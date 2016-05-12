@@ -1,0 +1,75 @@
+\documentclass{amsart}
+\usepackage{mathpartir}
+\input{decls}
+\title{Categorical logic from a categorical point of view}
+\author{}
+\date{\today}
+\autodefs{\bSet}
+\let\types\vdash
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Appetizer: inverses in group objects}
+\label{sec:intro}
+
+As an example to motivate what follows, and give some idea of the power and flexibility of categorical logic as a tool for category theory, we consider several different faces of the following theorem:
+
+\begin{thm}
+  If a monoid has inverses (hence is a group), then those inverses are unique.
+\end{thm}
+
+When ``monoid'' and ``group'' have their usual meaning, namely sets equipped with structure, the proof is easy.
+For any $x$, if $i(x)$ and $j(x)$ are both two-sided inverse of $x$, then we have
+\[ i(x) = i(x) \cdot e = i(x) \cdot (x \cdot j(x)) = (i(x)\cdot x)\cdot j(x) = e\cdot j(x) = j(x) \]
+However, the theorem is true much more generally than this.
+We consider first the case of monoid/group objects in a category with products.
+A \emph{monoid object} is an object $M$ together with maps $m:M\times M \to M$ and $e:1\to M$ satisfying associativity and unitality axioms:
+\begin{equation}
+  \vcenter{\xymatrix{
+      M\times M\times M\ar[r]^-{1\times m}\ar[d]_{m\times 1} &
+      M\times M\ar[d]^m\\
+      M\times M\ar[r]_m &
+      M
+    }}
+  \qquad
+  \vcenter{\xymatrix{ M \ar[r]^-{(1,e)} \ar[dr]_{1} &
+    M\times M \ar[d]_m & M \ar[l]_-{(e,1)} \ar[dl]^{1} \\
+    & M }}
+\end{equation}
+An \emph{inverse operator} for a monoid object is a map $i:M\to M$ such that
+\begin{equation}
+  \vcenter{\xymatrix@C=1pc{& M\times M \ar[rr]^{i\times 1} && M\times M \ar[dr]^m \\
+      M \ar[ur]^{\Delta} \ar[dr]_{\Delta} \ar[rr]^{!} && 1 \ar[rr]^{e} && M \\
+      & M\times M \ar[rr]_{1\times i} && M\times M \ar[ur]_{m}}}
+\end{equation}
+The internalized claim, then, is that any two inverse operators are equal.
+The \emph{internal logic of a category with products} allows us to prove this by using essentially the same argument that we did in the case of ordinary monoids in \bSet.
+The morphisms $m$ and $e$ are represented in this logic by the notations
+\begin{mathpar}
+  x:M,y:M \types x\cdot y :M \and
+  \types e:M.
+\end{mathpar}
+Don't worry if this notation doesn't make a whole lot of sense yet.
+The symbol $\types$ (called a ``turnstile'') is the logic version of a morphism arrow $\to$.
+The fact that $m$ is a morphism $M\times M \to M$ is indicated by the fact that $M$ appears twice to the left of $\types$ and once to the right; the comma ``$,$'' in between $x:M$ and $y:M$ represents the product $\times$, and the variables $x,y$ are there so that we have a good notation ``$x\cdot y$'' for the morphism $m$.
+In particular, the notation $x:M,y:M \types x\cdot y :M$ should be bracketed as
+\[ ((x:M),(y:M)) \types ((x\cdot y) :M). \]
+Similarly, the associativity, unit, and inverse axioms are indicated by the notations
+\begin{mathpar}
+  x:M,y:M,z:M \types (x\cdot y)\cdot z = x\cdot (y\cdot z) : M \\
+  x:M \types x\cdot e = x : M \and
+  x:M \types e\cdot x = x : M \\
+  x:M \types x\cdot i(x) = e : M \and
+  x:M \types i(x) \cdot x = e : M
+\end{mathpar}
+Now the \bSet-based proof can be essentially copied in this notation:
+\[ x:M \types i(x) = i(x) \cdot e = i(x) \cdot (x \cdot j(x)) = (i(x)\cdot x)\cdot j(x) = e\cdot j(x) = j(x) : M.\]
+The essential point is that the notation \emph{looks set-theoretic}, with ``variables'' representing ``elements'', and yet (as we will see) its formal structure is such that it can be interpreted into \emph{any} category with products.
+Therefore, writing the proof in this way yields automatically a proof of the general theorem that any two inverse \emph{operators} for a monoid \emph{object} in a category with products are equal.
+
+
+\bibliographystyle{alpha}
+\bibliography{all}
+
+\end{document}
