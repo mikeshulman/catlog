@@ -465,6 +465,12 @@
     %% This command tells cleveref's \cref what to call things
     \crefname{#1}{#2}{#3}% following brace must be on separate line to support poorman cleveref sed file
   }
+  % This one has its own number (e.g. exercises)
+  \def\defnewthm#1#2#3{%
+    \newtheorem{#1}{#2}[section]
+    %% This command tells cleveref's \cref what to call things
+    \crefname{#1}{#2}{#3}% following brace must be on separate line to support poorman cleveref sed file
+  }
   % \let\autoref\cref  % May want to use \autoref for xr-ed links
 \else
   % In non-TAC styles without cleveref, theorems have their own counters and so the
@@ -530,8 +536,8 @@
 \defthm{rmk}{Remark}{Remarks}
 \defthm{eg}{Example}{Examples}
 \defthm{egs}{Examples}{Examples}
-\defthm{ex}{Exercise}{Exercises}
 \defthm{ceg}{Counterexample}{Counterexamples}
+\defnewthm{ex}{Exercise}{Exercises}
 
 \ifcref
   % Display format for sections

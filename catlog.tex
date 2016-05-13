@@ -1,5 +1,6 @@
 \documentclass{amsart}
-\usepackage{mathpartir}
+\usepackage{mathpartir,cancel}
+\newif\ifcref\creftrue
 \input{decls}
 \title{Categorical logic from a categorical point of view}
 \author{}
@@ -13,7 +14,10 @@
 \section{Appetizer: inverses in group objects}
 \label{sec:intro}
 
-As an example to motivate what follows, and give some idea of the power and flexibility of categorical logic as a tool for category theory, we consider several different faces of the following theorem:
+In this section we consider an extended example.
+We do not expect the reader to understand it very deeply, but we hope it will give some motivation for what follows, as well as a taste of the power and flexibility of categorical logic as a tool for category theory.
+
+Our example will consist of several varations on the following theorem:
 
 \begin{thm}
   If a monoid has inverses (hence is a group), then those inverses are unique.
@@ -51,7 +55,7 @@ The morphisms $m$ and $e$ are represented in this logic by the notations
   \types e:M.
 \end{mathpar}
 Don't worry if this notation doesn't make a whole lot of sense yet.
-The symbol $\types$ (called a ``turnstile'') is the logic version of a morphism arrow $\to$.
+The symbol $\types$ (called a ``turnstile'') is the logic version of a morphism arrow $\to$, and the entire notation is called a \emph{sequent} or a \emph{judgment}.
 The fact that $m$ is a morphism $M\times M \to M$ is indicated by the fact that $M$ appears twice to the left of $\types$ and once to the right; the comma ``$,$'' in between $x:M$ and $y:M$ represents the product $\times$, and the variables $x,y$ are there so that we have a good notation ``$x\cdot y$'' for the morphism $m$.
 In particular, the notation $x:M,y:M \types x\cdot y :M$ should be bracketed as
 \[ ((x:M),(y:M)) \types ((x\cdot y) :M). \]
@@ -59,7 +63,7 @@ Similarly, the associativity, unit, and inverse axioms are indicated by the nota
 \begin{mathpar}
   x:M,y:M,z:M \types (x\cdot y)\cdot z = x\cdot (y\cdot z) : M \\
   x:M \types x\cdot e = x : M \and
-  x:M \types e\cdot x = x : M \\
+  x:M \types e\cdot x = x : M \\F
   x:M \types x\cdot i(x) = e : M \and
   x:M \types i(x) \cdot x = e : M
 \end{mathpar}
@@ -68,6 +72,134 @@ Now the \bSet-based proof can be essentially copied in this notation:
 The essential point is that the notation \emph{looks set-theoretic}, with ``variables'' representing ``elements'', and yet (as we will see) its formal structure is such that it can be interpreted into \emph{any} category with products.
 Therefore, writing the proof in this way yields automatically a proof of the general theorem that any two inverse \emph{operators} for a monoid \emph{object} in a category with products are equal.
 
+To be sure, such a proof could be written in standard categorical style using commutative diagrams as well (\cref{ex:fp-inv-uniq}), and experienced category theorists become quite good at translating proofs in this way.
+The point of categorical logic is that this sort of work is \emph{so} straightforward that it's actually completely unnecessary to do at all: we can prove a ``meta-theorem'' that does all the work for us.
+
+Before leaving this appetizer section, we mention some further generalizations of this result.
+While type theory allows us to use set-like notation to prove facts about any category with finite products, the allowable notation is fairly limited, essentially restricting us to algebraic calculations with variables.
+However, if our category has more structure, then we can ``internalize'' more set-theoretic arguments.
+
+As an example, note that for ordinary monoids in sets the uniqueness of inverses can be expressed ``pointwise'' rather than in terms of inverse-assigning operators.
+In other words, for each element $x\in M$, if $x$ has two two-sided inverses $y$ and $z$, then $y=z$.
+If we think hard enough, we can express this diagrammatically in terms of the category \bSet is to consider the following two sets:
+\begin{align*}
+  A &= \setof{(x,y,z)\in M^3 | xy=e, yx=e, xz=e, zx=e}\\
+  B &= \setof{(y,z)\in M^2 | y=z}
+\end{align*}
+In other words, $A$ is the set of elements $x$ equipped with two inverses, and $B$ is the set of pairs of equal elements.
+Then the uniqueness of pointwise inverses can be expressed by saying there is a commutative diagram
+\[ \xymatrix{ A \ar[d] \ar[r] & B \ar[d] \\ M^3 \ar[r]_{\pi_{23}} & M^2 } \]
+where the vertical arrows are inclusions and the lower horizontal arrow projects to the second and third components.
+
+This is a statement that makes sense for a monoid object $M$ in any category with finite \emph{limits}.
+The object $B$ can be constructed categorically as the equalizer of the two projections $M\times M \toto M$ (which is in fact isomorphic to $M$ itself), while the object $A$ is a ``joint equalizer'' of four parallel pairs, one of which is
+\[ \vcenter{\xymatrix{ & M \times M \ar[dr]^m \\
+    M\times M\times M \ar[ur]^{\pi_{12}} \ar[dr]_{!} && M \\
+    & 1 \ar[ur]_e }} \]
+and the others are similar.
+We can then try to \emph{prove}, in this generality, that there is a commutative square as above.
+We can do this by manipulating arrows, or by appealing to the Yoneda lemma, but we can also use the \emph{internal logic of a category with finite limits}.
+This is a syntax like the internal logic for categories with finite products, but which also allows us to \emph{hypothesize equalities}.
+The judgment in question is
+\begin{equation}\label{eq:pointwise-unique-inverses}
+  x:M, y:M, z:M, x\cdot y = e, y\cdot x=e, x\cdot z = e, z\cdot x = e \types y=z.
+\end{equation}
+As before, the comma binds the most loosely, so this should be read as
+\[ ((x:M), (y:M), (z:M), (x\cdot y = e), (y\cdot x=e), (x\cdot z = e), (z\cdot x = e)) \types (y=z). \]
+We can prove this by set-like equational reasoning, essentially just as before.
+The ``interpretation machine'' then produces from this a morphism $A\to B$, for the objects $A$ and $B$ constructed above.
+
+Next, note that in the category \bSet, the uniqueness of inverses ensures that if every element $x\in M$ has an inverse, then there is a \emph{function} $i:M\to M$ assigning inverses --- even without using the axiom of choice.
+(If we define functions as sets of ordered pairs, as is usual in set-theoretic foundations, we could take $i = \setof{(x,y) | xy=e}$; the pointwise uniqueness ensures that this is indeed a function.)
+This fact can be expressed in the internal logic of an \emph{elementary topos}.
+We postpone the definition of a topos until later; for now we just remark that its structure allows both sides of the turnstile $\types$ to contain \emph{logical formulas} such as $\exists x, \forall y, \phi(x,y)$ rather than just elements and equalities.
+In this language we can state and prove the following:
+\[ \forall x:M, \exists y:M, x\cdot y = e \land y\cdot x = e \types
+\exists i:M^M, \forall x:M, (x\cdot i(x) = e \land i(x)\cdot x = e)
+\]
+As before, the proof is essentially exactly like the usual set-theoretic one.
+Moreover, the interpretation machine allows us to actually extract an ``inverse operator'' morphism in the topos from this proof.
+As before, such a result can also be stated and proved using arrows and commutative diagrams, but as the theorems get more complicated, the translation gets more tedious to do by hand, and the advantage of type-theoretic notation becomes greater.
+
+So much for adding extra structure.
+In fact, we can also take structure away!
+A monoid object can be defined internal to any \emph{monoidal} category, not just a cartesian monoidal one; now the structure maps are $m:M\otimes M\to M$ and $e:I\to M$, and the commutative diagrams are essentially the same.
+
+To define an inverse operator in this case, however, we need some sort of ``diagonal'' $\Delta:M\to M\otimes M$ and also a ``projection'' or ``augmentation'' $\varepsilon:M\to I$.
+The most natural hypothesis is that these maps make $M$ into a \emph{comonoid} object, i.e.\ a monoid in the opposite monoidal category, and that the monoid and comonoid structures preserve each other; this is the notion of a \emph{bimonoid} (or ``bialgebra'').
+(\cref{ex:cartmon-bimon-uniq}: in a cartesian monoidal category, every object is a bimonoid in a unique way.)
+
+Now given a bimonoid $M$, we can define an ``inverse operator'' --- which in this context is usually called an \emph{antipode} --- to be a map $i:M\to M$ such that
+\begin{equation}
+  \vcenter{\xymatrix@C=1pc{& M\otimes M \ar[rr]^{i\otimes 1} && M\otimes M \ar[dr]^m \\
+      M \ar[ur]^{\Delta} \ar[dr]_{\Delta} \ar[rr]^{\varepsilon} && I \ar[rr]^{e} && M \\
+      & M\otimes M \ar[rr]_{1\otimes i} && M\otimes M \ar[ur]_{m}}}
+\end{equation}
+commutes, where now $\Delta$ and $\varepsilon$ are the comonoid structure of $M$ rather than the diagonal and projection of a cartesian product.
+A bimonoid equipped with an antipode is called a \emph{Hopf monoid} (or ``Hopf algebra'').
+The obvious question then is, if a bimonoid has two antipodes, are they equal?
+
+In some cases it is possible to apply the previous results directly.
+For instance, the category of \emph{(co)commutative} comonoids in a symmetric monoidal category inherits a monoidal structure that turns out to be \emph{cartesian} (\cref{ex:ccmon-cart}), so a cocommutative bimonoid is actually a monoid in a cartesian monoidal category, and we can apply the first version of our result.
+Similarly, the category of commutative monoids is cocartesian, so a commutative bimonoid is a comonoid in a cocartesian monoidal category, so we can apply the dual of the first version of our result.
+But what if neither the multiplication nor the comultiplication is commutative?
+
+Internal logic is up to this task.
+In a monoidal category we can consider judgments with multiple outputs as well as multiple inputs.
+This allows us to describe monoids and comonoids in a roughly ``dual'' way:
+\begin{alignat*}{2}
+  x:M, y:M &\types x\cdot y:M &\qquad x:M &\types (x_1,x_2):(M,M)\\
+  &\types e:M &\qquad x:M &\types \cancel{x}:()\\
+  x:M,y:M,z:M &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :M &\qquad x:M &\types (x_{11},x_{12},x_2)=(x_1,x_{21},x_{22}):(M,M,M)\\
+  x:M &\types x\cdot e=x:M &\qquad x:M &\types (x_1,\cancel{x_2}) = x:M\\
+  x:M &\types e\cdot x=x:M &\qquad x:M &\types (\cancel{x_1},x_2) = x:M
+\end{alignat*}
+In this language, the bimonoid axioms are
+\begin{align*}
+  x:M,y:M &\types (x_1\cdot y_1,x_2\cdot y_2) = ((x\cdot y)_1,(x\cdot y)_2) :(M,M)\\
+          &\types (e_1,e_2)=(e,e):(M,M)\\
+  x:M,y:M &\types \cancel{x\cdot y} = (\cancel{x},\cancel{y}) : ()\\
+  &\types \cancel{e}=():()
+\end{align*}
+And an antipode is a map $x:M \types i(x):M$ such that
+\begin{align*}
+  x:M &\types x_1\cdot i(x_2) = (e,\cancel{x}) :M\\
+  x:M &\types i(x_1)\cdot x_2 = (e,\cancel{x}) :M
+\end{align*}
+Now if we have another antipode $j$, we can compute
+\begin{align*}
+  x:M \types i(x)
+  &= i(x)\cdot e\\
+  &= (i(x_1)\cdot e,\cancel{x_2})\\
+  &= i(x_1)\cdot (x_{21} \cdot j(x_{22}))\\
+  &= (i(x_1)\cdot x_{21}) \cdot j(x_{22})\\
+  &= (\cancel{x_1},e \cdot j(x_{2}))\\
+  &= e\cdot j(x)\\
+  &= j(x) \qquad :M
+\end{align*}
+yielding the same result $i=j$.
+So even in a non-cartesian situation, we can use a very similar set-like argument, as long as we keep track of where elements get ``duplicated and discarded''.
+
+This concludes our ``appetizer''; I hope it has given you a taste of what categorical logic looks like, and what it can do for category theory.
+In the next section we will rewind back to the beginning and start with very simple cases.
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:fp-inv-uniq}
+  Prove, using arrows and commutative diagrams, that any two inverse operators for a monoid object in a category with finite products are equal.
+\end{ex}
+
+\begin{ex}\label{ex:cartmon-bimon-uniq}
+  Prove that in a cartesian monoidal category, every object is a bimonoid in a unique way.
+\end{ex}
+
+\begin{ex}\label{ex:ccmon-cart}
+  Show that the category of cocommutative comonoids in a symmetric monoidal category inherits a monoidal structure, and that this monoidal structure is cartesian.
+\end{ex}
+
+\begin{ex}\label{ex:antipode}
+  Prove, using arrows and commutative diagrams, that any two antipodes for a bimonoid (not necessarily commutative or cocommutative) are equal.
+\end{ex}
 
 \bibliographystyle{alpha}
 \bibliography{all}
