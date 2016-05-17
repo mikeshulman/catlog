@@ -5,8 +5,10 @@
 \title{Categorical logic from a categorical point of view}
 \author{}
 \date{\today}
-\autodefs{\bSet\bPoset\bRelGr}
+\autodefs{\bSet\bPoset\bRelGr\bCat\bGr}
 \let\types\vdash
+\let\sect\section
+\def\idfunc{\mathsf{id}}
 \begin{document}
 \maketitle
 \setcounter{tocdepth}{1}
@@ -223,7 +225,7 @@ In this example, the answer is yes, because we have $D\le A$ and  $A\le B$ and $
 More generally, we would like a method to answer all possible questions of this sort.
 
 There is an elegant categorical way to do this based on the notion of \emph{free structure}.
-Namely, consider the category \bPoset of posets, and also the category \bRelGr of relational graphs, by which I mean sets equipped with an arbitrary binary relation.
+Namely, consider the category \bPoset of posets, and also the category \bRelGr of \emph{relational graphs}, by which I mean sets equipped with an arbitrary binary relation.
 There is a forgetful functor $U:\bPoset \to \bRelGr$, which has a left adjoint $F$.
 
 Now, the abstract information about ``five objects $A,B,C,D,E$ satisfying five given relations'' can be regarded as an object $\cG$ of \bRelGr, and to give five such objects satisfying those relations in a poset \cP is to give a map $\cG \to U\cP$ in \bRelGr.
@@ -261,10 +263,11 @@ Since the properties distinguishing a poset are reflexivity and transitivity, we
 \end{mathpar}
 in which $A,B,C$ represent arbitrary objects.
 In other words, the first rule is that for any object $A$ we have a $0$-ary rule whose conclusion is $A\types A$, while the second is that for any objects $A,B,C$ we have a $2$-ary rule whose premises are $A\types B$ and $B\types C$ (that is, any two judgments of which the consequent of the first is the antecedent of the second) and whose conclusion is $A\types C$.
+We will refer to the pair of these two rules as the \textbf{free type theory of posets}.
 
 Hopefully it makes sense that we can construct the reflexive-transitive closure of a relational graph by expressing its relations in this funny syntax and then closing up under these two rules, since they are exactly reflexivity and transitivity.
 Categorically, of course, that means identities and composition.
-In type theory the composition rule is often called \emph{cut}, and plays a unique role; we will touch on this later on, though it is not as important from a purely categorical standpoint.
+In type theory the composition/transitivity rule is often called \emph{cut}, and plays a unique role; we will touch on this later on, though it is not as important from a purely categorical standpoint.
 
 In the example we started from,
 \begin{mathpar}
@@ -294,12 +297,258 @@ Note that \texttt{mathpartir} has only recently made it into standard distributi
 
 Formally speaking, what we have observed is the following \emph{initiality theorem}.
 
-\begin{thm}
-  For any relational graph \cG, the free poset $F\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in the above type theory.
+\begin{thm}\label{thm:initiality-posets-1}
+  For any relational graph \cG, the free poset $F_{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.
 \end{thm}
 
 This enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
-We now have all the essential ingredients for categorical logic; what remains is essentially just ever fancier enhancements to allow type theory to represent more and more complicated kinds of categorical structures.
+
+Another way to express this result is to incorporate \cG into the rules.
+Given a relational graph \cG, we define the \textbf{type theory of posets under \cG} to be the free type theory of posets together with a 0-ary rule
+\begin{mathpar}
+  \inferrule{ }{A\types B}
+\end{mathpar}
+for any relation $A\le B$ in \cG.
+Now a derivation can be written without any ``leaves'' at the top, such as
+\begin{mathpar}
+  \inferrule*{\inferrule*{\inferrule*{ }{D\types A} \\ \inferrule*{ }{A\types B}}{D\types B} \\ \inferrule*{ }{B\types E}}{D\types E}
+\end{mathpar}
+Clearly this produces the same judgments; thus the initiality theorem can also be expressed as follows.
+
+\begin{thm}\label{thm:initiality-posets-2}
+  For any relational graph \cG, the free poset $F_{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the derivable judgments in the type theory of posets under \cG.
+\end{thm}
+
+We can extract from this our first general statement about categorical logic: it is \emph{a syntax for generating free categorical structures using derivations from rules}.
+The reader may be forgiven at this time for wondering what the point is; but bear with us and things will get less trivial.
+
+
+\section{Categories}
+\label{sec:categories}
+
+Let's now generalize from posets to categories.
+The relevant adjunction is now between categories \bCat and \emph{directed graphs} \bGr; the latter are sets $\cG$ of ``vertices'' equipped with a set $\cG(A,B)$ of ``edges'' for each $x,y\in \cG$.
+Thus, we hope to generate the free category $F_{\bCat}\cG$ on a directed graph \cG type-theoretically.
+
+Our judgments $A\types B$ will still represent morphisms from $A$ to $B$, but now of course there can be more than one such morphism.
+Thus, to specify a particular morphism, we need more information than the simple \emph{derivability} of a judgment $A\types B$.
+Na\"ively, the first thing we might try is to identify this extra information with the \emph{derivation} of such a judgment, i.e.\ with the tree of rules that were applied to reach it.
+This makes the most sense if we take the approach of \cref{thm:initiality-posets-2} rather than \cref{thm:initiality-posets-1}, so that distinct edges $f,g\in \cG(A,B)$ can be regarded as distinct \emph{rules}
+\begin{mathpar}
+  \inferrule*[right=$f$]{ }{A\types B} \and
+  \inferrule*[right=$g$]{ }{A\types B} \and
+\end{mathpar}
+Thus, for instance, if we have also $h\in \cG(B,C)$, the distinct composites $h\circ g$ and $h\circ f$ will be represented by the distinct derivations
+\begin{mathpar}
+  \inferrule*[right=$\circ$]{
+    \inferrule*[right=$h$]{ }{B\types C} \\
+    \inferrule*[right=$g$]{ }{A\types B}
+  }{
+    A\types C
+  }\and
+  \inferrule*[right=$\circ$]{
+    \inferrule*[right=$h$]{ }{B\types C} \\
+    \inferrule*[right=$f$]{ }{A\types B}
+  }{
+    A\types C
+  }\and
+\end{mathpar}
+Note that when we have distinct rules with the same premises and conclusion, we have to label them so that we can tell which is being applied.
+For consistency, we begin labeling the identity and composition rules too, with $\circ$ and $\idfunc$.
+
+Of course, this na\"ive approach founders on the fact that composition in a category is supposed to be associative and unital, since the two composites $h\circ (g\circ f)$ and $(h\circ g)\circ f$, which ought to be equal, nevertheless correspond to distinct derivations:
+\begin{equation}\label{eq:assoc}
+  \begin{array}{c}
+  \inferrule*[right=$\circ$]{
+    \inferrule*[right=$h$]{ }{C\types D} \\
+    \inferrule*[right=$\circ$]{
+      \inferrule*[right=$g$]{ }{B\types C} \\
+      \inferrule*[right=$f$]{ }{A\types B}
+    }{
+      A\types C
+    }}{
+    A\types D
+  }\\\\
+  \inferrule*[right=$\circ$]{
+    \inferrule*[right=$\circ$]{
+      \inferrule*[right=$h$]{ }{C\types D} \\
+      \inferrule*[right=$g$]{ }{B\types C}
+    }{
+      B\types D
+    }\\
+    \inferrule*[right=$f$]{ }{A\types B}
+  }{
+    A\types D
+  }
+  \end{array}
+\end{equation}
+Thus, with this type theory we don't get the free category on \cG, but rather some free category-like structure that lacks associativity and unitality.
+
+There are two ways to deal with this problem.
+The first is to simply quotient by an equivalence relation.
+Our equivalence relation will have to identify the two derivations in~\eqref{eq:assoc}, and also the similar pairs for identities:
+\begin{mathpar}
+  \inferrule{\inferrule*[right=$\idfunc$]{ }{A\types A}\\ {A\types B}}{A\types B}\circ
+  \qquad\equiv\qquad A\types B
+  \\
+  \inferrule{A\types B \\ \inferrule*[right=$\idfunc$]{ }{B\types B}}{A\types B}\circ
+  \qquad\equiv\qquad A\types B
+\end{mathpar}
+Our equivalence relation must also be a ``congruence for the tree-construction of derivations'', meaning that these identifications can be made anywhere in the middle of a long derivation, such as:
+\begin{mathpar}
+  \inferrule{\inferrule*{}{\sD_1\\\\\vdots} \\
+    \inferrule*[right=$\circ$]{\inferrule*[right=$\idfunc$]{ }{A\types A}\\ \inferrule*{\sD_2\\\\\vdots}{A\types B}}{A\types B}
+  }{\vdots\\\\\sD_3}
+  \qquad\equiv\qquad
+  \inferrule{\inferrule*{}{\sD_1\\\\\vdots} \\
+    \inferrule*{\sD_2\\\\\vdots}{A\types B}
+  }{\vdots\\\\\sD_3}
+\end{mathpar}
+We will also have to close it up under reflexivity, symmetry, and transitivity to make an equivalence relation.
+
+Of course, it quickly becomes tedious to draw such derivations, so it is convenient to adopt a more succinct syntax for them.
+We begin by labeling each judgment with a one-dimensional syntactic representation of its derivation tree, such as:
+\begin{mathpar}
+  \inferrule*[right=$\circ$]{
+    \inferrule*[right=$g$]{ }{g:(B\types C)} \\
+    \inferrule*[right=$\circ$]{
+      \inferrule*[right=$\idfunc$]{ }{\idfunc_B:(B\types B)} \\
+      \inferrule*[right=$f$]{ }{f:(A\types B)}
+    }{
+      (\idfunc_B\circ f):(A\types B)
+    }}{
+    (g\circ (\idfunc_B\circ f)) : (A\types C)
+  }
+\end{mathpar}
+These labels are called \emph{terms}.
+Of course, in this case they are none other than the usual notation for composition and identities.
+Now the generators of our equivalence relation look even more familiar:
+\begin{align*}
+  \phi \circ (\psi \circ \chi) &\equiv (\phi\circ\psi)\circ\chi\\
+  \phi \circ \idfunc_A &\equiv \phi\\
+  \idfunc_B \circ \phi &\equiv \phi
+\end{align*}
+Here $\phi,\psi,\chi$ denote \emph{arbitrary terms}, corresponding to the fact that arbitrary derivations can appear at the top of our identified trees; and similarly these identifications can also happen anywhere inside another term, so that for instance
+\[ k\circ (h\circ (g\circ f)) \equiv k\circ ((h\circ g)\circ f).  \]
+Of course, we only impose these relations when they make sense.
+We can describe the conditions under which this happens using rules for a secondary judgment $\phi\equiv \psi : (A\types B)$, like so:
+\begin{mathpar}
+  \inferrule{\phi:(A\types B) \\ \psi:(B\types C) \\ \chi:(C\types D)}{(\phi \circ (\psi \circ \chi) \equiv (\phi\circ\psi)\circ\chi) : (A\types D)}\\
+  \inferrule{\phi:(A\types B)}{(\phi \circ \idfunc_A \equiv \phi):(A\types B)}\and
+  \inferrule{\phi:(A\types B)}{(\idfunc_B \circ \phi \equiv \phi):(A\types B)}
+\end{mathpar}
+When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory of categories under \cG}.
+It should hopefully be clear that this does work:
+
+\begin{thm}\label{thm:initiality-categories-1}
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory of categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.
+\end{thm}
+
+Of course, once again very little seems to be happening; we are just using a complicated funny syntax to build a free algebraic structure.
+Therefore, it is the second way to deal with the problem of associativity that is more interesting.
+In this case what we do is \emph{remove the composition rule $\circ$ entirely}; instead we ``build (post)composition into the axioms''.
+That is, the only rule independent of \cG is identities:
+\[ \inferrule{ }{A\types A}\,\idfunc \]
+while for every edge $f\in \cG(A,B)$ we take the following rule:
+\[ \inferrule{X\types A}{X\types B} \,f \]
+for any $X$.
+Informally, one might say that we represent $f$ by its ``image under the Yoneda embedding''.
+We will call this the \textbf{cut-free type theory of categories under \cG}.
+
+In this theory, if we have $f\in\cG(A,B)$, $g\in\cG(B,C)$, and $h\in \cG(C,D)$ there is \emph{only one way} to derive $A\types D$:
+\begin{mathpar}
+  \inferrule*[Right=$h$]{
+    \inferrule*[Right=$g$]{
+      \inferrule*[Right=$f$]{
+        \inferrule*[Right=$\idfunc$]{ }{A\types A}
+      }{
+        A\types B
+      }
+    }{
+      A\types C
+    }
+  }{
+    A\types D
+  }
+\end{mathpar}
+Thus, we no longer have to worry about distinguishing between $h\circ (g\circ f)$ and $(h\circ g)\circ f$.
+Of course, we have a new problem: if we are trying to build a category, then we \emph{do} need to be able to compose arrows!
+So we need the following theorem:
+
+\begin{thm}\label{thm:cutadm-categories}
+  If we have derivations of $A\types B$ and $B\types C$ in the cut-free type theory of categories under \cG, then we can construct a derivation of $A\types C$.
+\end{thm}
+\begin{proof}
+  We induct on the number of rules appearing in the given derivation of $B\types C$.
+
+  If there is only one rule, then that rule must be $\idfunc$, since all the other rules have a premise and would need a second rule to feed into them.
+  In this case, it be that $B=C$; so our given derivation of $A\types B$ is also a derivation of $A\types C$.
+
+  If there are $n+1$ rules, then we must have $f\in\cG(D,C)$ and our derivation of $B\types C$ ends like this:
+  \begin{mathpar}
+    \inferrule*[right=$f$]{\inferrule*{\sD\\\\\vdots}{B\types D}}{B\types C}
+  \end{mathpar}
+  In particular, it contains a derivation \sD of $B\types D$ with only $n$ rules.
+  Thus, by the inductive hypothesis we have a derivation, say $\sD'$, of $A\types D$.
+  Now we can simply follow this with the rule for $f$:
+  \begin{mathpar}
+    \inferrule*[right=$f$]{\inferrule*{\sD'\\\\\vdots}{A\types D}}{A\types C}
+  \end{mathpar}
+\end{proof}
+
+In type-theoretic lingo, \cref{thm:cutadm-categories} says that \textbf{the cut rule is admissible} in the cut-free type theory of categories under \cG.
+In other words, although the cut/composition rule
+\begin{mathpar}
+  \inferrule*[right=$\circ$]{A\types B \\ B\types C}{A\types C}
+\end{mathpar}
+is not \emph{part of the type theory} as defined, it is nevertheless true that whenever we have derivations of the premises of this rule, we can construct a derivation of its conclusion.
+
+Of course, another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
+We have just given an inductive definition of ``finite string of composable edges'': we have such a finite string (of length 0) from $A$ to $A$, and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
+Thus we have the analogous theorem:
+
+\begin{thm}\label{thm:initiality-categories-2}
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivations of $A\types B$ in the cut-free type theory for categories under \cG.
+\end{thm}
+
+This gives us a second, more interesting, general statement about categorical logic: it is
+{a syntax for generating free categorical structures using derivations from rules}
+\emph{that yield elements in canonical form}, eliminating (or reducing) the need for quotients.
+
+To end this section, we note that we can introduce \emph{terms} for the cut-free type theory as well in a pleasing way.
+Rather than describing the entire judgment $A\types B$ with a term, we assign a formal variable such as $x$ to the domain $A$, and then a term containing $x$ to the codomain $B$, such as $h(g(f(x)))$.
+We write this as
+\[ x:A \types h(g(f(x))) : B\]
+The identity rules and axiom rules can now be written as
+\begin{mathpar}
+  \inferrule{ }{x:A\types x:A}\,\idfunc \and
+  \inferrule{x:X\types \alpha:A}{x:X\types f(\alpha):B} \,f
+\end{mathpar}
+Here $\alpha$ denotes an arbitrary term.
+Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
+\begin{mathpar}
+  \inferrule*[Right=$h$]{
+    \inferrule*[Right=$g$]{
+      \inferrule*[Right=$f$]{
+        \inferrule*[Right=$\idfunc$]{ }{x:A\types x:A}
+      }{
+        x:A\types f(x):B
+      }
+    }{
+      x:A\types g(f(x)): C
+    }
+  }{
+    x:A\types h(g(f(x))):D
+  }
+\end{mathpar}
+If we trace through the proof of \cref{thm:cutadm-categories} in this notation, it says that if we have $x:A\types \beta:B$ and $y:B\types \gamma:C$, we can \emph{substitute} $\beta$ for $y$ in $\gamma$ to obtain a new judgment $x:A \types \gamma[\beta/y]:C$.
+For example, given $x:A \types g(f(x)):B$ and $y:B\types h(y):C$, the derivation constructed is $x:A\types h(g(f(x))):C$, in which the $y$ in $h(y)$ has been replaced by $g(f(x))$.
+Thus, \cref{thm:cutadm-categories} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory of categories under \cG.
+
+\begin{ex}
+  Prove \cref{thm:initiality-categories-2}.
+  You will have to start by proving that the composition defined in \cref{thm:cutadm-categories} is in fact associative and unital, so that it forms a category.
+\end{ex}
 
 
 \bibliographystyle{alpha}
