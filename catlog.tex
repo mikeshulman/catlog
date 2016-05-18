@@ -1,4 +1,4 @@
-\documentclass{amsart}
+\documentclass{article}
 \usepackage{mathpartir,cancel}
 \newif\ifcref\creftrue
 \input{decls}
@@ -16,6 +16,8 @@
 \def\meetR{\mathord{\meet}R}
 \def\meetE{\mathord{\meet}E}
 \def\meetI{\mathord{\meet}I}
+% join
+\let\join\vee
 \begin{document}
 \maketitle
 %\setcounter{tocdepth}{1}
@@ -192,6 +194,8 @@ So even in a non-cartesian situation, we can use a very similar set-like argumen
 
 This concludes our ``appetizer''; I hope it has given you a taste of what categorical logic looks like, and what it can do for category theory.
 In the next section we will rewind back to the beginning and start with very simple cases.
+
+\subsection*{Exercises}
 
 \begin{ex}\label{ex:fp-inv-uniq}
   Prove, using arrows and commutative diagrams, that any two inverse operators for a monoid object in a category with finite products are equal.
@@ -445,10 +449,10 @@ We can describe the conditions under which this happens using rules for a second
   \inferrule{\phi:(A\types B)}{(\idfunc_B \circ \phi \equiv \phi):(A\types B)}
 \end{mathpar}
 When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory of categories under \cG}.
-It should hopefully be clear that this does work:
+It should hopefully be clear that this does work, so that we have the initiality theorem.
 
 \begin{thm}\label{thm:category-initial-1}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory of categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory of categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.\qed
 \end{thm}
 
 Of course, once again very little seems to be happening; we are just using a complicated funny syntax to build a free algebraic structure.
@@ -515,10 +519,10 @@ is not \emph{part of the type theory} as defined, it is nevertheless true that w
 
 Another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
 We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
-Thus we have the analogous theorem:
+Thus we have the analogous initiality theorem:
 
 \begin{thm}\label{thm:category-initial-2}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivations of $A\types B$ in the cut-free type theory for categories under \cG.
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivations of $A\types B$ in the cut-free type theory for categories under \cG.\qed
 \end{thm}
 
 This gives us a second, more interesting, general statement about categorical logic: it is
@@ -559,10 +563,20 @@ Note, by the way, that this perspective gives one reason why we chose to build i
 If we used precomposition instead, then we could still develop analogous notions of term and substitution, but they would be backwards: we would have to represent $f:A\to B$ as $f(u):A \types u:B$ rather than $x:A \types f(x):B$.
 Of course, we are much more familiar with applying functions to variables than co-applying functions to co-variables.
 
+\subsection*{Exercises}
+
 \begin{ex}
   Prove \cref{thm:category-initial-2}.
   You will have to start by proving that the composition defined in \cref{thm:cutadm-categories} is in fact associative and unital, so that it forms a category.
 \end{ex}
+
+\begin{ex}\label{ex:categories-over}
+  Let \sM be a fixed category; then we have an induced adjunction between $\bCat/\sM$ and $\bGr/\sM$.
+  Describe a cut-free type theory for presenting the free category-over-\sM on a directed-graph-over-\sM, and prove the initiality theorem (the analogue of \cref{thm:category-initial-2}).
+  Note that you will have to prove that cut is admissible first.
+  \textit{(Hint: index the judgments by arrows in \sM, so that for instance $A\types_\alpha B$ represents an arrow lying over a given arrow $\alpha$ in $\sM$.)}
+\end{ex}
+
 
 \section{Meet-semilattices}
 \label{sec:mslat}
@@ -630,7 +644,7 @@ We consider each in turn.
 \subsection{Sequent calculus for meet-semilattices}
 \label{sec:seqcalc-mslat}
 
-To be precise, for a relational graph \cG, the \textbf{sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
+To be precise, for a relational graph \cG, the \textbf{unary sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
 We label each rule on the right to make them easier to refer to later on.
 \begin{mathpar}
   \inferrule{A\in \cG}{A\types A}\;\idfunc\and
@@ -646,7 +660,7 @@ This ensures that whenever we can derive a sequent $A\types B$, that $A$ and $B$
 However, we don't need to assume explicitly as premises that \emph{all} types appearing in any sequent are well-formed, only those that are introduced without belonging to any previous sequents; this is sufficient for the following inductive proof.
 
 \begin{thm}\label{sec:seqcalc-mslat-wftype}
-  In the sequent calculus for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.
+  In the unary sequent calculus for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.
 \end{thm}
 \begin{proof}
   By induction on the derivation of $A\types B$.
@@ -663,7 +677,7 @@ The second thing to note is that we only assert the identity rule $A\types A$ wh
 This is sufficient because in the sequent calculus, we can derive the identity rule for any type:
 
 \begin{thm}\label{thm:seqcalc-mslat-idadm}
-  In the sequent calculus for meet-semilattices under \cG, if $A$ is a type (that is, if $\types A\type$ is derivable), then $A\types A$ is derivable.
+  In the unary sequent calculus for meet-semilattices under \cG, if $A$ is a type (that is, if $\types A\type$ is derivable), then $A\types A$ is derivable.
 \end{thm}
 \begin{proof}
   We induct on the derivation of $\types A\type$.
@@ -702,7 +716,7 @@ This is a general characteristic of sequent calculi.
 Next we prove that the cut rule is admissible for this sequent calculus too.
 
 \begin{thm}\label{thm:seqcalc-mslat-cutadm}
-  In the sequent calculus for meet-semilattices under \cG, if $A\types B$ and $B\types C$ are derivable, then so is $A\types C$.
+  In the unary sequent calculus for meet-semilattices under \cG, if $A\types B$ and $B\types C$ are derivable, then so is $A\types C$.
 \end{thm}
 \begin{proof}
   By induction on the derivation of $B\types C$.
@@ -733,10 +747,10 @@ Next we prove that the cut rule is admissible for this sequent calculus too.
 This simple proof already displays many of the characteristic features of a cut-admissibility argument.
 The final case~\ref{item:mslat-principal-cut} is called the \textbf{principal case} for the operation $\meet$, when the type $B$ we are composing over (also called the \textbf{cut formula}) is obtained from $\meet$ and both sequents are also obtained from the $\meet$ rules.
 
-Finally, we have:
+Finally, we have the initiality theorem:
 
 \begin{thm}\label{thm:seqcalc-mslat-initial}
-  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the sequent calculus for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
+  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the unary sequent calculus for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
 \end{thm}
 \begin{proof}
   \cref{thm:seqcalc-mslat-idadm,thm:seqcalc-mslat-cutadm} show that this defines a poset; let us denote it $F\cG$.
@@ -763,7 +777,7 @@ The phrase \emph{sequent calculus}, like \emph{type theory}, is difficult to def
 \label{sec:natded-mslat}
 
 Now suppose we make the other choice about how to treat projections.
-We call this the \textbf{natural deduction for meet-semilattices under \cG}; its rules (in addition to those for $\types A\type$) are
+We call this the \textbf{unary natural deduction for meet-semilattices under \cG}; its rules (in addition to those for $\types A\type$) are
 \begin{mathpar}
   \inferrule{\types X\type}{X\types X}\;\idfunc\and
   \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;f\and
@@ -776,7 +790,7 @@ We call this the \textbf{natural deduction for meet-semilattices under \cG}; its
 We observe first that this theory has the same well-formedness property as the sequent calculus:
 
 \begin{thm}\label{sec:natded-mslat-wftype}
-  In the natural deduction for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.\qed
+  In the unary natural deduction for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.\qed
 \end{thm}
 
 Unlike the sequent calculus, however, the general identity rule is not admissible: there is no way to derive $A\meet B \types A\meet B$ from $A\types A$ and $B\types B$.
@@ -785,7 +799,7 @@ Thus, we assert that the $\idfunc$ rule applies to all types, not just those com
 Cut, however, is still admissible:
 
 \begin{thm}\label{thm:natded-mslat-cutadm}
-  In the natural deduction for meet-semilattices under \cG, if $A\types B$ and $B\types C$ are derivable, then so is $A\types C$.
+  In the unary natural deduction for meet-semilattices under \cG, if $A\types B$ and $B\types C$ are derivable, then so is $A\types C$.
 \end{thm}
 \begin{proof}
   We induct on the derivation of $B\types C$.
@@ -803,18 +817,61 @@ This is characteristic of \emph{natural deduction} theories.
 Accordingly, instead of the rules of sequent calculus that introduce operations like $\meet$ and $\top$ on the left and right, we have rules like $\top I$ and $\meetI$ that introduce them on the right, and also rules that \emph{eliminate} them on the right like $\meetE1$ and $\meetE2$.
 (Later on we will be able to give a more convincing explanation of the origin of the phrase ``natural deduction''.)
 
-Of course, we should also prove:
+Of course, we should also prove the initiality theorem:
 
 \begin{thm}\label{thm:natded-mslat-initial}
-  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the natural deduction for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
+  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the unary natural deduction for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
 \end{thm}
 \begin{proof}
   Almost exactly like \cref{thm:seqcalc-mslat-initial}.
 \end{proof}
 
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:mslat-invertible}
+  Prove that the rules $\bot R$, $\meetL1$, $\meetL2$, and $\meetR$ in the unary sequent calculus for meet-semilattices are \emph{invertible}, in the sense that whenever we have a derivation of their conclusions, we also have a derivation of all their premises.
+\end{ex}
+
+\begin{ex}\label{ex:jslat}
+  Describe a sequent calculus for \emph{join-semilattices} (posets with a bottom element and binary joins), and prove the initiality theorems for it (including the identity and cut admissibility theorems).
+  The rules for $\bot$ and $\join$ should be exactly dual to the rules for $\top$ and $\meet$.
+\end{ex}
+
+\begin{ex}\label{ex:lattices}
+  By putting together the rules for meet- and join-semilattices, describe a sequent calculus for \emph{lattices} (posets with a top and bottom element and binary meets and joins), and prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:lattices-invertible}
+  Prove that in your sequent calculus for lattices from \cref{ex:lattices}, the rules for $\bot,\top,\meet,\join$ are all invertible in the sense of \cref{ex:mslat-invertible}.
+\end{ex}
+
+\begin{ex}\label{ex:seqcalc-poset-fib}
+  A map of posets $P:\sA\to\sM$ is called a \emph{(cloven) fibration} if whenever $b\in\sA$ and $x\le P(b)$, there is a chosen $a\in \sA$ such that $P(a)=x$ and $a\le b$ and moreover for any $c\in\sA$, $c\le b$ and $P(c)\le x$ together imply $c\le a$.
+  The object $a$ can be written as $x^*(b)$.
+  Given a fixed poset \sM, describe a sequent calculus for fibrations over \sM by adding rules governing the operations $x^*$ to the cut-free theory of \cref{ex:categories-over}, and prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:natded-poset-fib}
+  Now describe instead a natural deduction for fibrations over \sM, and prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:poset-bifib}
+  A map of posets $P:\sA\to\sM$ is called an \emph{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration.
+  The analogous operation takes $a\in \sA$ and $P(a)\le y$ to a $b\in \sA$ with $P(b)=y$ and $a\le b$ and a universal property; we write this $b$ as $y_!(a)$.
+  We say $P$ is a \emph{bifibration} if it is both a fibration and an opfibration.
+  Describe a sequent calculus for bifibrations over a fixed \sM, and prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:poset-bifib-adj}
+  Use your sequent calculus from \cref{ex:poset-bifib} to prove that in a bifibration, if $x\le y$ in $\sM$, we have an adjunction $y_! \dashv x^*$.
+\end{ex}
+
+
 \section{Categories with products}
 \label{sec:cat-prod}
 
+
+% This is an instance of the \emph{modularity} of type theory: generally speaking, the rules for different categorical operations such as $\meet$ and $\join$ should be \emph{unrelated} to each other, so that each can be analyzed separately and included or excluded.
 
 
 \bibliographystyle{alpha}
