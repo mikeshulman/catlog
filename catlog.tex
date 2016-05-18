@@ -5,7 +5,7 @@
 \title{Categorical logic from a categorical point of view}
 \author{}
 \date{\today}
-\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype}
+\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat}
 \let\types\vdash
 \let\sect\section
 \def\idfunc{\mathsf{id}}
@@ -18,6 +18,13 @@
 \def\meetI{\mathord{\meet}I}
 % join
 \let\join\vee
+% unit
+\def\unit{\mathbf{1}}
+\def\ttt{\mathsf{tt}}
+% product
+\def\timesE{\mathord{\times}E}
+\def\timesI{\mathord{\times}I}
+\def\pair#1#2{\langle #1,#2\rangle}
 \begin{document}
 \maketitle
 %\setcounter{tocdepth}{1}
@@ -489,7 +496,7 @@ Thus, we no longer have to worry about distinguishing between $h\circ (g\circ f)
 Of course, we have a new problem: if we are trying to build a category, then we \emph{do} need to be able to compose arrows!
 So we need the following theorem:
 
-\begin{thm}\label{thm:cutadm-categories}
+\begin{thm}\label{thm:categories-cutadm}
   If we have derivations of $A\types B$ and $B\types C$ in the cut-free type theory of categories under \cG, then we can construct a derivation of $A\types C$.
 \end{thm}
 \begin{proof}
@@ -510,7 +517,7 @@ So we need the following theorem:
   \end{mathpar}
 \end{proof}
 
-In type-theoretic lingo, \cref{thm:cutadm-categories} says that \textbf{the cut rule is admissible} in the cut-free type theory of categories under \cG.
+In type-theoretic lingo, \cref{thm:categories-cutadm} says that \textbf{the cut rule is admissible} in the cut-free type theory of categories under \cG.
 In other words, although the cut/composition rule
 \begin{mathpar}
   \inferrule*[right=$\circ$]{A\types B \\ B\types C}{A\types C}
@@ -536,9 +543,9 @@ We write this as
 The identity rules and axiom rules can now be written as
 \begin{mathpar}
   \inferrule{ }{x:A\types x:A}\,\idfunc \and
-  \inferrule{x:X\types \alpha:A}{x:X\types f(\alpha):B} \,f
+  \inferrule{x:X\types M:A}{x:X\types f(M):B} \,f
 \end{mathpar}
-Here $\alpha$ denotes an arbitrary term.
+Here $M$ denotes an arbitrary term.
 Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
 \begin{mathpar}
   \inferrule*[Right=$h$]{
@@ -555,9 +562,10 @@ Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
     x:A\types h(g(f(x))):D
   }
 \end{mathpar}
-If we trace through the proof of \cref{thm:cutadm-categories} in this notation, it says that if we have $x:A\types \beta:B$ and $y:B\types \gamma:C$, we can \emph{substitute} $\beta$ for $y$ in $\gamma$ to obtain a new judgment $x:A \types \gamma[\beta/y]:C$.
+If we trace through the proof of \cref{thm:categories-cutadm} in this notation, it says that if we have $x:A\types M:B$ and $y:B\types N:C$, we can \emph{substitute} $M$ for $y$ in $N$ to obtain a new judgment $x:A \types N':C$, where $N'$ is the term $N$ with $M$ substituted for the variable $y$.
+We will write $N[M/y]$ for this $N'$ (although unfortunately one finds other notations in the literature, including $[M/y]N$ and $N[y/M]$).
 For example, given $x:A \types g(f(x)):B$ and $y:B\types h(y):C$, the derivation constructed is $x:A\types h(g(f(x))):C$, in which the $y$ in $h(y)$ has been replaced by $g(f(x))$.
-Thus, \cref{thm:cutadm-categories} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory of categories under \cG.
+Thus, \cref{thm:categories-cutadm} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory of categories under \cG.
 
 Note, by the way, that this perspective gives one reason why we chose to build in postcomposition rather than precomposition.
 If we used precomposition instead, then we could still develop analogous notions of term and substitution, but they would be backwards: we would have to represent $f:A\to B$ as $f(u):A \types u:B$ rather than $x:A \types f(x):B$.
@@ -567,7 +575,7 @@ Of course, we are much more familiar with applying functions to variables than c
 
 \begin{ex}
   Prove \cref{thm:category-initial-2}.
-  You will have to start by proving that the composition defined in \cref{thm:cutadm-categories} is in fact associative and unital, so that it forms a category.
+  You will have to start by proving that the composition defined in \cref{thm:categories-cutadm} is in fact associative and unital, so that it forms a category.
 \end{ex}
 
 \begin{ex}\label{ex:categories-over}
@@ -597,7 +605,7 @@ When talking about type theory under \cG, we additionally include ``axiom'' rule
 \begin{mathpar}
   \inferrule{A\in\cG}{\types A\type}
 \end{mathpar}
-Thus, for instance, if $A,B\in\cG$ we have a deduction
+Thus, for instance, if $A,B\in\cG$ we have a derivation
 \begin{mathpar}
   \inferrule*{
     \inferrule*{A\in\cG}{\types A\type}\\
@@ -648,7 +656,7 @@ To be precise, for a relational graph \cG, the \textbf{unary sequent calculus fo
 We label each rule on the right to make them easier to refer to later on.
 \begin{mathpar}
   \inferrule{A\in \cG}{A\types A}\;\idfunc\and
-  \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;f\and
+  \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;fR\and
   \inferrule{\types A\type}{A\types \top}\;\top R\and
   \inferrule{A\types C \\ \types B\type}{A\meet B \types C}\;\meetL1\and
   \inferrule{B\types C \\ \types A\type}{A\meet B \types C}\;\meetL2\and
@@ -659,7 +667,7 @@ The first is that we have included in the premises some judgments of the form $\
 This ensures that whenever we can derive a sequent $A\types B$, that $A$ and $B$ are well-formed as types.
 However, we don't need to assume explicitly as premises that \emph{all} types appearing in any sequent are well-formed, only those that are introduced without belonging to any previous sequents; this is sufficient for the following inductive proof.
 
-\begin{thm}\label{sec:seqcalc-mslat-wftype}
+\begin{thm}\label{thm:seqcalc-mslat-wftype}
   In the unary sequent calculus for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.
 \end{thm}
 \begin{proof}
@@ -726,7 +734,7 @@ Next we prove that the cut rule is admissible for this sequent calculus too.
   \item If it is $f\in\cG(C',C)$, then we have a derivation of $B\types C'$.
     So by the inductive hypothesis we can derive $A\types C'$, whence also $A\types C$ by the rule for $f$.
   \item If it ends with $\top R$, then $C=\top$.
-    Since $A\types B$ is derivable, by \cref{sec:seqcalc-mslat-wftype} $\types A\type$ is also derivable; thus by $\top R$ we have $A\types \top$.
+    Since $A\types B$ is derivable, by \cref{thm:seqcalc-mslat-wftype} $\types A\type$ is also derivable; thus by $\top R$ we have $A\types \top$.
   \item If it ends with $\meetR$, then $C=C_1\meet C_2$ and we have derivations of $B\types C_1$ and $B\types C_2$.
     By the inductive hypothesis we can derive both $A\types C_1$ and $A\types C_2$, to which we can apply $\meetR$ to get $A\types C_1\meet C_2$.
   \item If it ends with $\meetL1$, then $B=B_1\meet B_2$ and we can derive $B_1\types C$.
@@ -780,7 +788,7 @@ Now suppose we make the other choice about how to treat projections.
 We call this the \textbf{unary natural deduction for meet-semilattices under \cG}; its rules (in addition to those for $\types A\type$) are
 \begin{mathpar}
   \inferrule{\types X\type}{X\types X}\;\idfunc\and
-  \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;f\and
+  \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;fI\and
   \inferrule{\types X\type}{X\types \top}\;\top I\and
   \inferrule{X\types B\meet C}{X \types B}\;\meetE1\and
   \inferrule{X\types B\meet C}{X \types C}\;\meetE2\and
@@ -789,11 +797,11 @@ We call this the \textbf{unary natural deduction for meet-semilattices under \cG
 
 We observe first that this theory has the same well-formedness property as the sequent calculus:
 
-\begin{thm}\label{sec:natded-mslat-wftype}
+\begin{thm}\label{thm:natded-mslat-wftype}
   In the unary natural deduction for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.\qed
 \end{thm}
 
-Unlike the sequent calculus, however, the general identity rule is not admissible: there is no way to derive $A\meet B \types A\meet B$ from $A\types A$ and $B\types B$.
+Unlike the sequent calculus, however, the general identity rule is not admissible: there is no way to derive $A\meet B \types A\meet B$ from $A\types A$ and $B\types B$ without it.
 Thus, we assert that the $\idfunc$ rule applies to all types, not just those coming from \cG.
 
 Cut, however, is still admissible:
@@ -855,6 +863,8 @@ Of course, we should also prove the initiality theorem:
   Now describe instead a natural deduction for fibrations over \sM, and prove the initiality theorem.
 \end{ex}
 
+% TODO: Can we have an exercise on fibrations whose fibers are meet-semilattices, using the sequent calculus to prove that $x^*$ preserves meets?
+
 \begin{ex}\label{ex:poset-bifib}
   A map of posets $P:\sA\to\sM$ is called an \emph{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration.
   The analogous operation takes $a\in \sA$ and $P(a)\le y$ to a $b\in \sA$ with $P(b)=y$ and $a\le b$ and a universal property; we write this $b$ as $y_!(a)$.
@@ -868,7 +878,171 @@ Of course, we should also prove the initiality theorem:
 
 
 \section{Categories with products}
-\label{sec:cat-prod}
+\label{sec:catprod}
+
+Now we move back from posets to categories.
+Let \bPrCat be the category of categories with specified binary products and a specified terminal object, and functors preserving these strictly.
+Then we have an adjunction relating \bPrCat to \bGr, and we want to describe the left adjoint with a type theory.
+
+As in \cref{sec:natded-mslat}, we could take either the sequent calculus route or the natural deduction route.
+Unfortunately, it turns out that in both cases we need to impose an equivalence relation on the derivations, as there are single morphisms that can be derived in multiple ways.
+However, the ways in which this happens in the two cases are different.
+
+On one hand, if we have an arrow $A\to C$ in a directed graph \cG, then there is a morphism $A\times B \to A \to A\times C$ in the free category-with-products on \cG.
+In a sequent calculus, there are two distinct derivations of this morphism:
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{A\types A}{A\times B \types A}\\
+    \inferrule*{\inferrule*{A\types A}{A\types C}}{A\times B \types C}
+  }{
+    A\times B \types A\times C
+  }\and
+  \inferrule*{
+    \inferrule*{A\types A \\ \inferrule*{A\types A}{A\types C}}{A\types A\times C}
+  }{
+    A\times B \types A\times C
+  }\and
+\end{mathpar}
+whereas in a natural deduction there will be only one:
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{A\times B\types A\times B}{A\times B \types A}\\
+    \inferrule*{\inferrule*{A\times B\types A\times B}{A\times B\types A}}{A\times B \types C}
+  }{
+    A\times B \types A\times C
+  }
+\end{mathpar}
+This sort of thing is true quite generally.
+A sequent calculus includes both left and right rules, so to derive a given sequent we must choose whether a left or a right rule is to be applied last.
+By contrast, both kinds of rules in a natural deduction (introduction and elimination) act on the right, so there is less choice about what rule to apply last.
+
+On the other hand, if we have an arrow $A\to B$ in \cG, then in a natural deduction there are two derivations of the identity $A\to A$:
+\begin{mathpar}
+  \inferrule*{\inferrule*{A\types A \\ \inferrule*{A\types A}{A\types B}}{A\types A\times B}}{A\types A}\and
+  \inferrule*{ }{A\types A}\and
+\end{mathpar}
+while in a sequent calculus there is only one:
+\begin{mathpar}
+  \inferrule*{ }{A\types A}
+\end{mathpar}
+
+The two situations are not quite equally bad, however.
+In the sequent calculus case, there is no clear way to privilege one derivation over the other; but in the natural deduction case, the right-hand derivation is clearly preferable.
+It turns out that for natural deduction, we can implement the necessary equivalence relation using \emph{reduction rules} that allow us to \emph{simply} more complicated derivations into equivalent simpler ones.
+In particular, therefore, we can still have a ``canonical form'' for morphisms in our free category, namely those deductions that cannot be simplified.
+For this reason, from now on when considering type theories for categories, we will always choose natural deduction over sequent calculus.
+(We will still discuss sequent calculi for posets.)
+
+It is much more convenient to describe the reduction rules using a term syntax for derivations, as introduced at the end of \cref{sec:categories}.
+In this syntax, the rules from \cref{sec:natded-mslat} become:
+\begin{mathpar}
+  \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
+  \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
+  \inferrule{\types X\type}{x:X\types \ttt:\unit}\;\unit I\and
+  \inferrule{x:X\types M:B\times C}{x:X \types \pi_1(M):B}\;\timesE1\and
+  \inferrule{x:X\types M:B\times C}{x:X \types \pi_2(M):C}\;\timesE2\and
+  \inferrule{x:X\types M:B \\ x:X\types N:C}{x:X\types \pair MN:B\times C}\;\timesI
+\end{mathpar}
+Note how well the natural-deduction choice of ``all rules acting on the right'' matches the use of abstract variables: in all cases we can think of ``applying functions to arguments'' in a familiar way.
+The need to impose the identity rule for all types (not just those coming from \cG) also makes perfect sense here: a variable in any type is also a term of that type.
+
+Now the above equivalence between the two derivations of the identity $A\to A$ can be written as
+\begin{equation}
+  \pi_1(\pair M N) \equiv M\label{eq:beta-prodcat-1}
+\end{equation}
+and of course we should also have
+\begin{equation}
+  \pi_2(\pair M N) \equiv N\label{eq:beta-prodcat-2}
+\end{equation}
+Note that in these equalities, we want to allow $M$ and $N$ to be arbitrary terms.
+There is another, dual, family of simplifications as well; we want to identify the following derivations of $A\times B\to A\times B$:
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{\inferrule*{ }{A\times B\types A\times B}}{A\times B \types A} \\
+    \inferrule*{\inferrule*{ }{A\times B\types A\times B}}{A\times B \types B}
+  }{
+    A\times B \types A\times B
+  }\and
+  \inferrule*{ }{A\times B\types A\times B}
+\end{mathpar}
+In term syntax, this means that
+\begin{equation}
+  \pair{\pi_1(M)}{\pi_2(M)} \equiv M\label{eq:eta-prodcat}
+\end{equation}
+In type-theoretic lingo, the equalities~\eqref{eq:beta-prodcat-1} and~\eqref{eq:beta-prodcat-2} are called \textbf{$\beta$-reductions} while the equality~\eqref{eq:eta-prodcat} is called an \textbf{$\eta$-reduction}.
+
+For the moment we postpone consideration of these equalities as ``directed simplifications'' and simply regard them as generating an equivalence relation on terms, which we also require to be a congruence for everything else.
+We can describe this ``generation'' using an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}: in addition to the $\beta$ and $\eta$ reductions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality (this ensures by induction that it is a congruence for substitution).
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pi_1(\pair M N) \equiv M :A}\and
+    \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pi_2(\pair M N) \equiv N :B}\and
+    \inferrule{x:X\types M:A\times B}{x:X\types \pair{\pi_1(M)}{\pi_2(M)} \equiv M:A\times B}\and
+    \inferrule{x:X\types M:A}{x:X \types M\equiv M:A}\and
+    \inferrule{x:X\types M\equiv N:A}{x:X\types N\equiv M:A}\and
+    \inferrule{x:X\types M\equiv N:A \\ x:X\types N\equiv P:A}{x:X\types M\equiv P:A}\and
+    \inferrule{f\in \cG(A,B) \\ x:X\types M\equiv N:A}{x:X\types f(M)\equiv f(N):B}\and
+    \inferrule{x:X\types M\equiv N:B\times C}{x:X \types \pi_1(M)\equiv \pi_1(N):B}\and
+    \inferrule{x:X\types M\equiv N:B\times C}{x:X \types \pi_2(M)\equiv \pi_2(N):B}\and
+    \inferrule{x:X\types M\equiv M':B \\ x:X\types N\equiv N':C}{x:X\types \pair MN\equiv \pair{M'}{N'}:B\times C}
+  \end{mathpar}
+  \caption{Equality rules for categories with products}
+  \label{fig:catprod-equality}
+\end{figure}
+
+This completes the definition of the \textbf{unary type theory for categories with products under \cG}.
+
+\begin{thm}\label{thm:catprod-subadm}
+  Substitution is admissible in the unary type theory for categories with products under \cG.
+  That is, if we have derivations of $x:A\types M:B$ and $y:B \types N:C$, then we have a derivation of $x:A \types N[M/y]:C$.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $y:B \types N:C$.
+  \begin{enumerate}
+  \item If it is $\idfunc$, then $N[M/y]$ is just $M$.  
+  \item If it is $fI$ for $f\in \cG(C',C)$, then we have $y:B \types N':C'$, so by induction we have $x:A\types N'[M/y]:C'$ and hence $x:A\types f(N'[M/y]):C'$.
+    Of course, $f(N'[M/y])$ is $(f(N'))[M/y]$.
+  \item If it is $\unit I$, then by $\unit I$ we have $x:A \types \ttt:\unit$ as well (of course, $\ttt[M/y]$ is just $\ttt$).
+  \item If it is $\timesE1$, then we have $y:B\types N':C\times C'$, so by induction we have $x:A \types N'[M/y]:C\times C'$, hence $x:A \types \pi_1(N'[M/y]):C$ by $\timesE1$.
+    Of course, $\pi_1(N'[M/y])$ is $(\pi_1(N'))[M/y]$.
+    The case for $\timesE2$ is similar.
+  \item Finally, if it is $\timesI$, we have $y:B\types N_1:C_1$ and $y:B\types N_2:C_2$, so by induction we have $x:A \types N_1[M/y]:C_1$ and $x:A \types N_2[M/y]:C_2$, hence $x:A \types \pair{N_1[M/y]}{N_2[M/y]}:C_1\times C_2$.
+    Of course, $\pair{N_1[M/y]}{N_2[M/y]}$ is $(\pair{N_1}{N_2})[M/y]$.\qedhere
+  \end{enumerate}
+\end{proof}
+
+Note that this proof can be regarded as \emph{defining} what it means to ``substitute'' $M$ for $y$ in $N$.
+Similarly, we also have:
+
+\begin{thm}\label{thm:catprod-subcong}
+  The relation $\equiv$ is a congruence for substitution in the unary type theory for categories with products under \cG.
+  In other words, if we have derivations of $x:X \types M\equiv M':B$ and $y:B \types N\equiv N':C$, then we can derive $x:A \types N[M/y] \equiv N'[M'/y]:C$.
+\end{thm}
+
+And we have the initiality theorem.
+
+\begin{thm}\label{thm:catprod-initial}
+  For any directed graph \cG, the free category-with-products $F_\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.
+\end{thm}
+\begin{proof}
+  \cref{thm:catprod-subadm} tells us how to can compose morphisms in our putative $F_\bPrCat \cG$, and \cref{thm:catprod-subcong} tells us that this operation respects the equivalence relation, so it is well-defined.
+  To prove that we have a category, we have to check that composition is associative and unital.
+  [TODO\dots]
+\end{proof}
+
+Finally, we return to the ``directedness'' of the $\beta$ and $\eta$ reductions.
+
+[TODO: I'm less confident about what to say here.
+I suppose if we want to be precise, we have to talk about Church-Rosser and confluence properties?
+Also, does it work in this simple case to consider $\eta$ as a reduction, or do we already need to make it an expansion?]
+
+\subsection*{Exercises}
+
+\begin{ex}
+  Prove \cref{thm:catprod-subcong}.
+\end{ex}
 
 
 % This is an instance of the \emph{modularity} of type theory: generally speaking, the rules for different categorical operations such as $\meet$ and $\join$ should be \emph{unrelated} to each other, so that each can be analyzed separately and included or excluded.
