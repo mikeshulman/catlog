@@ -5,13 +5,20 @@
 \title{Categorical logic from a categorical point of view}
 \author{}
 \date{\today}
-\autodefs{\bSet\bPoset\bRelGr\bCat\bGr}
+\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype}
 \let\types\vdash
 \let\sect\section
 \def\idfunc{\mathsf{id}}
+\def\type{\;\ftype}
+% meet
+\let\meet\wedge
+\def\meetL{\mathord{\meet}L}
+\def\meetR{\mathord{\meet}R}
+\def\meetE{\mathord{\meet}E}
+\def\meetI{\mathord{\meet}I}
 \begin{document}
 \maketitle
-\setcounter{tocdepth}{1}
+%\setcounter{tocdepth}{1}
 \tableofcontents
 
 \section{Appetizer: inverses in group objects}
@@ -186,8 +193,6 @@ So even in a non-cartesian situation, we can use a very similar set-like argumen
 This concludes our ``appetizer''; I hope it has given you a taste of what categorical logic looks like, and what it can do for category theory.
 In the next section we will rewind back to the beginning and start with very simple cases.
 
-\subsection*{Exercises}
-
 \begin{ex}\label{ex:fp-inv-uniq}
   Prove, using arrows and commutative diagrams, that any two inverse operators for a monoid object in a category with finite products are equal.
 \end{ex}
@@ -207,6 +212,8 @@ In the next section we will rewind back to the beginning and start with very sim
 
 \section{Posets}
 \label{sec:poset}
+
+% TODO: Mention structural induction.
 
 To begin our formal investigation of categorical logic, we start with the simplest sort of categories: those in which each hom-set has at most one element.
 These are well-known to be equivalent to \emph{preordered sets}, where the existence of an arrow $A\to B$ is regarded as the assertion that $A\le B$.
@@ -297,7 +304,7 @@ Note that \texttt{mathpartir} has only recently made it into standard distributi
 
 Formally speaking, what we have observed is the following \emph{initiality theorem}.
 
-\begin{thm}\label{thm:initiality-posets-1}
+\begin{thm}\label{thm:poset-initial-1}
   For any relational graph \cG, the free poset $F_{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.
 \end{thm}
 
@@ -315,7 +322,7 @@ Now a derivation can be written without any ``leaves'' at the top, such as
 \end{mathpar}
 Clearly this produces the same judgments; thus the initiality theorem can also be expressed as follows.
 
-\begin{thm}\label{thm:initiality-posets-2}
+\begin{thm}\label{thm:poset-initial-2}
   For any relational graph \cG, the free poset $F_{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the derivable judgments in the type theory of posets under \cG.
 \end{thm}
 
@@ -333,7 +340,7 @@ Thus, we hope to generate the free category $F_{\bCat}\cG$ on a directed graph \
 Our judgments $A\types B$ will still represent morphisms from $A$ to $B$, but now of course there can be more than one such morphism.
 Thus, to specify a particular morphism, we need more information than the simple \emph{derivability} of a judgment $A\types B$.
 Na\"ively, the first thing we might try is to identify this extra information with the \emph{derivation} of such a judgment, i.e.\ with the tree of rules that were applied to reach it.
-This makes the most sense if we take the approach of \cref{thm:initiality-posets-2} rather than \cref{thm:initiality-posets-1}, so that distinct edges $f,g\in \cG(A,B)$ can be regarded as distinct \emph{rules}
+This makes the most sense if we take the approach of \cref{thm:poset-initial-2} rather than \cref{thm:poset-initial-1}, so that distinct edges $f,g\in \cG(A,B)$ can be regarded as distinct \emph{rules}
 \begin{mathpar}
   \inferrule*[right=$f$]{ }{A\types B} \and
   \inferrule*[right=$g$]{ }{A\types B} \and
@@ -440,7 +447,7 @@ We can describe the conditions under which this happens using rules for a second
 When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory of categories under \cG}.
 It should hopefully be clear that this does work:
 
-\begin{thm}\label{thm:initiality-categories-1}
+\begin{thm}\label{thm:category-initial-1}
   The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory of categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.
 \end{thm}
 
@@ -453,6 +460,9 @@ while for every edge $f\in \cG(A,B)$ we take the following rule:
 \[ \inferrule{X\types A}{X\types B} \,f \]
 for any $X$.
 Informally, one might say that we represent $f$ by its ``image under the Yoneda embedding''.
+
+Note that we have made a choice to build in \emph{postcomposition}; we could also have chosen to \emph{precomposition}.
+In the current context, either choice would work just as well; but later on we will see that there were reasons to choose postcomposition here.
 We will call this the \textbf{cut-free type theory of categories under \cG}.
 
 In this theory, if we have $f\in\cG(A,B)$, $g\in\cG(B,C)$, and $h\in \cG(C,D)$ there is \emph{only one way} to derive $A\types D$:
@@ -503,11 +513,11 @@ In other words, although the cut/composition rule
 \end{mathpar}
 is not \emph{part of the type theory} as defined, it is nevertheless true that whenever we have derivations of the premises of this rule, we can construct a derivation of its conclusion.
 
-Of course, another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
-We have just given an inductive definition of ``finite string of composable edges'': we have such a finite string (of length 0) from $A$ to $A$, and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
+Another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
+We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
 Thus we have the analogous theorem:
 
-\begin{thm}\label{thm:initiality-categories-2}
+\begin{thm}\label{thm:category-initial-2}
   The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivations of $A\types B$ in the cut-free type theory for categories under \cG.
 \end{thm}
 
@@ -545,10 +555,266 @@ If we trace through the proof of \cref{thm:cutadm-categories} in this notation, 
 For example, given $x:A \types g(f(x)):B$ and $y:B\types h(y):C$, the derivation constructed is $x:A\types h(g(f(x))):C$, in which the $y$ in $h(y)$ has been replaced by $g(f(x))$.
 Thus, \cref{thm:cutadm-categories} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory of categories under \cG.
 
+Note, by the way, that this perspective gives one reason why we chose to build in postcomposition rather than precomposition.
+If we used precomposition instead, then we could still develop analogous notions of term and substitution, but they would be backwards: we would have to represent $f:A\to B$ as $f(u):A \types u:B$ rather than $x:A \types f(x):B$.
+Of course, we are much more familiar with applying functions to variables than co-applying functions to co-variables.
+
 \begin{ex}
-  Prove \cref{thm:initiality-categories-2}.
+  Prove \cref{thm:category-initial-2}.
   You will have to start by proving that the composition defined in \cref{thm:cutadm-categories} is in fact associative and unital, so that it forms a category.
 \end{ex}
+
+\section{Meet-semilattices}
+\label{sec:mslat}
+
+Moving gradually up the ladder of nontriviality, we now consider categories with finite products, or more precisely binary products and a terminal object.
+In fact, let us revert back to the posetal world first and consider posets with binary meets and a top element, i.e.\ meet-semilattices.
+We will make all this structure algebraic, so that our meet-semilattices are posets (which, recall, is not necessarily skeletal) \emph{equipped with} a chosen top element and an operation assigning to each pair of objects a meet.
+We then have an adjunction relating the category \bmSLat of suchmeet-semilattices (and morphisms preserving all the structure strictly) with the category \bRelGr of relational graphs, and we want to describe the free meet-semilattice on a relational graph \cG.
+
+One new feature this introduces is that the objects of $F_\bmSLat \cG$ will no longer be the same as those of \cG: we need to add a top element and freely apply the meet operation.
+In order to describe this type-theoretically, we introduce a new judgment ``$\types X\type$'', meaning that $X$ will be one of the objects of the poset we are generating.
+The rules for this judgment are
+\begin{mathpar}
+  \inferrule{ }{\types \top\type} \and
+  \inferrule{\types X\type \\ \types Y\type}{\types X\meet Y\type}
+\end{mathpar}
+When talking about type theory under \cG, we additionally include ``axiom'' rules saying that each object of \cG is a type:
+\begin{mathpar}
+  \inferrule{A\in\cG}{\types A\type}
+\end{mathpar}
+Thus, for instance, if $A,B\in\cG$ we have a deduction
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{A\in\cG}{\types A\type}\\
+    \inferrule*{\inferrule*{ }{\types \top\type} \\ \inferrule*{B\in\cG}{\types B\type}}{\types \top\meet B\type}
+  }{
+    \types (A\meet (\top\meet B))\type
+  }
+\end{mathpar}
+so that $A\meet (\top\meet B)$ will be one of the objects of $F_\bmSLat\cG$.
+
+Now we need to describe its morphisms, i.e.\ the relation $\le$ in $F_\bmSLat\cG$.
+The obvious thing to do is to assert the universal property of the meet and the top element:
+\begin{mathpar}
+  \inferrule{ }{A\types \top}\and
+  \inferrule{ }{A\meet B \types A}\and
+  \inferrule{ }{A\meet B \types B}\and
+  \inferrule{A\types B \\ A\types C}{A\types B\meet C}
+\end{mathpar}
+This works, but it forces us to go back to asserting transitivity/cut.
+For instance, if $A,B,C\in \cG$ we have the following derivation:
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{ }{(A\meet B)\meet C \types A\meet B}\\
+    \inferrule*{ }{A\meet B \types A}
+  }{
+    (A\meet B)\meet C \types A
+  }
+\end{mathpar}
+but there is no way to deduce this without using the cut rule.
+Thus, this \textbf{cut-ful type theory for meet-semilattices under \cG} works, but to have a better class of ``canonical forms'' for its relations we would also like a cut-free version.
+
+What we need to do is to treat the ``projections'' $A\meet B \to A$ and $A\meet B\to B$ similarly to how we treated the edges of \cG in \cref{sec:categories}.
+However, at this point we have to make a choice of whether to build in postcomposition or precomposition:
+\[
+\inferrule{A\types C}{A\meet B \types C} \qquad\text{or}\qquad
+\inferrule{C\types A\meet B}{C\types A} \quad ?
+\]
+Both choices work (that is, they make cut admissible), and lead to different kinds of type theories with different properties.
+The first leads to a kind of type theory called \textbf{sequent calculus}, and the second to a kind of type theory called \textbf{natural deduction}.
+We consider each in turn.
+
+% TODO: Add something to the names of these theories to indicate that they have one-variable contexts?
+
+\subsection{Sequent calculus for meet-semilattices}
+\label{sec:seqcalc-mslat}
+
+To be precise, for a relational graph \cG, the \textbf{sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
+We label each rule on the right to make them easier to refer to later on.
+\begin{mathpar}
+  \inferrule{A\in \cG}{A\types A}\;\idfunc\and
+  \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;f\and
+  \inferrule{\types A\type}{A\types \top}\;\top R\and
+  \inferrule{A\types C \\ \types B\type}{A\meet B \types C}\;\meetL1\and
+  \inferrule{B\types C \\ \types A\type}{A\meet B \types C}\;\meetL2\and
+  \inferrule{A\types B \\ A\types C}{A\types B\meet C}\;\meetR
+\end{mathpar}
+There are several things to note about this.
+The first is that we have included in the premises some judgments of the form $\types A\type$.
+This ensures that whenever we can derive a sequent $A\types B$, that $A$ and $B$ are well-formed as types.
+However, we don't need to assume explicitly as premises that \emph{all} types appearing in any sequent are well-formed, only those that are introduced without belonging to any previous sequents; this is sufficient for the following inductive proof.
+
+\begin{thm}\label{sec:seqcalc-mslat-wftype}
+  In the sequent calculus for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.
+\end{thm}
+\begin{proof}
+  By induction on the derivation of $A\types B$.
+  \begin{itemize}
+  \item If it is the $\idfunc$ rule, then $A\in\cG$ and so $\types A\type$.
+  \item If it ends with the rule $f$ for some $f\in\cG(A,B)$, then $B\in \cG$ and so $\types A\type$, while $X\types A$ and so $\types X\type$ by the inductive hypothesis.
+  \item If it ends with the rule $\top R$, then $\types A\type$ by assumption.  
+  \item If it ends with the rule $\meetL1$, then $\types B\type$ by assumption, while $\types A\type$ and $\types C\type$ by the inductive hypothesis; thus also $\types A\meet B\type$.
+  \item The cases for $\meetL2$ and $\meetR$ are similar.\qedhere
+  \end{itemize}
+\end{proof}
+
+The second thing to note is that we only assert the identity rule $A\types A$ when $A$ is a \emph{generating object} (also called a \emph{base type}), i.e.\ an object of \cG.
+This is sufficient because in the sequent calculus, we can derive the identity rule for any type:
+
+\begin{thm}\label{thm:seqcalc-mslat-idadm}
+  In the sequent calculus for meet-semilattices under \cG, if $A$ is a type (that is, if $\types A\type$ is derivable), then $A\types A$ is derivable.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $\types A\type$.
+  There are three cases:
+  \begin{enumerate}
+  \item $A$ is in \cG.  In this case $A\types A$ is an axiom.
+  \item $A=\top$.  In this case $\top\types\top$ is a special case of the rule that anything $\types\top$.
+  \item $A=B\meet C$ and we have derivations $\sD_B$ and $\sD_C$ of $\types B \type$ and $\types C\type$ respectively.
+    Therefore we have, inductively, derivations $\sD_1$ and $\sD_2$ of $B\types B$ and $C\types C$, and we can put them together like this:
+    \begin{equation*}
+      \inferrule*{
+        \inferrule*{
+          \inferrule*{\sD_1\\\\\vdots}{B\types B} \\
+          \inferrule*{\sD_C\\\\\vdots}{\types C\type}
+        }{
+          B\meet C \types B
+        }\\
+        \inferrule*{
+          \inferrule*{\sD_2\\\\\vdots}{C\types C}\\
+          \inferrule*{\sD_B\\\\\vdots}{\types B\type}
+        }{
+          B\meet C\types C
+        }
+      }{
+        B\meet C\types B\meet C
+      }\qedhere
+    \end{equation*}
+  \end{enumerate}
+\end{proof}
+
+In other words, the general identity rule
+\[ \inferrule{\types A\type}{A\types A} \]
+is also \emph{admissible}.
+This is a general characteristic of sequent calculi.
+
+Next we prove that the cut rule is admissible for this sequent calculus too.
+
+\begin{thm}\label{thm:seqcalc-mslat-cutadm}
+  In the sequent calculus for meet-semilattices under \cG, if $A\types B$ and $B\types C$ are derivable, then so is $A\types C$.
+\end{thm}
+\begin{proof}
+  By induction on the derivation of $B\types C$.
+  \begin{enumerate}
+  \item If it is $\idfunc$, then $B=C$.
+    Now $A\types C$ is just $A\types B$ and we are done.
+  \item If it is $f\in\cG(C',C)$, then we have a derivation of $B\types C'$.
+    So by the inductive hypothesis we can derive $A\types C'$, whence also $A\types C$ by the rule for $f$.
+  \item If it ends with $\top R$, then $C=\top$.
+    Since $A\types B$ is derivable, by \cref{sec:seqcalc-mslat-wftype} $\types A\type$ is also derivable; thus by $\top R$ we have $A\types \top$.
+  \item If it ends with $\meetR$, then $C=C_1\meet C_2$ and we have derivations of $B\types C_1$ and $B\types C_2$.
+    By the inductive hypothesis we can derive both $A\types C_1$ and $A\types C_2$, to which we can apply $\meetR$ to get $A\types C_1\meet C_2$.
+  \item If it ends with $\meetL1$, then $B=B_1\meet B_2$ and we can derive $B_1\types C$.
+    We now do a secondary induction on the derivation of $A\types B$.
+    \begin{enumerate}
+    \item It cannot end with $\idfunc$ or $f$ or $\top R$, since $B=B_1\meet B_2$ is not in $\cG$ and not equal to $\top$.
+    \item If it ends with $\meetL1$, then $A=A_1\meet A_2$ and we can derive $A_1\types B$.
+      By the inductive hypothesis, we can derive $A_1 \types C$, and hence by $\meetL1$ also $A \types C$.
+      The case of $\meetL2$ is similar.
+    \item Finally, if it ends with $\meetR$, then we can derive $A\types B_1$ and $A\types B_2$.
+      Recall that we are also assuming a derivation of $B_1\types C$.
+      Thus, by the inductive hypothesis on $A\types B_1$ and $B_1\types C$, we can derive $A\types C$.
+      \label{item:mslat-principal-cut}\qedhere
+    \end{enumerate}
+  \end{enumerate}
+\end{proof}
+
+This simple proof already displays many of the characteristic features of a cut-admissibility argument.
+The final case~\ref{item:mslat-principal-cut} is called the \textbf{principal case} for the operation $\meet$, when the type $B$ we are composing over (also called the \textbf{cut formula}) is obtained from $\meet$ and both sequents are also obtained from the $\meet$ rules.
+
+Finally, we have:
+
+\begin{thm}\label{thm:seqcalc-mslat-initial}
+  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the sequent calculus for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
+\end{thm}
+\begin{proof}
+  \cref{thm:seqcalc-mslat-idadm,thm:seqcalc-mslat-cutadm} show that this defines a poset; let us denote it $F\cG$.
+  The rule $\top R$ implies that $\top$ is a top element, while the rules $\meetL1$, $\meetL2$, and $\meetR$ imply that $A\meet B$ is a binary meet.
+  Therefore, we have a meet-semilattice.
+  Moreover, the rules $\idfunc$ and $f$ yield a map of posets $\cG\to F\cG$.
+
+  Now suppose $\cM$ is any other meet-semilattice with a map $P:\cG\to\cM$.
+  Recall that a meet-semilattices is equipped with a chosen top element and meet function.
+  We extend $P$ to a map from the objects of $F\cG$ by recursion on the construction of the latter, sending $\top$ to the chosen top element of \cM, and $A\meet B$ to the chosen meet in \cM of the (recursively defined) images of $A$ and $B$.
+  This is clearly the only possible meet-semilattice map extending $P$, and it clearly preserves the chosen meets and top element, so it suffices to check that it is a poset map.
+  This follows by a straightforward induction over the rules for deriving the judgment $A\types B$.
+\end{proof}
+
+To finish, we observe that this sequent calculus has another important property.
+Inspecting the rules, we see that the operations $\meet$ and $\top$ only ever appear in the \emph{conclusions} of rules.
+Each operation $\meet$ and $\top$ has zero or more rules allowing us to introduce it on the right of the conclusion, and likewise zero or more rules allowing us to introduce it on the left.
+(Specifically, $\meet$ has two left rules and one right rule, while $\top$ has zero left rules and one right rule.)
+This is convenient if we are given a sequent $A\types B$ and want to figure out whether it is derivable: we can choose rules to apply ``in reverse'' by breaking down $A$ and $B$ according to their construction out of $\meet$ and $\top$.
+
+The phrase \emph{sequent calculus}, like \emph{type theory}, is difficult to define precisely, but sequent calculi generally exhibit the properties we have observed in this subsection: admissibility of the identity rule (based on an axiom applying only to ground types), admissibility of cut, and type operations appearing only in the conclusions of rules.
+
+\subsection{Natural deduction for meet-semilattices}
+\label{sec:natded-mslat}
+
+Now suppose we make the other choice about how to treat projections.
+We call this the \textbf{natural deduction for meet-semilattices under \cG}; its rules (in addition to those for $\types A\type$) are
+\begin{mathpar}
+  \inferrule{\types X\type}{X\types X}\;\idfunc\and
+  \inferrule{f\in \cG(A,B) \\ X\types A}{X\types B}\;f\and
+  \inferrule{\types X\type}{X\types \top}\;\top I\and
+  \inferrule{X\types B\meet C}{X \types B}\;\meetE1\and
+  \inferrule{X\types B\meet C}{X \types C}\;\meetE2\and
+  \inferrule{X\types B \\ X\types C}{X\types B\meet C}\;\meetI
+\end{mathpar}
+
+We observe first that this theory has the same well-formedness property as the sequent calculus:
+
+\begin{thm}\label{sec:natded-mslat-wftype}
+  In the natural deduction for meet-semilattices under \cG, if $A\types B$ is derivable, then so are $\types A\type$ and $\types B\type$.\qed
+\end{thm}
+
+Unlike the sequent calculus, however, the general identity rule is not admissible: there is no way to derive $A\meet B \types A\meet B$ from $A\types A$ and $B\types B$.
+Thus, we assert that the $\idfunc$ rule applies to all types, not just those coming from \cG.
+
+Cut, however, is still admissible:
+
+\begin{thm}\label{thm:natded-mslat-cutadm}
+  In the natural deduction for meet-semilattices under \cG, if $A\types B$ and $B\types C$ are derivable, then so is $A\types C$.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $B\types C$.
+  \begin{enumerate}
+  \item The cases when it ends with $\idfunc$, $f$, $\top I$, and $\meetI$ are just like those in \cref{thm:seqcalc-mslat-cutadm} for $\idfunc$, $f$, $\top R$, and $\meetR$.
+  \item If it ends with $\meetE1$, then we have $B\types C\meet D$ for some $D$.
+    Thus, $A\types C\meet D$ by the inductive hypothesis, so $A\types C$ by $\meetE1$.
+    The case of $\meetE2$ is similar.\qedhere
+  \end{enumerate}
+\end{proof}
+
+The proof is noticeably simpler than that of \cref{thm:seqcalc-mslat-cutadm}; we don't need the secondary inner induction.
+This is essentially due to the fact that all the rules of this theory involve an \emph{arbitrary} type $X$ on the left.
+This is characteristic of \emph{natural deduction} theories.
+Accordingly, instead of the rules of sequent calculus that introduce operations like $\meet$ and $\top$ on the left and right, we have rules like $\top I$ and $\meetI$ that introduce them on the right, and also rules that \emph{eliminate} them on the right like $\meetE1$ and $\meetE2$.
+(Later on we will be able to give a more convincing explanation of the origin of the phrase ``natural deduction''.)
+
+Of course, we should also prove:
+
+\begin{thm}\label{thm:natded-mslat-initial}
+  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the natural deduction for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
+\end{thm}
+\begin{proof}
+  Almost exactly like \cref{thm:seqcalc-mslat-initial}.
+\end{proof}
+
+\section{Categories with products}
+\label{sec:cat-prod}
+
 
 
 \bibliographystyle{alpha}
