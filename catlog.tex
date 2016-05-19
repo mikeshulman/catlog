@@ -907,13 +907,29 @@ Accordingly, instead of the rules of sequent calculus that introduce operations 
 Of course, we should also prove the initiality theorem:
 
 \begin{thm}\label{thm:natded-mslat-initial}
-  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the unary natural deduction for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
+  For any relational graph $\cG$, the free meet-semilattice $\F\bmSLat \cG$ it generates is described by the unary natural deduction for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
 \end{thm}
 \begin{proof}
   Almost exactly like \cref{thm:seqcalc-mslat-initial}.
 \end{proof}
 
 \subsection*{Exercises}
+
+\begin{ex}\label{ex:mslat-idem}
+  Using the unary sequent calculus for meet-semilattices, prove that $A\meet A \cong A$ in any meet-semilattice.
+  (Recall that meet-semilattices are categories with at most one morphism in each hom-set, so for two objects to be isomorphic it suffices to have a morphism in each direction.)
+  Then prove the same thing using the natural deduction.
+\end{ex}
+
+\begin{ex}\label{ex:mslat-monoid}
+  Using either the sequent calculus or the natural deduction for meet-semilattices (your choice), prove that in any meet-semilattice we have
+  \begin{mathpar}
+    A\meet \top \cong A\and
+    \top \meet A \cong A\and
+    A\meet B \cong B\meet A\and
+    A\meet (B\meet C) \cong (A\meet B)\meet C\and
+  \end{mathpar}
+\end{ex}
 
 \begin{ex}\label{ex:mslat-invertible}
   Prove that the rules $\bot R$, $\meetL1$, $\meetL2$, and $\meetR$ in the unary sequent calculus for meet-semilattices are \emph{invertible}, in the sense that whenever we have a derivation of their conclusions, we also have a derivation of all their premises.
@@ -935,14 +951,41 @@ Of course, we should also prove the initiality theorem:
 \begin{ex}\label{ex:seqcalc-poset-fib}
   A map of posets $P:\sA\to\sM$ is called a \emph{(cloven) fibration} if whenever $b\in\sA$ and $x\le P(b)$, there is a chosen $a\in \sA$ such that $P(a)=x$ and $a\le b$ and moreover for any $c\in\sA$, $c\le b$ and $P(c)\le x$ together imply $c\le a$.
   The object $a$ can be written as $x^*(b)$.
-  Given a fixed poset \sM, describe a sequent calculus for fibrations over \sM by adding rules governing the operations $x^*$ to the cut-free theory of \cref{ex:categories-over}, and prove the initiality theorem.
+  \begin{enumerate}
+  \item Given a fixed poset \sM, describe a sequent calculus for fibrations over \sM by adding rules governing the operations $x^*$ to the cut-free theory of \cref{ex:categories-over}.
+  \item Prove the initiality theorem for this sequent calculus.
+  \item Use this sequent calculus to prove that in any fibration $P:\sA\to\sM$, if we have $b\in \sA$ and $x\le y\le P(b)$, then $x^*(y^*(b))\cong x^*(b)$.
+  \end{enumerate}
 \end{ex}
 
 \begin{ex}\label{ex:natded-poset-fib}
-  Now describe instead a natural deduction for fibrations over \sM, and prove the initiality theorem.
+  Now describe instead a natural deduction for fibrations over \sM, prove the initiality theorem, and re-prove that $x^*(y^*(b))\cong x^*(b)$ using this theory.
 \end{ex}
 
-% TODO: Can we have an exercise on fibrations whose fibers are meet-semilattices, using the sequent calculus to prove that $x^*$ preserves meets?
+\begin{ex}\label{ex:mslat-fib}
+  Suppose we augment your sequent calculus for fibrations over \sM from \cref{ex:seqcalc-poset-fib} with the following additional rules for ``fiberwise meets''.
+  Here $\types A\type_x$ is a judgment indicating that $A$ will be an object of our fibration in the fiber over $x\in\sM$.
+  \begin{mathpar}
+    \inferrule{ }{\types \top_x \type_x} \and
+    \inferrule{\types A\type_x \\ \types B\type_x}{\types A\meet_x B\type_x} \and
+    \inferrule{\types A\type_x}{A\types_{x\le y} \top_y}\and
+    \inferrule{A\types_{x\le y} C \\ \types B\type_x}{A\meet_x B \types_{x\le y} C}\and
+    \inferrule{B\types_{x\le y} C \\ \types A\type_x}{A\meet_x B \types_{x\le y} C}\and
+    \inferrule{A\types_{x\le y} B \\ A\types_{x\le y} C}{A\types_{x\le y} B\meet_y C}\and
+  \end{mathpar}
+  Consider the sequents
+  \begin{align*}
+    x^*(A\meet_y B) &\types_{x\le x} x^*A \meet_x x^*B\\
+    x^*A \meet_x x^*B &\types_{x\le x} x^*(A\meet_y B)
+  \end{align*}
+  for $x\le y$, $\types A\type_y$, and $\types B\type_y$.
+  \begin{enumerate}
+  \item Construct derivations of these sequents in the above sequent calculus.
+  \item Write down an analoguous natural deduction and derive the above sequents therein.
+  \item What categorical structure do you think these type theories constructs the initial one of?
+    If you feel energetic, prove the initiality theorem.
+  \end{enumerate}
+\end{ex}
 
 \begin{ex}\label{ex:poset-bifib}
   A map of posets $P:\sA\to\sM$ is called an \emph{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration.
