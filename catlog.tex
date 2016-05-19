@@ -1,15 +1,17 @@
-\documentclass{article}
+\documentclass{book}
 \usepackage{mathpartir,cancel}
 \newif\ifcref\creftrue
 \input{decls}
 \title{Categorical logic from a categorical point of view}
 \author{}
 \date{\today}
-\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat}
+\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat}
 \let\types\vdash
 \let\sect\section
 \def\idfunc{\mathsf{id}}
 \def\type{\;\ftype}
+% free functors
+\newcommand{\F}[1]{\mathfrak{F}_{#1}}
 % meet
 \let\meet\wedge
 \def\meetL{\mathord{\meet}L}
@@ -18,6 +20,10 @@
 \def\meetI{\mathord{\meet}I}
 % join
 \let\join\vee
+\def\joinL{\mathord{\join}L}
+\def\joinR{\mathord{\join}R}
+\def\joinE{\mathord{\join}E}
+\def\joinI{\mathord{\join}I}
 % unit
 \def\unit{\mathbf{1}}
 \def\ttt{\mathsf{tt}}
@@ -25,10 +31,32 @@
 \def\timesE{\mathord{\times}E}
 \def\timesI{\mathord{\times}I}
 \def\pair#1#2{\langle #1,#2\rangle}
+% coproduct
+\def\plusE{\mathord{+}E}
+\def\plusI{\mathord{+}I}
+\def\inl{\mathsf{inl}}
+\def\inr{\mathsf{inr}}
+\def\case{\mathsf{case}}
+% empty
+\def\emptyt{\mathbf{0}}
+\def\abort{\mathsf{abort}}
+% one
+\def\one{\mathbf{1}}
+% tensor
+\let\tensor\otimes
+\def\tensorL{\mathord{\tensor}L}
+\def\tensorR{\mathord{\tensor}R}
+\def\tensorI{\mathord{\tensor}I}
+\def\tensorE{\mathord{\tensor}E}
 \begin{document}
 \maketitle
 %\setcounter{tocdepth}{1}
 \tableofcontents
+
+\setcounter{chapter}{-1}
+\chapter{Introduction}
+\label{chap:intro}
+
 
 \section{Appetizer: inverses in group objects}
 \label{sec:intro}
@@ -219,6 +247,57 @@ In the next section we will rewind back to the beginning and start with very sim
 \begin{ex}\label{ex:antipode}
   Prove, using arrows and commutative diagrams, that any two antipodes for a bimonoid (not necessarily commutative or cocommutative) are equal.
 \end{ex}
+
+
+\section{On type theory and category theory}
+\label{sec:generalities}
+
+Since there are other introductions to categorical logic [TODO: cite], it seems appropriate to say a few words about what distinguishes this one.
+These words may not make very much sense to the beginner who doesn't yet know what we are talking about, but it may help to orient the expert, and as the beginner becomes more expert he or she can return to it later on.
+
+Our perspective is very much that of the category theorist: our primary goal is to use type theory as a convenient syntax to prove things about categories.
+The way that it does this is by giving concrete presentations of \emph{free} categorical structures, so that by working in those presentations we can deduce conclusions about \emph{any} such structure.
+There are other such syntaxes for category theory, notably string diagram calculi, that function in a similar way (giving a concrete presentation of free structures) to the extent that they are made precise.
+Indeed, the \emph{usual} way of reasoning in category theory, in which we speak explicitly about objects, arrows, commutative diagrams, and so on, can also be interpreted, from this point of view, to be simply making use of the \emph{obvious} presentation of a free structure rather than some fancier one.
+
+In particular, this means that we are not interested in aspects of type theory such as computability, canonicity, proof search, and so on \emph{for their own sake}.
+However, at the same time we recognize their importance for type theory as a subject in its own right, which suggests that they should not be ignored by the category theorist.
+In fact, our perspective is that it is precisely the esoteric-sounding notion of \emph{cut elimination} (or \emph{admissibility of substitution}) that essentially \emph{defines} what we mean by a \emph{type theory}.
+Of course this is not literally true; a more careful statement would be that type theories with cut elimination are those that exhibit the most behavior most characteristic of type theories.
+(Jean-Yves Girard remarked that ``a logic without cut-elimination is like a car without an engine.'')
+A ``type theory without cut elimination'' may still yield explicit presentations of free structures, but reasoning with such a presentation will not yield the characteristic benefits of categorical logic.
+
+So what is this mysterious cut-elimination, from a categorical perspective?
+Informally, it says that the morphisms in a free categorical structure can be presented \emph{without explicit reference to composition}.
+This is a bit of a cheat, because as we will see, in fact what we do is to build just enough ``implicit'' reference to composition into our rules to ensure that we no longer need to talk about composition explicitly.
+However, this process yields important insight, and in particular leads us to \emph{term calculi} that exhibit the characteristic advantages of categorical logic: using ``set-like'' reasoning to prove things about arbitrary categories.
+From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
+This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
+
+Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts).
+One concrete advantage of this is a more direct correspondence between the type theory and the category theory: type theory distinguishes between a sequent $A,B\types C$ and a sequent $A\times B\types C$ (even though they are bijectively related), so it seems natural to work with a categorical structure that also distinguishes between morphisms $(A,B)\to C$ and $A\times B\to C$.
+
+However, the correspondence and motivation goes deeper than that.
+We may ask \emph{why} type theory distinguishes these two kinds of sequents?
+We will discuss this in more detail in \cref{sec:why-multicats}, but the short answer is that ``it makes cut-elimination work''.
+More specifically, it enables us to formulate type theory in such a way that \emph{each rule refers to at most one type former}; this enables us to ``commute these rules past each other'' in the proof of cut-elimination.
+Moreover, including sequents such as $A,B\types C$ allows us to describe certain operations in a type-theoretic style that would not otherwise be possible, such as a monoidal tensor product.
+A type theorist speaks of this in terms of \emph{focusing on the judgmental structure first} and then defining the connectives to ``internalize'' various aspects of that structure.
+
+From a categorical point of view, the move to (generalized) multicategories has the feature that \emph{it gives things universal properties}.
+For instance, the tensor product in a monoidal category has no universal property, but the tensor product in a multicategory does.
+In general, from a 2-monad $T$ we can define a notion of ``$T$-multicategory'' in which $T$-algebra structure acquires a universal property (specifically, $T$ is replaced by a lax- or colax-idempotent 2-monad).
+In type theoretic language, the move to $T$-multicategories corresponds to including the desired operations in the judgmental structure.
+The fact that the $T$-operations then have universal properties is what enables us to write down the usual sort of type-theoretic left/right or introduction/elimination rules for them.
+
+Making this correspondence explicit is helpful for many reasons.
+Pedagogically, it can help the category theorist, who believes in universal properties, understand why type theories are formulated the way they are.
+It also helps understand the ``initiality theorems'' more modularly: first we model the judgmental structure with a multicategory, and then we add more type formers corresponding to objects with various universal properties.
+Finally, it provides a guide for new applications of categorical logic: when seeking a categorical structure to model a given type theory, we should look for a kind of multicategory corresponding to its judgments; while when seeking an internal logic for a categorical structure, we should represent it using universal properties in some kind of multicategory, from which we can extract an appropriate judgmental structure.
+
+
+\chapter{Unary type theories}
+\label{chap:unary}
 
 
 \section{Posets}
