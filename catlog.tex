@@ -364,7 +364,8 @@ We will refer to the pair of these two rules as the \textbf{free type theory of 
 
 Hopefully it makes sense that we can construct the reflexive-transitive closure of a relational graph by expressing its relations in this funny syntax and then closing up under these two rules, since they are exactly reflexivity and transitivity.
 Categorically, of course, that means identities and composition.
-In type theory the composition/transitivity rule is often called \emph{cut}, and plays a unique role; we will touch on this later on, though it is not as important from a purely categorical standpoint.
+In type theory the composition/transitivity rule is often called \emph{cut}, and plays a unique role, as we will see later.
+% we will touch on this later on, though it is not as important from a purely categorical standpoint.
 
 In the example we started from,
 \begin{mathpar}
@@ -395,7 +396,7 @@ Note that \texttt{mathpartir} has only recently made it into standard distributi
 Formally speaking, what we have observed is the following \emph{initiality theorem}.
 
 \begin{thm}\label{thm:poset-initial-1}
-  For any relational graph \cG, the free poset $F_{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.
+  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.\qed
 \end{thm}
 
 This enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
@@ -413,7 +414,7 @@ Now a derivation can be written without any ``leaves'' at the top, such as
 Clearly this produces the same judgments; thus the initiality theorem can also be expressed as follows.
 
 \begin{thm}\label{thm:poset-initial-2}
-  For any relational graph \cG, the free poset $F_{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the derivable judgments in the type theory of posets under \cG.
+  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the derivable judgments in the type theory of posets under \cG.\qed
 \end{thm}
 
 We can extract from this our first general statement about categorical logic: it is \emph{a syntax for generating free categorical structures using derivations from rules}.
@@ -425,7 +426,7 @@ The reader may be forgiven at this time for wondering what the point is; but bea
 
 Let's now generalize from posets to categories.
 The relevant adjunction is now between categories \bCat and \emph{directed graphs} \bGr; the latter are sets $\cG$ of ``vertices'' equipped with a set $\cG(A,B)$ of ``edges'' for each $x,y\in \cG$.
-Thus, we hope to generate the free category $F_{\bCat}\cG$ on a directed graph \cG type-theoretically.
+Thus, we hope to generate the free category $\F{\bCat}\cG$ on a directed graph \cG type-theoretically.
 
 Our judgments $A\types B$ will still represent morphisms from $A$ to $B$, but now of course there can be more than one such morphism.
 Thus, to specify a particular morphism, we need more information than the simple \emph{derivability} of a judgment $A\types B$.
@@ -534,11 +535,11 @@ We can describe the conditions under which this happens using rules for a second
   \inferrule{\phi:(A\types B)}{(\phi \circ \idfunc_A \equiv \phi):(A\types B)}\and
   \inferrule{\phi:(A\types B)}{(\idfunc_B \circ \phi \equiv \phi):(A\types B)}
 \end{mathpar}
-When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory of categories under \cG}.
+When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory for categories under \cG}.
 It should hopefully be clear that this does work, so that we have the initiality theorem.
 
 \begin{thm}\label{thm:category-initial-1}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory of categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.\qed
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory for categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.\qed
 \end{thm}
 
 Of course, once again very little seems to be happening; we are just using a complicated funny syntax to build a free algebraic structure.
@@ -553,7 +554,7 @@ Informally, one might say that we represent $f$ by its ``image under the Yoneda 
 
 Note that we have made a choice to build in \emph{postcomposition}; we could also have chosen to \emph{precomposition}.
 In the current context, either choice would work just as well; but later on we will see that there were reasons to choose postcomposition here.
-We will call this the \textbf{cut-free type theory of categories under \cG}.
+We will call this the \textbf{cut-free type theory for categories under \cG}.
 
 In this theory, if we have $f\in\cG(A,B)$, $g\in\cG(B,C)$, and $h\in \cG(C,D)$ there is \emph{only one way} to derive $A\types D$:
 \begin{mathpar}
@@ -576,7 +577,7 @@ Of course, we have a new problem: if we are trying to build a category, then we 
 So we need the following theorem:
 
 \begin{thm}\label{thm:categories-cutadm}
-  If we have derivations of $A\types B$ and $B\types C$ in the cut-free type theory of categories under \cG, then we can construct a derivation of $A\types C$.
+  If we have derivations of $A\types B$ and $B\types C$ in the cut-free type theory for categories under \cG, then we can construct a derivation of $A\types C$.
 \end{thm}
 \begin{proof}
   We induct on the number of rules appearing in the given derivation of $B\types C$.
@@ -596,7 +597,7 @@ So we need the following theorem:
   \end{mathpar}
 \end{proof}
 
-In type-theoretic lingo, \cref{thm:categories-cutadm} says that \textbf{the cut rule is admissible} in the cut-free type theory of categories under \cG.
+In type-theoretic lingo, \cref{thm:categories-cutadm} says that \textbf{the cut rule is admissible} in the cut-free type theory for categories under \cG.
 In other words, although the cut/composition rule
 \begin{mathpar}
   \inferrule*[right=$\circ$]{A\types B \\ B\types C}{A\types C}
@@ -614,6 +615,11 @@ Thus we have the analogous initiality theorem:
 This gives us a second, more interesting, general statement about categorical logic: it is
 {a syntax for generating free categorical structures using derivations from rules}
 \emph{that yield elements in canonical form}, eliminating (or reducing) the need for quotients.
+
+A similar way to say this is that categorical logic is about \emph{identifying the initial objects in two different categories}.
+The rules of a type theory can be regarded as defining a certain algebraic theory, and the judgments with derivations form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
+The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
+To emphasize the difference between these two categories, notice that an arbitrary model of the algebraic rules of a type theory is not even a category, e.g.\ it may not satisfy the cut rule; the cut admissibility theorem says only that the \emph{initial} such model happens to actually be a category, and in fact the initial category with some structure.
 
 To end this section, we note that we can introduce \emph{terms} for the cut-free type theory as well in a pleasing way.
 Rather than describing the entire judgment $A\types B$ with a term, we assign a formal variable such as $x$ to the domain $A$, and then a term containing $x$ to the codomain $B$, such as $h(g(f(x)))$.
@@ -644,7 +650,7 @@ Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
 If we trace through the proof of \cref{thm:categories-cutadm} in this notation, it says that if we have $x:A\types M:B$ and $y:B\types N:C$, we can \emph{substitute} $M$ for $y$ in $N$ to obtain a new judgment $x:A \types N':C$, where $N'$ is the term $N$ with $M$ substituted for the variable $y$.
 We will write $N[M/y]$ for this $N'$ (although unfortunately one finds other notations in the literature, including $[M/y]N$ and $N[y/M]$).
 For example, given $x:A \types g(f(x)):B$ and $y:B\types h(y):C$, the derivation constructed is $x:A\types h(g(f(x))):C$, in which the $y$ in $h(y)$ has been replaced by $g(f(x))$.
-Thus, \cref{thm:categories-cutadm} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory of categories under \cG.
+Thus, \cref{thm:categories-cutadm} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory for categories under \cG.
 
 Note, by the way, that this perspective gives one reason why we chose to build in postcomposition rather than precomposition.
 If we used precomposition instead, then we could still develop analogous notions of term and substitution, but they would be backwards: we would have to represent $f:A\to B$ as $f(u):A \types u:B$ rather than $x:A \types f(x):B$.
@@ -673,12 +679,12 @@ In fact, let us revert back to the posetal world first and consider posets with 
 We will make all this structure algebraic, so that our meet-semilattices are posets (which, recall, is not necessarily skeletal) \emph{equipped with} a chosen top element and an operation assigning to each pair of objects a meet.
 We then have an adjunction relating the category \bmSLat of suchmeet-semilattices (and morphisms preserving all the structure strictly) with the category \bRelGr of relational graphs, and we want to describe the free meet-semilattice on a relational graph \cG.
 
-One new feature this introduces is that the objects of $F_\bmSLat \cG$ will no longer be the same as those of \cG: we need to add a top element and freely apply the meet operation.
-In order to describe this type-theoretically, we introduce a new judgment ``$\types X\type$'', meaning that $X$ will be one of the objects of the poset we are generating.
+One new feature this introduces is that the objects of $\F\bmSLat \cG$ will no longer be the same as those of \cG: we need to add a top element and freely apply the meet operation.
+In order to describe this type-theoretically, we introduce a new judgment ``$\types A\type$'', meaning that $A$ will be one of the objects of the poset we are generating.
 The rules for this judgment are
 \begin{mathpar}
   \inferrule{ }{\types \top\type} \and
-  \inferrule{\types X\type \\ \types Y\type}{\types X\meet Y\type}
+  \inferrule{\types A\type \\ \types B\type}{\types A\meet B\type}
 \end{mathpar}
 When talking about type theory under \cG, we additionally include ``axiom'' rules saying that each object of \cG is a type:
 \begin{mathpar}
@@ -693,9 +699,9 @@ Thus, for instance, if $A,B\in\cG$ we have a derivation
     \types (A\meet (\top\meet B))\type
   }
 \end{mathpar}
-so that $A\meet (\top\meet B)$ will be one of the objects of $F_\bmSLat\cG$.
+so that $A\meet (\top\meet B)$ will be one of the objects of $\F\bmSLat\cG$.
 
-Now we need to describe its morphisms, i.e.\ the relation $\le$ in $F_\bmSLat\cG$.
+Now we need to describe its morphisms, i.e.\ the relation $\le$ in $\F\bmSLat\cG$.
 The obvious thing to do is to assert the universal property of the meet and the top element:
 \begin{mathpar}
   \inferrule{ }{A\types \top}\and
@@ -726,12 +732,10 @@ Both choices work (that is, they make cut admissible), and lead to different kin
 The first leads to a kind of type theory called \textbf{sequent calculus}, and the second to a kind of type theory called \textbf{natural deduction}.
 We consider each in turn.
 
-% TODO: Add something to the names of these theories to indicate that they have one-variable contexts?
-
 \subsection{Sequent calculus for meet-semilattices}
 \label{sec:seqcalc-mslat}
 
-To be precise, for a relational graph \cG, the \textbf{unary sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
+To be precise, for a relational graph \cG, the \textbf{unary\footnote{The word ``unary'' indicates that there is only one type on each side of our sequents $A\types B$.  Later on we will generalize away from this restriction.} sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
 We label each rule on the right to make them easier to refer to later on.
 \begin{mathpar}
   \inferrule{A\in \cG}{A\types A}\;\idfunc\and
@@ -837,7 +841,7 @@ The final case~\ref{item:mslat-principal-cut} is called the \textbf{principal ca
 Finally, we have the initiality theorem:
 
 \begin{thm}\label{thm:seqcalc-mslat-initial}
-  For any relational graph $\cG$, the free meet-semilattice $F_\bmSLat \cG$ it generates is described by the unary sequent calculus for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
+  For any relational graph $\cG$, the free meet-semilattice $\F\bmSLat \cG$ it generates is described by the unary sequent calculus for meet-semilattices under \cG: its objects are the $A$ such that $\types A\type$ is derivable, with $A\le B$ just when $A\types B$ is derivable.
 \end{thm}
 \begin{proof}
   \cref{thm:seqcalc-mslat-idadm,thm:seqcalc-mslat-cutadm} show that this defines a poset; let us denote it $F\cG$.
@@ -1076,8 +1080,11 @@ and of course we should also have
 \begin{equation}
   \pi_2(\pair M N) \equiv N\label{eq:beta-prodcat-2}
 \end{equation}
-Note that in these equalities, we want to allow $M$ and $N$ to be arbitrary terms.
-There is another, dual, family of simplifications as well; we want to identify the following derivations of $A\times B\to A\times B$:
+Note that in these equalities we allow $M$ and $N$ to be arbitrary terms.
+Categorically speaking, therefore, we are asserting that the maps $X\to A\times B$ induced by the universal property of the product (the $\timesI$ rule) do in fact have the desired composites with the projections.
+
+The other half of the universal property is the uniqueness of maps into a product.
+This corresponds to a dual family of simplifications: we want to identify the following derivations of $A\times B\to A\times B$.
 \begin{mathpar}
   \inferrule*{
     \inferrule*{\inferrule*{ }{A\times B\types A\times B}}{A\times B \types A} \\
@@ -1146,10 +1153,10 @@ Similarly, we also have:
 And we have the initiality theorem.
 
 \begin{thm}\label{thm:catprod-initial}
-  For any directed graph \cG, the free category-with-products $F_\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.
+  For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.
 \end{thm}
 \begin{proof}
-  \cref{thm:catprod-subadm} tells us how to can compose morphisms in our putative $F_\bPrCat \cG$, and \cref{thm:catprod-subcong} tells us that this operation respects the equivalence relation, so it is well-defined.
+  \cref{thm:catprod-subadm} tells us how to can compose morphisms in our putative $\F\bPrCat \cG$, and \cref{thm:catprod-subcong} tells us that this operation respects the equivalence relation, so it is well-defined.
   To prove that we have a category, we have to check that composition is associative and unital.
   [TODO\dots]
 \end{proof}
@@ -1273,6 +1280,276 @@ In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' t
   \item Use this type theory to prove that in any bifibration, $f_!$ is left adjoint to $f^*$.
   \end{enumerate}
 \end{ex}
+
+\section{Onwards}
+\label{sec:why-multicats}
+
+At this point we have done about all we can with \emph{unary} type theories, where the antecedent and consequent of each sequent consist only of a single type.
+In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.
+The most common type theories allow finite \emph{lists} of types as the antecedent (and sometimes as the consequent as well).
+We now consider a few problems with unary type theory, from a categorical perspective, that all turn out to have this as their solution.
+
+Let's begin by stating some general principles of type theory.
+Looking back at the rules of all our type theories, we see that they can be divided into two groups.
+On the one hand, there are rules that don't refer specifically to any operation, such as the identity rule $x:X \types x:X$ and the cut rule.
+On the other hand, there are rules that introduce or eliminate a particular operation on types, such as product, coproduct, and so on --- and each such rule refers to only \emph{one} operation  (such as $\times,+,f^*$, etc.).
+
+This ``independence'' between the rules for distinct operations is important for the good behavior of type theory.
+For instance, notice that many of the exercises have involved combining the rules for multiple previously-studied operations.
+If you did some of these exercises, you hopefully got a sense for how these operations tend to coexist ``without interacting'' in the metatheory: e.g.\
+when proving the cut-admissibility theorems we essentially just commute the rules for different operations past each other.
+This ``modularity'' means that we are always free to add new structure to a theory without spoiling the structure we already had.
+We formulate this as a general principle:
+\begin{equation}\label{princ:independence}
+  {Each rule in a type theory should refer to only one operation}.\tag{$\ast$}
+\end{equation}
+
+We also observe that in all cases we were able to extract the rules for a given operation from the universal property of the objects it was intended to represent in category theory.
+The left and right rules in a sequent calculus, or the introduction and elimination rules in a natural deduction, always expressed the ``two sides'' of a universal property: one of them ``structures the object'' and the other says that it is universal with this structure.
+The ``principal case'' of cut admissibility for a sequent calculus, and the $\beta$-reduction equality rule for a natural deduction, both express the fact that morphisms defined by the universal property ``compose with the structure'' to the inputs, e.g.\ a map $X\to A\times B$ defined from $f:X\to A$ and $g:X\to B$ gives back $f$ and $g$ when composed with the product projections.
+Similarly, the proof of identity admissibility for a sequent calculus, and the $\eta$-reduction rule for a natural deduction, express the uniqueness half of the universal property.
+This leads us to formulate another general principle:
+\begin{equation}\label{princ:ump}
+  The operations in a type theory should correspond categorically to objects with universal properties.\tag{$\dagger$}
+\end{equation}
+
+The point is that from the perspective of unary type theory, these two principles \emph{seem} overly restrictive.
+For example, note that despite~\eqref{princ:independence}, we can sometimes obtain nontrivial results about the interaction of operations.
+For instance, in \cref{ex:mslat-monoid} you showed that $A\meet \top\cong A$, even though $\meet$ and $\top$ are distinct operations with apparently unrelated rules.
+Similarly, in \cref{ex:mslat-fib,ex:catprod-fib} you showed that $f^*$ preserves $\meet$ and $\times$.
+In general, this tends to happen when relating operations whose universal properties all have the same ``handedness''.
+For instance, all the operations $\meet,\top,\times,\unit,f^*$ have ``mapping in'' or ``from the right'' universal properties.
+Thus, we can expect to compare two objects built using more than one of them by showing that they have the same universal property, and this is essentially what type theory does.
+
+However, often we are interested in categorical structures satisfying nontrivial relations between objects with universal properties of different handedness.
+For instance, in any category with both products and coproducts, there is a canonical map $(A\times B)+(A\times C) \to A\times (B+C)$, and the category is said to be \emph{distributive} if this map is always an isomorphism.
+(When the category is a poset, we call it a \emph{distributive lattice}.)
+However, as you saw in \cref{ex:lattices,ex:cat-prod-coprod}, if we simply combine the unary type theoretic rules for $\times$ and $+$, we get a type theory for categories with products and coproducts, but no interaction between them.
+So unary type theory is unable to deal with distributive lattices/categories while adhering to~\eqref{princ:independence}.
+
+Perhaps surprisingly, there \emph{is} a way to present a type theory for distributive categories.
+The idea is to move into a world where the product $A\times B$ \emph{also} has a ``mapping out'' universal property, so that we can compare $(A\times B)+(A\times C)$ and $A\times (B+C)$ by saying they have the same universal property.
+As we will see, this requires moving to a type theory with multiple antecedents.
+
+This is one motivation.
+Another is that we might want to talk about operations whose universal property can't be expressed in unary type theory while adhering to~\eqref{princ:independence}.
+For instance, a \emph{cartesian closed category} has exponential objects such that morphisms $X\to Z^Y$ correspond to morphisms $X\times Y\to Z$; but how can we express this without referring to $\times$?
+It turns out that the solution is the same.
+
+We might also want to talk about operations that \emph{have} no obvious universal property, obviously violating~\eqref{princ:ump}.
+For instance, what about monoidal categories?
+In the usual presentation of a monoidal category, the tensor product $A\otimes B$ has no universal property.
+It turns out that there is a way to give it a universal property, and this also leads us to higher-ary antecedents.
+
+Finally, there is also another motivation not having anything to do with~\eqref{princ:independence} and~\eqref{princ:ump}: we may want to generalize the ``input data'' \cG from which we generate our free objects.
+The unary type theory for categories with products allows us to prove theorems of the form ``in any category with products, for any morphisms $f:A\to B$, $g:C\to D$ \dots'', but it doesn't permit these quantifications to include ``for any $f:A\times B\to C$''.
+This is because the type theory generates a free category-with-products from a directed graph \cG whose vertices and edges are the objects and morphisms we hypothesize; but there is no way to express $f:A\times B\to C$ as an edge of \cG, since \cG has no products of objects yet.
+This problem turns out to have the same solution as well.
+
+\chapter{Simple type theories}
+\label{chap:simple}
+
+
+\section{Multicategories}
+\label{sec:multicats-catth}
+
+[TODO: Define non-symmetric multicategories, multiposets, and representability.
+Probably need to mention the ``$\circ_i$'' version of composition as well as the multicomposition.]
+
+
+\section{Multiposets}
+\label{sec:multiposets}
+
+We begin our study of type theory for multicategories with the posetal case.
+Thus, consider the adjunction between the category \bMPos of multiposets and the category \bRelMGr of \emph{relational multigraphs}, i.e.\ sets of objects equipped with an $n$-ary relation ``$(a_1,\dots,a_{n-1})\le b$'' for all integers $n\ge 1$.
+We would like to construct the free multiposet on a relational multigraph \cG using a type theory.
+
+Its objects, of course, will be those of \cG, so we do not yet need a type judgment.
+We represent its relations using a judgment written ``$A_1,A_2,\dots,A_n \types B$''.
+As is customary, we use capital Greek letters such as $\Gamma$ and $\Delta$ to stand for finite lists (possibly empty) of types.
+We write ``$\Gamma_1,\Gamma_2,\dots,\Gamma_n$'' for the concatenation of such lists, and we also write for instance ``$\Gamma,A,\Delta$'' to indicate a list containing the type $A$ somewhere the middle.
+
+At the moment, the only rules for this judgment will be identities and those coming from \cG.
+Based on the lessons we learned from unary type theory, we represent the latter in Yoneda-style.
+\begin{mathpar}
+  \inferrule{ }{A\types A}\and
+  \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}
+\end{mathpar}
+We call this the \textbf{cut-free type theory for multiposets under \cG}.
+Note that we have chosen to use the ``multi-composition'' in Yoneda-ifying the relations in \cG; this will be necessary for admissibility of cut.
+By contrast, it is traditional to formulate the cut rule in terms of the $\circ_i$ compositions.
+
+\begin{thm}\label{thm:multiposet-cutadm}
+  In the cut-free type theory for multiposets under \cG, the following cut rule is admissible: if we have derivations of $\Gamma\types A$ and of $\Delta,A,\Psi\types B$, then we can construct a derivation of $\Delta,\Gamma,\Psi\types B$.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $\Delta,A,\Psi\types B$.
+  If it is the identity rule, then $A=B$ and $\Delta$ and $\Psi$ are empty, so our given derivation of $\Gamma\types A$ is all we need.
+  Otherwise, it comes from some relation $A_1,\dots,A_n \le B$ in \cG, where we have derivations of $\Gamma_i \types A_i$, and there is an $i$ such that $\Gamma_i = \Gamma_i',A,\Gamma_i''$, while $\Delta = \Gamma_1,\dots,\Gamma_{i-1},\Gamma_i'$ and $\Psi = \Gamma_i'',\Gamma_{i+1},\dots,\Gamma_n$.
+  Now by the inductive hypothesis, we can construct a derivation of $\Gamma_i',\Gamma,\Gamma_i''\types A_i$.
+  Applying the rule for $A_1,\dots,A_n \le B$ again, with this derivation in place of the original $\Gamma_i \types A_i$, gives the desired result.
+\end{proof}
+
+\begin{thm}\label{thm:multiposet-initial}
+  For any relational multigraph \cG, the free multiposet it generates has the same objects, and the relation $(A_1,\dots,A_n)\le B$ holds just when the sequent $A_1,\dots,A_n\types B$ is derivable in the cut-free type theory for multiposets under \cG.
+\end{thm}
+\begin{proof}
+  \cref{thm:multiposet-cutadm}, together with the identity rule, tells us that this defines a multiposet $\F\bMPos\cG$.
+  If $\cM$ is any other multiposet with a map $P:\cG\to\cM$ of relational multigraphs, then since the objects of $\F\bMPos\cG$ are those of \cG, there is at most one extension of $P$ to $\F\bMPos\cG$.
+  It suffices to check that the relations in $\F\bMPos\cG$ hold in $\cM$; but this is clear since $\cM$ is a multiposet and the only rules are an identity and a particular multi-transitivity.
+\end{proof}
+
+\section{Monoidal posets}
+\label{sec:monposet}
+
+We now augment the type theory for multiposets with operations representing a tensor product.
+Since the tensor product now has a universal property, this is essentially straightforward.
+First of all, we need a type judgment $\types A\type$, with unsurprising rules:
+\begin{mathpar}
+  \inferrule{A\in\cG}{\types A\type}\and
+  \inferrule{ }{\types \one\type}\and
+  \inferrule{\types A\type \\ \types B\type}{\types A\tensor B\type}
+\end{mathpar}
+
+Second, in addition to the rules from \cref{sec:multiposets}, we have rules for $\tensor$.
+Once again we need to make a choice between sequent calculus and natural deduction.
+
+\subsection{Sequent calculus}
+
+In sequent calculus the left rule expresses the universal property; while
+the right rule should be the universal relation $A,B\types A\tensor B$, but we have to Yoneda-ify it using the multicomposition.
+The rules for $\one$ are similar.
+\begin{mathpar}
+  \inferrule{\Gamma,A,B,\Delta\types C}{\Gamma,A\tensor B,\Delta\types C}\;\tensorL\and
+  \inferrule{\Gamma\types A \\ \Delta\types B}{\Gamma,\Delta\types A\tensor B}\;\tensorR\and
+  \inferrule{\Gamma,\Delta\types A}{\Gamma,\one,\Delta\types A}\;\one L\and
+  \inferrule{ }{\types \one}\;\one R
+\end{mathpar}
+This defines the \textbf{sequent calculus for monoidal posets under \cG}.
+
+\begin{thm}\label{thm:monposet-identity}
+  The general identity rule is admissible in the sequent calculus for monoidal posets under \cG: if $\types A\type$ is derivable, then so is $A\types A$.
+\end{thm}
+\begin{proof}
+  By induction on the derivation of $\types A\type$.
+  If $A\in \cG$, then $A\types A$ is an axiom.
+  If $A=\one$, then $\one\types \one$ has the following derivation:
+  \begin{mathpar}
+    \inferrule*[Right=$\one L$]{\inferrule*[Right=$\one R$]{ }{\types \one}}{\one\types \one}
+  \end{mathpar}
+  And if $A=B\tensor C$, by the inductive hypothesis we have derivations $\sD_B$ and $\sD_C$ of $B\types B$ and $C\types C$, which we can put together like so:
+  \begin{equation*}
+    \inferrule*[Right=$\tensorL$]{
+      \inferrule*[Right=$\tensorR$]{
+        \inferrule*{\sD_B\\\\\vdots}{B\types B}\\
+        \inferrule*{\sD_C\\\\\vdots}{C\types C}
+      }{
+        B,C\types B\tensor C
+      }
+    }{
+      B\tensor C\types B\tensor C
+    }\qedhere
+  \end{equation*}
+\end{proof}
+
+\begin{thm}\label{thm:monposet-cutadm}
+  Cut is admissible in the sequent calculus for monoidal posets under \cG: if we have derivations of $\Gamma\types A$ and of $\Delta,A,\Psi\types B$, then we can construct a derivation of $\Delta,\Gamma,\Psi\types B$.
+\end{thm}
+\begin{proof}
+  As always, we induct on the derivation of $\Delta,A,\Psi\types B$.
+  The cases of the identity and of relations from \cG are just as in \cref{thm:multiposet-cutadm}
+  It cannot end with a $\one R$.
+  If it ends with a $\tensorR$, we use the inductive hypotheses on its premises and apply $\tensorR$ again.
+
+  The cases when it ends with a left rule introduce a new feature that we have not seen before in cut-admissibility proofs.
+  Suppose it ends with a $\one L$.
+  If $A$ is the $\one$ that was introduced by this rule, then we proceed basically as before: if $\Gamma\types A$ is $\one R$, so that $\Gamma$ is empty, then we are in the principal case and we can simply use the given derivation of $\Delta,\Psi\types B$; while if it is a left rule then we can apply a secondary induction.
+  But it might also happen that $A$ is a different type, appearing in $\Delta$ or $\Psi$.
+  However, this case is also easily dealt with by applying the inductive hypothesis to $\Gamma\types A$ and the given $\Delta,\Psi\types B$ (with $A$ appearing somewhere in its antecedents).
+
+  The case of $\tensorL$ is similar.
+  In the interesting (principal) case, when the sequent $\Delta,A_1\tensor A_2,\Psi\types B$ is derived from $\Delta,A_1,A_2,\Psi\types B$, while $\Gamma\types A_1\tensor A_2$ is derived using $\tensorR$ from $\Gamma_1\types A_1$ and $\Gamma_2\types A_2$ (so that necessarily $\Gamma = \Gamma_1,\Gamma_2$), then we can apply the inductive hypothesis twice as follows:
+  \begin{equation*}
+    \inferrule*[Right=cut]{
+      \Gamma_2\types A_2\\
+      \inferrule*[Right=cut]{
+        \Gamma_1\types A_1\\
+        \Delta,A_1,A_2,\Psi\types B
+      }{
+        \Delta,\Gamma_1,A_2,\Psi\types B
+      }
+    }{
+      \Delta,\Gamma_1,\Gamma_2,\Psi\types B
+    }
+  \end{equation*}
+  We have to apply it twice because we are formulating our cut rule using $\circ_i$ composition.
+  If we were using multicomposition then we would only need to apply it once; but the notation for the whole argument would become much less wieldy that way.
+\end{proof}
+
+\begin{thm}\label{thm:monpos-initial}
+  For any relational multigraph \cG, the free monoidal poset generated by \cG is described by the sequent calculus for monoidal posets under \cG: its objects are the $A$ such that $\types A\type$ is derivable, while the relation $(A_1,\dots,A_n)\le B$ holds just when the sequent $A_1,\dots,A_n\types B$ is derivable.
+\end{thm}
+\begin{proof}
+  As before, \cref{thm:monposet-identity,thm:monposet-cutadm} show that this defines a multiposet $\F\bMonPos\cG$.
+  Moreover, the rules for $\tensor$ and $\one$ tell us that it is representable, hence monoidal.
+
+  Now suppose $P:\cG\to\cM$ is a map into the underlying multiposet of any other monoidal poset.
+  We can extend $P$ uniquely to a function from the objects of $\F\bMonPos\cG$ to those of $\cM$ preserving $\tensor$ and $\one$ on objects, so it remains to check that this is a map of multiposets and preserves the universal properties of $\tensor$ and $\one$.
+  However, $\tensorR$ and $\one R$ are preserved by the universal data of $\tensor$ and $\one$ in \cM, while the universal properties of these data mean that $\tensorL$ and $\one L$ are also preserved.
+\end{proof}
+
+\subsection{Natural deduction}
+
+In natural deduction, the introduction rules $\tensorI$ and $\one I$ will coincide with the right rules $\tensorR$ and $\one R$ from the sequent calculus, but now we need elimination rules.
+Since $\tensor$ and $\one$ in a multicategory have a ``mapping out'' universal property, these elimination rules will be reminiscent of the ``case analysis'' rules from \cref{sec:catcoprod}.
+Formally speaking, they can be obtained by simply cutting $\tensorL$ and $\one L$ with an arbitrary sequent:
+\begin{mathpar}
+  \inferrule*[Right=cut]{
+    \Psi \types A\tensor B \\
+    \inferrule*[Right=$\tensorL$]{\Gamma,A,B,\Delta\types C}{\Gamma,A\tensor B,\Delta\types C}
+  }{
+    \Gamma,\Psi,\Delta \types C
+  }\and
+  \inferrule*[Right=cut]{
+    \Psi\types \one \\
+    \inferrule*[Right=$\one L$]{\Gamma,\Delta\types A}{\Gamma,\one,\Delta\types A}
+  }{
+    \Gamma,\Psi,\Delta\types C
+  }
+\end{mathpar}
+As usual in a natural deduction, we also need to assert the identity rule for all types.
+Thus our complete \textbf{natural deduction for monoidal posets under \cG} consists of (the rules for $\types A\type$ and):
+\begin{mathpar}
+  \inferrule{\types A\type}{A\types A}\and
+  \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}\and
+  \inferrule{\Gamma\types A \\ \Delta\types B}{\Gamma,\Delta\types A\tensor B}\;\tensorI\and
+  \inferrule{
+    \Psi \types A\tensor B \\
+    \Gamma,A,B,\Delta\types C
+  }{
+    \Gamma,\Psi,\Delta \types C
+  }\;\tensorE\\
+  \inferrule{ }{\types \one}\;\one I\and
+  \inferrule{
+    \Psi\types \one \\
+    \Gamma,\Delta\types A
+  }{
+    \Gamma,\Psi,\Delta\types C
+  }\;\one E
+\end{mathpar}
+
+\subsection*{Exercises}
+
+\begin{ex}
+  Prove the well-formedness, cut-admissibility, and initiality theorems for the natural deduction for monoidal posets.
+\end{ex}
+
+
+\section{Monoidal categories}
+\label{sec:moncat}
+
+Now we are ready to move back up to categories, distinguishing between derivations by introducing a term calculus.
+
 
 
 \bibliographystyle{alpha}
