@@ -1163,11 +1163,116 @@ Also, does it work in this simple case to consider $\eta$ as a reduction, or do 
 \subsection*{Exercises}
 
 \begin{ex}
+  Use the type theory for categories with products to prove that in any category with products we have
+  \begin{mathpar}
+    A\times B \cong B\times A\and
+    A\times (B\times C) \cong (A\times B)\times C\and
+    A\times \unit \cong A\and
+    \unit \times A \cong A.
+  \end{mathpar}
+  Note that since we are in categories now rather than posets, to show that two types $A$ and $B$ are isomorphic we must derive $x:A\types M:B$ and $y:B\types N:A$ and also show that their substitutions in both orders are equal (modulo $\equiv$) to identities.
+\end{ex}
+
+\begin{ex}\label{ex:catprod-subcong}
   Prove \cref{thm:catprod-subcong}.
 \end{ex}
 
+\begin{ex}\label{ex:catfib}
+  A functor $P:\sA\to \sM$ is called a \textbf{fibration} if for any $b\in \sA$ and $f:x\to P(b)$, there exists a morphism $\phi:a\to b$ in \sA such that $P(\phi)=f$ and $\phi$ is \emph{cartesian}, meaning that for any $\psi:c\to b$ and $g:P(c)\to x$ such that $P(\psi)=fg$, there exists a unique $\chi:c\to a$ such that $P(\chi)=g$ and $\phi\chi=\psi$.
+  The object $c$ is denoted $f^*(b)$.
+  \begin{enumerate}
+  \item Generalize your natural deduction for fibrations of posets from \cref{ex:natded-poset-fib} to a type theory for fibrations of categories.
+  \item Prove the initiality theorem for this type theory.
+  \item Use this type theory to prove that in any fibration $P:\sA\to\sM$:
+    \begin{enumerate}
+    \item For any $f:x\to y$ in \sM, $f^*$ is a functor from the fiber over $y$ to the fiber over $x$.
+    \item For any $B\in \sA$ and $x\xto{f} y \xto{g} P(B)$ in \sM, we have $f^*(g^*(B)) \cong (gf)^*(M)$.
+    \end{enumerate}
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:catprod-fib}
+  Generalize \cref{ex:mslat-fib} from posets to categories.
+\end{ex}
+
+
+\section{Categories with coproducts}
+\label{sec:catcoprod}
+
+In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
+However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
+(Of course, we could dualize them to ``co-natural deductions'' in which all rules act only on the \emph{left}, but that would destroy the familiar behavior of terms on variables, as well as make it tricky to combine left and right universal properties, such as for lattices.)
+To describe joins in a natural deduction, we need to ``build an extra cut'' into their universal property:
+\begin{mathpar}
+  \inferrule{X\types A}{X\types A\join B}\;\joinI1\and
+  \inferrule{X\types B}{X\types A\join B}\;\joinI2\and
+  \inferrule{A\types C \\ B\types C \\ X\types A\join B}{X\types C}\;\joinE
+\end{mathpar}
+Note that $\joinE$ is precisely the result of cutting $\joinL$ with an arbitrary sequent:
+\begin{mathpar}
+  \inferrule*[Right=cut]{X\types A\join B \\ \inferrule*[Right=$\joinL$]{A\types C \\ B\types C}{A\join B\types C}}{X\types C}
+\end{mathpar}
+We treat the bottom element similarly:
+\begin{mathpar}
+  \inferrule{X\types \bot \\\types C\type}{X\types C}
+\end{mathpar}
+Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous term calculus for categories with coproducts.
+\begin{mathpar}
+  \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
+  \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
+  \inferrule{x:X \types M:\emptyt \\ \types C\type}{x:X \types \abort(M):C}\;\emptyt E\and
+  \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
+  \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
+  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \case(M,u.P,v.Q):C}\;\plusE
+\end{mathpar}
+The notation $\case(M,u.P,v.Q)$ is intended to suggest that we ``break into cases'' based on whether $M$ lies in $A$ or in $B$, and do $P$ in the first case and $Q$ in the second.
+More precisely, we substitute $M$ for $u$ or $v$ in $P$ or $Q$.
+(We have to indicate in the notation which variables $u$ and $v$ were used in $P$ and $Q$, because otherwise in simply reading the term ``$\case(M,u.P,v.Q)$'' there would be no way to guess.
+Technically the notation ``$u.P$'' is ``binding'' the variable $u$; we will come back to that later.)
+Thus, the $\beta$-reduction rules must be
+\begin{mathpar}
+  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A}{x:X \types \case(\inl(M),u.P,v.Q) \equiv P[M/u] : C}
+  \and
+  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/u] : C}
+\end{mathpar}
+saying that the map $A+B\to C$ induced by the universal property of a coproduct (the $\plusE$ rule) has the correct composites with the coproduct injections.
+Similarly, the $\eta$-reduction rule says that morphisms out of a coproduct are determined uniquely by their composites with the projections: whenever $y:A+B \types P:C$ we should have
+\[ \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P. \]
+In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' to prevent $A+B$ from appearing on the left in the conclusion, as we always do in natural deduction theories:
+\begin{mathpar}
+  \inferrule{x:X \types M:A+B \\ y:A+B \types P:C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] : C}
+\end{mathpar}
+[TODO: Complete this.  How much detail to give?]
+
+
 
 % This is an instance of the \emph{modularity} of type theory: generally speaking, the rules for different categorical operations such as $\meet$ and $\join$ should be \emph{unrelated} to each other, so that each can be analyzed separately and included or excluded.
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:cat-opfib}
+  A functor $P:\sA\to\sB$ is called an \textbf{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration (as in \cref{ex:catfib}).
+  The dual of $f^*(b)$ is written $f_!(a)$.
+  \begin{enumerate}
+  \item Write down a type theory for opfibrations and prove the initiality theorem.
+    (Remember that we always use natural deduction style when dealing with categories rather than posets, so you can't just dualize \cref{ex:catfib} or categorify \cref{ex:poset-bifib}.)
+  \item Use this type theory to prove that $f_!$ is always a functor.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:cat-prod-coprod}
+  Combine the type theories of \cref{sec:catprod,sec:catcoprod} to obtain a unary type theory for categories with both products and coproducts.
+  Prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:cat-bifib}
+  A functor $P:\sA\to\sB$ is called a \textbf{bifibration} if it is both a fibration and an opfibration.
+  \begin{enumerate}
+  \item Combine the theories of \cref{ex:catfib,ex:cat-opfib} to obtain a type theory for bifibrations.
+  \item If you aren't tired of proving initiality theorems yet, do it for this type theory.
+  \item Use this type theory to prove that in any bifibration, $f_!$ is left adjoint to $f^*$.
+  \end{enumerate}
+\end{ex}
 
 
 \bibliographystyle{alpha}
