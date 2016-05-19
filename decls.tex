@@ -586,10 +586,11 @@
 % seem to combine the two.  Use this instead.
 \def\thmqedhere{\expandafter\csname\csname @currenvir\endcsname @qed\endcsname}
 
-% Number numbered lists as (i), (ii), ...
 \ifbeamer\else
-  \renewcommand{\theenumi}{(\roman{enumi})}
+  \renewcommand{\theenumi}{(\alph{enumi})}
   \renewcommand{\labelenumi}{\theenumi}
+  \renewcommand{\theenumii}{(\roman{enumii})}
+  \renewcommand{\labelenumii}{\theenumii}
 \fi
 
 % Left margins for enumitem

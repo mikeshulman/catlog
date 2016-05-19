@@ -50,7 +50,7 @@
 \def\tensorE{\mathord{\tensor}E}
 \begin{document}
 \maketitle
-%\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{1}
 \tableofcontents
 
 \setcounter{chapter}{-1}
@@ -1054,7 +1054,7 @@ while in a sequent calculus there is only one:
 
 The two situations are not quite equally bad, however.
 In the sequent calculus case, there is no clear way to privilege one derivation over the other; but in the natural deduction case, the right-hand derivation is clearly preferable.
-It turns out that for natural deduction, we can implement the necessary equivalence relation using \emph{reduction rules} that allow us to \emph{simply} more complicated derivations into equivalent simpler ones.
+It turns out that for natural deduction, we can implement the necessary equivalence relation using \emph{reduction rules} that allow us to \emph{simplify} more complicated derivations into equivalent simpler ones.
 In particular, therefore, we can still have a ``canonical form'' for morphisms in our free category, namely those deductions that cannot be simplified.
 For this reason, from now on when considering type theories for categories, we will always choose natural deduction over sequent calculus.
 (We will still discuss sequent calculi for posets.)
@@ -1099,9 +1099,13 @@ In term syntax, this means that
   \pair{\pi_1(M)}{\pi_2(M)} \equiv M\label{eq:eta-prodcat}
 \end{equation}
 In type-theoretic lingo, the equalities~\eqref{eq:beta-prodcat-1} and~\eqref{eq:beta-prodcat-2} are called \textbf{$\beta$-reductions} while the equality~\eqref{eq:eta-prodcat} is called an \textbf{$\eta$-reduction}.
+As suggested above, these equalities can be regarded as ``directed simplifications'', yielding a sort of ``rewrite system'' that simplifies any term into a ``canonical'' one.
+(For technical reasons, one often turns the $\eta$-reduction around, so that the canonical terms are ``$\eta$-expanded.'')
+This is very important in type theory as a computational subject, but for our purposes it is rather tangential.
+Thus, we will simply regard the $\beta$- and $\eta$-reductions as generating an equivalence relation on terms, which we also require to be a congruence for everything else.
 
-For the moment we postpone consideration of these equalities as ``directed simplifications'' and simply regard them as generating an equivalence relation on terms, which we also require to be a congruence for everything else.
-We can describe this ``generation'' using an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}: in addition to the $\beta$ and $\eta$ reductions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality (this ensures by induction that it is a congruence for substitution).
+We can describe this ``generation'' using an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}.
+In addition to the $\beta$- and $\eta$-reductions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality (this ensures by induction that it is a congruence for substitution).
 
 \begin{figure}
   \centering
@@ -1161,11 +1165,6 @@ And we have the initiality theorem.
   [TODO\dots]
 \end{proof}
 
-Finally, we return to the ``directedness'' of the $\beta$ and $\eta$ reductions.
-
-[TODO: I'm less confident about what to say here.
-I suppose if we want to be precise, we have to talk about Church-Rosser and confluence properties?
-Also, does it work in this simple case to consider $\eta$ as a reduction, or do we already need to make it an expansion?]
 
 \subsection*{Exercises}
 
@@ -1301,7 +1300,7 @@ when proving the cut-admissibility theorems we essentially just commute the rule
 This ``modularity'' means that we are always free to add new structure to a theory without spoiling the structure we already had.
 We formulate this as a general principle:
 \begin{equation}\label{princ:independence}
-  {Each rule in a type theory should refer to only one operation}.\tag{$\ast$}
+  \text{Each rule in a type theory should refer to only one operation}.\tag{$\ast$}
 \end{equation}
 
 We also observe that in all cases we were able to extract the rules for a given operation from the universal property of the objects it was intended to represent in category theory.
@@ -1310,7 +1309,7 @@ The ``principal case'' of cut admissibility for a sequent calculus, and the $\be
 Similarly, the proof of identity admissibility for a sequent calculus, and the $\eta$-reduction rule for a natural deduction, express the uniqueness half of the universal property.
 This leads us to formulate another general principle:
 \begin{equation}\label{princ:ump}
-  The operations in a type theory should correspond categorically to objects with universal properties.\tag{$\dagger$}
+  \parbox{3.5in}{\centering The operations in a type theory should correspond categorically to objects with universal properties.}\tag{$\dagger$}
 \end{equation}
 
 The point is that from the perspective of unary type theory, these two principles \emph{seem} overly restrictive.
@@ -1350,7 +1349,7 @@ This problem turns out to have the same solution as well.
 \label{chap:simple}
 
 
-\section{Multicategories}
+\section{Introduction to multicategories}
 \label{sec:multicats-catth}
 
 [TODO: Define non-symmetric multicategories, multiposets, and representability.
@@ -1540,8 +1539,32 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
 
 \subsection*{Exercises}
 
-\begin{ex}
+\begin{ex}\label{ex:natded-monpos}
   Prove the well-formedness, cut-admissibility, and initiality theorems for the natural deduction for monoidal posets.
+\end{ex}
+
+\begin{ex}\label{ex:monpos-mslat}
+  Write down either a sequent calculus or a natural deduction for monoidal posets that are also meet-semilattices, and prove its initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:monpos-jslat}
+  Let us augment the sequent calculus for monoidal posets by the following versions of the rules for join-semilattices:
+  \begin{mathpar}
+    \inferrule{\types A\type \\ \types B\type}{\types A\join B\type}\and
+    \inferrule{ }{\types \bot\type}\and
+    \inferrule{\Gamma \types A}{\Gamma\types A\join B}\and
+    \inferrule{\Gamma \types B}{\Gamma\types A\join B}\and
+    \inferrule{\Gamma,A,\Delta \types C\\\Gamma,B,\Delta \types C}{\Gamma,A\join B,\Delta\types C}\and
+    \inferrule{ }{\Gamma,\bot,\Delta\types C}
+  \end{mathpar}
+  \begin{enumerate}
+  \item Construct derivations in this calculus of the following sequents:
+    \begin{align*}
+      (A\tensor B)\join (A\tensor C) &\types  A\tensor (B\join C)\\
+      A\tensor (B\join C) &\types (A\tensor B)\join (A\tensor C)
+    \end{align*}
+  \item What categorical structure do you think models this type theory?
+  \end{enumerate}
 \end{ex}
 
 
@@ -1549,6 +1572,42 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
 \label{sec:moncat}
 
 Now we are ready to move back up to categories, distinguishing between derivations by introducing a term calculus.
+
+[TODO]
+
+
+\section{Symmetric monoidal categories}
+\label{sec:symmoncat}
+
+[Symmetric multicategories and their type theory, exchange rule, structural rules in general]
+
+
+\section{Introduction to cartesian multicategories}
+\label{sec:cartmulti}
+
+[Define cartesian multicategories, cartesian multiposets, representability, products have both universal properties]
+
+
+\section{Cartesian monoidal categories}
+\label{sec:cartmoncat}
+
+[Not sure exactly where the section boundaries should be here, or how to mix introducing the categorical structures with the type theories.
+Where to talk about distributive categories and distributive lattices?]
+
+
+\section{Algebraic theories and operads}
+\label{sec:algthy-opd}
+
+[A multigraph is also known as a signature of function symbols.  An arbitrary set of equations between terms can be added to $\equiv$, thereby describing a ``presented'' rather than a free categorical structure.  For cartesian monoidal categories, this is a (multi-sorted) algebraic theory.  For (symmetric) monoidal categories, it is a syntactic approach to (colored) operads.]
+
+
+\section{Closed monoidal categories}
+\label{sec:clmoncat}
+
+
+\section{Intuitionistic propositional logic}
+\label{sec:int-logic}
+
 
 
 
