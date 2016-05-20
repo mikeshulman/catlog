@@ -1,11 +1,12 @@
 \documentclass{book}
-\usepackage{mathpartir,cancel}
+\usepackage{mathpartir,cancel,cmll}
 \newif\ifcref\creftrue
 \input{decls}
 \title{Categorical logic from a categorical point of view}
 \author{}
 \date{\today}
-\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat}
+\makeatletter
+\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC}
 \let\types\vdash
 \let\sect\section
 \def\idfunc{\mathsf{id}}
@@ -42,12 +43,19 @@
 \def\abort{\mathsf{abort}}
 % one
 \def\one{\mathbf{1}}
+\def\discard#1in{\mathsf{discard}\; #1 \; \mathsf{in} \;}
 % tensor
 \let\tensor\otimes
 \def\tensorL{\mathord{\tensor}L}
 \def\tensorR{\mathord{\tensor}R}
 \def\tensorI{\mathord{\tensor}I}
 \def\tensorE{\mathord{\tensor}E}
+\let\bigtensor\bigotimes
+\def\flet#1:{\mathsf{let}\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
+\def\fletp#1:{\mathsf{let}'\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
+\def\@fletdoublecolon:=#1in{\Coloneqq #1\;\mathsf{in}\;}
+\def\@fletsinglecolon=#1in{\coloneqq #1\;\mathsf{in}\;}
+\makeatother
 \begin{document}
 \maketitle
 \setcounter{tocdepth}{1}
@@ -192,35 +200,36 @@ Similarly, the category of commutative monoids is cocartesian, so a commutative 
 But what if neither the multiplication nor the comultiplication is commutative?
 
 Internal logic is up to this task.
-In a monoidal category we can consider judgments with multiple outputs as well as multiple inputs.\footnote{[Caveat: I haven't seen quite this sort of type theory ever written down before; I'm envisioning it as like ``classical linear logic'' but allowing cut along multiple formulas at once.]}
-This allows us to describe monoids and comonoids in a roughly ``dual'' way:
+In a monoidal category we can consider judgments with multiple outputs as well as multiple inputs.\footnote{For the benefit of readers who are already experts, I should mention that this is \emph{not} ordinary ``classical linear logic'': the comma represents the same monoidal structure $\tensor$ on both sides of the turnstile, rather than $\tensor$ on the left and $\parr$ on the right.}
+This allows us to describe monoids and comonoids in a roughly ``dual'' way.
+Don't worry about the precise syntax being used on the right; it will be explained in \cref{sec:prop-smpos,sec:prop-smc}.
 \begin{alignat*}{2}
   x:M, y:M &\types x\cdot y:M &\qquad x:M &\types (x_1,x_2):(M,M)\\
-  &\types e:M &\qquad x:M &\types \cancel{x}:()\\
+  &\types e:M &\qquad x:M &\types (\mid\cancel{x}):()\\
   x:M,y:M,z:M &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :M &\qquad x:M &\types (x_{11},x_{12},x_2)=(x_1,x_{21},x_{22}):(M,M,M)\\
-  x:M &\types x\cdot e=x:M &\qquad x:M &\types (x_1,\cancel{x_2}) = x:M\\
-  x:M &\types e\cdot x=x:M &\qquad x:M &\types (\cancel{x_1},x_2) = x:M
+  x:M &\types x\cdot e=x:M &\qquad x:M &\types (x_1\mid\cancel{x_2}) = x:M\\
+  x:M &\types e\cdot x=x:M &\qquad x:M &\types (x_2\mid\cancel{x_1}) = x:M
 \end{alignat*}
 In this language, the bimonoid axioms are
 \begin{align*}
   x:M,y:M &\types (x_1\cdot y_1,x_2\cdot y_2) = ((x\cdot y)_1,(x\cdot y)_2) :(M,M)\\
           &\types (e_1,e_2)=(e,e):(M,M)\\
-  x:M,y:M &\types \cancel{x\cdot y} = (\cancel{x},\cancel{y}) : ()\\
-  &\types \cancel{e}=():()
+  x:M,y:M &\types (\mid\cancel{x\cdot y}) = (\mid\cancel{x},\cancel{y}) : ()\\
+  &\types (\mid\cancel{e})=():()
 \end{align*}
 And an antipode is a map $x:M \types i(x):M$ such that
 \begin{align*}
-  x:M &\types x_1\cdot i(x_2) = (e,\cancel{x}) :M\\
-  x:M &\types i(x_1)\cdot x_2 = (e,\cancel{x}) :M
+  x:M &\types x_1\cdot i(x_2) = (e\mid\cancel{x}) :M\\
+  x:M &\types i(x_1)\cdot x_2 = (e\mid\cancel{x}) :M
 \end{align*}
 Now if we have another antipode $j$, we can compute
 \begin{align*}
   x:M \types i(x)
   &= i(x)\cdot e\\
-  &= (i(x_1)\cdot e,\cancel{x_2})\\
+  &= (i(x_1)\cdot e\mid\cancel{x_2})\\
   &= i(x_1)\cdot (x_{21} \cdot j(x_{22}))\\
   &= (i(x_1)\cdot x_{21}) \cdot j(x_{22})\\
-  &= (\cancel{x_1},e \cdot j(x_{2}))\\
+  &= (e \cdot j(x_{2})\mid\cancel{x_1})\\
   &= e\cdot j(x)\\
   &= j(x) \qquad :M
 \end{align*}
@@ -1399,7 +1408,7 @@ By contrast, it is traditional to formulate the cut rule in terms of the $\circ_
 \end{proof}
 
 \section{Monoidal posets}
-\label{sec:monposet}
+\label{sec:monpos}
 
 We now augment the type theory for multiposets with operations representing a tensor product.
 Since the tensor product now has a universal property, this is essentially straightforward.
@@ -1414,6 +1423,7 @@ Second, in addition to the rules from \cref{sec:multiposets}, we have rules for 
 Once again we need to make a choice between sequent calculus and natural deduction.
 
 \subsection{Sequent calculus}
+\label{sec:seqcalc-monpos}
 
 In sequent calculus the left rule expresses the universal property; while
 the right rule should be the universal relation $A,B\types A\tensor B$, but we have to Yoneda-ify it using the multicomposition.
@@ -1426,7 +1436,7 @@ The rules for $\one$ are similar.
 \end{mathpar}
 This defines the \textbf{sequent calculus for monoidal posets under \cG}.
 
-\begin{thm}\label{thm:monposet-identity}
+\begin{thm}\label{thm:monpos-identity}
   The general identity rule is admissible in the sequent calculus for monoidal posets under \cG: if $\types A\type$ is derivable, then so is $A\types A$.
 \end{thm}
 \begin{proof}
@@ -1451,7 +1461,7 @@ This defines the \textbf{sequent calculus for monoidal posets under \cG}.
   \end{equation*}
 \end{proof}
 
-\begin{thm}\label{thm:monposet-cutadm}
+\begin{thm}\label{thm:monpos-cutadm}
   Cut is admissible in the sequent calculus for monoidal posets under \cG: if we have derivations of $\Gamma\types A$ and of $\Delta,A,\Psi\types B$, then we can construct a derivation of $\Delta,\Gamma,\Psi\types B$.
 \end{thm}
 \begin{proof}
@@ -1489,7 +1499,7 @@ This defines the \textbf{sequent calculus for monoidal posets under \cG}.
   For any relational multigraph \cG, the free monoidal poset generated by \cG is described by the sequent calculus for monoidal posets under \cG: its objects are the $A$ such that $\types A\type$ is derivable, while the relation $(A_1,\dots,A_n)\le B$ holds just when the sequent $A_1,\dots,A_n\types B$ is derivable.
 \end{thm}
 \begin{proof}
-  As before, \cref{thm:monposet-identity,thm:monposet-cutadm} show that this defines a multiposet $\F\bMonPos\cG$.
+  As before, \cref{thm:monpos-identity,thm:monpos-cutadm} show that this defines a multiposet $\F\bMonPos\cG$.
   Moreover, the rules for $\tensor$ and $\one$ tell us that it is representable, hence monoidal.
 
   Now suppose $P:\cG\to\cM$ is a map into the underlying multiposet of any other monoidal poset.
@@ -1498,6 +1508,7 @@ This defines the \textbf{sequent calculus for monoidal posets under \cG}.
 \end{proof}
 
 \subsection{Natural deduction}
+\label{sec:natded-monpos}
 
 In natural deduction, the introduction rules $\tensorI$ and $\one I$ will coincide with the right rules $\tensorR$ and $\one R$ from the sequent calculus, but now we need elimination rules.
 Since $\tensor$ and $\one$ in a multicategory have a ``mapping out'' universal property, these elimination rules will be reminiscent of the ``case analysis'' rules from \cref{sec:catcoprod}.
@@ -1536,6 +1547,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
     \Gamma,\Psi,\Delta\types C
   }\;\one E
 \end{mathpar}
+We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}).
 
 \subsection*{Exercises}
 
@@ -1568,12 +1580,62 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
 \end{ex}
 
 
+\section{Multicategories and operads}
+\label{sec:multicat-operads}
+
+Now we are ready to move back up to categories, distinguishing between derivations by introducing a term calculus.
+Categorically, we begin with the adjunction between the category $\bMCat$ of multicategories and the category $\bMGr$ of multigraphs.
+Let \cG be a multigraph; we now augment the cut-free theory of \cref{sec:multiposets} with terms that exactly represent the structure of derivations, as we did in \cref{sec:categories,sec:catprod,sec:catcoprod}.
+\begin{mathpar}
+  \inferrule{A\in\cG}{x:A\types x:A}\and
+  \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
+\end{mathpar}
+We call this the \textbf{cut-free type theory for multicategories under \cG}.
+
+\begin{thm}\label{thm:multicat-subadm}
+  Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
+\end{thm}
+\begin{proof}
+  Just like \cref{thm:multiposet-cutadm}.
+  As before, note that we can regard this as defining substitution.
+\end{proof}
+
+[TODO: Substitution is associative and interchanging.  Where should we deal with that the first time?]
+
+\begin{thm}\label{thm:multicat-initial}
+  For any multigraph \cG, the free multicategory generated by \cG can be described by the cut-free type theory for multicategories under \cG: its objects are those of \cG, and its morphisms $\Gamma\to B$ are the derivable judgments $\Gamma\types M:B$.
+\end{thm}
+\begin{proof}
+  \cref{thm:multicat-subadm} tells us how to compose multimorphisms.
+  [TODO]
+\end{proof}
+
+
 \section{Monoidal categories}
 \label{sec:moncat}
 
-Now we are ready to move back up to categories, distinguishing between derivations by introducing a term calculus.
+Since the tensor product has a ``mapping out'' universal property like that of a coproduct, its elimination rules will be a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
+\begin{mathpar}
+  \inferrule{\types A\type}{x:A\types x:A}\and
+  \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
+  \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \pair{M}{N}:A\tensor B}\;\tensorI\and
+  \inferrule{
+    \Psi \types M:A\tensor B \\
+    \Gamma,x:A,y:B,\Delta\types N:C
+  }{
+    \Gamma,\Psi,\Delta \types (\flet \pair x y:=M in N):C
+  }\;\tensorE\\
+  \inferrule{ }{\types \ttt:\one}\;\one I\and
+  \inferrule{
+    \Psi\types M:\one \\
+    \Gamma,\Delta\types N:A
+  }{
+    \Gamma,\Psi,\Delta\types (\discard M in N):C
+  }\;\one E
+\end{mathpar}
 
-[TODO]
+[TODO: Try to explain the let-binding better.]
+
 
 
 \section{Symmetric monoidal categories}
@@ -1609,8 +1671,546 @@ Where to talk about distributive categories and distributive lattices?]
 \label{sec:int-logic}
 
 
-\chapter{Classical logic, linear logic, polycategories, and PROPs}
+\chapter[Polycategories]{Classical logic, linear logic, polycategories, and PROPs}
 \label{chap:polycats}
+
+
+\section{PROPs and symmetric monoidal posets}
+\label{sec:prop-smpos}
+
+In this section we consider sequents $\Gamma\types\Delta$ where the commas on both sides are intended to represent the \emph{same} tensor product $\tensor$.
+For simplicity, we assume this tensor product is symmetric, so that we have an exchange rule on both sides.
+This leads us to consider different identity and cut rules (in fact, two identity rules):
+\begin{mathpar}
+  \inferrule{ }{\quad\types\quad}\and
+  \inferrule{\Gamma\types\Delta}{\Gamma,A\types \Delta,A}\and
+  \inferrule*[Right=cut]{\Gamma\types\Xi,\Psi \\ \Psi,\Phi \types \Delta}{\Gamma,\Phi \types \Delta,\Xi}
+\end{mathpar}
+As always, of course, we intend for the cut rule to be admissible, but writing down at this point what it should be helps us build it into other rules appropriately.
+For instance, the Yoneda-ified rule for the generating morphisms from a polygraph should be
+\begin{mathpar}
+  \inferrule{\Gamma\types\Xi,\Psi \\ f\in\cG(\Psi,\Phi; \Delta)}{\Gamma,\Phi \types \Delta,\Xi}
+\end{mathpar}
+With only this and the identity rule, we have the \textbf{cut-free type theory for PROPs under \cG}.
+
+\begin{thm}\label{thm:prop-cutadm}
+  For any polygraph \cG, the above cut rule is admissible in the cut-free type theory for PROPs under \cG.
+\end{thm}
+\begin{proof}
+  As always, we induct on the derivation of $\Psi,\Phi \types \Delta$.
+  \begin{enumerate}
+  \item If it is the empty identity rule ``$\types$'', then $\Gamma\types\Xi,\Psi$ is just $\Gamma\types\Xi$ and is also the desired conclusion.
+  \item If it ends with the other identity rule, then there are two cases.
+    \begin{enumerate}
+    \item If $A$ is in $\Phi$, then we have $\Phi=\Phi',A$ and $\Delta=\Delta',A$ and a derivation of $\Psi,\Phi'\types\Delta'$.
+      Applying the inductive hypothesis to this we get $\Gamma,\Phi'\types \Xi,\Delta'$, and then applying the identity rule again gives the desired conclusion.
+    \item If $A$ is in $\Psi$, then we have $\Psi=\Psi',A$ and $\Delta=\Delta',A$ and a derivation of $\Psi',\Phi\types\Delta'$.
+      Now we can inductively cut this with the given $\Gamma\types \Xi,A,\Psi'$ along $\Psi'$ to get $\Gamma,\Phi\types \Xi,A,\Delta'$ which is the desired conclusion.
+    \end{enumerate}
+  \item Finally, suppose $\Psi,\Phi \types \Delta$ ends with the rule for an $f$.
+    Thus, we have $\Delta=\Delta_1,\Delta_2$ and $\Psi=\Psi_1,\Psi_2$ and $\Phi=\Phi_1,\Phi_2$, where $f\in\cG(\Psi_2,\Phi_2,\Upsilon;\Delta_1)$ and a given derivation of $\Psi_1,\Phi_1\types \Delta_2,\Upsilon$.
+    We first inductively cut the latter with our given $\Gamma\types \Xi,\Psi_1,\Psi_2$ along $\Psi_1$ to get $\Gamma,\Phi_1\types \Xi,\Psi_2,\Delta_2,\Upsilon$, then apply the $f$ rule on $\Psi_2,\Upsilon$ to get the desired $\Gamma,\Phi_1,\Phi_2\types \Xi,\Delta_1,\Delta_2$ as desired.\qedhere
+  \end{enumerate}
+\end{proof}
+
+To prove an initiality theorem, we need an appropriate categorical structure.
+We define a \textbf{PROP} to be a symmetric polygraph \cP together with the following data:
+\begin{enumerate}
+\item A morphism $\idfunc_{()}:()\to ()$.
+\item For every $A\in\cP$, a morphism $\idfunc_A (A)\to (A)$.
+  % For every $f:\Gamma\to\Delta$ and object $A$, a morphism $(f,\idfunc_A):(\Gamma,A) \to (\Delta,A)$.
+  % By induction from this and the previous, we have $\idfunc_{\Gamma} :\Gamma\to\Gamma$ for any $\Gamma$.
+\item For every $f:\Gamma\to (\Xi,\Psi)$ and $g:(\Psi,\Phi)\to \Delta$, a composite $g\circ_\Psi f : (\Gamma,\Phi) \to (\Xi,\Delta)$.
+% \item Identities are invariant under permutation: $\sigma\idfunc_{\Gamma}\sigma = \idfunc_{\sigma\Gamma}$.
+\item Composition is invariant under permutation: $\tau(g\circ_\Psi f)\sigma = (\tau g)\circ_\Psi (f\sigma)$ and $g\sigma \circ_\Psi f = g\circ_{\sigma \Psi} \sigma f$.
+\item Composition is unital:
+  % $g\circ_\Psi \idfunc_\Psi = g$ and $\idfunc_\Psi\circ_\Psi f = f$.
+  $g\circ_A \idfunc_A = g$ and $\idfunc_A\circ_A f = f$.
+\item Composition is associative: given $f:\Gamma\to (\Xi,\Theta,\Psi)$ and $g:(\Psi,\Phi)\to (\Delta,\Upsilon)$ and $h:(\Upsilon,\Theta,\Lambda)\to \Omega$, we have
+  \[h \circ_{\Upsilon,\Theta} (g\circ_\Psi f) = (h\circ_\Upsilon g) \circ_{\Theta,\Psi} f \qquad \text{(as morphisms} (\Gamma,\Phi,\Lambda) \to (\Xi,\Delta,\Omega). \]
+\item Composition is interchanging: $g\circ_{()}f = f\circ_{()}g$ (modulo a symmetry action).
+\end{enumerate}
+Note that by composing along empty lists, we can produce identity morphisms for lists: $\idfunc_{(A,B)} = \idfunc_A \circ_{()} \idfunc_B$ and so on.
+(The order doesn't matter by the interchange axiom.)
+It may not be obvious that these axioms are correct.
+For now, however, we restrict to the posetal case, in which case the axioms are irrelevant.
+
+Now there are actually \emph{three} ways we could imagine introducing tensor products in a PROP.
+Fortunately, they are all equivalent.
+
+\begin{thm}\label{thm:prop-tensor}
+  For any two objects $A$ and $B$ in a PROP \cP, the following are equivalent.
+  \begin{enumerate}
+  \item A morphism $(A,B) \to A\tensor B$, precomposition with which defines bijections\label{item:prop-tensor-left}
+    \[ \cP(\Gamma,A\tensor B;\Delta) \to \cP(\Gamma,A,B;\Delta) \]
+  \item A morphism $A\tensor B \to (A,B)$, postcomposition with which defines bijections\label{item:prop-tensor-right}
+    \[ \cP(\Gamma;\Delta,A\tensor B) \to \cP(\Gamma;\Delta,A,B) \]
+  \item Morphisms $(A,B) \to A\tensor B$ and $A\tensor B \to (A,B)$ whose composites in both directions
+    \begin{gather*}
+      A\tensor B \too (A,B)  \too A\tensor B\\
+      (A,B)\too A\tensor B \too (A,B)
+    \end{gather*}
+    are identities.\label{item:prop-tensor-iso}
+  \end{enumerate}
+\end{thm}
+\begin{proof}
+  If we have~\ref{item:prop-tensor-iso}, then pre- or post-composing with the other morphism yields the bijections in~\ref{item:prop-tensor-left} and~\ref{item:prop-tensor-right}.
+  On the other hand, given~\ref{item:prop-tensor-left}, the identity $(A,B)\to (A,B)$ must be the composite $(A,B)\to A\tensor B \to (A,B)$ for some unique morphism $A\tensor B \to (A,B)$, and the other composite must be the identity since its precomposite with $(A,B)\to A\tensor B$ is $(A,B)\to A\tensor B$; so~\ref{item:prop-tensor-iso} holds.
+  (This is basically the Yoneda lemma.)
+  The case of~\ref{item:prop-tensor-right} is dual.
+\end{proof}
+
+The case with units is similar.
+
+\begin{thm}\label{thm:prop-unit}
+  In a PROP \cP, the following are equivalent.
+  \begin{enumerate}
+  \item A morphism $()\to \one$, precomposition with which defines bijections $\cP(\Gamma,\one;\Delta) \to \cP(\Gamma;\Delta)$.
+  \item A morphism $\one\to()$, postcomposition with which defines bijections $\cP(\Gamma;\Delta,\one) \to \cP(\Gamma;\Delta)$.
+  \item Morphisms $()\to \one$ and $\one\to()$ whose composites in both directions are identities.\qed
+  \end{enumerate}
+\end{thm}
+
+\begin{thm}\label{thm:prop-smc}
+  There is an equivalence between (1) symmetric monoidal categories and (2) PROPs with tensors and units in the sense of \cref{thm:prop-tensor,thm:prop-unit}.
+\end{thm}
+\begin{proof}
+  Given a symmetric monoidal category \cC, we define a prop \cP by
+  \[ \cP(A_1,\dots,A_n ; B_1,\dots,B_m) = \cC(A_1\tensor \cdots\tensor A_n, B_1\tensor\cdots\tensor B_m)\]
+  or, more succinctly, $\cP(\Gamma;\Delta) = \cC(\bigtensor\Gamma, \bigtensor\Delta)$.
+  Of course, $\bigtensor() = \one$.
+  The identity rules come from $\idfunc_\one$ and $f\tensor \idfunc_A$, while the composite of $f:\Gamma\to (\Xi,\Psi)$ and $g:(\Psi,\Phi)\to \Delta$ is $(\bigtensor\Xi \tensor g) \circ (f\tensor \bigtensor \Phi)$.
+  Of course, this PROP has tensors and units quite trivially.
+
+  Conversely, given a PROP with tensors and units, we have an underlying category with an object $\one$ and an operation $\tensor$.
+  The functoriality of $\tensor$ is defined on $f:A\to A'$ and $g:B\to B'$ as the composite
+  \[ A\tensor B \too (A,B) \xto{(f,\idfunc)} (A',B) \xto{(\idfunc,g)} (A',B') \too A'\tensor B'. \]
+  The axioms of a PROP ensure that this is the same as if we put $f$ and $g$ in the other order (or we could write simply $(f,g)$ using the yet-to-be-defined polycomposition).
+  Functoriality is similarly easy.
+  For associativity, we have
+  \[ ((A\tensor B)\tensor C) \too (A\tensor B,C) \too (A,B,C) \too (A,B\tensor C) \to (A\tensor (B\tensor C)) \]
+  and for unitality we have
+  \[ (A\tensor \unit) \too (A,\unit) \too (A) \]
+  and dually.
+  It is straightforward to check that these are natural isomorphisms and satisfy the necessary axioms.
+  For symmetry, we use the fact that our PROP is a \emph{symmetric} polygraph and act by symmetry on the morphisms $(A,B)\to A\tensor B$ and $A\tensor B\to (A,B)$, obtaining ``inverse isomorphisms'' $(B,A) \to A\tensor B$ and $A\tensor B \to (B,A)$.
+  From these we can show $A\tensor B \cong B\tensor A$ and check naturality and the axioms.
+
+  Finally, it is straightforward to check that these two constructions are inverses.
+\end{proof}
+
+Now, \cref{thm:prop-tensor,thm:prop-unit} give several ways to introduce $\tensor$ and $\unit$ in our type theory.
+For a sequent calculus, the symmetrical approach is probably the most natural:
+\begin{mathpar}
+  \inferrule{\Gamma,A,B\types \Delta}{\Gamma,A\tensor B\types \Delta}\;\tensorL\and
+  \inferrule{\Gamma\types \Delta,A,B}{\Gamma\types \Delta,A\tensor B}\;\tensorR\and
+  \inferrule{\Gamma\types\Delta}{\Gamma,\one\types\Delta}\;\one L\and
+  \inferrule{\Gamma\types\Delta}{\Gamma\types\Delta,\one}\;\one R\and
+\end{mathpar}
+Of course, we also include the identity and generator rules (the former only for base types coming from \cG) and the type judgment:
+\begin{mathpar}
+  \inferrule{ }{()\types()}\and
+  \inferrule{\Gamma\types\Delta\\ A\in\cG}{\Gamma,A\types \Delta,A}\and
+  \inferrule{\Gamma\types\Xi,\Psi \\ f\in\cG(\Psi,\Phi; \Delta)}{\Gamma,\Phi \types \Delta,\Xi}\and
+  \inferrule{A\in\cG}{\types A\type}\and
+  \inferrule{ }{\types \one\type}\and
+  \inferrule{\types A\type \\ \types B\type}{\types A\tensor B\type}
+\end{mathpar}
+We call this the \textbf{classical sequent calculus for symmetric monoidal posets under \cG}.
+(Posets because we are not yet distinguishing derivations or introducing terms.)
+
+\begin{thm}\label{thm:seqcalc-smpos-invertible}
+  All the rules for $\tensor$ and $\one$ in the classical sequent calculus for symmetric monoidal posets under \cG are invertible.
+\end{thm}
+\begin{proof}
+  Suppose we have a derivation of $\Gamma,A\tensor B\types \Delta$; we want a derivation of $\Gamma,A,B\types \Delta$.
+  We induct on the given derivation.
+  \begin{enumerate}
+  \item The easy case is when it ends with $\tensorL$ whose premise is what we want.
+  \item If it ends with $\tensorL$ acting on another type, or any of $\tensorR$, $\one L$, or $\one R$, then we induct on the premise and then apply that rule to the result.
+  \item If it ends with the identity rule for $C$, then since $C\in \cG$ it can't be $A\tensor B$, so we can again induct on the premise and apply the identity rule afterwards.
+  \item Finally, if it ends with a generator rule for $f$, then since the domain of $f$ is a list of objects of $\cG$, none of them can be $A\tensor B$; so $A\tensor B$ must be in the sequent that the generator rule cuts with, and we can induct on that and then apply the generator rule.
+  \end{enumerate}
+  The other rules $\tensorR$, $\one L$, and $\one R$ are similar.
+\end{proof}
+
+\begin{thm}\label{thm:seqcalc-smpos-identity}
+  The following general identity rule is admissible in the classical sequent calculus for symmetric monoidal posets under \cG:
+  \begin{mathpar}
+    \inferrule{\Gamma\types\Delta\\ \types A\type}{\Gamma,A\types \Delta,A}\and
+  \end{mathpar}
+  In particular, since $()\types()$, we have $A\types A$ whenever $\types A\type$.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $\types A\type$.
+  \begin{enumerate}
+  \item If it is from \cG, we apply the postulated identity rule.
+  \item If it is $\one$, we have the following derivation:
+    \begin{mathpar}
+      \inferrule*{\inferrule*{\inferrule*{ }{\quad\types\quad}}{\quad \types \one}}{\one\types\one}
+    \end{mathpar}
+  \item If it is $A_1\tensor A_2$, we have by induction a derivation $\sD_1$ of $\Gamma,A_1\types,\Delta,A_1$, and then (again by induction) a derivation $\sD_2$ of $\Gamma,A_1,A_2\types \Delta,A_1,A_2$.
+    Now we augment this in a similar way:
+    \begin{equation*}
+      \inferrule*{
+        \inferrule*{
+          \inferrule*{\sD_2\\\\\vdots}{\Gamma,A_1,A_2\types \Delta,A_1,A_2}
+        }{
+          \Gamma,A_1\tensor A_2\types \Delta,A_1,A_2
+        }}{
+        \Gamma,A_1\tensor A_2\types \Delta,A_1\tensor A_2
+      }\qedhere
+    \end{equation*}
+  \end{enumerate}
+\end{proof}
+
+\begin{thm}\label{thm:seqcalc-smpos-cutadm}
+  The PROP cut rule is admissible in the classical sequent calculus for symmetric monoidal posets under \cG.
+\end{thm}
+\begin{proof}
+  Suppose given derivations of $\Gamma\types\Xi,\Psi$ and $\Psi,\Phi \types \Delta$; we want to derive $\Gamma,\Phi \types \Delta,\Xi$.
+  We induct on the derivation of $\Psi,\Phi \types \Delta$.
+  \begin{enumerate}
+  \item If it ends with an identity or a generator, we do as in \cref{thm:prop-cutadm}.
+  \item If it ends with $\tensorR$ or $\one R$, we can simply apply the inductive hypothesis to cut with the premise of that rule.
+  \item If it ends with $\tensorL$, there are two cases.
+    If the introduced $A\tensor B$ is in $\Phi$, then we can inductively cut the premise along $\Psi$ again.
+  \item On the other hand, if the introduced $A\tensor B$ is in $\Psi$, then our other derivation has the form $\Gamma\types\Xi,\Psi',A\tensor B$.
+    Since $\tensorR$ is invertible by \cref{thm:seqcalc-smpos-invertible}, we can also derive $\Gamma\types\Xi,\Psi',A,B$, and then cut with the premise $\Psi',A,B,\Phi \types \Delta$ of our $\tensorL$.
+  \item The case of $\one L$ is similar.\qedhere
+  \end{enumerate}
+\end{proof}
+
+\begin{thm}\label{thm:seqcalc-smpos-initial}
+  For any symmetric relational polygraph \cG, the free symmetric monoidal poset generated by \cG is described by the classical sequent calculus for symmetric monoidal posets under \cG.
+\end{thm}
+\begin{proof}
+  \cref{thm:seqcalc-smpos-identity,thm:seqcalc-smpos-cutadm} imply in particular that the sequent calculus gives us a PROP-poset $\F\bSMPos\cG$.
+  Moreover, the rules for $\tensor$ and $\one$ give $\F\bSMPos\cG$ the tensor and unit structure of \cref{thm:prop-tensor,thm:prop-unit}, so that it is a symmetric monoidal poset.
+  Now if \cM is any other symmetric monoidal poset and $P:\cG\to\cM$ a map of symmetric relational polygraphs, there is a unique extension of $P$ to the objects of $\F\bSMPos\cG$.
+  As usual, by induction on the rules of the sequent calculus and the fact that \cM is a PROP-poset, this extension preserves the relations $\Gamma\le\Delta$.
+  Finally, it also preserves the tensor and unit structure, so it is a strict functor of symmetric monoidal posets.
+\end{proof}
+
+
+\section{Symmetric monoidal categories}
+\label{sec:prop-smc}
+
+So much for symmetric monoidal posets.
+What we really want, however, is a type theory for symmetric monoidal \emph{categories}, in which we can talk about equality of morphisms, and that can also deal with tensors in the codomain.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{A\in\cG}{\types A\type}\and
+    \inferrule{ }{\types \one\type}\and
+    \inferrule{\types A\type \\ \types B\type}{\types A\tensor B\type}
+    \inferrule{ }{()\types()}\and
+    \inferrule{\Gamma\types\Delta\\ \types A\type}{\Gamma,A\types \Delta,A}\and
+    \inferrule{\Gamma\types\Xi,\Psi \\ f\in\cG(\Psi,\Phi; \Delta)}{\Gamma,\Phi \types \Delta,\Xi}\and
+    \inferrule{\Gamma\types \Delta,A,B}{\Gamma\types \Delta,A\tensor B}\;\tensorI\and
+    % \inferrule{\Xi\types\Phi,\Psi,A\tensor B \\ \Gamma,\Psi,A,B\types \Delta}{\Gamma,\Xi\types \Phi,\Delta}\;\tensorE\and
+    \inferrule{\Gamma\types \Delta,A\tensor B}{\Gamma\types \Delta,A,B}\;\tensorE\and
+    \inferrule{\Gamma\types\Delta}{\Gamma\types\Delta,\one}\;\one I\and
+    % \inferrule{\Xi\types \Phi,\Psi,\one \\ \Gamma,\Psi\types\Delta}{\Gamma,\Xi\types\Phi,\Delta}\;\one E\and
+    \inferrule{\Gamma\types\Delta,\one}{\Gamma\types\Delta}\;\one E\and
+  \end{mathpar}
+  \caption{Classical natural deduction for symmetric monoidal categories}
+  \label{fig:clnatded-smc}
+\end{figure}
+
+We begin, of course, by reformulating the sequent calculus from the last section as a natural deduction, as shown in \cref{fig:clnatded-smc}.
+As usual, the terms for this theory will contain $\beta$- and $\eta$-redexes, so that we need a $\equiv$ relation.
+However, there is now also another class of pairs of distinct derivations that we want to identify.
+A simple case is when we have $f\in \cG(A;B)$ and $g\in\cG(C;D)$; then there are two distinct derivations of $f\tensor g$:
+\begin{mathpar}
+  \inferrule*[Right=$g$]{
+    \inferrule*{
+      \inferrule*[Right=$f$]{
+        \inferrule*{\inferrule*{ }{()\types()}}{A\types A}
+      }{
+        A\types B
+      }}{
+      A,C\types B,C
+    }}{
+    A,C\types B,D
+  }\and
+  \inferrule*[Right=$f$]{
+    \inferrule*{
+      \inferrule*[Right=$g$]{
+        \inferrule*{\inferrule*{ }{()\types()}}{C\types C}
+      }{
+        C\types D
+      }}{
+      A,C\types A,D
+    }}{
+    A,C\types B,D
+  }\and
+\end{mathpar}
+If we write down a term calculus whose terms correspond exactly to derivations, as we usually do, then the desired equality between these two derivations would look something like
+\[ x:A, y:C \types (f,\idfunc)((\idfunc,g)(x,y)) \equiv (\idfunc,g)((f,\idfunc)(x,y)) : (B,D) \]
+Note that unlike the $\beta$- and $\eta$-reductions, this equality is not directional: it makes no sense to regard one or the other side as ``simpler'' or ``more canonical'' than the other.
+Moreover, the terms like $(f,\idfunc)((\idfunc,g)(x,y))$ are fairly ugly as well.
+
+Thus, for our multi-output type theory of symmetric monoidal categories, we will break the bijection between terms and deductions, in a way that enables us to represent the above two derivations by \emph{literally the same} term, namely
+\[ x:A, y:C \types (f(x),g(y)):(B,D) \]
+This makes the metatheory and the initiality theorem rather more complicated, but at the end of the day it leads to a much more congenial type theory.
+A nice example is the study of antipodes in noncommutative bimonoids that we discussed informally in \cref{sec:intro}.
+
+If our terms are not simply representations of derivations, then we need to explain what terms are before we explain what they mean.
+For this purpose we define the class of \emph{pre-terms}, which have a type and a context but may not respect the linearity of the inputs.
+\newcommand{\pc}{\mathrel{\mathord{:}?}}
+The pre-terms, being syntax, are freely generated in an appropriate sense, so we can describe them using an auxiliary judgment $\Gamma \types M\pc A$.
+The intent is that we will eventually judge $\Gamma \types (M_1,\dots,M_n):(A_1,\dots,A_n)$ where each $M_i$ is a pre-term such that $\Gamma \types M_i\pc A_i$.
+We will also need to include pre-terms with no type at all, so we also include a judgment $\Gamma \types M\pc ()$ for this purpose.
+The rules for these judgments are shown in \cref{fig:pre-terms}.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{ }{\Gamma,x:A \types x\pc A}\and
+    \inferrule{
+      \Gamma \types M_1\pc A_1 \\ \Gamma\types M_2\pc A_2 \\ \cdots \\ \Gamma\types M_n\pc A_n \\\\
+      f\in \cG(A_1,\dots,A_n; B_1,\dots,B_m)\\ 1\le j\le m
+    }{
+      \Gamma \types f_j(M_1,\dots,M_n)\pc B_j
+    }\and
+    \inferrule{
+      \Gamma \types M_1\pc A_1 \\ \Gamma\types M_2\pc A_2 \\ \cdots \\ \Gamma\types M_n\pc A_n \\\\
+      f\in \cG(A_1,\dots,A_n; \cdot )
+    }{
+      \Gamma \types f_j(M_1,\dots,M_n)\pc ()
+    }\and
+    \inferrule{\Gamma\types M\pc A \\ \Gamma\types N\pc B }{ \Gamma\types \pair{M}{N} \pc A\tensor B }\and
+    \inferrule{ }{\Gamma\types \ttt\pc\unit}\and
+    \inferrule{\Gamma\types M\pc A\tensor B}{\Gamma\types \pi_1(M) \pc A}\and
+    \inferrule{\Gamma\types M\pc A\tensor B}{\Gamma\types \pi_2(M) \pc B}\and
+    \inferrule{\Gamma\types M\pc \unit}{\Gamma\types \cancel{M}:()}\and
+  \end{mathpar}
+  \caption{Rules for pre-terms}
+  \label{fig:pre-terms}
+\end{figure}
+
+Now we give the rules for the term judgment.
+To incorporate morphisms with codomain $()$, we write the judgment as
+\[\Gamma \types (M_1,\dots,M_m\mid N_1,\dots,N_n):(A_1,\dots,A_m)\]
+with the intended invariant that $\Gamma\types M_i\pc A_i$ for each $i$ and $\Gamma\types N_j\pc ()$ for each $j$.
+If $n=0$ we write simply $(M_1,\dots,M_m)$, omitting the $|$, and if $m=1$ as well we omit the parentheses.
+
+We write $\vec M$ for a list of pre-terms, $\vec{x}$ for a list of variables, and $\vec M,N$ for concatenation thereof.
+We use capital Greek letters $\Gamma,\Delta,\dots$ both for \emph{contexts} (lists of types with assigned variables such as $x:A,y:B$) and for simple lists of types; the latter can be made into a context by supposing variables $\vec{x}:\Gamma$, or appear as the consequent with assigned terms $\vec{M}:\Gamma$.
+Finally, if $f\in\cG(A_1,\dots,A_n;B_1,\dots,B_m)$ we write $\vec{f}(\vec{M})$ for the list of pre-terms
+\[(f_1(M_1,\dots,M_n),f_2(M_1,\dots,M_n),\dots,f_m(M_1,\dots,M_n))\]
+where each $M_i \pc A_i$.
+Note that the variables in a context are not literally treated ``linearly'', since they can occur multiple times in the multiple ``components'' of a map $f$.
+For instance, a morphism $f:(A,B)\to (C,D)$ is represented by $x:A, y:B \types (f_1(x,y),f_2(x,y)):(C,D)$.
+Instead their ``usages'' are controlled by the codomain arity of the morphisms applied to them.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{
+      x_1:A_1,\dots,x_n:A_n\types (M_1,\dots,M_m\mid Z_1,\dots,Z_p):(B_1,\dots,B_m)\\
+      \sigma\in \Sigma_n \\ \tau\in\Sigma_m \\ \rho\in\Sigma_p
+    }{
+      x_{\sigma 1}:A_{\sigma 1},\dots,x_{\sigma n}:A_{\sigma n}\types (M_{\tau 1},\dots,M_{\tau m}\mid Z_{\rho 1},\dots,Z_{\rho p}):(B_{\tau 1},\dots,B_{\tau m})
+    }\and
+    \inferrule{ }{() \types ():()}\and
+    \inferrule{\Gamma\types (\vec{M}\mid \vec{Z}):\Delta\\ \types A\type}{\Gamma,x:A\types (\vec{M},x\mid \vec{Z}):(\Delta,A)}\and
+    \inferrule{
+      \Gamma\types (\vec M,\vec N\mid\vec{Z}):(\Xi,\Psi) \\
+      f\in\cG(\Psi,\Phi; \Delta)\\
+      |\Delta|>0
+    }{
+      \Gamma,\vec{x}:\Phi \types (\vec M,\vec f(\vec N,\vec x)\mid\vec{Z}):(\Xi,\Delta)
+    }\and
+    \inferrule{
+      \Gamma\types (\vec M,\vec N\mid\vec{Z}):(\Xi,\Psi) \\
+      f\in\cG(\Psi,\Phi; \cdot)
+    }{
+      \Gamma,\vec{x}:\Phi \types (\vec M\mid\vec{Z},\vec f(\vec N,\vec x)):\Xi
+    }\and
+    \inferrule{\Gamma\types (\vec{M},N,P\mid\vec{Z}):(\Delta,A,B)}{\Gamma\types (\vec{M},\pair N P\mid\vec{Z}):(\Delta,A\tensor B)}\;\tensorI\and
+    \inferrule{\Gamma\types (\vec{M},P\mid\vec{Z}):(\Delta,A\tensor B)}{\Gamma\types (\vec{M},\pi_1(P),\pi_2(P)\mid\vec{Z}):(\Delta,A,B)}\;\tensorE\\
+    \inferrule{\Gamma\types(\vec M\mid\vec Z):\Delta}{\Gamma\types (\vec M,\ttt\mid\vec Z):(\Delta,\one)}\;\one I\and
+    \inferrule{\Gamma\types(\vec M,N\mid\vec Z):(\Delta,\one)}{\Gamma\types(\vec M\mid \cancel{N},\vec Z):\Delta}\;\one E\and
+  \end{mathpar}
+  \caption{Rules for terms}
+  \label{fig:cl-smc-terms}
+\end{figure}
+
+With these notations, the term judgment is described in \cref{fig:cl-smc-terms}.
+For clarity, we have made the exchange rule explicit at the beginning.
+Note that it mirrors exactly the natural deduction from \cref{fig:clnatded-smc}, with the additional annotation by pre-terms.
+For instance, when we annotate the two problematic derivations we obtain the same pre-term.
+\begin{mathpar}
+  \inferrule*[Right=$g$]{
+    \inferrule*{
+      \inferrule*[Right=$f$]{
+        \inferrule*{\inferrule*{ }{()\types():()}}{x:A\types x:A}
+      }{
+        x:A\types f(x):B
+      }}{
+      x:A,y:C\types (f(x),y):(B,C)
+    }}{
+    x:A,y:C\types (f(x),g(y)):(B,D)
+  }\and
+  \inferrule*[Right=$f$]{
+    \inferrule*{
+      \inferrule*[Right=$g$]{
+        \inferrule*{\inferrule*{ }{()\types():()}}{y:C\types y:C}
+      }{
+        y:C\types g(y):D
+      }}{
+      x:A,y:C\types (x,g(y)):(A,D)
+    }}{
+    x:A,y:C\types (f(x),g(y)):(B,D)
+  }\and
+\end{mathpar}
+
+Finally, we have the equality judgment.
+This takes the form $\Gamma \types (\vec M\mid\vec Z)\equiv (\vec N\mid\vec W) :(\vec B)$, which should respect the invariants
+\begin{alignat*}{2}
+  \Gamma&\types M_i\pc B_i &\qquad
+  \Gamma&\types Z_j\pc ()\\
+  \Gamma&\types N_i\pc B_i &\qquad
+  \Gamma&\types W_j\pc ()
+\end{alignat*}
+Note that these may not be well-typed term judgments.
+We assert that this relation $\equiv$ is a congruence on lists of pre-terms with respect to concatenation, substitution, and permutation.
+Relative to this, $\equiv$ is generated by the following relations on individual pre-terms:
+\begin{mathpar}
+  \pi_1(\pair M N) \equiv M\and
+  \pi_2(\pair M N) \equiv N\and
+  \pair{\pi_1(P)}{\pi_2(P)} \equiv P\and
+  \cancel{\ttt} \equiv ()\and
+\end{mathpar}
+and the following relations on lists:
+\begin{mathpar}
+  (\vec M,\ttt \mid \vec Z,\cancel{W}) \equiv (\vec M,W\mid \vec Z)\and
+  (\vec M \mid \vec{Z}) \equiv (\vec M \mid \vec{\sigma Z})\and
+\end{mathpar}
+The last relation means that we can permute the $Z$'s arbitrarily (of course, we can also permute the $M$'s, but only if we also permute their types).
+
+We now commence the metatheoretic analysis.
+
+\begin{lem}
+  If $\Gamma\types (M_1,\dots,M_m\mid N_1,\dots,N_n):(B_1,\dots,B_m)$ is derivable, then so are $\Gamma\types M_i\pc B_i$ for each $i$ and $\Gamma\types N_j\pc ()$ for each $j$.
+\end{lem}
+\begin{proof}
+  A straightforward induction over derivations.
+\end{proof}
+
+\begin{lem}
+  The following rule of substitution into pre-terms is admissible:
+  \begin{mathpar}
+    \inferrule{\Gamma \types \vec M\pc \Psi\\ \vec y:\Psi,\Phi \types M\pc B}{\Gamma,\Phi \types M[\vec M/\vec y]\pc B}
+  \end{mathpar}
+\end{lem}
+\begin{proof}
+  Here $\Gamma \types \vec M\pc \Psi$ is shorthand for a number of pre-term judgments.
+  We induct over the derivation of $\vec y:\Psi,\Phi \types M\pc B$.
+  In almost all cases we simply apply the inductive hypothesis to the premise, thereby defining the meaning of substitution on pre-terms by recursing through the structure as usual.
+  The one exception is, as usual, the ``variable'' rule $\Gamma,x:A \types x\pc A$ when $x$ is one of the $y$'s; in this case the result of substitution is the corresponding one of the $M$'s.
+\end{proof}
+
+\begin{lem}\label{thm:prop-smc-subadm}
+  Substitution for terms (i.e.\ the cut rule for derivations) is admissible:
+  \[\inferrule{\Gamma\types(\vec M,\vec N\mid\vec Z):(\Xi,\Psi) \\ \vec y:\Psi,\Phi \types (\vec P\mid\vec W):\Delta}{\Gamma,\Phi \types (\vec M, \vec P[\vec N/\vec y] \mid \vec Z, \vec W[\vec N/\vec y]):(\Xi,\Delta)}\]
+\end{lem}
+\begin{proof}
+  As is usual for natural deductions, a very straightforward induction.
+\end{proof}
+
+We define the \textbf{height} of a derivation to be the number of rules appearing in it \emph{other} than the exchange rule.
+The following ``invertibility'' lemma is key to the initiality theorem.
+
+\begin{lem}\label{thm:prop-smc-invertible}
+  For all the rules in \cref{fig:cl-smc-terms}, if we have a derivation ending with (an instance of) the conclusion of that rule, then we can also construct a derivation of the same height ending with an application of that rule itself.
+\end{lem}
+\begin{proof}
+  This is trivially true for the exchange rule (since it supplies its own inverses) and for the trivial rule $()\types ():()$.
+  For all the other rules \cR, suppose the given derivation ends with a different rule $\cR'$ (disregarding any exchanges in between).
+  Then because pre-terms are inductively defined, that application of $\cR'$ must be introducing a set of pre-terms that are disjoint from those that \cR would introduce, and therefore the premise of that instance of $\cR'$ is also an instance of the conclusion of $\cR$.
+  Therefore, we can apply the inductive hypothesis to it to obtain a derivation of it ending with an application of $\cR$.
+  Finally, again because the two sets of pre-terms are disjoint, we can apply $\cR'$ to the premise of that final application of $\cR$, and then $\cR$ again at the end.
+  The height is obviously preserved.
+\end{proof}
+
+That proof was written very abstractly, so consider the following example.
+We omit to write exchange rules, as well as the obvious variable rules at the top.
+\begin{mathpar}
+  \inferrule*[Right=$\tensorE$]{
+    \inferrule*[Right=$f$]{
+      x:A,y:B\tensor C \types (y,x):(B\tensor C,A)
+    }{
+      x:A,y:B\tensor C \types (y,f_2(x),f_1(x)):(B\tensor C,E,D)
+    }
+  }{
+    x:A,y:B\tensor C \types (\pi_1(y),f_2(x),\pi_2(y),f_1(x)):(B,E,C,D)
+  }
+\end{mathpar}
+The conclusion of this rule is (modulo exchange) an instance of a conclusion of the $f$-generator rule.
+Since the $\pi$-pre-terms introduced by the actual rule $\tensorE$ that leads to this conclusion are disjoint from the $f$-pre-terms that would be introduced by this $f$-generator rule.
+Thus, by induction the premise $x:A,y:B\tensor C \types (y,f_2(x),f_1(x)):(B\tensor C,E,D)$ has a derivation of the same height ending with the $f$-generator rule; in this simple case that is in fact the derivation of it that we were given.
+Now we can apply $\tensorE$ to the premise of \emph{that} rule, namely $x:A,y:B\tensor C \types (y,x):(B\tensor C,A)$, and then follow it by the $f$-generator rule, obtaining the following derviation:
+\begin{mathpar}
+  \inferrule*[Right=$f$]{
+    \inferrule*[Right=$\tensorE$]{
+      x:A,y:B\tensor C \types (y,x):(B\tensor C,A)
+    }{
+      x:A,y:B\tensor C \types (\pi_1(y),\pi_2(y),x):(B,C,A)
+    }
+  }{
+    x:A,y:B\tensor C \types (\pi_1(y),f_2(x),\pi_2(y),f_1(x)):(B,E,C,D)
+  }
+\end{mathpar}
+
+\begin{thm}\label{thm:prop-smc-initial}
+  The free symmetric monoidal category on a symmetric polygraph can be presented using this type theory: its morphisms $\Gamma\to\Delta$ are the \emph{lists of pre-terms} such that $\Gamma\types (M_1,\dots,M_n \mid Z_1,\dots,Z_p):\Delta$ is derivable.
+  (In particular, if two derivations give the same pre-term, we stipulate that only one morphism results.)
+\end{thm}
+\begin{proof}
+  \cref{thm:prop-smc-subadm} tells us how to compose morphisms.
+  Associativity, unitality, and equivariance follow as usual, since substitution into pre-terms is basically ordinary substitution.
+  In particular, these axioms hold as syntactic equalities of pre-terms.
+
+  For the interchange rule, suppose given derivations of $\Gamma\types (\vec M\mid\vec Z):\Delta$ and $\Phi\types (\vec N\mid\vec W):\Xi$.
+  We can then substitute them along $()$ in either order to get
+  \begin{align*}
+    \Gamma,\Phi &\types (\vec M,\vec N\mid \vec Z,\vec W):\Delta,\Xi\\
+    \Phi,\Gamma &\types (\vec N,\vec M\mid \vec W,\vec Z):\Xi,\Delta\\
+\intertext{Applying exchange to the second, we obtain}
+    \Gamma,\Phi &\types (\vec M,\vec N\mid \vec W,\vec Z):\Delta,\Xi
+  \end{align*}
+  and we have $(\vec M,\vec N\mid \vec Z,\vec W) \equiv (\vec M,\vec N\mid \vec W,\vec Z)$ by the final generating rule of $\equiv$.
+  In particular, unlike the other axioms of a PROP, interchange holds only up to $\equiv$.
+
+  In any case, we now have a PROP $\F\bSMC\cG$.
+  The $\beta$- and $\eta$-reduction rules give it tensor and unit structure, so it is a symmetric monoidal category.
+
+  Now suppose \cM is a symmetric monoidal category and $P:\cG\to\cM$ is a morphism of polygraphs.
+  We extend $P$ to the PROP $\F\bSMC\cG$ by induction on derivations.
+  This is straightforward using the PROP structure and tensors and units in \cM; the nontrivial thing is showing that the result depends only on the pre-term judgment rather than on the particular derivation.
+  This is the purpose of \cref{thm:prop-smc-invertible}.
+
+  Suppose we have two derivations $\sD_1$ and $\sD_2$ of the same sequent $\sQ$, ending with rules $\cR_1$ and $\cR_2$ with premises $\sQ_1$ and $\sQ_2$ respectively.
+  By disjointness of pre-terms as in the proof of \cref{thm:prop-smc-invertible}, we can say that $\sQ_1$ is a conclusion of an instance of $\cR_2$, and similarly $\sQ_2$ is a conclusion of an instance of $\cR_1$.
+  By \cref{thm:prop-smc-invertible}, therefore, $\sQ_1$ has a derivation $\sD_1'$ of the same height ending with $\sR_2$, while $\sQ_2$ has a derivation $\sD_2'$ of the same height ending with $\sR_1$.
+  Moreover, up to exchange (as always) the premise of these two ending rules must be the same sequent $\sQ_3$.
+  By induction (which is applicable since the heights have been preserved), the given derivations of $\sQ_1$ and $\sQ_2$ yield the same morphism in \cM as these other derivations $\sD_1'$ and $\sD_2'$.
+
+  Thus, it will suffice to show that once the sequent $\sQ_3$ is interpreted according to some particular derivation of it, we obtain the same interpretation of $\sQ$ by deriving it in the following two ways:
+  \begin{mathpar}
+    \inferrule*[Right=$\cR_1$]{\inferrule*[Right=$\cR_2$]{\vdots\\\\\sQ_3}{\sQ_1}}{\sQ}\and
+    \inferrule*[Right=$\cR_2$]{\inferrule*[Right=$\cR_1$]{\vdots\\\\\sQ_3}{\sQ_2}}{\sQ}\and
+  \end{mathpar}
+  This follows straightforwardly from the associativity and interchange rules in \cM.
+\end{proof}
+
+[TODO: Finally, algebraic theory.]
+
+
 
 
 \chapter{First-order logic}
