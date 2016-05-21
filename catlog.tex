@@ -745,7 +745,7 @@ We consider each in turn.
 \subsection{Sequent calculus for meet-semilattices}
 \label{sec:seqcalc-mslat}
 
-To be precise, for a relational graph \cG, the \textbf{unary\footnote{The word ``unary'' indicates that there is only one type on each side of our sequents $A\types B$.  Later on we will generalize away from this restriction.} sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
+To be precise, for a relational graph \cG, the \textbf{unary sequent calculus for meet-semilattices under \cG} has the following rules (in addition to the rules for the judgment $\types A\type$ mentioned above).
 We label each rule on the right to make them easier to refer to later on.
 \begin{mathpar}
   \inferrule{A\in \cG}{A\types A}\;\idfunc\and
@@ -755,6 +755,13 @@ We label each rule on the right to make them easier to refer to later on.
   \inferrule{B\types C \\ \types A\type}{A\meet B \types C}\;\meetL2\and
   \inferrule{A\types B \\ A\types C}{A\types B\meet C}\;\meetR
 \end{mathpar}
+
+\begin{rmk}
+  The word \emph{unary} applied to a type theory is not standard in the literature.
+  We are using it to indicate that there is only one type on each side of our sequents $A\types B$.
+  This will be the case throughout the current chapter; in later chapters we will generalize away from this restriction.
+\end{rmk}
+
 There are several things to note about this.
 The first is that we have included in the premises some judgments of the form $\types A\type$.
 This ensures that whenever we can derive a sequent $A\types B$, that $A$ and $B$ are well-formed as types.
@@ -1290,11 +1297,14 @@ In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' t
   \end{enumerate}
 \end{ex}
 
-\section{Onwards}
+\chapter{Simple type theories}
+\label{chap:simple}
+
+\section{Towards multicategories}
 \label{sec:why-multicats}
 
 At this point we have done about all we can with \emph{unary} type theories, where the antecedent and consequent of each sequent consist only of a single type.
-In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.
+(In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.)
 The most common type theories allow finite \emph{lists} of types as the antecedent (and sometimes as the consequent as well).
 We now consider a few problems with unary type theory, from a categorical perspective, that all turn out to have this as their solution.
 
@@ -1313,6 +1323,13 @@ We formulate this as a general principle:
   \text{Each rule in a type theory should refer to only one operation}.\tag{$\ast$}
 \end{equation}
 
+Note that despite~\eqref{princ:independence}, we can often obtain nontrivial results about the interaction of operations.
+For instance, in \cref{ex:mslat-monoid} you showed that $A\meet \top\cong A$, even though $\meet$ and $\top$ are distinct operations with apparently unrelated rules.
+Similarly, in \cref{ex:mslat-fib,ex:catprod-fib} you showed that $f^*$ preserves $\meet$ and $\times$.
+In general, this tends to happen when relating operations whose universal properties all have the same ``handedness''.
+For instance, all the operations $\meet,\top,\times,\unit,f^*$ have ``mapping in'' or ``from the right'' universal properties.
+Thus, we can expect to compare two objects built using more than one of them by showing that they have the same universal property, and this is essentially what type theory does.
+
 We also observe that in all cases we were able to extract the rules for a given operation from the universal property of the objects it was intended to represent in category theory.
 The left and right rules in a sequent calculus, or the introduction and elimination rules in a natural deduction, always expressed the ``two sides'' of a universal property: one of them ``structures the object'' and the other says that it is universal with this structure.
 The ``principal case'' of cut admissibility for a sequent calculus, and the $\beta$-reduction equality rule for a natural deduction, both express the fact that morphisms defined by the universal property ``compose with the structure'' to the inputs, e.g.\ a map $X\to A\times B$ defined from $f:X\to A$ and $g:X\to B$ gives back $f$ and $g$ when composed with the product projections.
@@ -1323,18 +1340,11 @@ This leads us to formulate another general principle:
 \end{equation}
 
 The point is that from the perspective of unary type theory, these two principles \emph{seem} overly restrictive.
-For example, note that despite~\eqref{princ:independence}, we can sometimes obtain nontrivial results about the interaction of operations.
-For instance, in \cref{ex:mslat-monoid} you showed that $A\meet \top\cong A$, even though $\meet$ and $\top$ are distinct operations with apparently unrelated rules.
-Similarly, in \cref{ex:mslat-fib,ex:catprod-fib} you showed that $f^*$ preserves $\meet$ and $\times$.
-In general, this tends to happen when relating operations whose universal properties all have the same ``handedness''.
-For instance, all the operations $\meet,\top,\times,\unit,f^*$ have ``mapping in'' or ``from the right'' universal properties.
-Thus, we can expect to compare two objects built using more than one of them by showing that they have the same universal property, and this is essentially what type theory does.
-
-However, often we are interested in categorical structures satisfying nontrivial relations between objects with universal properties of different handedness.
+For instance, we remarked above that by expressing universal properties in type theory we can compare operations whose universal properties have the same handedness; but often we are interested in categorical structures satisfying nontrivial relations between objects with universal properties of different handedness.
 For instance, in any category with both products and coproducts, there is a canonical map $(A\times B)+(A\times C) \to A\times (B+C)$, and the category is said to be \emph{distributive} if this map is always an isomorphism.
 (When the category is a poset, we call it a \emph{distributive lattice}.)
 However, as you saw in \cref{ex:lattices,ex:cat-prod-coprod}, if we simply combine the unary type theoretic rules for $\times$ and $+$, we get a type theory for categories with products and coproducts, but no interaction between them.
-So unary type theory is unable to deal with distributive lattices/categories while adhering to~\eqref{princ:independence}.
+So unary type theory cannot deal with distributive categories while adhering to~\eqref{princ:independence} and~\eqref{princ:ump}.
 
 Perhaps surprisingly, there \emph{is} a way to present a type theory for distributive categories.
 The idea is to move into a world where the product $A\times B$ \emph{also} has a ``mapping out'' universal property, so that we can compare $(A\times B)+(A\times C)$ and $A\times (B+C)$ by saying they have the same universal property.
@@ -1355,8 +1365,40 @@ The unary type theory for categories with products allows us to prove theorems o
 This is because the type theory generates a free category-with-products from a directed graph \cG whose vertices and edges are the objects and morphisms we hypothesize; but there is no way to express $f:A\times B\to C$ as an edge of \cG, since \cG has no products of objects yet.
 This problem turns out to have the same solution as well.
 
-\chapter{Simple type theories}
-\label{chap:simple}
+As already mentioned, on the type-theoretic side what we will do in this chapter is allow multiple types in the antecedent of a judgment (but still only one type in the consequent; in \ref{chap:polycats} we remove this restriction as well).
+We call these \emph{simple type theories}; this term is somewhat more common in the literature, but perhaps not with the exact meaning we are giving it.
+In a simple type theory the antecedent is often called the \emph{context}.
+
+On the categorical side, what we will study are \emph{multicategories} of various sorts.
+An ordinary multicategory is like a category but whose morphisms can have any finite list of objects as their domain, say $f:(A_1,\dots,A_n) \to B$, with a straightforward composition law.
+There are many possible variations on this definition: in a symmetric multicategory the finite lists can be permuted, in a cartesian multicategory we can add unrelated objects and collapse equal ones, and so on.
+All of these categorical structures are known as \emph{generalized multicategories}.
+There is an abstract theory of generalized multicategories that includes these examples and many others, but (at least in the current version of this chapter) we will simply work with concrete examples.
+
+Our approach to the semantics of simple type theory can be summed up in the following additional principle:
+\begin{equation}\label{princ:structural}
+  \parbox{4in}{\centering The shape of the context and the structural rules in a simple type theory, including admissible rules such as cut, should mirror the categorical structure of a generalized multicategory.}\tag{$\ddagger$}
+\end{equation}
+The \emph{structural rules} are the rules that don't refer to any operation on types, such as identity and cut.
+(Later on we will meet other structural rules, such as exchange, contraction, and weakening.)
+Principle~\eqref{princ:ump} then tells us that the \emph{non-structural} rules (which are sometimes called \emph{logical} rules) should all correspond to objects with universal properties in a generalized multicategory.
+
+In sum, we have the following table of correspondences:
+\begin{center}
+  \begin{tabular}{c|c}
+    Type theory & Category theory\\\hline
+    Structural rules & Generalized multicategory\\
+    Logical rules & Independent universal properties
+  \end{tabular}
+\end{center}
+Here by ``independent universal properties'' I mean that the universal property of each object can be defined on its own without reference to any other objects defined by universal properties (unlike, for instance, the exponential in a cartesian closed category).
+
+This all been very abstract, so I recommend the reader come back to this section again at the end of this chapter.
+However, for completeness let me point out now that this general correspondence is particularly useful when designing new type theories and when looking for categorical semantics of existing type theories.
+On one hand, any type theory that adheres to~\eqref{princ:independence} should have semantics in a kind of generalized multicategory that can be ``read off'' from the shape of its contexts and its structural rules.
+On the other hand, to construct a type theory for a given categorical structure, we should seek to represent that structure as a generalized multicategory in which all the relevant objects have independent universal properties; then we can ``read off'' from the domains of morphisms in those multicategories the shape of the contexts and the structural rules of our desired type theory.
+
+We will not attempt to make this correspondence precise in any general way, and in practice it has many tweaks and variations that would probably be exceptions to any putative general theorem; but it is a very useful heuristic.
 
 
 \section{Introduction to multicategories}
