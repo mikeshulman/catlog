@@ -309,11 +309,10 @@ Finally, it provides a guide for new applications of categorical logic: when see
 \chapter{Unary type theories}
 \label{chap:unary}
 
+[TODO: Some kind of introduction]
 
 \section{Posets}
 \label{sec:poset}
-
-% TODO: Mention structural induction.
 
 To begin our formal investigation of categorical logic, we start with the simplest sort of categories: those in which each hom-set has at most one element.
 These are well-known to be equivalent to \emph{preordered sets}, where the existence of an arrow $A\to B$ is regarded as the assertion that $A\le B$.
@@ -406,12 +405,39 @@ Note that \texttt{mathpartir} has only recently made it into standard distributi
 Formally speaking, what we have observed is the following \emph{initiality theorem}.
 
 \begin{thm}\label{thm:poset-initial-1}
-  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.\qed
+  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.
 \end{thm}
+\begin{proof}
+  In the preceding discussion we assumed it as known that the free poset on a relational graph is its reflexive-transitive closure, which makes this theorem more or less obvious.
+  However, it is worth also presenting an explicit proof that does not assume this, since same pattern of proof will reappear many times for more complicated type theories where we don't know the answer in advance.
 
-This enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
+  Thus, let us define $\F{\bPoset}\cG$ as stated in the theorem.
+  The reflexivity and transitivity rules imply that $\F{\bPoset}\cG$ is in fact a poset.
+  Now suppose $\cA$ is any other poset and $P:\cG\to\cA$ is a map of relational graphs.
+  The objects of $\F{\bPoset}\cG$ are the same as those of \cG, so $P$ extends uniquely to a map on underlying sets $\F{\bPoset}\cG\to\cA$.
+  Thus it suffices to show that this map is order-preserving, i.e.\ that if $A\types B$ is derivable from \cG in the free type theory of posets, then $P(A)\le P(B)$.
 
-Another way to express this result is to incorporate \cG into the rules.
+  For this purpose we \emph{induct on the derivation of $A\types B$}.
+  There are multiple ways to phrase such an induction.
+  One is to define the \emph{height} of a derivation to be the number of rules appearing in it, and then induct on the height of the derivation of $A\types B$.
+  \begin{enumerate}
+  \item If there are no rules at all, then $A\types B$ must come from a relation $A\le B$ in \cG; hence $P(A)\le P(B)$ since $P$ is a map of relational graphs.
+  \item If there are $n>0$ rules, then consider the last rule.
+    \begin{enumerate}
+    \item If it is the identity rule $A\types A$, then $P(A)\le P(A)$ in \cA since \cA is a poset and hence reflexive.
+    \item Finally, if it is the transitivity rule, then each of its premises $A\types B$ and $B\types C$ must have a derivation with strictly smaller height, so by the (strong) inductive hypothesis we have $P(A)\le P(B)$ and $P(B)\le P(C)$.
+      Since \cA is a poset and hence transitive, we have $P(A)\le P(C)$.\qedhere
+    \end{enumerate}
+  \end{enumerate}
+\end{proof}
+
+A different way to phrase such an induction, which is more flexible and more type-theoretic in character, uses what is called \emph{structural induction}.
+[TODO: Say something about that.]
+
+However, it is proved, \cref{thm:poset-initial-1} enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
+In our present trivial case this is not very useful, but as we will see it becomes more useful for more complicated structures.
+
+Another way to express the initiality theorem is to incorporate \cG into the rules.
 Given a relational graph \cG, we define the \textbf{type theory of posets under \cG} to be the free type theory of posets together with a 0-ary rule
 \begin{mathpar}
   \inferrule{ }{A\types B}
@@ -491,15 +517,18 @@ Of course, this na\"ive approach founders on the fact that composition in a cate
   \end{array}
 \end{equation}
 Thus, with this type theory we don't get the free category on \cG, but rather some free category-like structure that lacks associativity and unitality.
+There are two ways to deal with this problem; we consider them in turn.
 
-There are two ways to deal with this problem.
-The first is to simply quotient by an equivalence relation.
+\subsection{Explicit cuts}
+\label{sec:category-cutful}
+
+The first solution is to simply quotient by an equivalence relation.
 Our equivalence relation will have to identify the two derivations in~\eqref{eq:assoc}, and also the similar pairs for identities:
 \begin{mathpar}
-  \inferrule{\inferrule*[right=$\idfunc$]{ }{A\types A}\\ {A\types B}}{A\types B}\circ
+  \inferrule{\inferrule*[right=$\idfunc$]{ }{A\types A}\\ {A\types B}}{A\types B}\;\circ
   \qquad\equiv\qquad A\types B
   \\
-  \inferrule{A\types B \\ \inferrule*[right=$\idfunc$]{ }{B\types B}}{A\types B}\circ
+  \inferrule{A\types B \\ \inferrule*[right=$\idfunc$]{ }{B\types B}}{A\types B}\;\circ
   \qquad\equiv\qquad A\types B
 \end{mathpar}
 Our equivalence relation must also be a ``congruence for the tree-construction of derivations'', meaning that these identifications can be made anywhere in the middle of a long derivation, such as:
@@ -530,13 +559,21 @@ We begin by labeling each judgment with a one-dimensional syntactic representati
 \end{mathpar}
 These labels are called \emph{terms}.
 Of course, in this case they are none other than the usual notation for composition and identities.
+Formally, this means the rules are now:
+\begin{mathpar}
+  \inferrule{f\in\cG(A,B)}{f:(A\types B)}\and
+  \inferrule{A\in\cG}{\idfunc_A : (A\types B)}\and
+  \inferrule{\phi:(A\types B) \\ \psi:(B\types C)}{\psi\circ \phi:(A\types C)}
+\end{mathpar}
+% TODO: Mention somewhere the assumptions of "external" facts as premises
+Here $\phi,\psi$ denote arbitrary terms, and if they contain $\circ$'s themselves then we put parentheses around them, as in the example above.
 Now the generators of our equivalence relation look even more familiar:
 \begin{align*}
   \phi \circ (\psi \circ \chi) &\equiv (\phi\circ\psi)\circ\chi\\
   \phi \circ \idfunc_A &\equiv \phi\\
   \idfunc_B \circ \phi &\equiv \phi
 \end{align*}
-Here $\phi,\psi,\chi$ denote \emph{arbitrary terms}, corresponding to the fact that arbitrary derivations can appear at the top of our identified trees; and similarly these identifications can also happen anywhere inside another term, so that for instance
+Again $\phi,\psi,\chi$ denote arbitrary terms, corresponding to the fact that arbitrary derivations can appear at the top of our identified trees; and similarly these identifications can also happen anywhere inside another term, so that for instance
 \[ k\circ (h\circ (g\circ f)) \equiv k\circ ((h\circ g)\circ f).  \]
 Of course, we only impose these relations when they make sense.
 We can describe the conditions under which this happens using rules for a secondary judgment $\phi\equiv \psi : (A\types B)$, like so:
@@ -546,14 +583,68 @@ We can describe the conditions under which this happens using rules for a second
   \inferrule{\phi:(A\types B)}{(\idfunc_B \circ \phi \equiv \phi):(A\types B)}
 \end{mathpar}
 When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory for categories under \cG}.
-It should hopefully be clear that this does work, so that we have the initiality theorem.
+It may seem obvious that this produces the free category on \cG, but again we write it out carefully to help ourselves get used to the patterns.
+In particular, we want to emphasize the role played by the following lemma:
+
+\begin{lem}\label{thm:category-uniqderiv}
+  If $\phi :(A\types B)$ is derivable in the cut-ful type theory for categories under \cG, then it has a unique derivation.
+\end{lem}
+\begin{proof}
+  The point is that the terms produced by all the rules have disjoint forms.
+  If $\phi$ is of the form ``$f$'' for some $f\in\cG(A,B)$, then it can only be derived by the first rule; if it is of the form ``$\idfunc_A$'' then it can only be derived by the identity rule, and if it is of the form ``$\psi\circ\phi$'' it can only be derived by the composition rule.
+  In the third case, we apply induction to show that $\phi$ and $\psi$ also have unique derivations.
+\end{proof}
+
+In other words, the terms (before we impose the relation $\equiv$ on them) really are simply one-dimensional representations of derivations, as we intended.
+This will not be true of all type theories; but those for which it fails tend to be much more complicated to analyze and prove the initiality theorem for.
+
+\begin{rmk}
+  Technically, there is either more or less happening here than may appear (depending on your point of view).
+  A term as we write it on the page is really just a string of symbols, whereas in the proof of \cref{thm:category-uniqderiv} we have assumed that a term such as ``$f\circ (g\circ h)$'' can uniquely be read as $\circ$ applied to ``$f$'' and ``$g\circ h$''.
+  This simple string of symbols could technically be regarded as $\circ$ applied to ``$f\circ (g$'' and ``$h)$'', but of course that would make no sense because those are not meaningful terms in their own right (in particular, they contain unbalanced parentheses).
+
+  Thus, something \emph{more} must be happening, and that something else is called \emph{parsing} a term.
+  Human mathematicians do it instinctively without thinking; electronic mathematicians have to be programmed to do it.
+  In either case, the result of parsing a string of symbols is an ``internal'' representation (a mental idea for humans, a data structure for computers) that generally has the form of a tree, indicating the ``outermost'' operation as the root with its operands as branches, and so on, for instance:
+  \[ f\circ (g\circ h) \qquad\leadsto\qquad \vcenter{\xymatrix@-1pc{ & \circ \ar@{-}[dl] \ar@{-}[dr]\\
+      f && \circ \ar@{-}[dl]\ar@{-}[dr]\\
+      & g && h }} \]
+
+  Of course, this ``internal'' tree representation of a term is nothing but the corresponding derivation flipped upside-down.
+  So in that sense \cref{thm:category-uniqderiv} is actually saying \emph{less} than one might think; the actual work is being done by the silent step of parsing.
+  We will not say much more about parsing, however; we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
+  Accordingly, for type theories that satisfy the ``terms are derivations'' principle we will usually simply observe this fact, leaving it to the concerned reader to verify that the parse trees really do correspond to the derivation trees.
+  (However, one small additional issue regarding this will arise in the next subsection.)
+\end{rmk}
+
+Now we can prove the initiality theorem.
 
 \begin{thm}\label{thm:category-initial-1}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the terms such that $\phi :(A\types B)$ is derivable in the cut-ful type theory for categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.\qed
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms $A\to B$ are the terms $\phi$ such that $\phi :(A\types B)$ is derivable in the cut-ful type theory for categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.
 \end{thm}
+\begin{proof}
+  Let $\F\bCat\cG$ be defined as described in the theorem; the identity and composition rules give it the structure necessary to be a category, and the transitivity and unitality relations make it a category.
+
+  Now suppose \cA is any category and $P:\cG\to\cA$ is a map of directed graphs.
+  Then $P$ extends uniquely to the objects of $\F\bCat\cG$, since they are the same as those of \cG.
+  But unlike the case of posets, we have to define it on the morphisms of $\F\bCat\cG$ as well.
+
+  If $\phi :(A\types B)$ is derivable, then by \cref{thm:category-uniqderiv} it has a unique derivation; thus we can define $P(\phi)$ by recursion on the derivation of $\phi$.
+  Of course, if the derivation of $\phi$ ends with $f\in\cG(A,B)$, then we define $P(\phi)=P(f)$; if it ends with $\idfunc_A$ we define $P(\phi)=\idfunc_{P(A)}$; and if it ends with $\psi\circ\chi$ we define $P(\phi) = P(\psi)\circ P(\chi)$.
+
+  We also have to show that this definition respects the equivalence relation $\equiv$.
+  This is clear since $\cA$ is a category; formally it would be another induction on the derivations of $\equiv$ judgments.
+
+  Finally, we have to show that this $P:\F\bCat\cG\to\cA$ is a functor.
+  This follows by definition of the category structure of $\F\bCat\cG$ and the action of $P$ on its arrows.
+\end{proof}
 
 Of course, once again very little seems to be happening; we are just using a complicated funny syntax to build a free algebraic structure.
 Therefore, it is the second way to deal with the problem of associativity that is more interesting.
+
+\subsection{Cut admissibility}
+\label{sec:category-cutadm}
+
 In this case what we do is \emph{remove the composition rule $\circ$ entirely}; instead we ``build (post)composition into the axioms''.
 That is, the only rule independent of \cG is identities:
 \[ \inferrule{ }{A\types A}\,\idfunc \]
@@ -562,7 +653,7 @@ while for every edge $f\in \cG(A,B)$ we take the following rule:
 for any $X$.
 Informally, one might say that we represent $f$ by its ``image under the Yoneda embedding''.
 
-Note that we have made a choice to build in \emph{postcomposition}; we could also have chosen to \emph{precomposition}.
+Note that we have made a choice to build in \emph{postcomposition}; we could also have chosen to build in precomposition.
 In the current context, either choice would work just as well; but later on we will see that there were reasons to choose postcomposition here.
 We will call this the \textbf{cut-free type theory for categories under \cG}.
 
@@ -602,9 +693,9 @@ So we need the following theorem:
   In particular, it contains a derivation \sD of $B\types D$ with only $n$ rules.
   Thus, by the inductive hypothesis we have a derivation, say $\sD'$, of $A\types D$.
   Now we can simply follow this with the rule for $f$:
-  \begin{mathpar}
-    \inferrule*[right=$f$]{\inferrule*{\sD'\\\\\vdots}{A\types D}}{A\types C}
-  \end{mathpar}
+  \begin{equation*}
+    \inferrule*[right=$f$]{\inferrule*{\sD'\\\\\vdots}{A\types D}}{A\types C}\qedhere
+  \end{equation*}
 \end{proof}
 
 In type-theoretic lingo, \cref{thm:categories-cutadm} says that \textbf{the cut rule is admissible} in the cut-free type theory for categories under \cG.
@@ -616,23 +707,40 @@ is not \emph{part of the type theory} as defined, it is nevertheless true that w
 
 Another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
 We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
-Thus we have the analogous initiality theorem:
 
-\begin{thm}\label{thm:category-initial-2}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivations of $A\types B$ in the cut-free type theory for categories under \cG.\qed
-\end{thm}
-
-This gives us a second, more interesting, general statement about categorical logic: it is
-{a syntax for generating free categorical structures using derivations from rules}
-\emph{that yield elements in canonical form}, eliminating (or reducing) the need for quotients.
-
-A similar way to say this is that categorical logic is about \emph{identifying the initial objects in two different categories}.
-The rules of a type theory can be regarded as defining a certain algebraic theory, and the judgments with derivations form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
-The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
-To emphasize the difference between these two categories, notice that an arbitrary model of the algebraic rules of a type theory is not even a category, e.g.\ it may not satisfy the cut rule; the cut admissibility theorem says only that the \emph{initial} such model happens to actually be a category, and in fact the initial category with some structure.
-
-To end this section, we note that we can introduce \emph{terms} for the cut-free type theory as well in a pleasing way.
-Rather than describing the entire judgment $A\types B$ with a term, we assign a formal variable such as $x$ to the domain $A$, and then a term containing $x$ to the codomain $B$, such as $h(g(f(x)))$.
+We could prove the initiality theorem by appealing to this known fact about free categories, but as before, we prefer to give a more explicit proof to illustrate the patterns of type theory.
+For this purpose, we have to introduce terms, as we did in the previous section for the cut-ful theory.
+We can do this with terms directly constructed so that their parse tree will mirror the derivation tree, for instance writing the rules as
+\begin{mathpar}
+  \inferrule{ }{\idfunc_A:(A\types A)}\,\idfunc\and
+  \inferrule{\phi:(X\types A)}{f\mathord{\circ}(\phi):(X\types B)} \,f
+\end{mathpar}
+Then a term derivation and corresponding parse tree would look like
+\begin{mathpar}
+\inferrule*[Right=$h$]{
+    \inferrule*[Right=$g$]{
+      \inferrule*[Right=$f$]{
+        \inferrule*[Right=$\idfunc$]{ }{\idfunc_A:(A\types A)}
+      }{
+        f\mathord{\circ}(\idfunc_A):(A\types B)
+      }
+    }{
+      g\mathord{\circ}(f\mathord{\circ}(\idfunc_A)):(A\types C)
+    }
+  }{
+    h\mathord{\circ}(g\mathord{\circ}(f\mathord{\circ}(\idfunc_A))):(A\types D)
+  }
+  \and\leadsto\and
+  \vcenter{\xymatrix@-1pc{
+      h\mathord\circ \ar@{-}[d] \\
+      g\mathord\circ \ar@{-}[d] \\
+      f\mathord\circ \ar@{-}[d] \\
+      \idfunc_A
+    }}
+\end{mathpar}
+However, now there is another option available to us, which begins to show more of the characteristic behavior of type-theoretic terms.
+Rather than describing the entire judgment $A\types B$ with a term, the way we did for the cut-ful theory, we assign a \emph{formal variable} such as $x$ to the domain $A$, and then an expression containing $x$ to the codomain $B$.
+For the theory of plain categories that we are working with here, the only possible expressions are repeated applications of function symbols to the variable, such as $h(g(f(x)))$.
 We write this as
 \[ x:A \types h(g(f(x))) : B\]
 The identity rules and axiom rules can now be written as
@@ -640,7 +748,7 @@ The identity rules and axiom rules can now be written as
   \inferrule{ }{x:A\types x:A}\,\idfunc \and
   \inferrule{x:X\types M:A}{x:X\types f(M):B} \,f
 \end{mathpar}
-Here $M$ denotes an arbitrary term.
+Here $M$ denotes an arbitrary term, which will generally involve the variable $x$.
 Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
 \begin{mathpar}
   \inferrule*[Right=$h$]{
@@ -657,21 +765,96 @@ Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
     x:A\types h(g(f(x))):D
   }
 \end{mathpar}
-If we trace through the proof of \cref{thm:categories-cutadm} in this notation, it says that if we have $x:A\types M:B$ and $y:B\types N:C$, we can \emph{substitute} $M$ for $y$ in $N$ to obtain a new judgment $x:A \types N':C$, where $N'$ is the term $N$ with $M$ substituted for the variable $y$.
-We will write $N[M/y]$ for this $N'$ (although unfortunately one finds other notations in the literature, including $[M/y]N$ and $N[y/M]$).
-For example, given $x:A \types g(f(x)):B$ and $y:B\types h(y):C$, the derivation constructed is $x:A\types h(g(f(x))):C$, in which the $y$ in $h(y)$ has been replaced by $g(f(x))$.
-Thus, \cref{thm:categories-cutadm} can be rephrased to say that \textbf{substitution is admissible} in the cut-free type theory for categories under \cG.
+Of course, the term $h(g(f(x)))$ has essentially the same parse tree as the term $h\mathord{\circ}(g\mathord{\circ}(f\mathord{\circ}(\idfunc_A)))$ shown above, so it can clearly represent the same derivation.
+The main difference is that instead of $\idfunc_A$ we have the variable $x$ representing the identity rule.
 
-Note, by the way, that this perspective gives one reason why we chose to build in postcomposition rather than precomposition.
-If we used precomposition instead, then we could still develop analogous notions of term and substitution, but they would be backwards: we would have to represent $f:A\to B$ as $f(u):A \types u:B$ rather than $x:A \types f(x):B$.
-Of course, we are much more familiar with applying functions to variables than co-applying functions to co-variables.
+This is our first encounter with how type theory permits a ``set-like'' syntax when reasoning about arbitrary categorical structures.
+It is also one reason why we chose to build in postcomposition rather than precomposition.
+If we used precomposition instead, then the analogous syntax would be backwards: we would have to represent $f:A\to B$ as $f(u):A \types u:B$ rather than $x:A \types f(x):B$.
+At a formal level, there would be little difference, but it feels much more familiar to apply functions to variables than to co-apply functions to co-variables.
+(We can still dualize at the level of the categorical models; we already mentioned in \cref{sec:intro} that we could apply the type theory of categories with finite products to the opposite of the category of commutative rings.)
+
+There is one further remark to make about the correspondence between terms and derivations in this theory.
+As written on the page, the judgments $x:A \types f(x):B$ and $y:A \types f(y):B$ are distinct; but clearly they represent the same morphism.
+So there is still an equivalence relation hanging around in the background, but it is a fairly harmless one; it just says that we can rename all the variables as long as we do it consistently.
+(When we consider theories with bound variables later on, the meaning of ``consistently'' will become more complicated, but the principle is the same.)
+In type-theoretic lingo, the equivalence relation of renaming variables is called \textbf{$\alpha$-equivalence}, and unless explicitly stated otherwise we \emph{always} consider judgments modulo $\alpha$-equivalence.\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
+
+Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:categories-cutadm} is not just a statement about derivability.
+Rather, its proof constructs, recursively, an \emph{operation} on derivations, and hence on terms: given derivable term judgments $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivable judgment $x:A\types P:C$.
+For instance, suppose we start with $x:A \types f(x):B$ and $y:B\types h(g(y)):C$; then the construction proceeds in the following steps.
+\begin{itemize}
+\item The second derivation ends with an application of $h$, so we apply the inductive hypothesis to $x:A \types f(x):B$ and $y:B\types g(y):D$.
+\item Now the second derivation begins with an application of $g$, so we recurse again on $x:A \types f(x):B$ and and $y:B\types y:B$.
+\item This time the second derivation is just the identity rule, so the result is the first given derivation $x:A \types f(x):B$.
+\item Backing out of the induction one step, we apply $g$ to this result to get $x:A\types g(f(x)):D$.
+\item Finally, backing out one more time, we apply $h$ to the previous result to get $x:A\types h(g(f(x))):C$.
+\end{itemize}
+Intuitively, the result $h(g(f(x)))$ has been obtained by \emph{substituting} the term $f(x)$ for the variable $y$ in the term $h(g(y))$.
+Thus, we refer to the operation on terms defined by \cref{thm:categories-cutadm} as \textbf{substitution}.
+In general, given $x:A\types M:B$ and $y:B\types N:C$ we denote the substitution of $M$ for $y$ in $N$ by $N[M/y]$ (although unfortunately one also finds other notations in the literature; including, quite confusingly, $[M/y]N$ and $N[y/M]$).
+Note that this is ``meta-notation''; the square brackets are not part of the syntax of terms, instead they denote an operation \emph{on} terms.
+The proof of \cref{thm:categories-cutadm} \emph{defines} the notion of substitution recursively in the following way:
+\begin{align*}
+  y[M/y] &\coloneqq M\\
+  f(N)[M/y] &\coloneqq f(N[M/y])
+\end{align*}
+When terms are regarded as syntax in their own right rather than as mere proxies for derivations, it is common to define substitution as an operation on terms first, and then to state (the analogue of) \cref{thm:categories-cutadm} as ``if $x:A\types M:B$ and $y:B\types N:C$ are derivable, then so is $x:A\types M[N/y]:C$''.
+From this point of view, one says that \textbf{substitution is admissible} in the cut-free type theory for categories under \cG.
+
+Before proving the initiality theorem, let us first observe that substitution does, in fact, define a category:
+
+\begin{lem}\label{thm:category-subassoc}
+  Substitution is associative: given $x:A\types M:B$ and $y:B\types N:C$ and $z:C\types P:D$, we have $P[N/z][M/y] = P[N[M/y]/z]$.
+  (This is a literal equality of terms or derivations.)
+\end{lem}
+\begin{proof}
+  By induction on the derivation of $P$.
+  If it ends with the identity, so that $P=z$, then
+  \[P[N/z][M/y] = z[N/z][M/y] = N[M/y] = z[N[M/y]/z] = P[N[M/y]/z] \]
+  If it ends with an application of a morphism $f$, so that $P = f(Q)$, then
+  \begin{multline*}
+    f(Q)[N/z][M/y] = f(Q[N/z])[M/y] = f(Q[N/z][M/y])\\
+    = f(Q[N[M/y]/z]) = f(Q)[N[M/y]/z]
+  \end{multline*}
+  using the inductive hypothesis for $Q$ in the third step.
+\end{proof}
+
+\begin{thm}\label{thm:category-initial-2}
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivable term judgments $x:A\types M:B$ in the cut-free type theory for categories under \cG.
+\end{thm}
+\begin{proof}
+  Let $\F\bCat\cG$ be defined as in the statement, with composition given by substitution constructed as in \cref{thm:categories-cutadm}.
+  By \cref{thm:category-subassoc}, composition is associative.
+  For unitality, we have $y[M/y] = y$ by definition, while $N[x/x] = N$ is another easy induction on the structure of $N$.
+  Thus, $\F\bCat\cG$ is a category.
+
+  Now suppose \cA is any category and $P:\cG\to\cA$ is a map of directed graphs.
+  We define $P:\F\bCat\cG \to\cA$ by recursion on the rules of the type theory: the identity $x:A\types x:A$ goes to $\idfunc_{P(A)}$, while $x:A\types f(M):B$ goes to $P(f) \circ P(M)$, with $P(M)$ defined recursively.
+  Since $x:A\types f(M):B$ is the composite of $x:A\types M:C$ and $y:C\types f(y):B$ in $\F\bCat\cG$, this is the only possible definition that could make $P$ a functor.
+  It remains to check that it actually \emph{is} a functor, i.e.\ that it preserves \emph{all} composites; that is, we must show that $P(N[M/y]) = P(N) \circ P(M)$.
+  This follows by yet another induction on the derivation of $N$.
+\end{proof}
+
+Note that we did not have to impose any equivalence relation on the terms in this theory (apart from the fairly trivial $\alpha$-equivalence).
+This suggests a second, more interesting, general statement about categorical logic: it is
+{a syntax for generating free categorical structures using derivations from rules}
+\emph{that yield elements in canonical form}, eliminating (or at least reducing) the need for quotients.
+(Starting in \cref{sec:catprod} we will see that more complicated theories generally still need an equivalence relation on terms beyond $\alpha$-equivalence, but it is arguably still simpler than the quotient required for a na\"ive presentation of free structures.)
+
+A similar way to say this is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
+The rules of a type theory can be regarded as defining a certain algebraic theory, and the judgments with derivations form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
+The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
+To emphasize the difference between these two categories, notice that an arbitrary model of the algebraic rules of a type theory is not even a category, e.g.\ it may not satisfy the cut rule; the cut admissibility theorem says only that the \emph{initial} such model happens to actually be a category, and in fact the initial category with some structure.
+
 
 \subsection*{Exercises}
 
-\begin{ex}
-  Prove \cref{thm:category-initial-2}.
-  You will have to start by proving that the composition defined in \cref{thm:categories-cutadm} is in fact associative and unital, so that it forms a category.
-\end{ex}
+% [I think we should do this one in the text.]
+% \begin{ex}
+%   Prove \cref{thm:category-initial-2}.
+%   You will have to start by proving that the composition defined in \cref{thm:categories-cutadm} is in fact associative and unital, so that it forms a category.
+% \end{ex}
 
 \begin{ex}\label{ex:categories-over}
   Let \sM be a fixed category; then we have an induced adjunction between $\bCat/\sM$ and $\bGr/\sM$.
@@ -687,7 +870,7 @@ Of course, we are much more familiar with applying functions to variables than c
 Moving gradually up the ladder of nontriviality, we now consider categories with finite products, or more precisely binary products and a terminal object.
 In fact, let us revert back to the posetal world first and consider posets with binary meets and a top element, i.e.\ meet-semilattices.
 We will make all this structure algebraic, so that our meet-semilattices are posets (which, recall, is not necessarily skeletal) \emph{equipped with} a chosen top element and an operation assigning to each pair of objects a meet.
-We then have an adjunction relating the category \bmSLat of suchmeet-semilattices (and morphisms preserving all the structure strictly) with the category \bRelGr of relational graphs, and we want to describe the free meet-semilattice on a relational graph \cG.
+We then have an adjunction relating the category \bmSLat of such meet-semilattices (and morphisms preserving all the structure strictly) with the category \bRelGr of relational graphs, and we want to describe the free meet-semilattice on a relational graph \cG.
 
 One new feature this introduces is that the objects of $\F\bmSLat \cG$ will no longer be the same as those of \cG: we need to add a top element and freely apply the meet operation.
 In order to describe this type-theoretically, we introduce a new judgment ``$\types A\type$'', meaning that $A$ will be one of the objects of the poset we are generating.
@@ -1269,7 +1452,6 @@ In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' t
 
 
 
-% This is an instance of the \emph{modularity} of type theory: generally speaking, the rules for different categorical operations such as $\meet$ and $\join$ should be \emph{unrelated} to each other, so that each can be analyzed separately and included or excluded.
 
 \subsection*{Exercises}
 
