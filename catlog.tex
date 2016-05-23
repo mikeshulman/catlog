@@ -1186,7 +1186,7 @@ Of course, we should also prove the initiality theorem:
   \begin{enumerate}
   \item Construct derivations of these sequents in the above sequent calculus.
   \item Write down an analoguous natural deduction and derive the above sequents therein.
-  \item What categorical structure do you think these type theories constructs the initial one of?
+  \item What categorical structure do you think these type theories construct the initial one of?
     If you feel energetic, prove the initiality theorem.
   \end{enumerate}
 \end{ex}
@@ -1214,17 +1214,17 @@ As in \cref{sec:natded-mslat}, we could take either the sequent calculus route o
 Unfortunately, it turns out that in both cases we need to impose an equivalence relation on the derivations, as there are single morphisms that can be derived in multiple ways.
 However, the ways in which this happens in the two cases are different.
 
-On one hand, if we have an arrow $A\to C$ in a directed graph \cG, then there is a morphism $A\times B \to A \to A\times C$ in the free category-with-products on \cG.
+On one hand, if we have an arrow $f:A\to C$ in a directed graph \cG, then there is a morphism $A\times B \to A \to A\times C$ in the free category-with-products on \cG.
 In a sequent calculus, there are two distinct derivations of this morphism:
 \begin{mathpar}
   \inferrule*{
     \inferrule*{A\types A}{A\times B \types A}\\
-    \inferrule*{\inferrule*{A\types A}{A\types C}}{A\times B \types C}
+    \inferrule*{\inferrule*[Right=$f$]{A\types A}{A\types C}}{A\times B \types C}
   }{
     A\times B \types A\times C
   }\and
   \inferrule*{
-    \inferrule*{A\types A \\ \inferrule*{A\types A}{A\types C}}{A\types A\times C}
+    \inferrule*{A\types A \\ \inferrule*[Right=$f$]{A\types A}{A\types C}}{A\types A\times C}
   }{
     A\times B \types A\times C
   }\and
@@ -1233,7 +1233,7 @@ whereas in a natural deduction there will be only one:
 \begin{mathpar}
   \inferrule*{
     \inferrule*{A\times B\types A\times B}{A\times B \types A}\\
-    \inferrule*{\inferrule*{A\times B\types A\times B}{A\times B\types A}}{A\times B \types C}
+    \inferrule*[Right=$f$]{\inferrule*{A\times B\types A\times B}{A\times B\types A}}{A\times B \types C}
   }{
     A\times B \types A\times C
   }
@@ -1242,7 +1242,7 @@ This sort of thing is true quite generally.
 A sequent calculus includes both left and right rules, so to derive a given sequent we must choose whether a left or a right rule is to be applied last.
 By contrast, both kinds of rules in a natural deduction (introduction and elimination) act on the right, so there is less choice about what rule to apply last.
 
-On the other hand, if we have an arrow $A\to B$ in \cG, then in a natural deduction there are two derivations of the identity $A\to A$:
+On the other hand, if we have an arrow $A\to B$ in \cG, then in a natural deduction there are (at least) two derivations of the identity $A\to A$:
 \begin{mathpar}
   \inferrule*{\inferrule*{A\types A \\ \inferrule*{A\types A}{A\types B}}{A\types A\times B}}{A\types A}\and
   \inferrule*{ }{A\types A}\and
@@ -1259,7 +1259,7 @@ In particular, therefore, we can still have a ``canonical form'' for morphisms i
 For this reason, from now on when considering type theories for categories, we will always choose natural deduction over sequent calculus.
 (We will still discuss sequent calculi for posets.)
 
-It is much more convenient to describe the reduction rules using a term syntax for derivations, as introduced at the end of \cref{sec:categories}.
+It is much more convenient to describe the reduction rules using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
 In this syntax, the rules from \cref{sec:natded-mslat} become:
 \begin{mathpar}
   \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
@@ -1336,37 +1336,40 @@ This completes the definition of the \textbf{unary type theory for categories wi
   \begin{enumerate}
   \item If it is $\idfunc$, then $N[M/y]$ is just $M$.  
   \item If it is $fI$ for $f\in \cG(C',C)$, then we have $y:B \types N':C'$, so by induction we have $x:A\types N'[M/y]:C'$ and hence $x:A\types f(N'[M/y]):C'$.
-    Of course, $f(N'[M/y])$ is $(f(N'))[M/y]$.
+    Thus $f(N'[M/y])$ is $(f(N'))[M/y]$.
   \item If it is $\unit I$, then by $\unit I$ we have $x:A \types \ttt:\unit$ as well (of course, $\ttt[M/y]$ is just $\ttt$).
   \item If it is $\timesE1$, then we have $y:B\types N':C\times C'$, so by induction we have $x:A \types N'[M/y]:C\times C'$, hence $x:A \types \pi_1(N'[M/y]):C$ by $\timesE1$.
     Of course, $\pi_1(N'[M/y])$ is $(\pi_1(N'))[M/y]$.
     The case for $\timesE2$ is similar.
   \item Finally, if it is $\timesI$, we have $y:B\types N_1:C_1$ and $y:B\types N_2:C_2$, so by induction we have $x:A \types N_1[M/y]:C_1$ and $x:A \types N_2[M/y]:C_2$, hence $x:A \types \pair{N_1[M/y]}{N_2[M/y]}:C_1\times C_2$.
-    Of course, $\pair{N_1[M/y]}{N_2[M/y]}$ is $(\pair{N_1}{N_2})[M/y]$.\qedhere
+    Of course, $\pair{N_1[M/y]}{N_2[M/y]}$ is $\pair{N_1}{N_2}[M/y]$.\qedhere
   \end{enumerate}
 \end{proof}
 
-Note that this proof can be regarded as \emph{defining} what it means to ``substitute'' $M$ for $y$ in $N$.
+As with \cref{thm:categories-cutadm}, this proof can be regarded as \emph{defining} what it means to ``substitute'' $M$ for $y$ in $N$.
 Similarly, we also have:
 
 \begin{thm}\label{thm:catprod-subcong}
   The relation $\equiv$ is a congruence for substitution in the unary type theory for categories with products under \cG.
-  In other words, if we have derivations of $x:X \types M\equiv M':B$ and $y:B \types N\equiv N':C$, then we can derive $x:A \types N[M/y] \equiv N'[M'/y]:C$.
+  In other words, if we have derivations of $x:X \types M\equiv M':B$ and $y:B \types N\equiv N':C$, then we can derive $x:A \types N[M/y] \equiv N'[M'/y]:C$.\qed
 \end{thm}
 
 And we have the initiality theorem.
 
 \begin{thm}\label{thm:catprod-initial}
-  For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.
+  For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.\qed
 \end{thm}
-\begin{proof}
-  \cref{thm:catprod-subadm} tells us how to can compose morphisms in our putative $\F\bPrCat \cG$, and \cref{thm:catprod-subcong} tells us that this operation respects the equivalence relation, so it is well-defined.
-  To prove that we have a category, we have to check that composition is associative and unital.
-  [TODO.  This is probably the place to introduce associativity of substitution.]
-\end{proof}
 
 
 \subsection*{Exercises}
+
+\begin{ex}\label{ex:catprod-subcong}
+  Prove \cref{thm:catprod-subcong}.
+\end{ex}
+
+\begin{ex}
+  Prove \cref{thm:catprod-initial}.
+\end{ex}
 
 \begin{ex}
   Use the type theory for categories with products to prove that in any category with products we have
@@ -1377,10 +1380,6 @@ And we have the initiality theorem.
     \unit \times A \cong A.
   \end{mathpar}
   Note that since we are in categories now rather than posets, to show that two types $A$ and $B$ are isomorphic we must derive $x:A\types M:B$ and $y:B\types N:A$ and also show that their substitutions in both orders are equal (modulo $\equiv$) to identities.
-\end{ex}
-
-\begin{ex}\label{ex:catprod-subcong}
-  Prove \cref{thm:catprod-subcong}.
 \end{ex}
 
 \begin{ex}\label{ex:catfib}
@@ -1405,6 +1404,9 @@ And we have the initiality theorem.
 \section{Categories with coproducts}
 \label{sec:catcoprod}
 
+[TODO: I'm unsure whether this should be here at all.
+It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.]
+
 In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
 However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
 (Of course, we could dualize them to ``co-natural deductions'' in which all rules act only on the \emph{left}, but that would destroy the familiar behavior of terms on variables, as well as make it tricky to combine left and right universal properties, such as for lattices.)
@@ -1422,15 +1424,20 @@ We treat the bottom element similarly:
 \begin{mathpar}
   \inferrule{X\types \bot \\\types C\type}{X\types C}
 \end{mathpar}
-Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous term calculus for categories with coproducts.
-\begin{mathpar}
-  \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
-  \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
-  \inferrule{x:X \types M:\emptyt \\ \types C\type}{x:X \types \abort(M):C}\;\emptyt E\and
-  \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
-  \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
-  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \case(M,u.P,v.Q):C}\;\plusE
-\end{mathpar}
+Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts}, shown in \cref{fig:catcoprod}.
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
+    \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
+    \inferrule{x:X \types M:\emptyt \\ \types C\type}{x:X \types \abort(M):C}\;\emptyt E\and
+    \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
+    \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
+    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \case(M,u.P,v.Q):C}\;\plusE
+  \end{mathpar}
+  \caption{Unary type theory for categories with coproducts}
+  \label{fig:catcoprod}
+\end{figure}
 The notation $\case(M,u.P,v.Q)$ is intended to suggest that we ``break into cases'' based on whether $M$ lies in $A$ or in $B$, and do $P$ in the first case and $Q$ in the second.
 More precisely, we substitute $M$ for $u$ or $v$ in $P$ or $Q$.
 (We have to indicate in the notation which variables $u$ and $v$ were used in $P$ and $Q$, because otherwise in simply reading the term ``$\case(M,u.P,v.Q)$'' there would be no way to guess.
