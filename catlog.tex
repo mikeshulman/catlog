@@ -17,6 +17,11 @@
 \newcommand{\atom}{\mathrel{\downarrow}}
 \newcommand{\can}{\mathrel{\uparrow}}
 \newcommand{\atomcan}{\ensuremath{\mathord{\downarrow\uparrow}}}
+\newcommand{\focus}[1]{[#1]}
+\newcommand{\postcsym}[1]{#1\mathord{\circ}}
+\newcommand{\postc}[2]{\postcsym{#1}(#2)}
+\newcommand{\precsym}[1]{\mathord{\circ}#1}
+\renewcommand{\prec}[2]{(#1)\precsym{#2}}
 % substitution
 \newcommand{\hsub}[1]{\llbracket #1\rrbracket}
 % free functors
@@ -720,7 +725,7 @@ For this purpose, we have to introduce terms, as we did in the previous section 
 We can do this with terms directly constructed so that their parse tree will mirror the derivation tree, for instance writing the rules as
 \begin{mathpar}
   \inferrule{ }{\idfunc_A:(A\types A)}\,\idfunc\and
-  \inferrule{\phi:(X\types A)}{f\mathord{\circ}(\phi):(X\types B)} \,f
+  \inferrule{\phi:(X\types A)}{\postc f\phi:(X\types B)} \,f
 \end{mathpar}
 Then a term derivation and corresponding parse tree would look like
 \begin{mathpar}
@@ -729,19 +734,19 @@ Then a term derivation and corresponding parse tree would look like
       \inferrule*[Right=$f$]{
         \inferrule*[Right=$\idfunc$]{ }{\idfunc_A:(A\types A)}
       }{
-        f\mathord{\circ}(\idfunc_A):(A\types B)
+        \postc f{\idfunc_A}:(A\types B)
       }
     }{
-      g\mathord{\circ}(f\mathord{\circ}(\idfunc_A)):(A\types C)
+      \postc g{\postc f{\idfunc_A}}:(A\types C)
     }
   }{
-    h\mathord{\circ}(g\mathord{\circ}(f\mathord{\circ}(\idfunc_A))):(A\types D)
+    \postc h{\postc g{\postc f{\idfunc_A}}}:(A\types D)
   }
   \and\leadsto\and
   \vcenter{\xymatrix@-1pc{
-      h\mathord\circ \ar@{-}[d] \\
-      g\mathord\circ \ar@{-}[d] \\
-      f\mathord\circ \ar@{-}[d] \\
+      \postcsym h \ar@{-}[d] \\
+      \postcsym g \ar@{-}[d] \\
+      \postcsym f \ar@{-}[d] \\
       \idfunc_A
     }}
 \end{mathpar}
@@ -772,7 +777,7 @@ Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
     x:A\types h(g(f(x))):D
   }
 \end{mathpar}
-Of course, the term $h(g(f(x)))$ has essentially the same parse tree as the term $h\mathord{\circ}(g\mathord{\circ}(f\mathord{\circ}(\idfunc_A)))$ shown above, so it can clearly represent the same derivation.
+Of course, the term $h(g(f(x)))$ has essentially the same parse tree as the term $\postc h{\postc g{\postc f{\idfunc_A}}}$ shown above, so it can clearly represent the same derivation.
 The main difference is that instead of $\idfunc_A$ we have the variable $x$ representing the identity rule.
 
 This is our first encounter with how type theory permits a ``set-like'' syntax when reasoning about arbitrary categorical structures.
@@ -1249,6 +1254,10 @@ Of course, we should also prove the initiality theorem:
   Use your sequent calculus from \cref{ex:poset-bifib} to prove that in a bifibration, if $x\le y$ in $\sM$, we have an adjunction $y_! \dashv x^*$.
 \end{ex}
 
+\begin{ex}\label{ex:poset-bifib-iso}
+  Use your sequent calculus from \cref{ex:poset-bifib} to prove that in a bifibration, if $x\cong y$ in $\sM$, we have an isomorphism $x_! \cong x^*$ (that is, for any $a$ in the fiber over $y$, we have $x_!(a) \cong x^*(a)$).
+\end{ex}
+
 
 \section{Categories with products}
 \label{sec:catprod}
@@ -1452,6 +1461,7 @@ It turns out that the best way to do this is to assert that any atomic term \emp
   \inferrule{B\in\cG \\ x:A \types M\atom B}{x:A\types M\can B}\;\atomcan
 \end{mathpar}
 and then regard the canonical terms as the morphisms.
+This completes the definition of our \textbf{canonical/atomic natural deduction for categories with products}.
 Intuitively, the canonical terms are the subset of the terms from \cref{sec:beta-eta} with the property of being ``canonical representatives'' of a morphism in a free category with products.
 The atomic terms are a different subset of the same terms, whose meaning is more technical.
 
@@ -1525,7 +1535,7 @@ For instance, we have
 whereas ordinary substitution would give $\pi_1(\pair M N)$.
 In type-theoretic lingo, this ``reducing substitution'' is called \textbf{hereditary substitution}.
 
-[TODO: Associativity, initiality, reduction of terms in the previous calculus]
+[TODO: Identity, associativity, initiality, reduction of terms in the previous calculus]
 
 
 \subsection{Focusing}
@@ -1533,6 +1543,122 @@ In type-theoretic lingo, this ``reducing substitution'' is called \textbf{heredi
 
 For completeness, we now describe how the sequent calculus for meet-semilattices can also be modified to present free categories with products without needing an equivalence relation on terms.
 This version is not as commonly used in categorical logic, but it is important in other applications of type theory such as automated proof search; it is called \emph{focusing}.
+
+If we inspect the derivations of canonical terms in the type theory of \cref{sec:catprod-atomcan}, we see that they have the following form: first they apply some number of projections to variables, then they apply $\atomcan$, they apply some number of generating arrows between base types, and finally they apply some number of pairings.
+For instance, if $f\in \cG(C,D)$ we have
+\[x:(A\times B)\times C \types \pair{f(\pi_2(x))}{\pi_2(\pi_1(x))}\can D\times B\]
+with derivation
+\begin{mathpar}
+\let\mytimes\times
+\def\times{\mathord{\mytimes}}
+  \inferrule*{
+    \inferrule*{\inferrule*{\inferrule*{
+          x:(A\times B)\times C \types x\atom (A\times B)\times C
+        }{x:(A\times B)\times C \types \pi_2(x) \atom C
+        }}{x:(A\times B)\times C \types \pi_2(x) \can C
+      }}{x:(A\times B)\times C \types f(\pi_2(x)) \can D}
+    \\
+    \inferrule*{\inferrule*{\inferrule*{
+          x:(A\times B)\times C \types x\atom (A\times B)\times C
+        }{x:(A\times B)\times C \types \pi_1(x)\atom A\times B
+        }}{x:(A\times B)\times C \types \pi_2(\pi_1(x))\atom B}
+    }{x:(A\times B)\times C \types \pi_2(\pi_1(x))\can B}
+  }{x:(A\times B)\times C \types \pair{f(\pi_2(x))}{\pi_2(\pi_1(x))}\can D\times B}
+\end{mathpar}
+This suggests that we ought to consider as ``canonical'' the sequent calculus derivation that is closest to the above.
+Roughly speaking, this means first applying left rules, then generators, then right rules\footnote{To be honest, we should point out that the fact that the canonical derivations can be described so simply is an artifact of the relative triviality of our current theory, with essentially only one operation $\times$.
+As we will see, we can still formulate canonical/atomic and focused versions of more general theories, but the canonical forms don't have as simple a description.}, as in the following derivation:
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{\inferrule*{C\types C
+      }{(A\times B)\times C \types C
+      }}{(A\times B)\times C \types D}
+      \\
+    \inferrule*{\inferrule*{B \types B
+      }{A\times B \types B
+      }}{(A\times B)\times C \types B}
+  }{(A\times B)\times C \types D\times B}
+\end{mathpar}
+As in the natural deduction case, we can rule out the undesired sequent calculus derivations by using two judgments to indicate whether we are in the ``left phase'' or the ``right phase''.
+We denote these by
+\[ \focus{A} \types B
+\qquad\text{and}\qquad
+%A\types\focus{B}
+A\types B
+\]
+respectively.
+The brackets in the first case indicate that we are ``focused'' on the left side of the sequent.
+You might think that in the second case we should write $A\types \focus B$ to indicate that we are focused on the right side, but in fact in the latter case we are not really ``focused'' at all; in more complicated situations there is also a ``right-focused'' judgment $A\types \focus B$ that is different from both $\focus A \types B$ and $A\types B$.
+The asymmetry we see here is due to the fact that all universal properties we are considering are of the ``mapping in'' sort.
+
+We now modify the sequent calculus rules from \cref{sec:seqcalc-mslat} by stipulating that
+the right rules only apply when we are in the right phase,
+% \begin{mathpar}
+%   \inferrule{A\types \focus{B} \\ A\types \focus{C}}{A\types \focus{B\times C}}\and
+%   \inferrule{f\in \cG(A,B) \\ X\types \focus{A}}{X\types \focus{B}}\and
+%   \inferrule{\types A\type}{A\types \focus{\top}}\and
+% \end{mathpar}
+while the left rules apply only in the left phase;
+% \begin{mathpar}
+%   \inferrule{A\in \cG}{\focus A\types A}\and
+%   \inferrule{\focus A\types C \\ \types B\type}{\focus {A\times B} \types C}\and
+%   \inferrule{\focus B\types C \\ \types A\type}{\focus{A\times B} \types C}\and
+% \end{mathpar}
+and we can transition from the left to the right phase, but not vice versa.
+% \[ \inferrule{\focus A \types B}{A\types\focus B}\]
+Since we are interested in distinguishing between derivations, we also annotate our sequents with terms; and
+because the left rules of sequent calculus are not well-adapted to the use of formal variables, we go back to annotating the entire sequent with a term.
+The rules with annotations for this \textbf{focused sequent calculus for categories with products} are shown in \cref{fig:catprod-focused-seqcalc}.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    % \inferrule{\phi:(A\types \focus{B}) \\ \psi:(A\types \focus{C})}{\pair{\phi}{\psi}:(A\types \focus{B\times C})}\and
+    % \inferrule{f\in \cG(A,B) \\ \phi:(X\types \focus{A})}{\postc f\phi:(X\types \focus{B})}\and
+    % \inferrule{\types A\type}{\ttt:(A\types \focus{\top})}\and
+    \inferrule{\phi:(A\types {B}) \\ \psi:(A\types {C})}{\pair{\phi}{\psi}:(A\types {B\times C})}\and
+    \inferrule{f\in \cG(A,B) \\ \phi:(X\types {A})}{\postc f\phi:(X\types {B})}\and
+    \inferrule{\types A\type}{\ttt:(A\types {\top})}\and
+    \inferrule{A\in \cG}{\idfunc_A:(\focus A\types A)}\and
+    \inferrule{\phi:(\focus A\types C) \\ \types B\type}{\prec{\phi}{\pi_1}:(\focus {A\times B} \types C)}\and
+    \inferrule{\phi:(\focus B\types C) \\ \types A\type}{\prec{\phi}{\pi_2}:(\focus{A\times B} \types C)}\and
+    \inferrule{\phi:(\focus A \types B)}{\phi:(A\types\focus B)}
+  \end{mathpar}
+  \caption{Focused sequent calculus for categories with products}
+  \label{fig:catprod-focused-seqcalc}
+\end{figure}
+
+For instance, the above derivation of $(A\times B)\times C \types D\times B$ can be given in the focused sequent calculus with term annotations as follows:
+\begin{mathpar}
+  \let\mytimes\times
+  \def\times{\mathord{\mytimes}}
+  \inferrule*{
+    \inferrule*{\inferrule*{\inferrule*{\idfunc_C:(\focus C\types C)
+        }{\prec{\idfunc_C}{\pi_2}:(\focus{(A\times B)\times C} \types C)
+        }}{\prec{\idfunc_C}{\pi_2}:((A\times B)\times C \types C)
+      }}{\postc{f}{\prec{\idfunc_C}{\pi_2}}:((A\times B)\times C \types D)}
+    \\
+    \inferrule*{\inferrule*{\inferrule*{\idfunc_B:(\focus B \types B)
+        }{\prec{\idfunc_B}{\pi_2}:(\focus{A\times B} \types B)
+        }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:(\focus{(A\times B)\times C} \types B)
+      }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:((A\times B)\times C \types B)}
+  }{\pair{\postc{f}{\prec{\idfunc_C}{\pi_2}}}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}}
+    :((A\times B)\times C \types {D\times B})}
+  % \inferrule*{
+  %   \inferrule*{\inferrule*{\inferrule*{\idfunc_C:(\focus C\types C)
+  %       }{\prec{\idfunc_C}{\pi_2}:(\focus{(A\times B)\times C} \types C)
+  %       }}{\prec{\idfunc_C}{\pi_2}:((A\times B)\times C \types \focus C)
+  %     }}{\postc{f}{\prec{\idfunc_C}{\pi_2}}:((A\times B)\times C \types \focus D)}
+  %   \\
+  %   \inferrule*{\inferrule*{\inferrule*{\idfunc_B:(\focus B \types B)
+  %       }{\prec{\idfunc_B}{\pi_2}:(\focus{A\times B} \types B)
+  %       }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:(\focus{(A\times B)\times C} \types B)
+  %     }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:((A\times B)\times C \types \focus B)}
+  % }{\pair{\postc{f}{\prec{\idfunc_C}{\pi_2}}}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}}
+  %   :((A\times B)\times C \types \focus{D\times B})}
+\end{mathpar}
+
+[TODO: How hard is it to prove identity, cut, and initiality directly for the focused case?  Also, does focusing continue to identify unique canonical derivations in more complicated theories (with both positives and negatives)?  Different sources have implied different answers to me.  At some point, type-theoretic treatments of focusing tend to introduce ``polarized connectives'' as well, which is not (I think) something I want to get into here, as its connection with the category theory is even more tenuous.]
 
 
 \subsection*{Exercises}
