@@ -24,6 +24,7 @@
 \renewcommand{\prec}[2]{(#1)\precsym{#2}}
 % substitution
 \newcommand{\hsub}[1]{\llbracket #1\rrbracket}
+\newcommand{\hid}[1]{\mathbbb{id}_{#1}}
 % free functors
 \newcommand{\F}[1]{\mathfrak{F}_{#1}}
 % meet
@@ -1535,7 +1536,29 @@ For instance, we have
 whereas ordinary substitution would give $\pi_1(\pair M N)$.
 In type-theoretic lingo, this ``reducing substitution'' is called \textbf{hereditary substitution}.
 
-[TODO: Identity, associativity, initiality, reduction of terms in the previous calculus]
+In particular, hereditary substitution implies that the usual natural deduction rules are also admissible for canonical terms.
+For instance, given $x:X \types M\can A\times B$, there is a term $M'$ such that $x:X\types M' \can A$, even though $\pi_1$ cannot be applied directly to canonical terms; we can take $M' = \pi_1(y)\hsub{M/y}$.
+(It may be tempting to write this as ``$\pi_1(M)$'', but that would probably be confusing since it hides the fact that a meta-operation on syntax is occurring, as we can't directly apply $\pi_1$ to $M$.)
+
+Now recall that in ordinary natural deduction, we don't need to (and, indeed, can't) prove that identity rule $A\types A$ is also admissible; hence we assume the ``use a variable'' rule $x:A\types x:A$.
+However, in the canonical/atomic calculus, we have only assumed that variables are \emph{atomic}; thus we need to also prove that there are \emph{canonical} identities.
+
+\begin{lem}
+  If $\types A\type$ is derivable, then there is a term $\hid{A}(x)$ such that $x:A \types \hid{A}(x)\can A$.
+\end{lem}
+\begin{proof}
+  We induct on the derivation of $\types A\type$.
+  \begin{itemize}
+  \item If $A\in\cG$ is a base type, then we can apply $\atomcan$ to derive $x:A \types x\can A$, so $\hid{A}(x)=x$.
+  \item If $A=\unit$, then $x:\unit \types \ttt\can \unit$, so $\hid{\unit}(x)=\ttt$.
+  \item If $A=A_1\times A_2$, then by induction we have $y:A_1 \types \hid{A_1}(y)\can A_1$ and $z:A_2 \types \hid{A_2}(z)\can A_2$.
+    Thus, $x:A \types \hid{A_1}(y)\hsub{\pi_1(x)/y}\can A_1$ and $x:A \types \hid{A_2}(z)\hsub{\pi_2(x)/z}\can A_2$, so we have
+    \[ x:A \types \pair{\hid{A_1}(y)\hsub{\pi_1(x)/y}}{\hid{A_2}(z)\hsub{\pi_2(x)/z}} \can A;\]
+    thus $\hid{A_1\times A_2}(x) = \pair{\hid{A_1}(y)\hsub{\pi_1(x)/y}}{\hid{A_1}(z)\hsub{\pi_2(x)/z}}$.\qedhere
+  \end{itemize}
+\end{proof}
+
+[TODO: Associativity, initiality, reduction of terms in the previous calculus]
 
 
 \subsection{Focusing}
