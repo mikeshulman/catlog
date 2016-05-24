@@ -7,11 +7,18 @@
 \date{\today}
 \makeatletter
 \autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC}
-\let\types\vdash
 \let\sect\section
 \def\idfunc{\mathsf{id}}
-\def\type{\;\ftype}
 \def\finsubset{\subset_{\textrm{fin}}}
+% judgments
+\let\types\vdash
+\def\type{\;\ftype}
+\newcommand{\pc}{\mathrel{\mathord{:}?}}
+\newcommand{\atom}{\mathrel{\downarrow}}
+\newcommand{\can}{\mathrel{\uparrow}}
+\newcommand{\atomcan}{\ensuremath{\mathord{\downarrow\uparrow}}}
+% substitution
+\newcommand{\hsub}[1]{\llbracket #1\rrbracket}
 % free functors
 \newcommand{\F}[1]{\mathfrak{F}_{#1}}
 % meet
@@ -30,8 +37,8 @@
 \def\unit{\mathbf{1}}
 \def\ttt{\mathsf{tt}}
 % product
-\def\timesE{\mathord{\times}E}
-\def\timesI{\mathord{\times}I}
+\def\timesE{\ensuremath{\mathord{\times}E}}
+\def\timesI{\ensuremath{\mathord{\times}I}}
 \def\pair#1#2{\langle #1,#2\rangle}
 % coproduct
 \def\plusE{\mathord{+}E}
@@ -677,7 +684,7 @@ Thus, we no longer have to worry about distinguishing between $h\circ (g\circ f)
 Of course, we have a new problem: if we are trying to build a category, then we \emph{do} need to be able to compose arrows!
 So we need the following theorem:
 
-\begin{thm}\label{thm:categories-cutadm}
+\begin{thm}\label{thm:category-cutadm}
   If we have derivations of $A\types B$ and $B\types C$ in the cut-free type theory for categories under \cG, then we can construct a derivation of $A\types C$.
 \end{thm}
 \begin{proof}
@@ -698,7 +705,7 @@ So we need the following theorem:
   \end{equation*}
 \end{proof}
 
-In type-theoretic lingo, \cref{thm:categories-cutadm} says that \textbf{the cut rule is admissible} in the cut-free type theory for categories under \cG.
+In type-theoretic lingo, \cref{thm:category-cutadm} says that \textbf{the cut rule is admissible} in the cut-free type theory for categories under \cG.
 In other words, although the cut/composition rule
 \begin{mathpar}
   \inferrule*[right=$\circ$]{A\types B \\ B\types C}{A\types C}
@@ -780,7 +787,7 @@ So there is still an equivalence relation hanging around in the background, but 
 (When we consider theories with bound variables later on, the meaning of ``consistently'' will become more complicated, but the principle is the same.)
 In type-theoretic lingo, the equivalence relation of renaming variables is called \textbf{$\alpha$-equivalence}, and unless explicitly stated otherwise we \emph{always} consider judgments modulo $\alpha$-equivalence.\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
 
-Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:categories-cutadm} is not just a statement about derivability.
+Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:category-cutadm} is not just a statement about derivability.
 Rather, its proof constructs, recursively, an \emph{operation} on derivations, and hence on terms: given derivable term judgments $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivable judgment $x:A\types P:C$.
 For instance, suppose we start with $x:A \types f(x):B$ and $y:B\types h(g(y)):C$; then the construction proceeds in the following steps.
 \begin{itemize}
@@ -791,15 +798,15 @@ For instance, suppose we start with $x:A \types f(x):B$ and $y:B\types h(g(y)):C
 \item Finally, backing out one more time, we apply $h$ to the previous result to get $x:A\types h(g(f(x))):C$.
 \end{itemize}
 Intuitively, the result $h(g(f(x)))$ has been obtained by \emph{substituting} the term $f(x)$ for the variable $y$ in the term $h(g(y))$.
-Thus, we refer to the operation on terms defined by \cref{thm:categories-cutadm} as \textbf{substitution}.
+Thus, we refer to the operation on terms defined by \cref{thm:category-cutadm} as \textbf{substitution}.
 In general, given $x:A\types M:B$ and $y:B\types N:C$ we denote the substitution of $M$ for $y$ in $N$ by $N[M/y]$ (although unfortunately one also finds other notations in the literature; including, quite confusingly, $[M/y]N$ and $N[y/M]$).
 Note that this is ``meta-notation''; the square brackets are not part of the syntax of terms, instead they denote an operation \emph{on} terms.
-The proof of \cref{thm:categories-cutadm} \emph{defines} the notion of substitution recursively in the following way:
+The proof of \cref{thm:category-cutadm} \emph{defines} the notion of substitution recursively in the following way:
 \begin{align*}
   y[M/y] &\coloneqq M\\
   f(N)[M/y] &\coloneqq f(N[M/y])
 \end{align*}
-When terms are regarded as syntax in their own right rather than as mere proxies for derivations, it is common to define substitution as an operation on terms first, and then to state (the analogue of) \cref{thm:categories-cutadm} as ``if $x:A\types M:B$ and $y:B\types N:C$ are derivable, then so is $x:A\types M[N/y]:C$''.
+When terms are regarded as syntax in their own right rather than as mere proxies for derivations, it is common to define substitution as an operation on terms first, and then to state (the analogue of) \cref{thm:category-cutadm} as ``if $x:A\types M:B$ and $y:B\types N:C$ are derivable, then so is $x:A\types M[N/y]:C$''.
 From this point of view, one says that \textbf{substitution is admissible} in the cut-free type theory for categories under \cG.
 
 Before proving the initiality theorem, let us first observe that substitution does, in fact, define a category:
@@ -824,7 +831,7 @@ Before proving the initiality theorem, let us first observe that substitution do
   The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivable term judgments $x:A\types M:B$ in the cut-free type theory for categories under \cG.
 \end{thm}
 \begin{proof}
-  Let $\F\bCat\cG$ be defined as in the statement, with composition given by substitution constructed as in \cref{thm:categories-cutadm}.
+  Let $\F\bCat\cG$ be defined as in the statement, with composition given by substitution constructed as in \cref{thm:category-cutadm}.
   By \cref{thm:category-subassoc}, composition is associative.
   For unitality, we have $y[M/y] = y$ by definition, while $N[x/x] = N$ is another easy induction on the structure of $N$.
   Thus, $\F\bCat\cG$ is a category.
@@ -839,10 +846,50 @@ Before proving the initiality theorem, let us first observe that substitution do
 Note that we did not have to impose any equivalence relation on the terms in this theory (apart from the fairly trivial $\alpha$-equivalence).
 This suggests a second, more interesting, general statement about categorical logic: it is
 {a syntax for generating free categorical structures using derivations from rules}
-\emph{that yield elements in canonical form}, eliminating (or at least reducing) the need for quotients.
-(Starting in \cref{sec:catprod} we will see that more complicated theories generally still need an equivalence relation on terms beyond $\alpha$-equivalence, but it is arguably still simpler than the quotient required for a na\"ive presentation of free structures.)
+\emph{that yield elements in canonical form}, eliminating the need for quotients.
+This statement is actually too narrow; as we will see later on, type theory is not \emph{just} about canonical forms.
+However, canonical forms do play a very important role.
 
-A similar way to say this is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
+From the perspective of category theory, the reason for the importance of canonical forms is that we can easily decide whether two canonical forms are equal.
+In the cut-free type theory for categories, two terms present the same morphism in a free category just when they are literally equal (modulo $\alpha$-conversion); whereas to check whether two terms are equal in the cut-ful theory we have to remove the identities and reassociate them all to the left or the right.
+
+In fact, a good algorithm for checking equality of terms in the cut-ful theory is to \emph{interpret them into the cut-free theory}!
+That is, we note that every rule of the cut-ful theory is admissible in the cut-free theory, so any term (i.e.\ derivation) in the cut-ful theory yields a derivation in the cut-free theory.
+For instance, to translate the cut-ful term $h\circ ((\id_C\circ g) \circ f)$ into the cut-free theory, we first write it as a derivation
+\begin{mathpar}
+  \inferrule*[Right=$\circ$]{
+    h:(C\types D)\\
+    \inferrule*[Right=$\circ$]{
+      \inferrule*[Right=$\circ$]{
+        \id_C:(C\types C)\\
+        g:(B\types C)}
+      {(\id_C\circ g):(B\types C)}\\
+      f:(A\types B)
+    }{((\id_C\circ g) \circ f):(A\types C)}
+  }{(h\circ ((\id_C\circ g) \circ f)):(A\types D)}
+\end{mathpar}
+and then annotate the same derivation by cut-free terms, using substitution for composition:
+\begin{mathpar}
+  \inferrule*[Right=$\circ$]{
+    z:C\types h(z):D\\
+    \inferrule*[Right=$\circ$]{
+      \inferrule*[Right=$\circ$]{
+        z:C\types z:C\\
+        y:B\types g(y):C}
+      {y:B\types g(y):C}\\
+      x:A\types f(x):B
+    }{x:A\types g(f(x)):C}
+  }{x:A\types h(g(f(x))):D}
+\end{mathpar}
+Since, as we have proven, both the cut-ful and the cut-free theory present the same free structure, it follows that \emph{two terms in the cut-ful theory are equal modulo $\equiv$ exactly when their images in the cut-free theory are identical}.
+Informally, we are just comparing two  ``removing all the identities and the parentheses''; but as we will see, in a more complicated theory much more can be going on.
+
+In this sense, type theory can be considered to be about solving \emph{coherence problems} in category theory.
+In general, the coherence problem for a categorical structure is to decide when two morphisms ``constructed from its basic data'' are equal (or isomorphic, etc.)
+For instance, the classical coherence theorem of MacLane for monoidal categories says, informally, that two parallel morphisms constructed from the basic constraint isomorphisms of a monoidal category are \emph{always} equal; whereas the analogous theorem for braided monoidal categories says that they are equal if and only if they have the same underlying braid.
+A type-theoretic calculus of canonical forms gives a way to answer this question, by translating a cut-ful theory into a cut-free one.
+
+A related remark is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
 The rules of a type theory can be regarded as defining a certain algebraic theory, and the judgments with derivations form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
 The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
 To emphasize the difference between these two categories, notice that an arbitrary model of the algebraic rules of a type theory is not even a category, e.g.\ it may not satisfy the cut rule; the cut admissibility theorem says only that the \emph{initial} such model happens to actually be a category, and in fact the initial category with some structure.
@@ -853,7 +900,7 @@ To emphasize the difference between these two categories, notice that an arbitra
 % [I think we should do this one in the text.]
 % \begin{ex}
 %   Prove \cref{thm:category-initial-2}.
-%   You will have to start by proving that the composition defined in \cref{thm:categories-cutadm} is in fact associative and unital, so that it forms a category.
+%   You will have to start by proving that the composition defined in \cref{thm:category-cutadm} is in fact associative and unital, so that it forms a category.
 % \end{ex}
 
 \begin{ex}\label{ex:categories-over}
@@ -1085,7 +1132,7 @@ We observe first that this theory has the same well-formedness property as the s
 \end{thm}
 
 Unlike the sequent calculus, however, the general identity rule is not admissible: there is no way to derive $A\meet B \types A\meet B$ from $A\types A$ and $B\types B$ without it.
-Thus, we assert that the $\idfunc$ rule applies to all types, not just those coming from \cG.
+Thus, we assert the $\idfunc$ for all types, not just those coming from \cG.
 
 Cut, however, is still admissible:
 
@@ -1211,7 +1258,7 @@ Let \bPrCat be the category of categories with specified binary products and a s
 Then we have an adjunction relating \bPrCat to \bGr, and we want to describe the left adjoint with a type theory.
 
 As in \cref{sec:natded-mslat}, we could take either the sequent calculus route or the natural deduction route.
-Unfortunately, it turns out that in both cases we need to impose an equivalence relation on the derivations, as there are single morphisms that can be derived in multiple ways.
+At first glance, it seems that in \emph{both} cases we need to impose an equivalence relation on the derivations, as there are single morphisms that can be derived in multiple ways.
 However, the ways in which this happens in the two cases are different.
 
 On one hand, if we have an arrow $f:A\to C$ in a directed graph \cG, then there is a morphism $A\times B \to A \to A\times C$ in the free category-with-products on \cG.
@@ -1251,16 +1298,19 @@ while in a sequent calculus there is only one:
 \begin{mathpar}
   \inferrule*{ }{A\types A}
 \end{mathpar}
+This is also true quite generally.
+A natural deduction includes both introduction and elimination rules, so we will always be able to introduce a type and then eliminate it, essentially ``doing nothing''.
+By contrast, in a sequent calculus we have ``only introduction rules'' (of both left and right sorts), so this cannot happen.
 
-The two situations are not quite equally bad, however.
-In the sequent calculus case, there is no clear way to privilege one derivation over the other; but in the natural deduction case, the right-hand derivation is clearly preferable.
-It turns out that for natural deduction, we can implement the necessary equivalence relation using \emph{reduction rules} that allow us to \emph{simplify} more complicated derivations into equivalent simpler ones.
-In particular, therefore, we can still have a ``canonical form'' for morphisms in our free category, namely those deductions that cannot be simplified.
-For this reason, from now on when considering type theories for categories, we will always choose natural deduction over sequent calculus.
-(We will still discuss sequent calculi for posets.)
+In fact, it is possible to eliminate the redundancy in both cases!
+For expositional purposes, we will first describe a theory (based on natural deduction) that does contain an equivalence relation, and then the two ``theories of canonical forms'' that do without one.
 
-It is much more convenient to describe the reduction rules using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
-In this syntax, the rules from \cref{sec:natded-mslat} become:
+
+\subsection{$\beta$ and $\eta$}
+\label{sec:beta-eta}
+
+It is convenient to describe the reduction rules using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
+In this syntax, the natural deduction rules from \cref{sec:natded-mslat} become:
 \begin{mathpar}
   \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
   \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
@@ -1270,6 +1320,7 @@ In this syntax, the rules from \cref{sec:natded-mslat} become:
   \inferrule{x:X\types M:B \\ x:X\types N:C}{x:X\types \pair MN:B\times C}\;\timesI
 \end{mathpar}
 Note how well the natural-deduction choice of ``all rules acting on the right'' matches the use of abstract variables: in all cases we can think of ``applying functions to arguments'' in a familiar way.
+(It is possible to describe sequent calculus derivations using terms as well, but they are less pretty.)
 The need to impose the identity rule for all types (not just those coming from \cG) also makes perfect sense here: a variable in any type is also a term of that type.
 
 Now the above equivalence between the two derivations of the identity $A\to A$ can be written as
@@ -1299,12 +1350,8 @@ In term syntax, this means that
   \pair{\pi_1(M)}{\pi_2(M)} \equiv M\label{eq:eta-prodcat}
 \end{equation}
 In type-theoretic lingo, the equalities~\eqref{eq:beta-prodcat-1} and~\eqref{eq:beta-prodcat-2} are called \textbf{$\beta$-reductions} while the equality~\eqref{eq:eta-prodcat} is called an \textbf{$\eta$-reduction}.
-As suggested above, these equalities can be regarded as ``directed simplifications'', yielding a sort of ``rewrite system'' that simplifies any term into a ``canonical'' one.
-(For technical reasons, one often turns the $\eta$-reduction around, so that the canonical terms are ``$\eta$-expanded.'')
-This is very important in type theory as a computational subject, but for our purposes it is rather tangential.
-Thus, we will simply regard the $\beta$- and $\eta$-reductions as generating an equivalence relation on terms, which we also require to be a congruence for everything else.
-
-We can describe this ``generation'' using an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}.
+They generate an equivalence relation on terms, which we also require to be a congruence for everything else.
+We can describe this more formally with an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}.
 In addition to the $\beta$- and $\eta$-reductions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality (this ensures by induction that it is a congruence for substitution).
 
 \begin{figure}
@@ -1327,6 +1374,14 @@ In addition to the $\beta$- and $\eta$-reductions, we assert reflexivity, symmet
 
 This completes the definition of the \textbf{unary type theory for categories with products under \cG}.
 
+\begin{rmk}\label{rmk:beta-reduction}
+  Note that unlike the equalities $h\circ (g\circ f) \equiv (h\circ g)\circ f$ from \cref{sec:category-cutful}, the $\beta$- and $\eta$-reductions are intutively ``directional'', with one side being ``simpler'' than the other.
+  This suggests that we should be able to ``reduce'' an arbitrary term to a ``simplest possible form'' by successively applying $\beta$- and $\eta$-reductions.
+  Such is indeed the case (although for technical reasons the $\eta$-reduction is usually applied in reverse as an ``expansion'').
+  This \emph{process of reduction} belongs to the ``computational'' side of type theory, which (though of course important in its own right) is somewhat tangential to our category-theoretic emphasis, so we will not discuss it in detail.
+  However, in \cref{sec:catprod-atomcan} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.
+\end{rmk}
+
 \begin{thm}\label{thm:catprod-subadm}
   Substitution is admissible in the unary type theory for categories with products under \cG.
   That is, if we have derivations of $x:A\types M:B$ and $y:B \types N:C$, then we have a derivation of $x:A \types N[M/y]:C$.
@@ -1346,7 +1401,7 @@ This completes the definition of the \textbf{unary type theory for categories wi
   \end{enumerate}
 \end{proof}
 
-As with \cref{thm:categories-cutadm}, this proof can be regarded as \emph{defining} what it means to ``substitute'' $M$ for $y$ in $N$.
+As with \cref{thm:category-cutadm}, this proof can be regarded as \emph{defining} what it means to ``substitute'' $M$ for $y$ in $N$.
 Similarly, we also have:
 
 \begin{thm}\label{thm:catprod-subcong}
@@ -1359,6 +1414,125 @@ And we have the initiality theorem.
 \begin{thm}\label{thm:catprod-initial}
   For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.\qed
 \end{thm}
+
+
+\subsection{Canonical and atomic}
+\label{sec:catprod-atomcan}
+
+As observed in \cref{rmk:beta-reduction}, the $\beta$-reduction rule can be seen as a ``directed simplification'': clearly $M$ is simpler than $\pi_1(\pair M N)$.
+Put differently, the derivation leading to the term $\pi_1(\pair M N)$ is ``redundant'' since it represents a morphism that already had a representative, namely $M$.
+We now present a theory that prevents such redundancy from ever occurring.
+
+The idea is to prevent application of elimination rules (such as $\pi_1$) to terms resulting from introduction rules (such as $\pair M N$).
+We do, of course, have to be able to apply elimination rules to some terms, in order to derive say $x:A\times B \types \pi_1(x):A$.
+To distinguish between the ``terms that can be eliminated'' and those that can't, we replace the single judgment $x:A\types M:B$ with two:
+\begin{mathpar}
+  x:A \types M\atom B\and
+  x:A \types M\can B.
+\end{mathpar}
+We read $M\atom B$ as ``$M$ is an \textbf{atomic} term of type $B$'' and $M\can B$ as ``$M$ is a \textbf{canonical} term of type $B$''.
+We assert the same natural deduction rules, but now with annotations describing which terms are canonical and which are atomic.
+\begin{mathpar}
+  \inferrule{\types X\type}{x:X\types x\atom X}\;\idfunc\and
+  \inferrule{f\in \cG(A,B) \\ x:X\types M\can A}{x:X\types f(M)\can B}\;fI\and
+  \inferrule{\types X\type}{x:X\types \ttt\can \unit}\;\unit I\and
+  \inferrule{x:X\types M\atom B\times C}{x:X \types \pi_1(M)\atom B}\;\timesE1\and
+  \inferrule{x:X\types M\atom B\times C}{x:X \types \pi_2(M)\atom C}\;\timesE2\and
+  \inferrule{x:X\types M\can B \\ x:X\types N\can C}{x:X\types \pair MN\can B\times C}\;\timesI
+\end{mathpar}
+Note particularly that in the $\timesE$ rules, $M$ must be atomic; whereas in the $\timesI$ rule, $\pair MN$ is only canonical; thus $\pi_1(\pair MN)$ cannot be formed.
+We allow $M$ and $N$ in the $\timesI$ rule to also be canonical, so that we can form iterated pairs such as $\pair M{\pair NP}$; while similarly we say that $\pi_1(M)$ and $\pi_2(M)$ are again atomic, so that we can form iterated projections such as $\pi_1(\pi_2(M))$.
+All variables are atomic, so that we can form $x:A\times B \types \pi_1(x):A$.
+We take terms of the form $f(M)$ to be canonical and act on canonical terms, but this choice isn't really essential.
+
+Of course, this division into atomic and canonical is an artifact of the syntax; it has no natural counterpart in category theory.
+Thus, to extract a description of a free category with products, we need some way to combine the two kinds of terms to describe one kind of morphism.
+It turns out that the best way to do this is to assert that any atomic term \emph{belonging to a base type} (i.e.\ an object of \cG) is also canonical:
+\begin{mathpar}
+  \inferrule{B\in\cG \\ x:A \types M\atom B}{x:A\types M\can B}\;\atomcan
+\end{mathpar}
+and then regard the canonical terms as the morphisms.
+Intuitively, the canonical terms are the subset of the terms from \cref{sec:beta-eta} with the property of being ``canonical representatives'' of a morphism in a free category with products.
+The atomic terms are a different subset of the same terms, whose meaning is more technical.
+
+The restriction $B\in\cG$ in $\atomcan$ is what deals with the \emph{other} generator of $\equiv$, namely the $\eta$-reduction $\pair{\pi_1(M)}{\pi_2(M)}\equiv M$.
+However, it deals with it in a surprising way: it is the seemingly ``more complicated'' term $\pair{\pi_1(M)}{\pi_2(M)}$ that we regard as canonical!
+For example, when $x=M$ we have the following derivation in our new system:
+\begin{mathpar}
+  \inferrule*[Right=\timesI]{
+    \inferrule*[Right=\atomcan]{
+      \inferrule*[Right=\timesE]{\inferrule*{ }{x:A\times B\types x\atom A\times B}}{x:A\times B \types \pi_1(x)\atom A}
+    }{x:A\times B \types \pi_1(x)\can A} \\
+    \inferrule*[Right=\atomcan]{
+      \inferrule*[Right=\timesE]{\inferrule*{ }{x:A\times B\types x\atom A\times B}}{x:A\times B \types \pi_2(x)\atom B}
+    }{x:A\times B \types \pi_2(x)\can B}
+  }{
+    x:A\times B \types \pair{\pi_1(x)}{\pi_2(x)}\can A\times B
+  }
+\end{mathpar}
+but while we have $x:A\times B\types x\atom A\times B$, we cannot apply $\atomcan$ to deduce $x:A\times B\types x\can A\times B$ since $A\times B$ is not a base type.
+Put differently, when transforming an arbitrary term into a canonical one, we regard the $\beta$-equivalence as a reduction, but the $\eta$-equivalence as an \emph{expansion}.
+
+There are various reasons for this choice, foremost among which is that it works well.
+A category theorist can gain some intuition for it by thinking of $\beta$-reduction as analogous to the multiplication transformation $T^2\to T$ of a monad, while the $\eta$-expansion is analogous to the unit transformation $\mathsf{Id}\to T$.
+In an example such as the free monoid monad, the multiplication ``simplifies'' a list $((a,b),(),(c,d,e))$ by removing redundant parentheses to get $(a,b,c,d,e)$, while the unit makes an element $a$ into a list $(a)$ by \emph{adding} parentheses.
+Na\"ively one might say that $(a)$ is more complicated than $a$, but it has the virtue of being in the same ``canonical form'' as every other list.
+
+\begin{rmk}
+  Recall that we generally want to regard terms as simply a different syntactic representation of derivations, with a parse tree that inverts the derivation tree.
+  This is almost true for our current system: the only rule that breaks it is $\atomcan$, which uses the same term $M$ to represent two different derivations (one of $M\atom B$, and one of $M\can B$ obtained by following the former with $\atomcan$).
+  However, this can be regarded as simply a convenient abuse of notation: since otherwise the syntaxes producing atomic and canonical terms are disjoint, if when parsing $M\can B$ we see that $M$ looks like an atomic term, it must be that it was deduced from $\atomcan$ and so we can insert an appropriate node into the tree.
+\end{rmk}
+
+The central lemma that justifies this theory is, as usual, the admissibility of cut/substitution.
+
+\begin{lem}\label{thm:catprod-atomcan-subadm}\ 
+  \begin{enumerate}
+  \item If $x:A\types M\can B$ and $y:B\types N\atom C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catprod-atomcan-subadm-1}
+  \item If $x:A\types M\can B$ and $y:B\types N\can C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catprod-atomcan-subadm-2}
+  \end{enumerate}
+\end{lem}
+For purposes of composition in a free category with products, we are mainly interested in~\ref{item:catprod-atomcan-subadm-2}.
+However, for the induction to go through we must also prove~\ref{item:catprod-atomcan-subadm-1}.
+\begin{proof}
+  We first prove~\ref{item:catprod-atomcan-subadm-1}, by induction on the derivation of $y:B\types N\atom C$ as usual.
+  \begin{itemize}
+  \item If it ends with $\idfunc$, then $B=C$ and $N=y$, whence $x:A\types M\can B$ is our desired result.
+  \item If it ends with $\timesE1$, then we have $N=\pi_1(N')$ and $y:B\types N'\atom C\times D$.
+    Thus, inductively we have $x:A\types P'\can C\times D$.
+    This is where the interesting thing happens: since $P'$ is canonical rather than atomic, we can't apply $\timesE1$ directly to obtain $\pi_1(P')$.
+    Instead we observe that \emph{any canonical term of $C\times D$ must be of the form $\pair PQ$}, simply because the only rule that builds canonical terms of a product type is $\timesI$.
+    Thus, we must have $P'=\pair PQ$ where $x:A\types P\can C$ and $x:A\types Q\can D$.
+    But $x:A\types P\can C$ is exactly what we wanted.
+    (Of course, the case of $\timesE2$ is symmetric.)
+  \end{itemize}
+  Now we prove~\ref{item:catprod-atomcan-subadm-2}, again by induction on the derivation of $y:B\types N\can C$.
+  \begin{itemize}
+  \item If it ends with $fI$ for some $f\in\cG(D,C)$, then $N=f(N')$ and $y:B\types N'\can D$.
+    Thus, inductively we have $x:A\types P':D$ and hence $x:A\types f(P'):C$.
+  \item If it ends with $\unit I$, then $C=\unit$ and so $x:A\types \ttt\can \unit$.
+  \item If it ends with $\timesI$, then $N=\pair{N_1}{N_2}$ with $y:B\types N_1\can C_1$ and $y:B\types N_2\can C_2$.
+    Thus, inductively we have $x:A\types P_1:C_1$ and $x:A\types P_2:C_2$, whence $x:A\types \pair{P_1}{P_2}\can C$.
+  \item If it ends with $\atomcan$, then we have $y:B\types N\atom C$, and hence by~\ref{item:catprod-atomcan-subadm-1} we have $x:A\types P\atom C$.
+    Since we already applied $\atomcan$ at type $C$, $C$ must be a base type, so we can apply it again to conclude $x:A\types P\can C$.\qedhere
+  \end{itemize}
+\end{proof}
+
+Like \cref{thm:category-cutadm,thm:catprod-subadm}, the proof of \cref{thm:catprod-atomcan-subadm} defines a ``substitution'' operation (well, technically, two operations) on terms, which we write as $N\hsub{M/y}$.
+However, compared to ordinary substitution, this operation is more powerful: it also performs ``$\beta$-simplification'' as it goes.
+For instance, we have
+\[ \pi_1(y)\hsub{\pair M N/y} = M \]
+whereas ordinary substitution would give $\pi_1(\pair M N)$.
+In type-theoretic lingo, this ``reducing substitution'' is called \textbf{hereditary substitution}.
+
+[TODO: Associativity, initiality, reduction of terms in the previous calculus]
+
+
+\subsection{Focusing}
+\label{sec:catprod-focusing}
+
+For completeness, we now describe how the sequent calculus for meet-semilattices can also be modified to present free categories with products without needing an equivalence relation on terms.
+This version is not as commonly used in categorical logic, but it is important in other applications of type theory such as automated proof search; it is called \emph{focusing}.
 
 
 \subsection*{Exercises}
@@ -2207,7 +2381,6 @@ We assume given an infinite alphabet of symbols \fA for this purpose (such as $'
 
 Now, if our terms are not simply representations of derivations, then we need to explain what terms \emph{are} before we explain what they mean.
 For this purpose we define the class of \emph{pre-terms}, which have a type and a context but may not respect the linearity of the inputs.
-\newcommand{\pc}{\mathrel{\mathord{:}?}}
 The pre-terms, being syntax, are freely generated in an appropriate sense, so we can describe them using an auxiliary judgment $\Gamma \types^\fL M\pc A$.
 The intent is that we will eventually judge $\Gamma \types (M_1,\dots,M_n):(A_1,\dots,A_n)$ where each $M_i$ is a pre-term such that $\Gamma \types M_i\pc A_i$.
 We will also need to include pre-terms with no type at all, so we also include a judgment $\Gamma \types^\fL M\pc ()$ for this purpose.
