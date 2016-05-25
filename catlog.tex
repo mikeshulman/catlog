@@ -283,8 +283,10 @@ The way that it does this is by giving concrete presentations of \emph{free} cat
 There are other such syntaxes for category theory, notably string diagram calculi, that function in a similar way (giving a concrete presentation of free structures) to the extent that they are made precise.
 Indeed, the \emph{usual} way of reasoning in category theory, in which we speak explicitly about objects, arrows, commutative diagrams, and so on, can also be interpreted, from this point of view, to be simply making use of the \emph{obvious} presentation of a free structure rather than some fancier one.
 
-In particular, this means that we are not interested in aspects of type theory such as computability, canonicity, proof search, and so on \emph{for their own sake}.
+In particular, this means that we are not interested in aspects of type theory such as computability, canonicity, proof search, cut-elimination, focusing, and so on \emph{for their own sake}.
 However, at the same time we recognize their importance for type theory as a subject in its own right, which suggests that they should not be ignored by the category theorist.
+If nothing else, the category theorist will encounter these words when speaking to type theorists, and so it is advantageous to have at least a passing familiarity with them.
+
 In fact, our perspective is that it is precisely the esoteric-sounding notion of \emph{cut elimination} (or \emph{admissibility of substitution}) that essentially \emph{defines} what we mean by a \emph{type theory}.
 Of course this is not literally true; a more careful statement would be that type theories with cut elimination are those that exhibit the most behavior most characteristic of type theories.
 (Jean-Yves Girard remarked that ``a logic without cut-elimination is like a car without an engine.'')
@@ -293,11 +295,21 @@ A ``type theory without cut elimination'' may still yield explicit presentations
 So what is this mysterious cut-elimination, from a categorical perspective?
 Informally, it says that the morphisms in a free categorical structure can be presented \emph{without explicit reference to composition}.
 This is a bit of a cheat, because as we will see, in fact what we do is to build just enough ``implicit'' reference to composition into our rules to ensure that we no longer need to talk about composition explicitly.
-However, this process yields important insight, and in particular leads us to \emph{term calculi} that exhibit the characteristic advantages of categorical logic: using ``set-like'' reasoning to prove things about arbitrary categories.
+However, this does not make the process trivial, and it can still yield valuable results.
+
+(As a simple example of nontriviality, if an arrow is constructed by applying a universal property, then that property automatically determines some of the composites of that arrow.
+For instance, a pairing $\pair{f}{g}:X\to A\times B$ must compose with the projections $\pi_1:A\times B\to A$ and $\pi_2:A\times B\to B$ to give $f$ and $g$ respectively.
+Thus, composites of this sort do not need to be ``built in'' by hand; this provides an interesting point of view on the value of universal properties.)
+
+Foremost among the categorical applications of ensuring cut-elimination is that it simplifies the presentation of free structures by isolating a class of \emph{canonical forms}, reducing the need for equivalence relations.
+For instance, when composition is obtained by cut-elimination, we can present the free category on a directed graph without needing to impose any equivalence relation.
+There are many other simple cases where we can do without any equivalence relation at all; in more complicated situations we can still make do with a much simplified one.
+
+These presentations of free structures are often presented as \emph{term calculi} that exhibit another characteristic advantage of categorical logic: we can use ``set-like'' reasoning to prove things about arbitrary categories.
 From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
 This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
 
-Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts).
+Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts, including also the still more general ``polycategories'' and their generalizations).
 One concrete advantage of this is a more direct correspondence between the type theory and the category theory: type theory distinguishes between a sequent $A,B\types C$ and a sequent $A\times B\types C$ (even though they are bijectively related), so it seems natural to work with a categorical structure that also distinguishes between morphisms $(A,B)\to C$ and $A\times B\to C$.
 
 However, the correspondence and motivation goes deeper than that.
@@ -305,11 +317,11 @@ We may ask \emph{why} type theory distinguishes these two kinds of sequents?
 We will discuss this in more detail in \cref{sec:why-multicats}, but the short answer is that ``it makes cut-elimination work''.
 More specifically, it enables us to formulate type theory in such a way that \emph{each rule refers to at most one type former}; this enables us to ``commute these rules past each other'' in the proof of cut-elimination.
 Moreover, including sequents such as $A,B\types C$ allows us to describe certain operations in a type-theoretic style that would not otherwise be possible, such as a monoidal tensor product.
-A type theorist speaks of this in terms of \emph{focusing on the judgmental structure first} and then defining the connectives to ``internalize'' various aspects of that structure.
+A type theorist speaks of this in terms of \emph{deciding on the judgmental structure first} (including ``structural rules'') and then defining the connectives to ``internalize'' various aspects of that structure.
 
 From a categorical point of view, the move to (generalized) multicategories has the feature that \emph{it gives things universal properties}.
 For instance, the tensor product in a monoidal category has no universal property, but the tensor product in a multicategory does.
-In general, from a 2-monad $T$ we can define a notion of ``$T$-multicategory'' in which $T$-algebra structure acquires a universal property (specifically, $T$ is replaced by a lax- or colax-idempotent 2-monad).
+In general, from a 2-monad $T$ we can define a notion of ``$T$-multicategory'' [TODO: citations] in which $T$-algebra structure acquires a universal property (specifically, $T$ is replaced by a lax- or colax-idempotent 2-monad with the same algebras [TODO: citations]).
 In type theoretic language, the move to $T$-multicategories corresponds to including the desired operations in the judgmental structure.
 The fact that the $T$-operations then have universal properties is what enables us to write down the usual sort of type-theoretic left/right or introduction/elimination rules for them.
 
@@ -318,11 +330,30 @@ Pedagogically, it can help the category theorist, who believes in universal prop
 It also helps understand the ``initiality theorems'' more modularly: first we model the judgmental structure with a multicategory, and then we add more type formers corresponding to objects with various universal properties.
 Finally, it provides a guide for new applications of categorical logic: when seeking a categorical structure to model a given type theory, we should look for a kind of multicategory corresponding to its judgments; while when seeking an internal logic for a categorical structure, we should represent it using universal properties in some kind of multicategory, from which we can extract an appropriate judgmental structure.
 
+These facts about cut-elimination and multicategories have surely been known in some form to experts for a long time, but I am not aware of a clear presentation of them for the beginner coming from a category-theoretic background.\footnote{One reference that seems more related than it is is [TODO: cite Dosen].
+  Like us, Dosen also emphasizes how cut-elimination presents free categorical structures without explicit composition.
+  But his goal is to ``explain'' or ``justify'' categorical notions from the perspective of cut-elimination, whereas our goal is rather the reverse: to explain cut-elimination to category theorists, and to use type theory as a tool for reasoning about category theory.
+  He also considers only sequent calculus, whereas we attempt to be even-handed between sequent calculus and natural deduction (although the latter is what yields set-like term calculi for internal reasoning, so we are somewhat biased towards it).
+  [TODO: Mention multicategories.]}
+Understanding them is not strictly necessary if one wants simply to use type theory for internal reasoning about categories, and there are plenty of excellent introductions that take a geodesic route to that application [TODO: cite].
+However, we believe that they yield a deeper understanding of the type/category correspondence; and they are especially valuable when it comes to designing type theories that correspond to new categorical structures (or vice versa).
+
+We will not assume that the reader has any acquaintance with type theory, or any interest in it apart from its uses for category theory.
+However, because one of our goals is to help the reader become familiar with the lingo and concerns of type theorists, we sometimes include a little more detail than is strictly necessary for categorical applications.
+The reader should feel free to skip over these brief digressions.
+
 
 \chapter{Unary type theories}
 \label{chap:unary}
 
-[TODO: Some kind of introduction]
+We begin our study of type theories and their categorical counterparts with a class of very simple cases that we will call \emph{unary type theories}.
+(This terminology is not standard in the literature.)
+On the type-theoretic side the word ``unary'' indicates that there is only one type on each side of a sequent $A\types B$.
+On the categorical side it means, roughly, that we deal with categories rather than any kind of multicategory.
+
+In some ways the unary case is fairly trivial, but for that very reason it serves as a good place to become familiar with basic notions of type theory and how they correspond to category theory.
+In later chapters we will generalize away from unarity in various ways.
+
 
 \section{Posets}
 \label{sec:poset}
@@ -610,6 +641,7 @@ In particular, we want to emphasize the role played by the following lemma:
 
 In other words, the terms (before we impose the relation $\equiv$ on them) really are simply one-dimensional representations of derivations, as we intended.
 This will not be true of all type theories; but those for which it fails tend to be much more complicated to analyze and prove the initiality theorem for.
+We will always attempt to construct our type theories so that this property holds, and we will remark on it only when it fails.
 
 \begin{rmk}
   Technically, there is either more or less happening here than may appear (depending on your point of view).
@@ -717,6 +749,20 @@ In other words, although the cut/composition rule
   \inferrule*[right=$\circ$]{A\types B \\ B\types C}{A\types C}
 \end{mathpar}
 is not \emph{part of the type theory} as defined, it is nevertheless true that whenever we have derivations of the premises of this rule, we can construct a derivation of its conclusion.
+
+\begin{rmk}\label{rmk:admissible-derivable-1}
+  This is what it means in general for a rule to be \textbf{admissible}: it is not part of the theory as defined (that is, it is not one of the \textbf{primitive rules}), but nevertheless if it were added to the theory it would not change the set of derivable sequents.
+  In between primitive and admissible rules there are \textbf{derivable rules}: those that can be expanded out directly into a fragment of a derivation in terms of the primitive rules.
+  For instance, if we have $f\in\cG(A,B)$ and $g\in \cG(B,C)$, then the left-hand rule below is derivable:
+  \begin{mathpar}
+    \inferrule*{X\types A}{X\types C}\and
+    \inferrule*[Right=$g$]{\inferrule*[Right=$f$]{X\types A}{X\types B}}{X\types C}
+  \end{mathpar}
+  because we can expand it out into the right-hand derivation in terms of the primitive rules.
+  Any derivable rule is admissible: if we have a derivation of $X\types A$ we can follow it with the $f$ and $g$ rules to obtain a derivation of $X\types C$.
+  Note the difference with the proof of cut-admissibility: here we do not need to modify the given derivation, we only apply further primitive rules to its conclusion.
+  We will return to this distinction in \cref{rmk:admissible-derivable-2}.
+\end{rmk}
 
 Another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
 We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
@@ -894,11 +940,17 @@ In this sense, type theory can be considered to be about solving \emph{coherence
 In general, the coherence problem for a categorical structure is to decide when two morphisms ``constructed from its basic data'' are equal (or isomorphic, etc.)
 For instance, the classical coherence theorem of MacLane for monoidal categories says, informally, that two parallel morphisms constructed from the basic constraint isomorphisms of a monoidal category are \emph{always} equal; whereas the analogous theorem for braided monoidal categories says that they are equal if and only if they have the same underlying braid.
 A type-theoretic calculus of canonical forms gives a way to answer this question, by translating a cut-ful theory into a cut-free one.
+(And indeed, cut-elimination methods have frequently been used in the proof of coherence theorems; [TODO: some citations].)
 
 A related remark is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
-The rules of a type theory can be regarded as defining a certain algebraic theory, and the judgments with derivations form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
+The primitive rules of a type theory can be regarded as the ``operations'' of a certain algebraic theory\footnote{More precisely, an ``essentially algebraic theory''.}, and the judgments that can be derived from these rules form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
 The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
-To emphasize the difference between these two categories, notice that an arbitrary model of the algebraic rules of a type theory is not even a category, e.g.\ it may not satisfy the cut rule; the cut admissibility theorem says only that the \emph{initial} such model happens to actually be a category, and in fact the initial category with some structure.
+
+\begin{rmk}\label{rmk:admissible-derivable-2}
+  This point of view sheds further light on the distinction between derivable and admissible rules mentioned in \cref{rmk:admissible-derivable-1}.
+  A derivable rule automatically holds in any model of the ``algebraic theory'' version of a type theory, whereas an admissible rules holds \emph{only in the initial algebra} for this algebraic theory.
+  In particular, an arbitrary model of the algebraic rules of the cut-free type theory for categories is not even a category, e.g.\ it may not satisfy the cut rule.
+\end{rmk}
 
 
 \subsection*{Exercises}
@@ -936,7 +988,14 @@ When talking about type theory under \cG, we additionally include ``axiom'' rule
 \begin{mathpar}
   \inferrule{A\in\cG}{\types A\type}
 \end{mathpar}
-Thus, for instance, if $A,B\in\cG$ we have a derivation
+Note that the premise $A\in \cG$ here is not a judgment; rather it is an ``external'' fact that serves as a precondition for application of thish rule.
+Thus it might be more correct to write this rule as
+\begin{mathpar}
+  \inferrule{ }{\types A\type}\;\text{(if $A\in\cG$)}
+\end{mathpar}
+but we will generally write such conditions as premises for simplicity.
+
+As an example of the application of these rules, if $A,B\in\cG$ we have a derivation
 \begin{mathpar}
   \inferrule*{
     \inferrule*{A\in\cG}{\types A\type}\\
@@ -947,7 +1006,7 @@ Thus, for instance, if $A,B\in\cG$ we have a derivation
 \end{mathpar}
 so that $A\meet (\top\meet B)$ will be one of the objects of $\F\bmSLat\cG$.
 
-Now we need to describe its morphisms, i.e.\ the relation $\le$ in $\F\bmSLat\cG$.
+Now we need to describe the morphisms, i.e.\ the relation $\le$ in $\F\bmSLat\cG$.
 The obvious thing to do is to assert the universal property of the meet and the top element:
 \begin{mathpar}
   \inferrule{ }{A\types \top}\and
@@ -991,12 +1050,6 @@ We label each rule on the right to make them easier to refer to later on.
   \inferrule{B\types C \\ \types A\type}{A\meet B \types C}\;\meetL2\and
   \inferrule{A\types B \\ A\types C}{A\types B\meet C}\;\meetR
 \end{mathpar}
-
-\begin{rmk}
-  The word \emph{unary} applied to a type theory is not standard in the literature.
-  We are using it to indicate that there is only one type on each side of our sequents $A\types B$.
-  This will be the case throughout the current chapter; in later chapters we will generalize away from this restriction.
-\end{rmk}
 
 There are several things to note about this.
 The first is that we have included in the premises some judgments of the form $\types A\type$.
@@ -1091,6 +1144,13 @@ Next we prove that the cut rule is admissible for this sequent calculus too.
 This simple proof already displays many of the characteristic features of a cut-admissibility argument.
 The final case~\ref{item:mslat-principal-cut} is called the \textbf{principal case} for the operation $\meet$, when the type $B$ we are composing over (also called the \textbf{cut formula}) is obtained from $\meet$ and both sequents are also obtained from the $\meet$ rules.
 
+\begin{rmk}
+  It may seem somewhat odd that we can prove the admissibility of all cuts (compositions), but we have to assert identities as a primitive rule for base/generating types.
+  This is essentially because we chose to ``build a cut'' into the rule $fR$ that represents the generating arrows.
+  If we had not, then we would have to assert ``cuts over base types'' (that is, where the cut formula is an object of \cG) as primitive rules, the way we did in the cut-ful theory of \cref{sec:category-cutful}.
+  Put differently, building a cut into $fR$ is essentially the ``morphism version'' of asserting identities primitively for base types.
+\end{rmk}
+
 Finally, we have the initiality theorem:
 
 \begin{thm}\label{thm:seqcalc-mslat-initial}
@@ -1115,7 +1175,12 @@ Each operation $\meet$ and $\top$ has zero or more rules allowing us to introduc
 (Specifically, $\meet$ has two left rules and one right rule, while $\top$ has zero left rules and one right rule.)
 This is convenient if we are given a sequent $A\types B$ and want to figure out whether it is derivable: we can choose rules to apply ``in reverse'' by breaking down $A$ and $B$ according to their construction out of $\meet$ and $\top$.
 
-The phrase \emph{sequent calculus}, like \emph{type theory}, is difficult to define precisely, but sequent calculi generally exhibit the properties we have observed in this subsection: admissibility of the identity rule (based on an axiom applying only to ground types), admissibility of cut, and type operations appearing only in the conclusions of rules.
+It also tells us nontrivial things about derivations.
+For instance, all the primitive rules have the property that every type appearing in their premises also appears as a sub-expression of some type in their conclusion.
+Thus, any (cut-free) \emph{derivation} of a sequent $A\types B$ must involves only types appearing as sub-expressions of $A$ and $B$.
+This is called the \textbf{subformula property}.
+
+The phrase \emph{sequent calculus}, like \emph{type theory}, is difficult to define precisely, but sequent calculi generally exhibit the properties we have observed in this subsection: admissibility of the identity rule (based on an axiom applying only to base types), admissibility of cut, type operations appearing only in the conclusions of rules, and the subformula property.
 
 \subsection{Natural deduction for meet-semilattices}
 \label{sec:natded-mslat}
@@ -1156,10 +1221,17 @@ Cut, however, is still admissible:
 \end{proof}
 
 The proof is noticeably simpler than that of \cref{thm:seqcalc-mslat-cutadm}; we don't need the secondary inner induction.
-This is essentially due to the fact that all the rules of this theory involve an \emph{arbitrary} type $X$ on the left.
-This is characteristic of \emph{natural deduction} theories.
-Accordingly, instead of the rules of sequent calculus that introduce operations like $\meet$ and $\top$ on the left and right, we have rules like $\top I$ and $\meetI$ that introduce them on the right, and also rules that \emph{eliminate} them on the right like $\meetE1$ and $\meetE2$.
+This is essentially due to the fact that all the rules of this theory involve an \emph{arbitrary} type $X$ on the left (rather than one built using operations such as $\meet$).
+Thus, instead of the rules of sequent calculus that introduce operations like $\meet$ and $\top$ on the left and right, we have rules like $\top I$ and $\meetI$ that introduce them on the right, and also rules that \emph{eliminate} them on the right like $\meetE1$ and $\meetE2$.
+These properties are characteristic of \emph{natural deduction} theories.
 (Later on we will be able to give a more convincing explanation of the origin of the phrase ``natural deduction''.)
+
+\begin{rmk}
+  Because the proof of cut-elimination for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
+  Triviality is subjective; but what seems inarguable is that cut-elimination for natural deduction is \emph{saying something different} than cut-elimination for sequent calculus.
+  The content of cut-elimination for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}), or to the cut-elimination (``hereditary substitution'') of a canonical/atomic natural deduction (see \cref{sec:catprod-atomcan}).
+  This different is also evident in the fact that we have to assert the full identity rule in natural deduction.
+\end{rmk}
 
 Of course, we should also prove the initiality theorem:
 
@@ -1173,7 +1245,7 @@ Of course, we should also prove the initiality theorem:
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:mslat-idem}
-  Using the unary sequent calculus for meet-semilattices, prove that $A\meet A \cong A$ in any meet-semilattice.
+  Using the unary sequent calculus for meet-semilattices, prove that $A\meet A \cong A$ for any object $A$ of any meet-semilattice.
   (Recall that meet-semilattices are categories with at most one morphism in each hom-set, so for two objects to be isomorphic it suffices to have a morphism in each direction.)
   Then prove the same thing using the natural deduction.
 \end{ex}
@@ -1312,7 +1384,7 @@ This is also true quite generally.
 A natural deduction includes both introduction and elimination rules, so we will always be able to introduce a type and then eliminate it, essentially ``doing nothing''.
 By contrast, in a sequent calculus we have ``only introduction rules'' (of both left and right sorts), so this cannot happen.
 
-In fact, it is possible to eliminate the redundancy in both cases!
+In fact, it is possible to eliminate both kinds of redundancy!
 For expositional purposes, we will first describe a theory (based on natural deduction) that does contain an equivalence relation, and then the two ``theories of canonical forms'' that do without one.
 
 
@@ -1330,7 +1402,7 @@ In this syntax, the natural deduction rules from \cref{sec:natded-mslat} become:
   \inferrule{x:X\types M:B \\ x:X\types N:C}{x:X\types \pair MN:B\times C}\;\timesI
 \end{mathpar}
 Note how well the natural-deduction choice of ``all rules acting on the right'' matches the use of abstract variables: in all cases we can think of ``applying functions to arguments'' in a familiar way.
-(It is possible to describe sequent calculus derivations using terms as well, but they are less pretty.)
+(It is possible to describe sequent calculus derivations using terms as well, but they are less pretty; see for instance \cref{sec:catprod-focusing}.)
 The need to impose the identity rule for all types (not just those coming from \cG) also makes perfect sense here: a variable in any type is also a term of that type.
 
 Now the above equivalence between the two derivations of the identity $A\to A$ can be written as
@@ -1419,11 +1491,15 @@ Similarly, we also have:
   In other words, if we have derivations of $x:X \types M\equiv M':B$ and $y:B \types N\equiv N':C$, then we can derive $x:A \types N[M/y] \equiv N'[M'/y]:C$.\qed
 \end{thm}
 
-And we have the initiality theorem.
+\begin{thm}\label{thm:catprod-subassoc}
+  Substitution is associative in the unary type theory for categories with products under \cG: we have $P[N/z][M/y] = P[N[M/y]/z]$.\qed
+\end{thm}
 
 \begin{thm}\label{thm:catprod-initial}
   For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.\qed
 \end{thm}
+
+The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,ex:catprod-subassoc,ex:catprod-initial}.
 
 
 \subsection{Canonical and atomic}
@@ -1466,7 +1542,7 @@ This completes the definition of our \textbf{canonical/atomic natural deduction 
 Intuitively, the canonical terms are the subset of the terms from \cref{sec:beta-eta} with the property of being ``canonical representatives'' of a morphism in a free category with products.
 The atomic terms are a different subset of the same terms, whose meaning is more technical.
 
-The restriction $B\in\cG$ in $\atomcan$ is what deals with the \emph{other} generator of $\equiv$, namely the $\eta$-reduction $\pair{\pi_1(M)}{\pi_2(M)}\equiv M$.
+The restriction $B\in\cG$ in $\atomcan$ is what removes the redundancy expressed by the \emph{other} generator of $\equiv$, namely the $\eta$-reduction $\pair{\pi_1(M)}{\pi_2(M)}\equiv M$.
 However, it deals with it in a surprising way: it is the seemingly ``more complicated'' term $\pair{\pi_1(M)}{\pi_2(M)}$ that we regard as canonical!
 For example, when $x=M$ we have the following derivation in our new system:
 \begin{mathpar}
@@ -1485,6 +1561,7 @@ but while we have $x:A\times B\types x\atom A\times B$, we cannot apply $\atomca
 Put differently, when transforming an arbitrary term into a canonical one, we regard the $\beta$-equivalence as a reduction, but the $\eta$-equivalence as an \emph{expansion}.
 
 There are various reasons for this choice, foremost among which is that it works well.
+Philosophically, it can be justified by saying that the type $A\times B$ is supposed to be a ``type whose elements are pairs'', and therefore the \emph{canonical form} of any element of it (even a variable) should \emph{be a pair}.
 A category theorist can gain some intuition for it by thinking of $\beta$-reduction as analogous to the multiplication transformation $T^2\to T$ of a monad, while the $\eta$-expansion is analogous to the unit transformation $\mathsf{Id}\to T$.
 In an example such as the free monoid monad, the multiplication ``simplifies'' a list $((a,b),(),(c,d,e))$ by removing redundant parentheses to get $(a,b,c,d,e)$, while the unit makes an element $a$ into a list $(a)$ by \emph{adding} parentheses.
 Na\"ively one might say that $(a)$ is more complicated than $a$, but it has the virtue of being in the same ``canonical form'' as every other list.
@@ -1537,7 +1614,7 @@ whereas ordinary substitution would give $\pi_1(\pair M N)$.
 In type-theoretic lingo, this ``reducing substitution'' is called \textbf{hereditary substitution}.
 
 In particular, hereditary substitution implies that the usual natural deduction rules are also admissible for canonical terms.
-For instance, given $x:X \types M\can A\times B$, there is a term $M'$ such that $x:X\types M' \can A$, even though $\pi_1$ cannot be applied directly to canonical terms; we can take $M' = \pi_1(y)\hsub{M/y}$.
+For instance, given a canonical term $x:X \types M\can A\times B$, we can construct a canonical term $x:X\types M' \can A$, even though $\pi_1$ cannot be applied directly to canonical terms; we can take $M' = \pi_1(y)\hsub{M/y}$.
 (It may be tempting to write this as ``$\pi_1(M)$'', but that would probably be confusing since it hides the fact that a meta-operation on syntax is occurring, as we can't directly apply $\pi_1$ to $M$.)
 
 Now recall that in ordinary natural deduction, we don't need to (and, indeed, can't) prove that identity rule $A\types A$ is also admissible; hence we assume the ``use a variable'' rule $x:A\types x:A$.
@@ -1645,7 +1722,7 @@ The rules with annotations for this \textbf{focused sequent calculus for categor
     \inferrule{A\in \cG}{\idfunc_A:(\focus A\types A)}\and
     \inferrule{\phi:(\focus A\types C) \\ \types B\type}{\prec{\phi}{\pi_1}:(\focus {A\times B} \types C)}\and
     \inferrule{\phi:(\focus B\types C) \\ \types A\type}{\prec{\phi}{\pi_2}:(\focus{A\times B} \types C)}\and
-    \inferrule{\phi:(\focus A \types B)}{\phi:(A\types\focus B)}
+    \inferrule{\phi:(\focus A \types B)}{\phi:(A\types B)}
   \end{mathpar}
   \caption{Focused sequent calculus for categories with products}
   \label{fig:catprod-focused-seqcalc}
@@ -1681,7 +1758,14 @@ For instance, the above derivation of $(A\times B)\times C \types D\times B$ can
   %   :((A\times B)\times C \types \focus{D\times B})}
 \end{mathpar}
 
-[TODO: How hard is it to prove identity, cut, and initiality directly for the focused case?  Also, does focusing continue to identify unique canonical derivations in more complicated theories (with both positives and negatives)?  Different sources have implied different answers to me.  At some point, type-theoretic treatments of focusing tend to introduce ``polarized connectives'' as well, which is not (I think) something I want to get into here, as its connection with the category theory is even more tenuous.]
+[TODO:
+\begin{itemize}
+\item How hard is it to prove identity, cut, and initiality directly for the focused case?  So far I've failed to prove identity by a straightforward induction rather than by actually inspecting the structure of the type ``all the way down''.
+\item Does focusing continue to identify unique canonical derivations in more complicated theories (with both positives and negatives)?  Different sources have implied different answers to me; right now I think the answer is no, that we still need commuting conversions, and that that's also true for canonical/atomic calculi.
+\item At some point, type-theoretic treatments of focusing tend to introduce ``polarized connectives'' as well, which is not (I think) something I want to get into here, as its connection with the category theory is even more tenuous.]
+\end{itemize}
+
+
 
 
 \subsection*{Exercises}
@@ -1690,7 +1774,11 @@ For instance, the above derivation of $(A\times B)\times C \types D\times B$ can
   Prove \cref{thm:catprod-subcong}.
 \end{ex}
 
-\begin{ex}
+\begin{ex}\label{ex:catprod-subassoc}
+  Prove \cref{thm:catprod-subassoc}.
+\end{ex}
+
+\begin{ex}\label{ex:catprod-initial}
   Prove \cref{thm:catprod-initial}.
 \end{ex}
 
@@ -1728,7 +1816,8 @@ For instance, the above derivation of $(A\times B)\times C \types D\times B$ can
 \label{sec:catcoprod}
 
 [TODO: I'm unsure whether this should be here at all.
-It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.]
+It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.
+Note that we also need variable binding for monoidal categories, so if we want to do those before cartesian monoidal categories (as also seems natural, since multicategories are simpler than cartesian multicategories) we need to discuss variable binding sooner than $\lambda$-calculus.]
 
 In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
 However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
@@ -1812,14 +1901,17 @@ In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' t
 \chapter{Simple type theories}
 \label{chap:simple}
 
+At this point we have done about all we can with \emph{unary} type theories, where the antecedent and consequent of each sequent consist only of a single type.
+(In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.)
+The most common type theories allow finite \emph{lists} of types as the antecedent.
+These are the object of study in this chapter; we call them \emph{simple type theories}.
+This term is more common in the literature than ``unary'', but perhaps not with the exact meaning we are giving it.
+(Sometimes one allows lists in the consequent as well; we will consider this possibility in \cref{chap:polycats}.)
+
 \section{Towards multicategories}
 \label{sec:why-multicats}
 
-At this point we have done about all we can with \emph{unary} type theories, where the antecedent and consequent of each sequent consist only of a single type.
-(In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.)
-The most common type theories allow finite \emph{lists} of types as the antecedent (and sometimes as the consequent as well).
-We now consider a few problems with unary type theory, from a categorical perspective, that all turn out to have this as their solution.
-
+As motivation for the generalization away from unary type theories, we consider a few problems with unary type theory, from a categorical perspective, that all turn out to have this as their solution.
 Let's begin by stating some general principles of type theory.
 Looking back at the rules of all our type theories, we see that they can be divided into two groups.
 On the one hand, there are rules that don't refer specifically to any operation, such as the identity rule $x:X \types x:X$ and the cut rule.
@@ -1877,15 +1969,14 @@ The unary type theory for categories with products allows us to prove theorems o
 This is because the type theory generates a free category-with-products from a directed graph \cG whose vertices and edges are the objects and morphisms we hypothesize; but there is no way to express $f:A\times B\to C$ as an edge of \cG, since \cG has no products of objects yet.
 This problem turns out to have the same solution as well.
 
-As already mentioned, on the type-theoretic side what we will do in this chapter is allow multiple types in the antecedent of a judgment (but still only one type in the consequent; in \ref{chap:polycats} we remove this restriction as well).
-We call these \emph{simple type theories}; this term is somewhat more common in the literature, but perhaps not with the exact meaning we are giving it.
+As already mentioned, on the type-theoretic side what we will do in this chapter is allow multiple types in the antecedent of a judgment (but still, for now, only one type in the consequent); we call these \emph{simple type theories}.
 In a simple type theory the antecedent is often called the \emph{context}.
 
 On the categorical side, what we will study are \emph{multicategories} of various sorts.
 An ordinary multicategory is like a category but whose morphisms can have any finite list of objects as their domain, say $f:(A_1,\dots,A_n) \to B$, with a straightforward composition law.
 There are many possible variations on this definition: in a symmetric multicategory the finite lists can be permuted, in a cartesian multicategory we can add unrelated objects and collapse equal ones, and so on.
 All of these categorical structures are known as \emph{generalized multicategories}.
-There is an abstract theory of generalized multicategories that includes these examples and many others, but (at least in the current version of this chapter) we will simply work with concrete examples.
+There is an abstract theory of generalized multicategories [TODO: cite] that includes these examples and many others, but (at least in the current version of this chapter) we will simply work with concrete examples.
 
 Our approach to the semantics of simple type theory can be summed up in the following additional principle:
 \begin{equation}\label{princ:structural}
@@ -2155,7 +2246,7 @@ We call this the \textbf{cut-free type theory for multicategories under \cG}.
   As before, note that we can regard this as defining substitution.
 \end{proof}
 
-[TODO: Substitution is associative and interchanging.  Where should we deal with that the first time?]
+[TODO: Substitution is associative and interchanging.]
 
 \begin{thm}\label{thm:multicat-initial}
   For any multigraph \cG, the free multicategory generated by \cG can be described by the cut-free type theory for multicategories under \cG: its objects are those of \cG, and its morphisms $\Gamma\to B$ are the derivable judgments $\Gamma\types M:B$.
@@ -2170,6 +2261,7 @@ We call this the \textbf{cut-free type theory for multicategories under \cG}.
 \label{sec:moncat}
 
 Since the tensor product has a ``mapping out'' universal property like that of a coproduct, its elimination rules will be a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
+
 \begin{mathpar}
   \inferrule{\types A\type}{x:A\types x:A}\and
   \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
