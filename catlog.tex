@@ -6,7 +6,7 @@
 \author{Michael Shulman}
 \date{\today}
 \makeatletter
-\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
+\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
 \def\tr{\mathrm{tr}}
 \let\sect\section
 \def\idfunc{\mathsf{id}}
@@ -1961,9 +1961,9 @@ Once again we let the reader complete the argument (\cref{ex:focused-catprod-cut
 \section{Categories with coproducts}
 \label{sec:catcoprod}
 
-[TODO: I'm unsure whether this should be here at all.
-It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.
-Note that we also need variable binding for monoidal categories, so if we want to do those before cartesian monoidal categories (as also seems natural, since multicategories are simpler than cartesian multicategories) we need to discuss variable binding sooner than $\lambda$-calculus.]
+% [TODO: I'm unsure whether this should be here at all.
+% It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.
+% Note that we also need variable binding for monoidal categories, so if we want to do those before cartesian monoidal categories (as also seems natural, since multicategories are simpler than cartesian multicategories) we need to discuss variable binding sooner than $\lambda$-calculus.]
 
 In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
 However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
@@ -1982,7 +1982,7 @@ We treat the bottom element similarly:
 \begin{mathpar}
   \inferrule{X\types \bot \\\types C\type}{X\types C}
 \end{mathpar}
-Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts}, shown in \cref{fig:catcoprod}.
+
 \begin{figure}
   \centering
   \begin{mathpar}
@@ -1996,26 +1996,66 @@ Rather than take the time to analyze a natural deduction for join-semilattices, 
   \caption{Unary type theory for categories with coproducts}
   \label{fig:catcoprod}
 \end{figure}
-The notation $\case(M,u.P,v.Q)$ is intended to suggest that we ``break into cases'' based on whether $M$ lies in $A$ or in $B$, and do $P$ in the first case and $Q$ in the second.
-More precisely, we substitute $M$ for $u$ or $v$ in $P$ or $Q$.
-(We have to indicate in the notation which variables $u$ and $v$ were used in $P$ and $Q$, because otherwise in simply reading the term ``$\case(M,u.P,v.Q)$'' there would be no way to guess.
-Technically the notation ``$u.P$'' is ``binding'' the variable $u$; we will come back to that later.)
-Thus, the $\beta$-reduction rules must be
+
+Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts} in which we annotate the judgments with terms, shown in \cref{fig:catcoprod}.
+The two injections $A\to A+B$ and $B\to A+B$ are named $\inl$ and $\inr$ (``in-left'' and ``in-right''), while the unique morphism $\emptyt \to C$ is called $\abort$.
+The term $\case(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
+
+We should start by saying that this term is parsed as $\case(M,(u.P),(v.Q))$: that is, the periods bind more tightly than the commas.
+Now the idea is that $\case(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
+The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
+The morphisms $f$ and $g$, however, are specified (like all morphisms in unary type theory) using term syntax, $u:A\types P:C$ and $v:A\types Q:C$ --- and, as always, the specific variables $u$ and $v$ used are irrelevant (judgments only have meaning up to $\alpha$-equivalence).
+Thus we write $u.P$ and $v.Q$ in the $\case$ term, rather than simply $P$ and $Q$, to indicate what variable is being used.
+These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\case(M,u.f(u),v.g(v))$ has the same meaning as $\case(M,w.f(w),z.g(z))$.
+
+\begin{rmk}
+  In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
+  However, starting in \cref{chap:simple} it will be important to keep track of which variable is being bound, so we establish good habits now.
+\end{rmk}
+
+Now that we understand the $\case$ syntax, we can write down the $\beta$-reduction rules.
+Dualizing the $\beta$-reduction rules for products, the $\beta$-reduction rules for coproducts should say that the map $A+B\to C$ induced by $f:A\to C$ and $g:B\to C$ yields $f$ and $g$ when composed with the coproduct injections.
+Recalling that composition is given by substitution, this leads us to write down
+\begin{align*}
+  \case(\inl(y),u.P,v.Q) &\equiv P[y/u]\\
+  \case(\inr(z),u.P,v.Q) &\equiv Q[z/v]\\
+\end{align*}
+Similarly, the $\eta$-reduction rule should say that morphisms out of a coproduct are determined uniquely by their composites with the projections:
+\[ \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P \]
+In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' to all of these rules, so that the antecedent of the conclusion is an arbitrary type.
+Thus the actual generating $\equiv$ rules are
 \begin{mathpar}
   \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A}{x:X \types \case(\inl(M),u.P,v.Q) \equiv P[M/u] : C}
   \and
-  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/u] : C}
-\end{mathpar}
-saying that the map $A+B\to C$ induced by the universal property of a coproduct (the $\plusE$ rule) has the correct composites with the coproduct injections.
-Similarly, the $\eta$-reduction rule says that morphisms out of a coproduct are determined uniquely by their composites with the projections: whenever $y:A+B \types P:C$ we should have
-\[ \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P. \]
-In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' to prevent $A+B$ from appearing on the left in the conclusion, as we always do in natural deduction theories:
-\begin{mathpar}
+  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/v] : C}
+  \and
   \inferrule{x:X \types M:A+B \\ y:A+B \types P:C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] : C}
 \end{mathpar}
-[TODO: Complete this.  How much detail to give?]
+As usual, we also require $\equiv$ to be an equivalence relation and a congruence for substitution.
+This completes the definition of our \textbf{unary type theory for categories with coproducts under \cG}.
 
+\begin{lem}\label{thm:catcoprod-subadm}
+  Substitution is admissible in the unary type theory for categories with coproducts under \cG.
+  That is, if we have derivations of $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivation of $x:A\types N[M/y]:C$.
+\end{lem}
+\begin{proof}
+  By induction over derivations.
+  As usual for natural deduction theories, there is not much happening: for each rule that might appear last in the derivation of $y:B\types N:C$, we apply the inductive hypothesis to its premises and then re-apply the final rule.
+\end{proof}
 
+\begin{thm}\label{thm:catcoprod-initial}
+  For any directed graph \cG, the free category with coproducts generated by \cG can be described by the unary type theory for categories with coproducts under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the derivable judgments $x:A\types M:B$, modulo the equivalence relation $\equiv$.
+\end{thm}
+\begin{proof}
+  \cref{thm:catcoprod-subadm} defines substitution, and the same sort of induction proves it associative and unital; thus we have a category $\F\bCoprCat\cG$.
+  The rules are defined just so as to give this category the structure of finite coproducts.
+
+  Now if \cM is a category with (specified) finite coproducts and $P:\cG\to\cM$ is a map of graphs, we extend it to the objects of $\F\bCoprCat\cG$ in the obviously unique way (by induction on derivations of $\types A\type$), and to its morphisms by induction on derivations of $x:A\types M:B$.
+  All the non-identity rules are defined by a cut with a generator or one of the coproduct structure maps; thus their images in \cM are uniquely determined by the need for the extension to be a functor and to preserve the specified coproducts.
+  Finally, we show by a further induction that this extension is actually a functor (preserves all composites).
+\end{proof}
+
+[TODO: Canonical/atomic, focused sequent calculus, categories with products and coproducts?]
 
 
 \subsection*{Exercises}
