@@ -10,7 +10,7 @@
 \def\tr{\mathrm{tr}}
 \let\sect\section
 \def\idfunc{\mathsf{id}}
-\def\finsubset{\subset_{\textrm{fin}}}
+\def\finsubset{\subset_{\mathrm{fin}}}
 % judgments
 \let\types\vdash
 \def\type{\;\ftype}
@@ -2831,6 +2831,7 @@ To incorporate morphisms with codomain $()$, we write the judgment as
 with the intended invariants that $\Gamma\types^{\fL} M_i\pc A_i$ for each $i$ and $\Gamma\types^{\fL} N_j\pc ()$ for each $j$.
 Like the pre-term judgment, the term judgment is closed under adding finitely many more unused labels.
 If $n=0$ we write simply $(M_1,\dots,M_m)$, omitting the $|$, and if $m=1$ as well we may omit the parentheses.
+When pre-terms $M_i$ and $N_j$ appear in a valid term judgment, we refer to them as \textbf{terms}, and we refer to the $N_j$'s in particular as \textbf{null terms}.
 
 We write $\vec M$ for a list of pre-terms, $\vec{x}$ for a list of variables, and $\vec M,N$ for concatenation thereof.
 We use capital Greek letters $\Gamma,\Delta,\dots$ both for \emph{contexts} (lists of types with assigned variables such as $x:A,y:B$) and for simple lists of types; the latter can be made into a context by supposing variables $\vec{x}:\Gamma$, or appear as the consequent with assigned terms $\vec{M}:\Gamma$.
@@ -2839,7 +2840,7 @@ Finally, if $f\in\cG(A_1,\dots,A_n;B_1,\dots,B_m)$ we write $\vec{f}^\fa(\vec{M}
 where each $M_i \pc A_i$.
 Note that the variables in a context are not literally treated ``linearly'', since they can occur multiple times in the multiple ``components'' of a map $f$.
 For instance, a morphism $f:(A,B)\to (C,D)$ is represented by $x:A, y:B \types (f_1(x,y),f_2(x,y)):(C,D)$.
-Instead their ``usages'' are controlled by the codomain arity of the morphisms applied to them.
+Instead the ``usages'' of a variable are controlled by the codomain arity of the morphisms applied to them.
 
 \begin{figure}
   \centering
@@ -2879,8 +2880,8 @@ Instead their ``usages'' are controlled by the codomain arity of the morphisms a
 
 With these notations, the rules for the term judgment are shown in \cref{fig:cl-smc-terms}.
 For clarity, we have made the exchange rule explicit at the beginning.
-Note that these rules are exactly the rules of the type theory for posetal props \cref{sec:proppos-smpos}, with the additional annotation by pre-terms.
-Moreover, when we annotate the two problematic derivations discussed above, we obtain the same pre-term.
+Note that these rules are exactly the rules of the type theory for posetal props \cref{sec:proppos-smpos}, with the additional term annotations.
+Moreover, when we annotate the two problematic derivations discussed above, we obtain the same terms.
 \begin{mathpar}
   \inferrule*[Right=$g$]{
     \inferrule*{
@@ -2964,8 +2965,8 @@ The following ``invertibility'' lemma is key to the initiality theorem.
 \begin{proof}
   This is trivially true for the exchange rule (since it supplies its own inverses and contributes no height) and for the trivial rule $()\types ():()$.
   For all the other rules \cR, suppose the given derivation ends with a different rule application $\cS$ (disregarding any exchanges in between).
-  Now note that each rule introduces a new label and introduces exactly those pre-terms in the judgment whose outer connective has that label.
-  Therefore, the rule applications $\cR$ and $\cS$, being different, must introduce different labels, and therefore introduce \emph{disjoint} sets of pre-terms.
+  Now note that each rule introduces a new label and introduces exactly those terms in the judgment whose outer connective has that label.
+  Therefore, the rule applications $\cR$ and $\cS$, being different, must introduce different labels, and therefore introduce \emph{disjoint} sets of terms.
   (This is where the argument would fail without labels.)
 
   It follows that the premise of \cS, say $\sQ'$, is also a conclusion of some instance $\cR'$ of the same rule as \cR.
@@ -2988,7 +2989,7 @@ We omit to write exchange rules, as well as the obvious variable rules at the to
   }
 \end{mathpar}
 The conclusion of this rule is (modulo exchange) the conclusion of an instance of the $f$-generator rule.
-Now the $g$-pre-terms introduced by the actual rule that leads to this conclusion are disjoint from the $f$-pre-terms that would be introduced by this $f$-generator rule.
+Now the $g$-terms introduced by the actual rule that leads to this conclusion are disjoint from the $f$-terms that would be introduced by this $f$-generator rule.
 Thus, by induction the premise $x:A,y:B \types (y,f_2(x),f_1(x)):(B,E,D)$ has a derivation of the same height ending with the $f$-generator rule; in this simple case that is in fact the derivation of it that we were given.
 Now we can apply the $g$-generator rule to the premise of \emph{that} rule, namely $x:A,y:B C \types (y,x):(B C,A)$, and then follow it by the $f$-generator rule, obtaining the following derviation:
 \begin{mathpar}
@@ -3004,8 +3005,8 @@ Now we can apply the $g$-generator rule to the premise of \emph{that} rule, name
 \end{mathpar}
 
 \begin{thm}\label{thm:prop-initial}
-  The free prop on a polygraph can be presented using this type theory: its morphisms $\Gamma\to\Delta$ are the \emph{lists of pre-terms} such that $\Gamma\types (M_1,\dots,M_n \mid Z_1,\dots,Z_p):\Delta$ is derivable.
-  (In particular, if two derivations give the same pre-term, we stipulate that only one morphism results.)
+  The free prop on a polygraph can be presented using this type theory: its morphisms $\Gamma\to\Delta$ are the \emph{pairs $(\vec M,\vec Z)$ of lists of terms} such that $\Gamma\types^\fL (M_1,\dots,M_n \mid Z_1,\dots,Z_p):\Delta$ is derivable for some $\fL\finsubset\fA$, modulo the equivalence relation generated by (a) permutation of labels and (b) permutation of the null terms $\vec Z$.
+  In particular, if two derivations give the same lists of pre-terms, we stipulate that only one morphism results.
 \end{thm}
 \begin{proof}
   \cref{thm:prop-subadm} tells us how to compose morphisms.
@@ -3020,9 +3021,12 @@ Now we can apply the $g$-generator rule to the premise of \emph{that} rule, name
 \intertext{Applying exchange to the second, we obtain}
     \Gamma,\Phi &\types (\vec M,\vec N\mid \vec W,\vec Z):\Delta,\Xi
   \end{align*}
-  and we have $(\vec M,\vec N\mid \vec Z,\vec W) \equiv (\vec M,\vec N\mid \vec W,\vec Z)$ by the final generating rule of $\equiv$.
-  In particular, unlike the other axioms, interchange holds only up to $\equiv$.
+  and we have $(\vec M,\vec N\mid \vec Z,\vec W) \equiv (\vec M,\vec N\mid \vec W,\vec Z)$ by the permutation condition (b).
+  In particular, unlike the other axioms, interchange doesn't hold as an on-the-nose equality of syntax.
+
   In any case, we now have a prop $\F\bProp\cG$.
+  We define the inclusion of polygraphs $\cG\to \F\bProp\cG$ by sending $f\in\cG(\Gamma,\Delta)$ to $\vec x:\Gamma \types (\vec f^\fa(\vec x)):\Delta$ (or to $\vec x:\Gamma \types (\,\mid\vec f^\fa(\vec x)):()$ if $\Delta=()$), for some $\fa\in\fA$.
+  This is independent of the choice of \fa due to the permutation condition (a).
 
   Now suppose \cM is any prop and $P:\cG\to\cM$ is a morphism of polygraphs.
   We extend $P$ to the prop $\F\bProp\cG$ by induction on derivations.
@@ -3041,6 +3045,16 @@ Now we can apply the $g$-generator rule to the premise of \emph{that} rule, name
     \inferrule*[Right=$\cR_2$]{\inferrule*[Right=$\cR_1$]{\vdots\\\\\sQ_3}{\sQ_2}}{\sQ}\and
   \end{mathpar}
   This follows from the associativity and interchange rules in \cM.
+
+  Thus we have a map of polygraphs $\F\bProp\cG\to\cM$, which extends $P$ by construction.
+  To see that it is the unique such extension that could be a prop functor, note that every primitive rule is essentially an instance of identity or cut.
+  In the former case, its image in $\cM$ must also be an identity.
+  In the latter case, we may inductively suppose the image in \cM of its first input is already uniquely determined, while its second input is either an identity (hence determined) or a generating morphism in \cG, and the images of the latter are determined by $P$.
+  (Here we use again the imposed invariance (a) under permutation of labels, since otherwise $P$ would only determine the images of the generators with the particular labels we chose to define the inclusion $\cG\to\F\bProp\cG$.)
+  Thus, their composite is also uniquely determined.
+
+  Finally, we must show that $\F\bProp\cG\to\cM$ actually \emph{is} a prop functor, i.e.\ it preserves identities and composition.
+  Identities are immediate, while composition follows as usual by inductively considering the definition of composition (i.e.\ substitution) in $\F\bProp\cG$.
 \end{proof}
 
 We can extend this type theory for props to a type theory for symmetric monoidal categories by introducing tensors and units, as we did in the posetal case.
@@ -3128,10 +3142,14 @@ which should respect the invariants
 \end{alignat*}
 Note that these may not be well-typed term judgments.
 % TODO: Should they be?
+
 We assert that this relation $\equiv$ is a congruence on lists of pre-terms with respect to concatenation, substitution, and permutation, and that it is invariant under permutations of the label set \fA \emph{separately on each side}.
 That is, there is no requirement that the actual labels used on the two sides of $\equiv$ match up; to the eyes of $\equiv$, the label annotations simply define a partition of the ``label occurrences'' in a list of pre-terms.
 (We do, of course, have to keep track of individual labels at the level of pre-terms; it's only after they are grouped into lists that we can ignore the identity of the labels.)
 % TODO: Do we need to worry more about what happens to the labels here?
+We assert moreover that $\equiv$ allows us to permute the second parts of pre-term lists freely:
+\[ (\vec M \mid \vec{Z}) \equiv (\vec M \mid \vec{\sigma Z})\]
+Thus, it incorporates the permutation quotients (a) and (b) from \cref{thm:prop-initial}.
 
 Relative to the above closure conditions, $\equiv$ is generated by the following relations on individual pre-terms (occurring anywhere in a list):
 \begin{mathpar}
@@ -3140,12 +3158,10 @@ Relative to the above closure conditions, $\equiv$ is generated by the following
   \pair{\pi_1^\fa(P)}{\pi_2^\fa(P)}^\fb \equiv P\and
   \cancel{\ttt^\fa}^\fb \equiv ()\and
 \end{mathpar}
-and also the following relations on lists:
+and also the following relation on lists:
 \begin{mathpar}
   (\vec M,\ttt^\fa \mid \vec Z,\cancel{W}^\fb) \equiv (\vec M,W\mid \vec Z)\and
-  (\vec M \mid \vec{Z}) \equiv (\vec M \mid \vec{\sigma Z})\and
 \end{mathpar}
-The last relation means that we can permute the $Z$'s arbitrarily (of course, we can also permute the $M$'s, but only if we also permute their types).
 
 We leave it to the reader to extend the metatheory to deal with $\tensor$ and $\unit$ and prove the initiality theorem; there is very little difference with the prop case.
 Similarly, we can construct ``presented'' props and symmetric monoidal categories by including arbitrary generators of $\equiv$.
@@ -3159,19 +3175,21 @@ e&:()\to M\\
 while the generators of $\equiv$ are the bimonoid axioms.
 
 Here is another example.
-If $M$ is an object of a prop, a \textbf{dual} of $M$ is an object $M^*$ with morphisms $\eta:()\to (M,M^*)$ and $\ep:(M^*,M)\to ()$ such that $\ep \circ_{M^*} \eta = \idfunc_M$ and $\ep \circ_{M} \eta = \idfunc_M^*$.
+If $A$ is an object of a prop, a \textbf{dual} of $A$ is an object $A^*$ with morphisms $\eta:()\to (A,A^*)$ and $\ep:(A^*,A)\to ()$ such that $\ep \circ_{A^*} \eta = \idfunc_A$ and $\ep \circ_{A} \eta = \idfunc_A^*$.
 (In a symmetric monoidal category this reduces to the usual notion of dual.)
-If $M$ has a dual $M^*$, and $f:M\to M$, the \textbf{trace} of $f$ is the composite 
-\[ \tr(f) = \ep \circ_{M,M^*} (f \circ_M \eta) \]
-or equivalently $(\ep \circ_M f)\circ_{M,M^*} \eta$.
+If $A$ has a dual $A^*$, and $f:A\to A$, the \textbf{trace} of $f$ is the composite 
+\[ \tr(f) = \ep \circ_{A,A^*} (f \circ_A \eta) \]
+or equivalently $(\ep \circ_A f)\circ_{A,A^*} \eta$.
 In the type theory for props, the axioms of a dual say
 \begin{mathpar}
-  x:M \types (\eta_1 \mid \ep(\eta_2,x)) \equiv x :M\and
-  y:M^* \types (\eta_2 \mid \ep(y,\eta_1)) \equiv y :M^*
+  x:A \types (\eta_1 \mid \ep(\eta_2,x)) \equiv x :A\and
+  y:A^* \types (\eta_2 \mid \ep(y,\eta_1)) \equiv y :A^*
 \end{mathpar}
 while the trace is $(\,\mid \ep(\eta_2,f(\eta_1)))$.
+Recall that $\equiv$ is a congruence for substitution; thus the dual axioms mean that \emph{any term} $M$ (appearing even as a sub-term of some other term) can be replaced by $\eta_1^\fa$ if we simultaneously add $\ep^\fb(\eta_2^\fa,M)$ to the list of null terms (here \fa and \fb are fresh labels).
+And dually, if $\ep^\fb(\eta_2^\fa,M)$ appears in the null terms, for any term $M$, then it can be removed by replacing $\eta_1^\fa$ (wherever it appears) with $M$.
 
-Now a classical fact about the trace is that it is \emph{cyclic}: if $M$ and $M'$ both have duals $M^*$ and $(M')^*$, and $f:M\to M'$ and $g:M'\to M$, then $\tr(gf) = \tr(fg)$.
+Now a classical fact about the trace is that it is \emph{cyclic}: if $A$ and $A'$ both have duals $A^*$ and $(A')^*$, and $f:A\to A'$ and $g:A'\to A$, then $\tr(gf) = \tr(fg)$.
 To prove this using traditional commutative-diagram reasoning is quite involved.
 It does have a pretty and intuitive proof using string diagrams.
 However, its proof in the type theory for props is one line:
@@ -3180,12 +3198,19 @@ However, its proof in the type theory for props is one line:
 = (\,\mid \ep(\eta'_2,f(g(\eta'_1))))
 = \tr(fg).
 \]
-Here $\eta,\ep$ exhibit the dual of $M$, while $\eta',\ep'$ exhibit the dual of $M'$.
+Here $\eta,\ep$ exhibit the dual of $A$, while $\eta',\ep'$ exhibit the dual of $A'$.
 The first and last equality are by definition;
-the second applies the first duality equation for $M'$ with $x=f(\eta_1)$; and the third applies the first duality equation for $M$ with $x=g(\eta'_1)$.
+the second applies the first duality equation for $A'$ with $x=f(\eta_1)$; and the third applies the first duality equation for $A$ with $x=g(\eta'_1)$.
 
 One thing to note about these examples is that they use only the type theory of props, not its extension to symmetric monoidal categories.
 In general, because the underlying prop of a symmetric monoidal category remembers its morphisms both into and out of tensor products, it seems rarely necessary to invoke the actual tensor product objects.
+
+\begin{rmk}
+  A \textbf{compact closed} category is a symmetric monoidal category in which every object has a dual.
+  By adding appropriate objects, generators, and relations, we can obtain a type theory describing the free compact closed category on a polygraph, or on a graph, or on a category.
+  This does not ``solve the coherence problem'' for compact closed categories, however, since with the additional $\equiv$ relations for duals, the terms no longer have an obvious canonical form.
+  In fact, it turns out that an explicit description of the free compact closed category on a category can be given, and involves traces in an essential way; see~\cite{kl:cpt}.
+\end{rmk}
 
 
 \chapter{First-order logic}
