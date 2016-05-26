@@ -2361,7 +2361,7 @@ With only this and the identity rule, we have the \textbf{cut-free type theory f
 \end{proof}
 
 To prove an initiality theorem, we need an appropriate categorical structure.
-We define a \textbf{PROP} to be a symmetric polygraph \cP together with the following data:
+We define a \textbf{prop} to be a symmetric polygraph \cP together with the following data:
 \begin{enumerate}
 \item A morphism $\idfunc_{()}:()\to ()$.
 \item For every $A\in\cP$, a morphism $\idfunc_A (A)\to (A)$.
@@ -2377,16 +2377,21 @@ We define a \textbf{PROP} to be a symmetric polygraph \cP together with the foll
   \[h \circ_{\Upsilon,\Theta} (g\circ_\Psi f) = (h\circ_\Upsilon g) \circ_{\Theta,\Psi} f \qquad \text{(as morphisms} (\Gamma,\Phi,\Lambda) \to (\Xi,\Delta,\Omega). \]
 \item Composition is interchanging: $g\circ_{()}f = f\circ_{()}g$ (modulo a symmetry action).
 \end{enumerate}
-Note that by composing along empty lists, we can produce identity morphisms for lists: $\idfunc_{(A,B)} = \idfunc_A \circ_{()} \idfunc_B$ and so on.
-(The order doesn't matter by the interchange axiom.)
 It may not be obvious that these axioms are correct.
 For now, however, we restrict to the posetal case, in which case the axioms are irrelevant.
 
-Now there are actually \emph{three} ways we could imagine introducing tensor products in a PROP.
+By composing along empty lists, we get a ``tensor product'' of morphisms: if $f:\Gamma\to\Xi$ and $g:\Phi\to\Delta$, then $g\circ_{()}f : (\Gamma,\Phi) \to (\Xi,\Delta)$.
+(This sort of operation is what distinguishes a prop from a ``properad''.)
+In particular, we can produce identity morphisms for lists: $\idfunc_{(A,B)} = \idfunc_A \circ_{()} \idfunc_B$ and so on.
+
+Similarly we have $f\circ_{()}g : (\Phi,\Gamma) \to (\Delta,\Xi)$, and the interchange axiom means that these two morphisms are related by the appropriate symmetric group actions.
+In the special case when $\Gamma=\Phi=\Xi=\Delta=()$, the Eckmann--Hilton argument implies that the morphisms $()\to ()$ form a commutative monoid; thus our props are the original ones of Adams--MacLane~\cite{maclane:natural-assoc,maclane:cat-alg} rather than the ``graphical'' ones of Batanin--Berger~\cite{bb:htapm}.
+
+Now there are actually \emph{three} ways we could imagine introducing tensor products in a prop.
 Fortunately, they are all equivalent.
 
 \begin{thm}\label{thm:prop-tensor}
-  For any two objects $A$ and $B$ in a PROP \cP, the following are equivalent.
+  For any two objects $A$ and $B$ in a prop \cP, the following are equivalent.
   \begin{enumerate}
   \item A morphism $(A,B) \to A\tensor B$, precomposition with which defines bijections\label{item:prop-tensor-left}
     \[ \cP(\Gamma,A\tensor B;\Delta) \to \cP(\Gamma,A,B;\Delta) \]
@@ -2410,7 +2415,7 @@ Fortunately, they are all equivalent.
 The case with units is similar.
 
 \begin{thm}\label{thm:prop-unit}
-  In a PROP \cP, the following are equivalent.
+  In a prop \cP, the following are equivalent.
   \begin{enumerate}
   \item A morphism $()\to \one$, precomposition with which defines bijections $\cP(\Gamma,\one;\Delta) \to \cP(\Gamma;\Delta)$.
   \item A morphism $\one\to()$, postcomposition with which defines bijections $\cP(\Gamma;\Delta,\one) \to \cP(\Gamma;\Delta)$.
@@ -2419,7 +2424,7 @@ The case with units is similar.
 \end{thm}
 
 \begin{thm}\label{thm:prop-smc}
-  There is an equivalence between (1) symmetric monoidal categories and (2) PROPs with tensors and units in the sense of \cref{thm:prop-tensor,thm:prop-unit}.
+  There is an equivalence between (1) symmetric monoidal categories and (2) props with tensors and units in the sense of \cref{thm:prop-tensor,thm:prop-unit}.
 \end{thm}
 \begin{proof}
   Given a symmetric monoidal category \cC, we define a prop \cP by
@@ -2427,12 +2432,12 @@ The case with units is similar.
   or, more succinctly, $\cP(\Gamma;\Delta) = \cC(\bigtensor\Gamma, \bigtensor\Delta)$.
   Of course, $\bigtensor() = \one$.
   The identity rules come from $\idfunc_\one$ and $f\tensor \idfunc_A$, while the composite of $f:\Gamma\to (\Xi,\Psi)$ and $g:(\Psi,\Phi)\to \Delta$ is $(\bigtensor\Xi \tensor g) \circ (f\tensor \bigtensor \Phi)$.
-  Of course, this PROP has tensors and units quite trivially.
+  Of course, this prop has tensors and units quite trivially.
 
-  Conversely, given a PROP with tensors and units, we have an underlying category with an object $\one$ and an operation $\tensor$.
+  Conversely, given a prop with tensors and units, we have an underlying category with an object $\one$ and an operation $\tensor$.
   The functoriality of $\tensor$ is defined on $f:A\to A'$ and $g:B\to B'$ as the composite
   \[ A\tensor B \too (A,B) \xto{(f,\idfunc)} (A',B) \xto{(\idfunc,g)} (A',B') \too A'\tensor B'. \]
-  The axioms of a PROP ensure that this is the same as if we put $f$ and $g$ in the other order (or we could write simply $(f,g)$ using the yet-to-be-defined polycomposition).
+  The axioms of a prop ensure that this is the same as if we put $f$ and $g$ in the other order (or we could write simply $(f,g)$ using the yet-to-be-defined polycomposition).
   Functoriality is similarly easy.
   For associativity, we have
   \[ ((A\tensor B)\tensor C) \too (A\tensor B,C) \too (A,B,C) \too (A,B\tensor C) \to (A\tensor (B\tensor C)) \]
@@ -2440,7 +2445,7 @@ The case with units is similar.
   \[ (A\tensor \unit) \too (A,\unit) \too (A) \]
   and dually.
   It is straightforward to check that these are natural isomorphisms and satisfy the necessary axioms.
-  For symmetry, we use the fact that our PROP is a \emph{symmetric} polygraph and act by symmetry on the morphisms $(A,B)\to A\tensor B$ and $A\tensor B\to (A,B)$, obtaining ``inverse isomorphisms'' $(B,A) \to A\tensor B$ and $A\tensor B \to (B,A)$.
+  For symmetry, we use the fact that our prop is a \emph{symmetric} polygraph and act by symmetry on the morphisms $(A,B)\to A\tensor B$ and $A\tensor B\to (A,B)$, obtaining ``inverse isomorphisms'' $(B,A) \to A\tensor B$ and $A\tensor B \to (B,A)$.
   From these we can show $A\tensor B \cong B\tensor A$ and check naturality and the axioms.
 
   Finally, it is straightforward to check that these two constructions are inverses.
@@ -2512,7 +2517,7 @@ We call this the \textbf{classical sequent calculus for symmetric monoidal poset
 \end{proof}
 
 \begin{thm}\label{thm:seqcalc-smpos-cutadm}
-  The PROP cut rule is admissible in the classical sequent calculus for symmetric monoidal posets under \cG.
+  The prop cut rule is admissible in the classical sequent calculus for symmetric monoidal posets under \cG.
 \end{thm}
 \begin{proof}
   Suppose given derivations of $\Gamma\types\Xi,\Psi$ and $\Psi,\Phi \types \Delta$; we want to derive $\Gamma,\Phi \types \Delta,\Xi$.
@@ -2532,10 +2537,10 @@ We call this the \textbf{classical sequent calculus for symmetric monoidal poset
   For any symmetric relational polygraph \cG, the free symmetric monoidal poset generated by \cG is described by the classical sequent calculus for symmetric monoidal posets under \cG.
 \end{thm}
 \begin{proof}
-  \cref{thm:seqcalc-smpos-identity,thm:seqcalc-smpos-cutadm} imply in particular that the sequent calculus gives us a PROP-poset $\F\bSMPos\cG$.
+  \cref{thm:seqcalc-smpos-identity,thm:seqcalc-smpos-cutadm} imply in particular that the sequent calculus gives us a prop-poset $\F\bSMPos\cG$.
   Moreover, the rules for $\tensor$ and $\one$ give $\F\bSMPos\cG$ the tensor and unit structure of \cref{thm:prop-tensor,thm:prop-unit}, so that it is a symmetric monoidal poset.
   Now if \cM is any other symmetric monoidal poset and $P:\cG\to\cM$ a map of symmetric relational polygraphs, there is a unique extension of $P$ to the objects of $\F\bSMPos\cG$.
-  As usual, by induction on the rules of the sequent calculus and the fact that \cM is a PROP-poset, this extension preserves the relations $\Gamma\le\Delta$.
+  As usual, by induction on the rules of the sequent calculus and the fact that \cM is a prop-poset, this extension preserves the relations $\Gamma\le\Delta$.
   Finally, it also preserves the tensor and unit structure, so it is a strict functor of symmetric monoidal posets.
 \end{proof}
 
@@ -2931,12 +2936,12 @@ Now we can apply $\tensorE$ to the premise of \emph{that} rule, namely $x:A,y:B\
   and we have $(\vec M,\vec N\mid \vec Z,\vec W) \equiv (\vec M,\vec N\mid \vec W,\vec Z)$ by the final generating rule of $\equiv$.
   In particular, unlike the other axioms, interchange holds only up to $\equiv$.
 
-  In any case, we now have a PROP $\F\bSMC\cG$.
+  In any case, we now have a prop $\F\bSMC\cG$.
   The $\beta$- and $\eta$-reduction rules give it tensor and unit structure, so it is a symmetric monoidal category.
 
   Now suppose \cM is a symmetric monoidal category and $P:\cG\to\cM$ is a morphism of polygraphs.
-  We extend $P$ to the PROP $\F\bSMC\cG$ by induction on derivations.
-  This is straightforward using the PROP structure and tensors and units in \cM; the nontrivial thing is showing that the result depends only on the pre-term judgment rather than on the particular derivation.
+  We extend $P$ to the prop $\F\bSMC\cG$ by induction on derivations.
+  This is straightforward using the prop structure and tensors and units in \cM; the nontrivial thing is showing that the result depends only on the pre-term judgment rather than on the particular derivation.
   This is the purpose of \cref{thm:prop-smc-invertible}.
 
   Suppose we have two derivations $\sD_1$ and $\sD_2$ of the same sequent $\sQ$, ending with rules $\cR_1$ and $\cR_2$ with premises $\sQ_1$ and $\sQ_2$ respectively.
