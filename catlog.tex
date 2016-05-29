@@ -6,7 +6,7 @@
 \author{Michael Shulman}
 \date{\today}
 \makeatletter
-\autodefs{\bSet\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
+\autodefs{\bSet\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
 \def\tr{\mathrm{tr}}
 \let\sect\section
 \def\idfunc{\mathsf{id}}
@@ -52,7 +52,9 @@
 \def\plusI{\mathord{+}I}
 \def\inl{\mathsf{inl}}
 \def\inr{\mathsf{inr}}
-\def\case{\mathsf{case}}
+\def\case{\mathsf{match}_+}
+% general positives
+\def\match{\mathsf{match}}
 % empty
 \def\emptyt{\mathbf{0}}
 \def\abort{\mathsf{abort}}
@@ -2157,6 +2159,7 @@ The only perhaps surprising thing is that the ``branches'' $P,Q$ of $\case$ can 
   \end{enumerate}
 \end{ex}
 
+
 \chapter{Simple type theories}
 \label{chap:simple}
 
@@ -2266,15 +2269,118 @@ We will not attempt to make this correspondence precise in any general way, and 
 \section{Introduction to multicategories}
 \label{sec:multicats-catth}
 
-[TODO: Define non-symmetric multicategories, multiposets, and representability.
-Probably need to mention the ``$\circ_i$'' version of composition as well as the multicomposition.]
+From a categorical point of view, a multicategory can be regarded as an answer to the question ``in what kind of structure does a tensor product have a universal property?''
+The classical tensor product of vector spaces (or, more generally, modules over a commutative ring) does have a universal property: it is the target of a universal bilinear map.
+That is, there is a function $m:V\times W \to V\tensor W$ that is bilinear (i.e.\ $m(x,-)$ and $m(-,y)$ are linear maps for all $x\in V$ and $y\in W$), and any other bilinear map $V\times W \to U$ factors uniquely through $m$ by a linear map $V\tensor W \to U$.
+Put differently, $V\tensor W$ is a representing object for the functor $\mathrm{Bilin}(V,W;-) : \bVect \to \bSet$.
+
+Of course, this property determines the tensor product up to isomorphism (though of course one still needs some more or less explicit construction to ensure that such a representing object exists).
+However, unlike many universal properties, it is not quite sufficient on its own to show that the tensor product behaves as desired.
+In particular, to show that the tensor product is associative, we would naturally like to show that $V\tensor (W\tensor U)$ and $(V\tensor W)\tensor U$ are both representing objects for the functor of \emph{trilinear} maps $\mathrm{Trilin}(V,W,U;-)$; but this is not an abstract consequence of the fact that each binary tensor product represents bilinear maps.
+What we need is a sort of ``relative representability'' $\mathrm{Trilin}(V,W,U;-) \cong \mathrm{Bilin}(V\tensor W,U;-)$, and similarly.
+
+Finally, when we come to prove that these associativity isomorphisms satisfy the pentagon axiom of a monoidal category, we need analogous facts about quadrilinear maps, at which point it is clear that we should be talking about a general $n$.
+A multicategory is the categorical context in which to do this: in addition to ordinary morphisms like an ordinary category (e.g.\ linear maps) it also contains $n$-ary maps for all $n\in\dN$ (e.g.\ multilinear maps).
+Formally, just as a category is a directed graph with composition and identities, a multicategory is a \emph{multigraph} with composition and identities.
+
+\begin{defn}
+  A \textbf{multigraph} \cG consists of a set of \emph{objects}, together with for every object $B$ and every finite list of objects $(A_1,\dots,A_n)$ a set of \emph{arrows} $\cG(A_1,\dots,A_n;B)$.
+\end{defn}
+
+Note that $n$ can be $0$.
+We say that an arrow in $\cG(A_1,\dots,A_n;B)$ is \textbf{$n$-ary}; the special cases $n=0,1,2$ are \emph{nullary}, \emph{unary}, and \emph{binary}.
+
+\begin{defn}
+  A \textbf{multicategory} \cM is a multigraph together with the following structure and properties.
+  \begin{itemize}
+  \item For each object $A$, an identity arrow $\idfunc_A\in\cM(A;A)$.
+  \item For any object $C$ and lists of objects $(B_1,\dots,B_m)$ and $(A_{i1},\dots,A_{in_i})$ for $1\le i\le m$, a composition operation
+    \begin{align*}
+      \cM(B_1,\dots,B_m;C) \times \prod_{i=1}^m \cM(A_{i1},\dots,A_{in_i};B_i) &\too \cM(A_{11},\dots,A_{mn_m};C)\\
+      (g,(f_1,\dots,f_m)) &\mapsto g\circ (f_1,\dots,f_m)
+    \end{align*}
+    [TODO: Picture]
+  \item For any $f\in\cG(A_1,\dots,A_n;B)$ we have
+    \begin{mathpar}
+      \idfunc_B \circ (f) = f\and
+      f\circ (\idfunc_{A_1},\dots,\idfunc_{A_n}) = f.
+    \end{mathpar}
+  \item For any $h,g_i,f_{ij}$ we have
+    \begin{mathpar}
+      (h\circ (g_1,\dots,g_m))\circ (f_{11},\dots,f_{mn_m}) =
+      h \circ (g_1\circ (f_{11},\dots,f_{1n_1}), \dots, g_m \circ (f_{m1},\dots,f_{mn_m}))
+    \end{mathpar}
+  \end{itemize}
+\end{defn}
+
+The objects and unary arrows in a multicategory form a category; indeed, a multicategory with only unary arrows is exactly a category.
+Vector spaces and multilinear maps, as discussed above, are a good example to build intuition.
+
+While the above definition is the natural one from a certain categorical perspective, there is another equivalent way to define multicategories.
+If in the ``multi-composition'' $g\circ (f_1,\dots,f_m)$ all the $f_j$'s for $j\neq i$ are identities, we write it as $g \circ_i f_i$.
+We may also write it as $g\circ_{B_i} f_i$ if there is no danger of ambiguity (e.g.\ if none of the other $B_j$'s are equal to $B_i$).
+Thus we have operations
+\begin{multline*}
+  \circ_i : \cM(B_1,\dots,B_n;C) \times \cM(A_1,\dots,A_m;B_i) \\
+  \too \cM(B_1,\dots,B_{i-1},A_1,\dots,A_m,B_{i+1},\dots,B_n;C)
+\end{multline*}
+that satisfy the following properties:
+\begin{itemize}
+\item $\idfunc_B \circ_1 f = f$ (since $\idfunc_B$ is unary, $\circ_1$ is the only possible composition here).
+\item $f\circ_i \idfunc_{B_i} = f$ for any $i$.
+\item $(h \circ_i g) \circ_{j} f$ is equal either to $h\circ_i (g\circ_k f)$ for some $k$ or to $(h\circ_k f)\circ_\ell g$ for some $k,\ell$, according to whether $j$ is such that $f$ is being plugged into one of the inputs of $g$ or into one of the remaining inputs of $h$.
+  [TODO: Picture]
+  From this idea one may deduce formulas for $k,\ell$ in terms of $i,j$.
+\end{itemize}
+Conversely, given the $\circ_i$ operations one may define
+\[ g\circ (f_1,\dots,f_m) = (\cdots((g \circ_m f_m) \circ_{m-1} f_{m-1}) \cdots \circ_2 f_2) \circ_1 f_1 \]
+to recover the original definition of multicategory.
+We leave the details to the interested reader (\cref{ex:multicat-defns})
+
+With multicategories in hand, we can give an abstract version of the characterization of the tensor product of vector spaces using multilinear maps.
+\begin{defn}
+  Given objects $A_1,\dots,A_n$ in a multicategory \cM, a \textbf{tensor product} of them is an object $\bigtensor_i A_i$ with a morphism $\chi:(A_1,\dots,A_n) \to \bigtensor_i A_i$ such that all the maps $(-\circ_i \chi)$ are bijections.
+\end{defn}
+
+When $n=2$ we write a binary tensor product as $A_1\tensor A_2$.
+When $n=0$ we call a nullary tensor product a \textbf{unit object} and write $\one$.
+When $n=1$ a unary tensor product is just an object isomorphic to $A$.
+
+\begin{thm}\label{thm:multicat-repr}
+  If in some multicategory \cM every pair of objects has a specified tensor product, and there is a unit object, then the underlying category of \cM inherits a monoidal structure.
+\end{thm}
+\begin{proof}
+  It is easy to show that $(A_1\tensor A_2)\tensor A_3$ and $A_1 \tensor (A_2\tensor A_3)$, if they both exist, are both a ternary tensor product $\bigtensor_{i=1}^3 A_i$, and hence canonically isomorphic.
+  Similarly, $A\tensor \one$ and $\one\tensor A$ are unary tensor products, hence canonically isomorphic to $A$.
+  The coherence axioms follow similarly.
+\end{proof}
+
+A multicategory with the property of \cref{thm:multicat-repr} is said to be \textbf{representable}.
+Conversely, given a \emph{monoidal} category \cM, we can make it a multicategory with $\cM(A_1,\dots,A_n;B) = \cM(\bigtensor_i A_i;B)$.
+This yields an equivalence between monoidal categories and representable multicategories --- with the caveat that functors of multicategories (maps of multigraphs preserving identities and composition) correspond to \emph{lax} monoidal functors.
+The strong monoidal functors correspond to the multicategory functors that ``preserve composites and units'' in the usual sense that functors preserve universal properties: if $\chi:(A,B)\to A\tensor B$ is a tensor product then so is its image $F\chi :(FA,FB)\to F(A\tensor B)$ and so on.
+And if the domain and codomain are equipped with chosen tensor products and units, then the strict monoidal functors are those that preserve these chosen ones exactly.
+
+There are plenty of good references on multicategories, so we will not belabor them further here.
+See for instance~\cite{hermida:multicats,leinster:higher-opds}.
 
 
-\section{Multiposets}
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:multicat-defns}
+  Write down the axioms for $\circ_i$ more explicitly, and prove that the two definitions of multicategory are equivalent.
+\end{ex}
+
+
+\section{Multiposets and monoidal posets}
+\label{sec:multiposets-monpos}
+
+\subsection{Multiposets}
 \label{sec:multiposets}
 
 We begin our study of type theory for multicategories with the posetal case.
-Thus, consider the adjunction between the category \bMPos of multiposets and the category \bRelMGr of \emph{relational multigraphs}, i.e.\ sets of objects equipped with an $n$-ary relation ``$(a_1,\dots,a_{n-1})\le b$'' for all integers $n\ge 1$.
+A \textbf{multiposet} is a multicategory in which each set $\cM(A_1,\dots,A_n;B)$ has at most one element.
+We consider the adjunction between the category \bMPos of multiposets and the category \bRelMGr of \emph{relational multigraphs}, i.e.\ sets of objects equipped with an $n$-ary relation ``$(a_1,\dots,a_{n-1})\le b$'' for all integers $n\ge 1$.
 We would like to construct the free multiposet on a relational multigraph \cG using a type theory.
 
 Its objects, of course, will be those of \cG, so we do not yet need a type judgment.
@@ -2312,10 +2418,7 @@ By contrast, it is traditional to formulate the cut rule in terms of the $\circ_
   It suffices to check that the relations in $\F\bMPos\cG$ hold in $\cM$; but this is clear since $\cM$ is a multiposet and the only rules are an identity and a particular multi-transitivity.
 \end{proof}
 
-\section{Monoidal posets}
-\label{sec:monpos}
-
-We now augment the type theory for multiposets with operations representing a tensor product.
+Now we augment the type theory for multiposets with operations representing a tensor product.
 Since the tensor product now has a universal property, this is essentially straightforward.
 First of all, we need a type judgment $\types A\type$, with unsurprising rules:
 \begin{mathpar}
@@ -2327,7 +2430,7 @@ First of all, we need a type judgment $\types A\type$, with unsurprising rules:
 Second, in addition to the rules from \cref{sec:multiposets}, we have rules for $\tensor$.
 Once again we need to make a choice between sequent calculus and natural deduction.
 
-\subsection{Sequent calculus}
+\subsection{Sequent calculus for monoidal posets}
 \label{sec:seqcalc-monpos}
 
 In sequent calculus the left rule expresses the universal property; while
@@ -2340,6 +2443,7 @@ The rules for $\one$ are similar.
   \inferrule{ }{\types \one}\;\one R
 \end{mathpar}
 This defines the \textbf{sequent calculus for monoidal posets under \cG}.
+Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$ and $\one L$, which corresponds to the strong universal property of a tensor product in a multicategory referring to $n$-ary arrows for all $n$.
 
 \begin{thm}\label{thm:monpos-identity}
   The general identity rule is admissible in the sequent calculus for monoidal posets under \cG: if $\types A\type$ is derivable, then so is $A\types A$.
@@ -2400,6 +2504,9 @@ This defines the \textbf{sequent calculus for monoidal posets under \cG}.
   If we were using multicomposition then we would only need to apply it once; but the notation for the whole argument would become much less wieldy that way.
 \end{proof}
 
+We are ready to prove the initiality theorem, relating to an adjunction between the categoris \bRelMGr of relational multigraphs and \bMonPos of monoidal posets.
+As always, the morphisms in our categories will be completely strict: so in particular the morphisms in \bMonPos are \emph{strict} monoidal functors.
+
 \begin{thm}\label{thm:monpos-initial}
   For any relational multigraph \cG, the free monoidal poset generated by \cG is described by the sequent calculus for monoidal posets under \cG: its objects are the $A$ such that $\types A\type$ is derivable, while the relation $(A_1,\dots,A_n)\le B$ holds just when the sequent $A_1,\dots,A_n\types B$ is derivable.
 \end{thm}
@@ -2412,7 +2519,7 @@ This defines the \textbf{sequent calculus for monoidal posets under \cG}.
   However, $\tensorR$ and $\one R$ are preserved by the universal data of $\tensor$ and $\one$ in \cM, while the universal properties of these data mean that $\tensorL$ and $\one L$ are also preserved.
 \end{proof}
 
-\subsection{Natural deduction}
+\subsection{Natural deduction for monoidal posets}
 \label{sec:natded-monpos}
 
 In natural deduction, the introduction rules $\tensorI$ and $\one I$ will coincide with the right rules $\tensorR$ and $\one R$ from the sequent calculus, but now we need elimination rules.
@@ -2485,10 +2592,14 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}).
 \end{ex}
 
 
-\section{Multicategories and operads}
-\label{sec:multicat-operads}
+\section{Multicategories and monoidal categories}
+\label{sec:multicat-moncat}
 
 Now we are ready to move back up to categories, distinguishing between derivations by introducing a term calculus.
+
+\subsection{Multicategories}
+\label{sec:multicats}
+
 Categorically, we begin with the adjunction between the category $\bMCat$ of multicategories and the category $\bMGr$ of multigraphs.
 Let \cG be a multigraph; we now augment the cut-free theory of \cref{sec:multiposets} with terms that exactly represent the structure of derivations, as we did in \cref{sec:categories,sec:catprod,sec:catcoprod}.
 \begin{mathpar}
@@ -2496,58 +2607,171 @@ Let \cG be a multigraph; we now augment the cut-free theory of \cref{sec:multipo
   \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
 \end{mathpar}
 We call this the \textbf{cut-free type theory for multicategories under \cG}.
+Note that it has the following property.
+
+\begin{lem}\label{thm:multicat-linear}
+  If $\Gamma\types M:B$ is derivable, then every variable in $\Gamma$ appears exactly once in $M$.
+\end{lem}
+\begin{proof}
+  By induction on the derivation.
+  The identity rule $x:A\types x:A$ clearly has this property.
+  And in the conclusion of the generator rule each variable appears in exactly one $\Gamma_i$, hence can only appear in one of the $M_i$'s, and by induction it appears exactly once there; hence it appears exactly once in $f(M_1,\dots,M_n)$.
+\end{proof}
+
+In type-theoretic lingo, \cref{thm:multicat-linear} says that this type theory is \textbf{linear} (just like a linear polynomial uses each variable exactly once, a linear type theory uses each variable exactly once).
+Note that linearity is a property of a system that we \emph{prove}, not a requirement that we impose from outside.
 
 \begin{thm}\label{thm:multicat-subadm}
   Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
 \end{thm}
 \begin{proof}
   Just like \cref{thm:multiposet-cutadm}.
-  As before, note that we can regard this as defining substitution.
 \end{proof}
 
-[TODO: Substitution is associative and interchanging.]
+As before, note that we can regard this as defining substitution; its inductive clauses are
+\begin{align*}
+  x[M/x] &= M\\
+  f(N_1,\dots,N_n)[M/x] &= f(N_1,\dots,N_{i-1},N_i[M/x],N_{i+1},\dots,N_n)
+\end{align*}
+where $i$ is the unique index such that $x$ occurs in $N_i$ (which exists by \cref{thm:multicat-linear}).
+
+\begin{thm}\label{thm:multicat-subassoc}
+  Substitution in the cut-free type theory for multicategories satisfies the associativity/interchange rules of the $\circ_i$ operations:
+  \begin{enumerate}
+  \item If $\Gamma\types M:A$ and $\Delta,x:A,\Delta' \types N:B$ and $\Psi,y:B,\Psi'\types P:C$, then\label{item:multicat-subassoc-1}
+    \[ P[N/y][M/x] = P[N[M/x]/y] \]
+  \item If $\Gamma\types M:A$ and $\Delta \types N:B$ and $\Psi,x:A,\Psi',y:B,\Psi''\types P:C$, then\label{item:multicat-subassoc-2}
+    \[ P[N/y][M/x] = P[M/x][N/y] \]
+  \end{enumerate}
+\end{thm}
+\begin{proof}
+  In both cases we induct on the derivation of $P$.
+  For~\ref{item:multicat-subassoc-1}, if $P=y$ then both sides are $N[M/x]$.
+  If $P=f(P_1,\dots,P_n)$, suppose $y$ occurs in $P_i$.
+  Then $P[N/y] = f(P_1,\dots,P_i[N/y],\dots,P_n)$ and $x$ occurs in $P_i[N/y]$, so
+  $P[N/y][M/x] = f(P_1,\dots,P_i[N/y][M/x],\dots,P_n)$ and the inductive hypothesis applies.
+
+  For~\ref{item:multicat-subassoc-2}, we can't have $P$ being a single variable since there are two distinct variables in its context.
+  Thus it must be $f(P_1,\dots,P_n)$, with $x$ and $y$ appearing in $P_i$ and $P_j$ respectively.
+  If $i=j$, then we simply apply the inductive hypothesis to $P_i$; while if $i\neq j$ then
+  \begin{equation*}
+    P[N/y][M/x] = f(P_1,\dots,P_i[M/x],\dots,P_j[N/y],\dots,P_n) = P[M/x][N/y]\qedhere
+  \end{equation*}
+\end{proof}
 
 \begin{thm}\label{thm:multicat-initial}
   For any multigraph \cG, the free multicategory generated by \cG can be described by the cut-free type theory for multicategories under \cG: its objects are those of \cG, and its morphisms $\Gamma\to B$ are the derivable judgments $\Gamma\types M:B$.
 \end{thm}
 \begin{proof}
-  \cref{thm:multicat-subadm} tells us how to compose multimorphisms.
-  [TODO]
+  \cref{thm:multicat-subadm} tells us how to compose multimorphisms in the $\circ_i$ style, and \cref{thm:multicat-subassoc} verifies the associativity/interchange axiom for these.
+  (If you did \cref{ex:multicat-defns}, feel free to verify this by translating the conclusions of \cref{thm:multicat-subassoc} back into numerical indices.
+  Note how much more comprehensible it is when expressed using abstract variables.)
+  The two identity axioms are $x[M/x]=M$ (one of the defining clauses of substitution) and ``$M[y/x] = M$'', which looks false or nonsensical but is actually just an instance of $\alpha$-equivalence (recall that we always consider type theories up to $\alpha$-equivalence, i.e.\ renaming of variables).
+
+  Thus, we have a multicategory $\F\bMCat\cG$.
+  Let \cM be any multicategory and $P:\cG\to\cM$ a map of multigraphs; as usual we extend $P$ to the morphisms of $\F\bMCat\cG$ by induction on derivations, and such an extension is forced since the rules are all instances of functoriality.
+  Finally we verify by induction on derivations that this extension is in fact functorial on all composites.
 \end{proof}
 
 
-\section{Monoidal categories}
+\subsection{Monoidal categories}
 \label{sec:moncat}
 
-Since the tensor product has a ``mapping out'' universal property like that of a coproduct, its elimination rules will be a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
+We proceed to annotate the natural deduction for monoidal posets from \cref{sec:natded-monpos} with terms, obtaining the \textbf{simple type theory for monoidal categories under \cG} as shown in \cref{fig:moncat}.
 
+As noted in \cref{sec:natded-monpos}, since the tensor product has a ``mapping out'' universal property like that of a coproduct, its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
+Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\pair{x}{y}$.''
+And just as the term syntax $\case(M,u.P,v.Q)$ for coproducts binds the variables $u$ in $P$ and $v$ in $Q$, the term syntax $\match_\tensor(M,xy.N)$ binds the variables $x$ and $y$ in $N$.
+
+The case of the unit is similar but simpler: to do something with an element of $\one$, it suffices to assume that it is $\ttt$ --- hence gives no extra information, i.e.\ no new variables are bound.
+Thus, the term syntax $\match_\one(M,N)$ binds nothing in $N$, it simply allows us to ignore $M$.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types A\type}{x:A\types x:A}\and
+    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
+    \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \pair{M}{N}:A\tensor B}\;\tensorI\and
+    \inferrule{
+      \Psi \types M:A\tensor B \\
+      \Gamma,x:A,y:B,\Delta\types N:C
+    }{
+      \Gamma,\Psi,\Delta \types \match_\tensor(M,xy.N):C
+    }\;\tensorE\\
+    \inferrule{ }{\types \ttt:\one}\;\one I\and
+    \inferrule{
+      \Psi\types M:\one \\
+      \Gamma,\Delta\types N:A
+    }{
+      \Gamma,\Psi,\Delta\types \match_\one(M,N):C
+    }\;\one E
+  \end{mathpar}
+  \caption{Simple type theory for monoidal categories}
+  \label{fig:moncat}
+\end{figure}
+
+The $\beta$- and $\eta$-reduction rules implement the universal properties:
 \begin{mathpar}
-  \inferrule{\types A\type}{x:A\types x:A}\and
-  \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
-  \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \pair{M}{N}:A\tensor B}\;\tensorI\and
-  \inferrule{
-    \Psi \types M:A\tensor B \\
-    \Gamma,x:A,y:B,\Delta\types N:C
-  }{
-    \Gamma,\Psi,\Delta \types (\flet \pair x y:=M in N):C
-  }\;\tensorE\\
-  \inferrule{ }{\types \ttt:\one}\;\one I\and
-  \inferrule{
-    \Psi\types M:\one \\
-    \Gamma,\Delta\types N:A
-  }{
-    \Gamma,\Psi,\Delta\types (\discard M in N):C
-  }\;\one E
+  \match_\tensor(\pair M N,xy.P) \equiv P[M/x,N/y]\and
+  \match_\tensor(M,xy.N[\pair xy/u]) \equiv N[M/u]\\
+  \match_\one(\ttt,N) \equiv N\and
+  \match_\one(M,N[\ttt/u]) \equiv N[M/u]
 \end{mathpar}
+[TODO: Maybe say more here, depending on what we said about coproducts.]
 
-[TODO: Try to explain the let-binding better.]
+\begin{lem}\label{thm:moncat-linear}
+  If $\Gamma\types M:B$ is derivable in the simple type theory for monoidal categories under \cG, then every variable in $\Gamma$ appears exactly once in $M$.
+\end{lem}
+\begin{proof}
+  By induction on the derivation.
+  The cases of variables and generators are as in \cref{thm:multicat-linear}.
+  For a pair $\pair M N$ coming from $\tensorI$, each variable in $\Gamma,\Delta$ appears in exactly one of $\Gamma$ and $\Delta$, hence in exactly one of $M$ and $N$; we then apply the inductive hypotheses to $M$ or $N$ respectively.
+  Similarly, for $\match_\tensor(M,xy.N)$ coming from $\tensorE$, each variable in $\Gamma,\Psi,\Delta$ must appear in exactly one of $\Gamma$, $\Psi$, or $\Delta$; by induction then in the first and third cases it must appear exactly once in $N$, and in the second case it must appear exactly once in $M$.
+  The case of $\one E$ is similar, while there are no variables at all in $\ttt$.
+\end{proof}
 
+\begin{lem}\label{thm:moncat-subadm}
+  Substitution is admissible in the simple type theory for monoidal categories under \cG, in the same sense as \cref{thm:multicat-subadm}.
+  Moreover, it is associative and interchanging in the same sense as \cref{thm:multicat-subassoc}.
+\end{lem}
+\begin{proof}
+  We sketch the proof by giving the defining clauses for the substitution operation:
+  \begin{alignat*}{2}
+    x[M/x] &= M\\
+    f(N_1,\dots,N_n)[M/x] &= f(N_1,\dots,N_i[M/x],\dots,N_n) &&\quad\text{if $x$ occurs in $N_i$}\\
+    \pair P Q[M/x] &= \pair{P[M/x]}{Q} &&\quad\text{if $x$ occurs in $P$}\\
+    \pair P Q[M/x] &= \pair{P}{Q[M/x]} &&\quad\text{if $x$ occurs in $Q$}\\
+    \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
+    \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N,uv.P[M/x]) &&\quad\text{if $x$ occurs in $P$}\\
+    \ttt[M/x] &&&\quad\text{cannot occur}\\
+    \match_\one(N,P)[M/x] &= \match_\one(N[M/x],P) &&\quad\text{if $x$ occurs in $N$}\\
+    \match_\one(N,P)[M/x] &= \match_\one(N,P[M/x]) &&\quad\text{if $x$ occurs in $P$}
+  \end{alignat*}
+  To summarize, we simply check which of the input terms the variable being substituted for appears in, and substitute recursively in that term.
+  As in \cref{sec:catcoprod} [TODO], we are assuming that the bound variables $u,v$ are distinct from the variable $x$ being substituted for; if they are not then we have to rename them first.
+
+  The proof of associativity and interchange is essentially the same as before: all the other rules behave just like the generator rules, except for $\ttt$ where the claim is trivial.
+\end{proof}
+
+\begin{thm}\label{thm:moncat-initial}
+  The free monoidal category generated by a multigraph \cG (or, more precisely, its underlying multicategory) can be described by the simple type theory for monoidal categories under \cG: its objects are the $A$ such that $\types A\type$, and its morphisms are the term judgments $\Gamma\types M:A$ modulo the congruence $\equiv$.
+\end{thm}
+\begin{proof}
+  \cref{thm:moncat-subadm} shows that we obtain a multicategory $\F\bMonCat\cG$ this way, just as in \cref{thm:multicat-initial}.
+  The rules for $\tensor$ and $\one$, together with the $\beta$- and $\eta$-rules for $\equiv$, tell us that it is representable, and hence a monoidal category.
+  Now if \cM is a monoidal category and $P:\cG\to\cM$ a map of multigraphs, we extend it to $\F\bMonCat\cG$ by induction on derivations (of objects and morphisms and equalities) using the fact that \cM is a representable multicategory, observe that this definition is forced by functoriality and (strict) preservation of the monoidal structure, and then prove by induction that it is indeed a functor.
+\end{proof}
 
 
 \section{Symmetric monoidal categories}
 \label{sec:symmoncat}
 
-[Symmetric multicategories and their type theory, exchange rule, structural rules in general]
+[Symmetric multicategories and their type theory, exchange rule, structural rules in general.  How exactly do the structural rules work with initiality?  Should we use finite sets (e.g.\ of variables) instead of natural numbers to index the domains of morphisms in our symmetric multicategories?]
+
+We can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
+I've never seen that done before, but I think it's more standard that we can make exchange, contraction, and weakening all admissible by allowing the variable rule to extract from anywhere in the context.
+
+Can we also make sense of ``multisets''?
 
 
 \section{Introduction to cartesian multicategories}
@@ -2837,7 +3061,7 @@ We call this the \textbf{classical sequent calculus for symmetric monoidal poset
 So much for symmetric monoidal posets.
 What we really want, however, is a type theory for symmetric monoidal \emph{categories}, in which we can talk about equality of morphisms, and that can also deal with tensors in the codomain.
 
-In our type theories for categories and multicategories in \cref{sec:category-cutadm,sec:multicat-operads} (before introducing any operations such as products or tensors), we did not have to impose any equivalence relation on the derivations.
+In our type theories for categories and multicategories in \cref{sec:category-cutadm,sec:multicat-moncat} (before introducing any operations such as products or tensors), we did not have to impose any equivalence relation on the derivations.
 However, in the case of props this is no longer true, because of the interchange rule.
 A simple case is when we have $f\in \cG(A;B)$ and $g\in\cG(C;D)$; then there are two distinct derivations of a sequent representing $f\circ_{()} g$:
 \begin{mathpar}
