@@ -2966,7 +2966,7 @@ The case with units is similar.
   It is straightforward to check that these two constructions are inverses.
 \end{proof}
 
-Now, \cref{thm:prop-tensor,thm:prop-unit} give several ways to introduce $\tensor$ and $\unit$ into the type theory of posetal props from \ref{sec:proppos-smpos}.
+\cref{thm:prop-tensor,thm:prop-unit} give several ways to introduce $\tensor$ and $\unit$ into the type theory of posetal props.
 For a sequent calculus, the symmetrical approach is probably the most natural:
 \begin{mathpar}
   \inferrule{\Gamma,A,B\types \Delta}{\Gamma,A\tensor B\types \Delta}\;\tensorL\and
@@ -3116,7 +3116,7 @@ This does require one further technical device (that will be almost invisible in
 Suppose we have $f:()\to (B,C)$, written in type theory as $()\types (f_1,f_2):(B,C)$, and we compose/tensor it with itself to get a morphism $() \to (B,B,C,C)$.
 We would na\"ively write this as $() \types (f_1,f_1,f_2,f_2)$, but this is ambiguous since we can't tell which $f_1$ matches which $f_2$.
 We disambiguate the possibilities by writing $() \types (f_1,f'_1,f_2,f'_2)$ or $() \types (f_1,f'_1,f'_2,f_2)$.
-Although this issue seems to only arise for morphisms with empty domain and greater than unary codomain, for consistency we formulate the syntax with a label (like $'$) on \emph{every} term former, and simply omit them informally when there is no risk of ambiguity.
+Although this issue seems to only arise for morphisms with empty domain and greater than unary codomain, for consistency we formulate the syntax with a label (like $'$) on \emph{every} term former, and simply omit them informally (as in the vast majority of cases) when there is no risk of ambiguity.
 We assume given an infinite alphabet of symbols \fA for this purpose (such as $','',''',\dots$, or $1,2,3,\dots$).
 
 Now, if our terms are not simply representations of derivations, then we need to explain what terms \emph{are} before we explain what they mean.
