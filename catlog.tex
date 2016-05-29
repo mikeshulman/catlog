@@ -360,6 +360,8 @@ On the categorical side it means, roughly, that we deal with categories rather t
 In some ways the unary case is fairly trivial, but for that very reason it serves as a good place to become familiar with basic notions of type theory and how they correspond to category theory.
 In later chapters we will generalize away from unarity in various ways.
 
+[TODO: Say something about how rules and trees generate a free structure.  Maybe talk first about free structures in sets, like magmas, monoids, groups (including inductively defined equivalence relations too), then in multi-sorted theories like set-with-group-action, then in graphs with fixed object set (being a multi-sorted theory).  Later generalize to graphs whose fixed object set has operations on it (themselves defined as a free structure); we don't need full inductive-inductiveness.  Think about how best to move on to the multi-case from here.]
+
 
 \section{Posets}
 \label{sec:poset}
@@ -482,7 +484,7 @@ Formally speaking, what we have observed is the following \emph{initiality theor
 \end{proof}
 
 A different way to phrase such an induction, which is more flexible and more type-theoretic in character, uses what is called \emph{structural induction}.
-[TODO: Say something about that.]
+[TODO: Say something about that.  If we have a good introduction to rules generating free structures, maybe we can include the general induction/recursion principle there.]
 
 However, it is proved, \cref{thm:poset-initial-1} enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
 In our present trivial case this is not very useful, but as we will see it becomes more useful for more complicated structures.
@@ -1699,6 +1701,8 @@ For instance, we have
   As usual, this extension is forced by functoriality and product-preservation, and we can prove by induction on derivations that it actually is a functor.
 \end{proof}
 
+[TODO: Mention how canonical/atomic also reflects the algorithm of parsing a term that isn't fully annotated into a derivation tree, with $M\can A$ meaning $A$ is given and our job is to check that $M$ has that type while $M\atom A$ means that from $M$ we have to synthesize a type $A$ that it has.  (Remark earlier on that for terms to exactly correspond to derivations they have to be more annotated than we usually do, e.g.\ $g\circ_B f$ instead of $g\circ f$.)  Talking about parsing, here or earlier, may be the way to introduce the ``bottom-up'' view of rules.  How does this check/synthesize POV generalize to type theory that allows redexes?]
+
 
 \subsection{Focusing}
 \label{sec:catprod-focusing}
@@ -2132,6 +2136,7 @@ The only perhaps surprising thing is that the ``branches'' $P,Q$ of $\case$ can 
 
 [TODO: Canonical/atomic, focused sequent calculus, categories with products and coproducts?]
 
+[We seem to need $\atomcan$ for positive types as well as base ones, but then this destroys $\eta$.  There's some suggestion that $\eta$ for positives is not computational.  But focused sequent calculus should be symmetrical!]
 
 \subsection*{Exercises}
 
