@@ -6,11 +6,14 @@
 \author{Michael Shulman}
 \date{\today}
 \makeatletter
-\autodefs{\bSet\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
 \def\tr{\mathrm{tr}}
 \let\sect\section
 \def\idfunc{\mathsf{id}}
 \def\finsubset{\subset_{\mathrm{fin}}}
+% well-founded trees and algebras
+\def\act#1{[#1]}
+\def\equivsym{\mathord{\equiv}}
 % judgments
 \let\types\vdash
 \def\type{\;\ftype}
@@ -347,6 +350,169 @@ However, we believe that they yield a deeper understanding of the type/category 
 We will not assume that the reader has any acquaintance with type theory, or any interest in it apart from its uses for category theory.
 However, because one of our goals is to help the reader become familiar with the lingo and concerns of type theorists, we sometimes include a little more detail than is strictly necessary for categorical applications.
 The reader should feel free to skip over these brief digressions.
+
+\chapter{Deductive systems}
+\label{chap:dedsys}
+
+Before beginning the study of any type theories in particular, we spend a brief chapter on the formal apparatus underlying them.
+This is rarely explained in detail, yet its unfamiliarity to mathematicians is probably a large part of what makes type theory hard for them to understand.
+
+\section{Trees and free algebras}
+\label{sec:trees}
+
+As remarked in \cref{sec:generalities}, our perspective on type theory is that it presents \emph{free categorical structures} in a particularly convenient way.
+Now categorical structures are particular kinds of \emph{algebraic} structures, so it seems reasonable to think first about what free algebraic structures look like in general.
+A convenient way to present these is by using \emph{trees}.
+
+A \textbf{tree} is a set of \textbf{nodes} together with a binary relation between them called \textbf{edge existence} (a ``relational graph'') that is connected and loop-free.
+A tree is \textbf{rooted} if it is equipped with a chosen node called the \textbf{root}.
+In a rooted tree every node $x$ has a unique (non-retracing) path to the root; if $x$ is not the root, this path goes through a unique edge connected to $x$ that we call \textbf{outgoing}, and the node at the other end of that edge is its \textbf{parent}.
+The non-outgoing edges connected to $x$ are called \textbf{incoming}, and the nodes they connect it to are called its \textbf{children}.
+A node is a \textbf{descendant} of $x$ if its path to the root passes through $x$, which is to say it is a child of a child of a \dots of $x$.
+A node $x$ together with all its descendants forms another rooted tree with $x$ as the root, called the \textbf{branch} of $x$.
+The \textbf{height} of a node is the length of its path to the root; this is always a natural number, and the height of a child of $x$ is one more than the height of $x$.
+A rooted tree is \textbf{well-founded} if there are no infinite non-retracing paths.
+
+Let $\cO$ be a set, whose elements we call \textbf{operations}, and $\{\cA_m\}_{m\in \cO}$ an \cO-indexed family of sets that we call the \textbf{arities}.
+We call $(\cO,\cA)$ a \textbf{signature}.
+A $(\cO,\cA)$-\textbf{algebra} is a set $X$ together with for every $m\in\cO$ a function $\act m : X^{\cA_m}\to X$.
+There is an obvious notion of $(\cO,\cA)$-algebra \textbf{morphism}.
+
+$(\cO,\cA)$-algebras are a very ``primordial'' sort of algebraic structure, with arbitrary operations but no axioms allowed.
+For instance, if $\cO=\{e,m\}$ with $\cA_e = \emptyset$ and $\cA_m=\mathbf{2}$, then $(\cO,\cA)$-algebras are \emph{pointed magmas}: sets equipped with a basepoint and a binary operation.
+Later on we will see how to add axioms.
+
+A $(\cO,\cA)$-\textbf{labeled tree} is a rooted tree equipped with a \textbf{labeling} function from nodes to \cO, along with for every node $x$ labeled by $m\in\cO$ a bijection between the incoming edges of $x$ and $\cA_m$.
+There is an obvious notion of \emph{isomorphism} between labeled trees.
+We write $W(\cO,\cA)$ for the set of all isomorphism classes of \emph{well-founded} $(\cO,\cA)$-labeled trees.
+(Note that $W(\cO,\cA)$ is empty unless some of the arity sets $\cA_m$ are empty.)
+Then $W(\cO,\cA)$ has a $(\cO,\cA)$-algebra defined as follows: given $m\in\cO$ and $f:\cA_m\to W(\cO,\cA)$, define a tree $\act m (f)$ with nodes $\{\star\} \sqcup \bigsqcup_{a\in\cA_m} f(a)$, where $\star$ is the root, with label $m$, and its children are the roots of the trees $f(a)$, with edges labeled tautologically.
+
+We will show that $W(\cO,\cA)$ is the initial $(\cO,\cA)$-algebra.
+
+\begin{thm}\label{thm:tree-ind}
+  Suppose $P\subseteq W(\cO,\cA)$ has the property that whenever a function $f:\cA_m\to W(\cO,\cA)$ satisfies $f(a)\in P$ for all $a$, then $\act m(f)\in P$.
+  Then $P= W(\cO,\cA)$.
+\end{thm}
+\begin{proof}
+  Suppose not, so there is a well-founded $(\cO,\cA)$-labeled tree not in $P$.
+  Let $m$ be the label of its root and $f:\cA_m\to W(\cO,\cA)$ the function sending each $a$ to the branch of the child of the root labeled by $a$; then our given tree is (isomorphic to) $\act m(f)$.
+  By the contrapositive of our assumption, therefore, there must be some $a$ such that $f(a)\notin P$.
+  Iterating, we obtain an infinite non-retracing path, contradicting well-foundedness.
+\end{proof}
+
+\begin{thm}\label{thm:tree-rec}
+  For any $(\cO,\cA)$-algebra $X$, there is a unique $(\cO,\cA)$-algebra morphism $W(\cO,\cA) \to X$.
+\end{thm}
+\begin{proof}
+  TODO: standard argument.
+\end{proof}
+
+Note that \emph{free} $(\cO,\cA)$-algebras can be constructed by a simple modification.
+Given $(\cO,\cA)$ and any set $X$, let $\cO[X] = \cO \sqcup X$, and define $\cA[X]$ to extend $\cA$ by giving each $x\in X$ arity zero.
+Then an $(\cO[X],\cA[X])$-algebra is just an $(\cO,\cA)$-algebra together with a map from $X$ into its underlying set.
+The initial such algebra is then the free $(\cO,\cA)$-algebra on $X$.
+Thus, the forgetful functor from $(\cO,\cA)$-algebras to sets has a left adjoint.
+
+A different way to express \cref{thm:tree-rec} is that \emph{given an arbitrary set $X$, to define a function $W(\cO,\cA) \to X$ it suffices to define an $(\cO,\cA)$-algebra structure on $X$}.
+This may seem like a trivial reformulation, but it better reflects the way we will use it.
+
+
+\section{Indexed trees}
+\label{sec:indexed-trees}
+
+Sometimes an algebraic structure has more than one underlying set (or ``sort'').
+As a simple example, we could consider a set together with a group acting on that set to be a single algebraic structure.
+(Categories could be regarded as having two sets, namely objects and arrows, but it is generally better to treat them differently; wait for \cref{chap:unary}.)
+
+If $\cI$ is any set, an $\cI$-\textbf{indexed signature} is a signature $(\cO,\cA)$ together with functions $c:\cO\to\cI$ and $d_m:\cA_m\to \cI$.
+The idea is that $c$ specifies the output sort of $m$, while $d_m$ specifies the sorts of its inputs.
+If $\cA_m$ is finite, we may informally write $m : (d_m(a_1),\dots,d_m(a_n)) \to c(m)$ to indicate the input and output arities.
+Thus, we define an $\cI$-\textbf{indexed algebra} for such a signature to be an \cI-indexed family of sets $X_i$ together with operations
+\[ \act m:\setof{ f :{\cA_m} \to \bigsqcup_i X_i | \forall a, f(a) \in X_{d(a)} } \to X_{c(m)}\]
+For instance, if $\cI=\{g,s\}$ and $\cO=\{m,t\}$ with $\cA_m=\cA_t =\mathbf{2}$, and
+\begin{mathpar}
+  m : (g,g) \to g \and t : (g,s) \to s
+  % c(m)=g \and c(t) = s \and
+  % d_m(x)=g \and d_m(y)=g\and
+  % d_t(x)=g \and d_t(y)=s
+\end{mathpar}
+then an indexed algebra consists of two sets $X_g$ and $X_s$, a binary operation on $X_g$, and an action of $X_g$ on $X_s$.
+
+An $\cI$-\textbf{indexed tree} is one with a function from its nodes to \cI.
+Let $W_\cI(\cO,\cA)_i$ be the set of well-founded $(\cO,\cA)$-labeled and $\cI$-indexed trees such that the root is labeled by $i$, the index of each node matches the $c$-index of its \cO-label, and the index of each child of a node matches the $d$-index of the \cA-label on the connecting edge.
+Then we have analogous theorems with analogous proofs:
+
+\begin{thm}\label{thm:tree-ind}
+  Suppose $P_i\subseteq W_\cI(\cO,\cA)_i$ is a family of subsets such that whenever a function $f:\cA_m\to \bigsqcup_i W_\cI(\cO,\cA)_i$ satisfies $f(a)\in P_{d(a)}$ for all $a$, then $\act m(f)\in P_{c(a)}$.
+  Then $P_i= W_\cI(\cO,\cA)_i$ for all $i$.\qed
+\end{thm}
+
+\begin{thm}\label{thm:tree-rec}
+  For any \cI-indexed $(\cO,\cA)$-algebra $X$, there is a unique \cI-indexed $(\cO,\cA)$-algebra morphism $W_\cI(\cO,\cA) \to X$.\qed
+\end{thm}
+
+
+\section{Free algebras with axioms}
+\label{sec:axioms}
+
+Of course, most algebraic structures of interest contain axioms as well as operations; for instance, multiplication in a group or monoid must be associative and unital.
+The free monoid on a set $X$ is naturally regarded as a quotient of the free pointed magma on $X$ that forces associativity and unitality to hold.
+It turns out that we can construct free algebras of this sort quite generally by defining an equivalence relation \emph{as another indexed free algebra}.
+
+Making this completely precise in general is rather technical, so we will only do [or ``begin with''?] an example.
+Suppose we want to generate the free semigroup on a set $X$.
+Let $\F\bMag X$ denote the free magma on $X$, constructed as in \cref{sec:trees}.
+(A magma is a set with a single binary operation; a semigroup is a magma whose operation is associative.)
+
+Let $\cI = \F\bMag X\times \F\bMag X$, and define a \cI-indexed signature that has the following operations.
+\begin{itemize}
+\item For each $x\in \F\bMag X$, a nullary operation $() \to (x,x)$.
+\item For each $x,y\in \F\bMag X$, a unary operation $((x,y)) \to (y,x)$.
+\item For each $x,y,z\in \F\bMag X$, a binary operation $((x,y),(y,z)) \to (x,z)$.
+\item For each $x,y,z,w\in \F\bMag X$, a binary operation \[((x,y),(z,w)) \to (x\cdot z,y\cdot w),\] where $\cdot$ denotes the binary magma operation on $\F\bMag X$.
+\item For each $x,y,z\in \F\bMag X$, a nullary operation \[() \to (x\cdot (y\cdot z),(x\cdot y)\cdot z).\]
+\end{itemize}
+An algebra for this signature is an $(\F\bMag X\times \F\bMag X)$-indexed family of sets $R(x,y)$ equipped with elements and operations
+\begin{align*}
+  e_x &\in R(x,x)\\
+  R(x,y) &\to R(y,x)\\
+  R(x,y)\times R(y,z) &\to R(x,z)\\
+  R(x,y) \times R(z,w) &\to R(x\cdot z,y\cdot w)\\
+  a_{x,y,z} &\in R(x\cdot (y\cdot z),(x\cdot y)\cdot z)
+\end{align*}
+Now for any such $R$, ``$R(x,y)$ is nonempty'' is a binary \emph{relation} on $\F\bMag X$, which we abusively denote also by $R(x,y)$.
+The above elements and operations imply that this is an equivalence relation that is a congruence for the magma operation and moreover relates $x\cdot (y\cdot z)$ to $(x\cdot y)\cdot z$ for all $x,y,z$.
+And conversely, if we have any such binary relation $\sim$, we can construct an indexed algebra $R$ by setting $R(x,y) = \unit$ if $x\sim y$ and $R(x,y)=\emptyset$ otherwise.
+
+Let $\equiv$ denote the binary relation obtained as above from nonemptiness of the \emph{initial} algebra for this indexed signature.
+
+\begin{thm}\label{thm:free-monoid}
+  The quotient of $\F\bMag X$ by $\equivsym$ is the free semigroup generated by $X$.
+\end{thm}
+\begin{proof}
+  First we show that it is a semigroup.
+  Given $u,v\in\F\bMag X/\equivsym$, choose representatives $x,y\in\F\bMag X$ for them, and let $u\cdot v$ be the equivalence class of $x\cdot y$.
+  Since $\equiv$ is a congruence for the magma operation, the result is independent of the choice of representatives; thus $\F\bMag X/\equivsym$ is a magma.
+  Now given $u,v,w \in \F\bMag X/\equivsym$, choose representatives $x,y,z$; then since $x\cdot (y\cdot z)\equiv (x\cdot y)\cdot z$, we have $u\cdot (v\cdot w) =  (u\cdot v)\cdot w$.
+  Thus $\F\bMag X/\equivsym$ is a semigroup
+
+  Now let $M$ be any other semigroup and $\psi:X\to M$ a map.
+  Since $M$ is in particular a magma, we have a unique induced magma morphism $\phi : \F\bMag X\to M$.
+  Define a binary relation $R$ on $\F\bMag X$ by saying that $R(x,y)$ means $\phi(x)=\phi(y)$.
+  Since $\phi$ is a magma morphism and $M$ is a semigroup, $R$ can be regarded as an algebra for the above indexed signature.
+  Thus it admits a map from the initial such algebra.
+  Hence, if $x\equiv y$, then $R(x,y)$, i.e.\ $\phi(x)=\phi(y)$; so $\phi$ factors through $\F\bMag X/\equivsym$.
+  It is straightforward to check that this factorization is a semigroup morphism and is the unique such extending $\psi$.
+\end{proof}
+
+[TODO: Do it in general?]
+
+\section{Rules and deductive systems}
+\label{sec:rules}
+
+
+
 
 
 \chapter{Unary type theories}
