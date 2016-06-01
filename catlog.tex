@@ -355,272 +355,6 @@ However, because one of our goals is to help the reader become familiar with the
 The reader should feel free to skip over these brief digressions.
 
 
-\chapter{Deductive systems}
-\label{chap:dedsys}
-
-Before beginning the study of any type theories in particular, we spend a brief chapter on the formal apparatus underlying them.
-This is rarely explained in detail, yet its unfamiliarity to mathematicians is probably a large part of what makes type theory hard for them to understand.
-
-[TODO: I like this, but it seems unlikely to really be appreciated by the reader at this point who doesn't have any exposure to type theory yet.  Maybe it should be an appendix that we refer the reader to at various points?]
-
-
-\section{Trees and free algebras}
-\label{sec:trees}
-
-As remarked in \cref{sec:generalities}, our perspective on type theory is that it presents \emph{free categorical structures} in a particularly convenient way.
-Since categorical structures are particular kinds of \emph{algebraic} structures, it seems reasonable to think first about what free algebraic structures look like in general.
-In this section we begin by considering ``algebras without axioms''.
-
-A \textbf{signature} $\sig$ is a set $\sig_1$ of \textbf{operations} with a function $\ay:\sig_1 \to \dN$ assigning to each operation a natural number\footnote{Everything in this chapter works just as well if arities are arbitrary cardinal numbers (except that in \cref{sec:axioms} we would require the axiom of choice).
-  However, for simplicity we restrict to the case of finite arities, since that is where our ultimate interest lies.
-  On the other hand, there may certainly be infinitely many operations.} called its \textbf{arity}.
-A $\sig$-\textbf{algebra} is a set $A$ together with, for each $m\in\sig_1$, a function $\act m :A^{\ay(m)} \to A$.
-There is an obvious notion of $\sig$-algebra morphism, forming a category.
-
-Algebras over a signature are a very ``primordial'' sort of algebraic structure, with arbitrary operations but no axioms allowed.
-For instance, if $\sig_1=\{e,m\}$ with $\ay(e)=0$ and $\ay(m)=2$, then $\sig$-algebras are \emph{pointed magmas}: sets equipped with a basepoint and a binary operation.
-Later on we will see how to add axioms.
-
-Free $\sig$-algebras are conveniently described in terms of {trees}.
-A \textbf{tree} is a set of \textbf{nodes} together with a binary relation between them called \textbf{edge existence} (a ``relational graph'') that is connected and loop-free.
-A tree is \textbf{rooted} if it is equipped with a chosen node called the \textbf{root}.
-In a rooted tree every node $x$ has a unique (non-retracing) path to the root; if $x$ is not the root, this path goes through a unique edge connected to $x$ that we call \textbf{outgoing}, and the node at the other end of that edge is the \textbf{parent} of $x$.
-The non-outgoing edges connected to $x$ are called \textbf{incoming}, and the nodes they connect it to are called its \textbf{children}.
-A node is a \textbf{descendant} of $x$ if its path to the root passes through $x$, which is to say it is a child of a child of a\dots of $x$.
-A node $x$ together with all its descendants forms another rooted tree with $x$ as the root.
-% The \textbf{height} of a node is the length of its path to the root; this is always a natural number, and the height of a child of $x$ is one more than the height of $x$.
-A \textbf{branch} is a non-retracing path starting at the root; a rooted tree is \textbf{well-founded} if there are no infinite branches.
-
-If $\sig$ is a signature, then a $\sig$-\textbf{labeled tree} is a rooted tree equipped with a \textbf{labeling} function from nodes to $\sig_1$, along with for every node $x$ labeled by $m\in\cO$, a bijection from the incoming edges of $x$ to $\{1,\dots,\ay(m)\}$ (hence, in particular, that there are exactly $\ay(m)$ such edges).
-There is an obvious notion of \emph{isomorphism} between labeled trees.
-We write $W\sig$ for the set of all isomorphism classes of \emph{well-founded} $\sig$-labeled trees.
-(Note that $W\sig$ is empty unless there is at least one nullary operation.)
-Then $W\sig$ has a $\sig$-algebra structure defined as follows: given $m\in\sig_1$ and a list of trees $t_1,\dots,t_{\ay(m)}$, define a tree $\act m (t_1,\dots,t_{\ay(m)})$ with nodes $\{\star\} \sqcup \bigsqcup_i t_i$, where $\star$ is the root, with label $m$, and its children are the roots of the trees $t_i$.
-
-The central fact is that $W\sig$ is the initial $\sig$-algebra.
-We will give a classical set-theoretic proof of this for the comfort of a certain kind of reader, but readers of a different kind, or who already believe this fact, are welcome to skip the proof.
-(From a constructive or type-theoretic point of view, $W\sig$ and its initiality are sometimes a fundamental axiom not reducible to sets.)
-
-\begin{thm}\label{thm:tree-ind}
-  Suppose $P\subseteq W\sig$ has the property that for any $m$ and trees $t_1,\dots,t_{\ay(m)}$ such that each $t_i\in P$, then also $\act m(t_1,\dots,t_{\ay(m)})\in P$.
-  Then $P= W\sig$.
-\end{thm}
-\begin{proof}
-  Suppose not, so there is a well-founded $\sig$-labeled tree not in $P$.
-  Let $m$ be the label of its root and $t_1,\dots,t_{\ay(m)}$ its children; then our given tree is (isomorphic to) $\act m(t_1,\dots,t_{\ay(m)})$.
-  By the contrapositive of our assumption, therefore, there must be some $i$ such that $t_i\notin P$.
-  Iterating, we obtain an infinite branch, contradicting well-foundedness.
-\end{proof}
-
-\begin{thm}\label{thm:tree-rec}
-  For any $\sig$-algebra $A$, there is a unique $\sig$-algebra morphism $W\sig \to A$.
-\end{thm}
-\begin{proof}
-  TODO: standard argument.
-\end{proof}
-
-Now that we have \emph{initial} $\sig$-algebras, note that \emph{free} $\sig$-algebras can be constructed by a simple modification.
-Given $\sig$ and any set $X$, define a new signature $\sig[X]$ by $\sig[X]_1 = \sig_1 \sqcup X$, where $\ay(x)=0$ for all $x\in X$.
-Then a $\sig[X]$-algebra is just a $\sig$-algebra together with a map from $X$ into its underlying set, so the initial such algebra is exactly the free $\sig$-algebra on $X$.
-Thus, the forgetful functor from $\sig$-algebras to sets has a left adjoint.
-
-A different way to express \cref{thm:tree-rec} is that \emph{given an arbitrary set $A$, to define a function $W\sig \to A$ it suffices to define a $\sig$-algebra structure on $A$}.
-This may seem like a trivial reformulation, but it better reflects the way we will use it.
-
-In yet other words, we may define a function $f:W\sig \to A$ by specifying $f(\act m(t_1,\dots,t_{\ay(m)}))$ for each $m$, assuming recursively that $f(t_1),\dots,f(t_{\ay(m)})$ have already been defined.
-Formally this is the same as specifying a $\sig$-algebra structure on $A$ --- the definition of ``$f(\act m(t_1,\dots,t_{\ay(m)}))$'' given the ``values of $f(t_1),\dots,f(t_{\ay(m)})$'' is precisely the action $\act m$ on $A$ --- but it often matches our thought processes best.
-
-\subsection*{Exercises}
-
-\begin{ex}\label{ex:wf-rigid}
-  Prove that a well-founded $\sig$-labeled tree has no nonidentity automorphisms.
-  Thus, the passage to isomorphism classes in the definition of $W\sig$ is ``categorically harmless''.
-\end{ex}
-
-\begin{ex}\label{ex:natw}
-  Exhibit a signature $\sig$ such that $W\sig \cong \dN$ and \cref{thm:tree-ind} reduces to ordinary mathematical induction.
-\end{ex}
-
-
-\section{Indexed trees}
-\label{sec:indexed-trees}
-
-The signatures and algebras in \cref{sec:trees} have only one underlying set, or \emph{sort}, but sometimes algebraic structures have more than one sort.
-As a simple example, we could consider a set together with a group acting on that set to be a single algebraic structure; then the group and the set are two sorts.
-(Categories could be regarded as having two sets, namely objects and arrows; but it is generally better to treat them differently.
-Wait for \cref{chap:unary}.)
-
-To deal with this situation, we augment our signatures with a set $\sig_0$ of \textbf{sorts} together with, for each operation $m\in\sig_1$, an \textbf{output sort} $c_m\in\sig_0$ and also a list of \textbf{input sorts} $d_{m,1},\dots,d_{m,\ay(m)}$.
-For brevity we write such an operation as $m:(d_{m,1},\dots,d_{m,\ay(m)}) \to c_m$.
-From now on we call these simply \textbf{signatures}; the simpler signatures of \cref{sec:trees} we re-christen \textbf{one-sorted signatures}.
-
-For a multi-sorted signature $\sig$, a $\sig$-\textbf{algebra} is a $\sig_0$-indexed family of sets $\{A_i\}_{i\in\sig_0}$ together with for each $m\in\sig_1$ a function $A_{d_{m,1}}\times \cdots \times A_{d_{m,\ay(m)}} \to A_{c_m}$.
-For instance, if $\sig_0 = \{g,s\}$ and $\sig_1=\{m,t\}$ with
-$m : (g,g) \to g$ and $t : (g,s) \to s$,
-then an indexed algebra consists of two sets $A_g$ and $A_s$, a binary operation on $A_g$, and an action of $A_g$ on $A_s$.
-
-Similarly, we define a $\sig$-\textbf{labeled tree} as before, with the additional requirement that if $x$ is the $k^{\mathrm{th}}$ child of $y$, and $x$ is labeled by $m$ while $y$ is labeled by $p$, then $c_m = d_{p,k}$.
-For each $i\in\sig_0$, let $W\sig_i$ be the set of isomorphism classes of $\sig$-labeled trees for which the output sort of the root is $i$.
-Then $\{W\sig_i\}_{i\in\sig_0}$ has a similar tautological $\sig$-algebra structure, and is the initial one.
-
-\subsection*{Exercises}
-
-\begin{ex}
-  Prove that $\{W\sig_i\}_{i\in\sig_0}$ is the initial $\sig$-algebra.
-\end{ex}
-
-\section{Free algebras with axioms}
-\label{sec:axioms}
-
-Of course, most algebraic structures of interest contain axioms as well as operations; for instance, multiplication in a group or monoid must be associative and unital.
-The free monoid on a set $X$ is naturally regarded as a quotient of the free pointed magma on $X$ that forces associativity and unitality to hold.
-It turns out that we can construct free algebras of this sort quite generally by defining an equivalence relation \emph{as another indexed free algebra}.
-
-Making this completely precise in general is a bit technical, so we will begin with a concrete example.
-Suppose we want to generate the free semigroup on a set $X$.
-Let $\F\bMag X$ denote the free magma on $X$, constructed as in \cref{sec:trees}.
-(A magma is a set with a single binary operation; a semigroup is a magma whose operation is associative.)
-
-Now define a signature $\sig^{\equivsym}$ with $\sig^{\equivsym}_0 = \F\bMag X\times \F\bMag X$ and the following operations.
-\begin{itemize}
-\item For each $x\in \F\bMag X$, a nullary operation $() \to (x,x)$.
-\item For each $x,y\in \F\bMag X$, a unary operation $((x,y)) \to (y,x)$.
-\item For each $x,y,z\in \F\bMag X$, a binary operation $((x,y),(y,z)) \to (x,z)$.
-\item For each $x,y,z,w\in \F\bMag X$, a binary operation \[((x,y),(z,w)) \to (x\cdot z,y\cdot w),\] where $\cdot$ denotes the binary magma operation on $\F\bMag X$.
-\item For each $x,y,z\in \F\bMag X$, a nullary operation \[() \to (x\cdot (y\cdot z),(x\cdot y)\cdot z).\]
-\end{itemize}
-An algebra for this signature is an $(\F\bMag X\times \F\bMag X)$-indexed family of sets $R(x,y)$ equipped with elements and operations
-\begin{align*}
-  e_x &\in R(x,x)\\
-  R(x,y) &\to R(y,x)\\
-  R(x,y)\times R(y,z) &\to R(x,z)\\
-  R(x,y) \times R(z,w) &\to R(x\cdot z,y\cdot w)\\
-  a_{x,y,z} &\in R(x\cdot (y\cdot z),(x\cdot y)\cdot z)
-\end{align*}
-Now for any such $R$, ``$R(x,y)$ is nonempty'' is a binary \emph{relation} on $\F\bMag X$, which we abusively denote also by $R(x,y)$.
-The above elements and operations imply that this is an equivalence relation that is a congruence for the magma operation and moreover relates $x\cdot (y\cdot z)$ to $(x\cdot y)\cdot z$ for all $x,y,z$.
-And conversely, if we have any such binary relation $\sim$, we can construct an indexed algebra $R$ by setting $R(x,y) = \unit$ if $x\sim y$ and $R(x,y)=\emptyset$ otherwise.
-
-Let $\equivsym$ denote the binary relation obtained as above from nonemptiness of the \emph{initial} algebra for this indexed signature.
-
-\begin{thm}\label{thm:free-monoid}
-  The quotient of $\F\bMag X$ by $\equivsym$ is the free semigroup generated by $X$.
-\end{thm}
-\begin{proof}
-  First we show that it is a semigroup.
-  Given $u,v\in\F\bMag X/\equivsym$, choose representatives $x,y\in\F\bMag X$ for them, and let $u\cdot v$ be the equivalence class of $x\cdot y$.
-  Since $\equiv$ is a congruence for the magma operation, the result is independent of the choice of representatives; thus $\F\bMag X/\equivsym$ is a magma.
-  Now given $u,v,w \in \F\bMag X/\equivsym$, choose representatives $x,y,z$; then since $x\cdot (y\cdot z)\equiv (x\cdot y)\cdot z$, we have $u\cdot (v\cdot w) =  (u\cdot v)\cdot w$.
-  Thus $\F\bMag X/\equivsym$ is a semigroup
-
-  Now let $M$ be any other semigroup and $\psi:X\to M$ a map.
-  Since $M$ is in particular a magma, we have a unique induced magma morphism $\phi : \F\bMag X\to M$.
-  Define a binary relation $R$ on $\F\bMag X$ by saying that $R(x,y)$ means $\phi(x)=\phi(y)$.
-  Since $\phi$ is a magma morphism and $M$ is a semigroup, $R$ can be regarded as an algebra for the above indexed signature.
-  Thus it admits a map from the initial such algebra.
-  Hence, if $x\equiv y$, then $R(x,y)$, i.e.\ $\phi(x)=\phi(y)$; so $\phi$ factors through $\F\bMag X/\equivsym$.
-  It is straightforward to check that this factorization is a semigroup morphism and is the unique such extending $\psi$.
-\end{proof}
-
-In the general case, we proceed as follows.
-Suppose $\sig$ is a (multi-sorted) signature and we have additionally a set $\axes$ of \textbf{axioms}, each of which is a pair $(a,b)$ of elements of the free algebra $W\sig[V]_i$ for some $i\in\sig_0$ and some finite set $V$.
-Then for any $\sig$-algebra $A$, any axiom $a,b\in W\sig[V]_i$, and any function $g:V\to A$ (picking out some finite set of elements of $A$), we have an induced $\sig$-algebra map $\gbar:W\sig[V]\to A$.
-We define a $(\sig,\axes)$-\textbf{algebra} to be a $\sig$-algebra $A$ such that $\gbar(a)=\gbar(b)$ for any $(a,b)\in\axes$ and $g:V\to A$.
-
-For instance, associativity in a magma is represented by the axiom
-\[ \left(
-  \vcenter{\xymatrix@-1.5pc{ & m \ar@{-}[dl] \ar@{-}[dr] \\ x && m \ar@{-}[dl] \ar@{-}[dr] \\ & y && z }},
-  \vcenter{\xymatrix@-1.5pc{ && m \ar@{-}[dl] \ar@{-}[dr] \\ & m \ar@{-}[dl] \ar@{-}[dr] && z \\ x && y }}
-\right)
-\in W\sig[\{x,y,z\}]
-\]
-The $(\sig,\axes)$-algebras in this case are exactly semigroups.
-
-Now, given a set $X$, we define a signature $\sig^{\equivsym}$ with
-\[\sig^{\equivsym}_0 = \setof{(i,x,y) | i\in \sig_0; x,y\in W\sig[X]_i}\]
-and the following operations:
-\begin{itemize}
-\item For each $x\in W\sig[X]_i$, a nullary operation $() \to (i,x,x)$.
-\item For each $x,y\in W\sig[X]_i$, a unary operation $((i,x,y)) \to (i,y,x)$.
-\item For each $x,y,z\in W\sig[X]_i$, a binary operation $((i,x,y),(i,y,z)) \to (i,x,z)$.
-\item For each operation $m:(d_{m,1},\dots,d_{m,\ay(m)}) \to c_m$ in $\sig$, and each collection of pairs of elements $x_k,y_k \in W\sig[X]_{d_{m,k}}$ for $1\le k\le \ay(m)$, an operation
-  \begin{multline*}
-    ((d_{m,1},x_1,y_1),\dots,(d_{m,\ay(m)},x_{\ay(m)},y_{\ay(m)})) \\\too
-    (c_m, \act m(x_1,\dots,x_{\ay(m)}), \act m(y_1,\dots,y_{\ay(m)})).
-  \end{multline*}
-\item For each axiom $a,b\in W\sig[V]_i$ in $\axes$ and each function $g:V\to W\sig[X]$ with unique extension $\gbar:W\sig[V]\to W\sig[X]$, a nullary operation
-  \[ () \to (i,\gbar(a),\gbar(b)). \]
-\end{itemize}
-Let $\equivsym_i$ be the binary relation on $W\sig[X]_i$ defined by $a\equiv_i b$ if the sort $(i,a,b)$ is nonempty in the initial $\sig^{\equivsym}$-algebra.
-
-\begin{thm}\label{thm:tree-quotient}
-  Each $\equivsym_i$ is an equivalence relation and a congruence for the $\sig$-algebra structure, and the quotients $W\sig[X]_i/\equivsym_i$ form the free $(\sig,\axes)$-algebra.\qed
-\end{thm}
-
-As in \cref{sec:trees}, we will usually think of this theorem slightly differently: to define a family of maps $f_i:W\sig[X]_i/\equivsym_i\to A_i$, it suffices to define each $f_{c_m}(\act m(t_1,\dots,t_{\ay(m)}))$ assuming recursively that $f_{d_{m,1}}(t_1),\dots, f_{d_{m,\ay(m)}}(t_{\ay(m)})$ have been defined, and also to check that for any axiom $(a,b)\in W\sig[V]_i$ and $g:V\to W\sig[X]_i$ we have $f_i(\gbar(a))=f_i(\gbar(b))$.
-
-\subsection*{Exercises}
-
-\begin{ex}\label{ex:tree-quotient}
-  Prove \cref{thm:tree-quotient}.
-\end{ex}
-
-\begin{ex}
-  Why is the axiom of choice required to generalize \cref{thm:tree-quotient} to the case of infinitary operations?
-\end{ex}
-
-
-\section{Rules and deductive systems}
-\label{sec:rules}
-
-The basic machinery of type theory is an iteration and reformulation of the preceding sections in different language, simultaneously introducing convenient notations.
-
-We consider a sequence of signatures $\sig^{(1)},\sig^{(2)},\dots,\sig^{(n)}$ for which the sorts of $\sig^{(k)}$ are defined in terms of the initial algebras $W\sig^{(j)}$ for the previous signatures $j<k$.
-For instance, we might have $\sig^{(2)}_0 = W\sig^{(1)} \times W\sig^{(1)}$.
-Note that the signatures $\sig^{\equivsym}$ from \cref{sec:axioms} also have sorts defined like this.
-
-Each sort in one of the signatures $\sig^{(k)}$ is called a \textbf{judgment}.
-We write $\cJ$ for a generic judgment, but we use more specific and congenial notation in particular cases.
-For instance, the sort $(\cJ,x,y)$ in $\sig^{\equivsym}$ is usually written $x\equiv y : \cJ$.
-
-Each operation $m:(\cJ_1,\dots,\cJ_n) \to \cJ'$ in one of these signatures is called a \textbf{rule} and written
-\[ \inferrule*[right=$m$]{\cJ_1 \\ \cdots \\ \cJ_n}{\cJ'}. \]
-The input judgments $\cJ_1,\dots,\cJ_n$ of a rule are called its \textbf{premises}, and the output judgment $\cJ'$ is called its \textbf{conclusion}.
-
-Finally, each element of $W\sig^{(k)}$ is called a \textbf{derivation} (sometimes a derivation \emph{of} its root judgment) and written by placing rules on top of each other to form its tree structure.
-For instance, if \cJ denotes the single sort of the signature for semigroups, then the associativity axiom of a monoid is
-\[
-\inferrule*[Right=$m$]{\inferrule*[Right=$x$]{\qquad}{\cJ} \\
-  \inferrule*[Right=$m$]{\inferrule*[Right=$y$]{\qquad}{\cJ}\\\inferrule*[Right=$z$]{\qquad}{\cJ}}{\cJ}}{\cJ}
-\qquad = \qquad
-\inferrule*[Right=$m$]{\inferrule*[Right=$m$]{\inferrule*[Right=$x$]{\qquad}{\cJ}\\\inferrule*[Right=$y$]{\qquad}{\cJ}}{\cJ} \\
-  \inferrule*[Right=$z$]{\qquad}{\cJ}}{\cJ}
-\]
-Note the rules with empty premises, corresponding to nullary operations.
-
-The whole sequence of signatures is called a \textbf{deductive system}.
-Thus, for instance, the signature $\sig[X]$ for semigroups under a fixed set $X$, together with the axiom-signature for monoids under $X$ on top of it, form a single deductive system.
-
-There is one further feature that seems trivial, but is eventually responsible for much of the value of categorical logic.
-Since the judgments in $\sig^{(k)}$ are defined in terms of the \emph{elements} of $W\sig^{(j)}$ for $j<k$, and the latter are rooted trees, the notation would rapidly get unwieldy if each $\cJ$ in a rule contained within it some number of derivation trees.
-Thus, we also represent derivations by \textbf{terms}, which are a ``linear'' syntax containing enough information to reconstruct the derivation.
-For instance, the expressions $x\cdot (y\cdot z)$ and $(x\cdot y)\cdot z$ for the two sides of associativity are terms, in which we have represented the rule $m$ by an infix operation ``$\cdot$''.
-
-Technically, something must be said about \emph{how} a linear syntax gives rise to a derivation tree.
-In fact, when a human mathematician reads an expression such as $x\cdot (y\cdot z)$, they generally mentally organize it as a tree without really thinking about it: here the first $\cdot$, being the ``outer'' operation, is the root, with children $x$ and $y\cdot z$, and the latter decomposes further into another $\cdot$ node with children $y$ and $z$.
-This ``internal syntax tree'' is exactly the intended derivation tree.
-An alternative reading where the second $\cdot$ is the root with children ``$x\cdot (y$'' and ``$z)$'' is ruled out by our intuitive understanding of the meaning of parentheses.
-
-When a computer reads such an expression it likewise constructs an internal tree representation.
-But the programmer has to be explicitly aware of this process, which is called \textbf{parsing}.
-If we are given a putative term claiming to represent a derivation of some judgment, then there is a further step after parsing of verifying that the parse tree indeed corresponds to a valid derivation tree; this is called \textbf{type-checking}.
-The main point to be made here is that technically, a term must contain enough information to reconstruct the derivation tree; but in many cases we tend to omit some of that information when it can be inferred from context.
-(Programmers even have elaborate and precise algorithms to make sense of ``inferring from context''.)
-
-With all that said, there are exceptions: some type theories deviate from this general picture by having terms that do not exactly represent derivations.
-Dependent type theories are probably the most notable example.
-But even in those cases it is helpful to understand the ``standard'' picture in order to appreciate the deviancy better.
-
 
 \chapter{Unary type theories}
 \label{chap:unary}
@@ -2561,7 +2295,7 @@ Finally, when we come to prove that these associativity isomorphisms satisfy the
 A multicategory is the categorical context in which to do this: in addition to ordinary morphisms like an ordinary category (e.g.\ linear maps) it also contains $n$-ary maps for all $n\in\dN$ (e.g.\ multilinear maps).
 Formally, just as a category is a directed graph with composition and identities, a multicategory is a \emph{multigraph} with composition and identities.
 
-\begin{defn}
+\begin{defn}\label{defn:multigraph}
   A \textbf{multigraph} \cG consists of a set of \emph{objects}, together with for every object $B$ and every finite list of objects $(A_1,\dots,A_n)$ a set of \emph{arrows} $\cG(A_1,\dots,A_n;B)$.
 \end{defn}
 
@@ -3832,6 +3566,316 @@ In general, because the underlying prop of a symmetric monoidal category remembe
 \label{chap:fol}
 
 
+\appendix
+
+\chapter{Deductive systems}
+\label{chap:dedsys}
+
+The purpose of this appendix is to explain the formal apparatus underlying type theory from a mathematical perspective, giving precise meanings to words like ``judgment'', ``rule'', and ``derivation''.
+This is rarely explained in detail, yet in my experience the unfamiliar terminology is a large part of what makes type theory difficult for mathematicians to understand.
+
+Formally speaking, this appendix should come before \cref{chap:unary}.
+However, its technicalities seem unlikely to be appreciated without some concrete exposure to the ideas that it is trying to explain, so I have placed it as an appendix instead.
+I encourage the reader to skip back and forth between it and the main text as needed.
+
+I should say that probably not all type theorists would agree with the meanings assigned herein to words like ``judgment''.
+Constructive type theory also has a philosophical/foundational aspect that I will not attempt to explain or engage with.
+The purpose of this appendix, like that of the entire book, is to explain type theory \emph{only} in its role as a language for reasoning about categorical structures, without meaning thereby to disparage its other roles or regard them as unimportant.
+
+
+\section{Trees and free algebras}
+\label{sec:trees}
+
+As remarked in \cref{sec:generalities}, our perspective on type theory is that it presents \emph{free categorical structures} in a particularly convenient way.
+Since categorical structures are particular kinds of \emph{algebraic} structures, it seems reasonable to think first about what free algebraic structures look like in general.
+In this section we begin by considering ``algebras without axioms''.
+
+A \textbf{signature} $\sig$ is a set $\sig_1$ of \textbf{operations} with a function $\ay:\sig_1 \to \dN$ assigning to each operation a natural number\footnote{Everything in this chapter works just as well if arities are arbitrary cardinal numbers (except that in \cref{sec:axioms} we would require the axiom of choice).
+  However, for simplicity we restrict to the case of finite arities, since that is where our ultimate interest lies.
+  On the other hand, there may certainly be infinitely many operations.} called its \textbf{arity}.
+A $\sig$-\textbf{algebra} is a set $A$ together with, for each $m\in\sig_1$, a function $\act m :A^{\ay(m)} \to A$.
+There is an obvious notion of $\sig$-algebra morphism, forming a category.
+
+Algebras over a signature are a very ``primordial'' sort of algebraic structure, with arbitrary operations but no axioms allowed.
+For instance, if $\sig_1=\{e,m\}$ with $\ay(e)=0$ and $\ay(m)=2$, then $\sig$-algebras are \emph{pointed magmas}: sets equipped with a basepoint and a binary operation.
+We will see how to add axioms in \cref{sec:axioms}.
+
+Free $\sig$-algebras are conveniently described in terms of {trees}.
+A \textbf{tree} is a set whose elements are called \textbf{nodes}, together with a binary relation between them called \textbf{edge existence} (a ``relational graph'') that is connected and loop-free.
+A tree is \textbf{rooted} if it is equipped with a chosen node called the \textbf{root}.
+In a rooted tree every node $x$ has a unique (non-retracing) path to the root; if $x$ is not the root, this path goes through a unique edge connected to $x$ that we call \textbf{outgoing}, and the node at the other end of that edge is the \textbf{parent} of $x$.
+The non-outgoing edges connected to $x$ are called \textbf{incoming}, and the nodes they connect it to are called its \textbf{children}.
+A node is a \textbf{descendant} of $x$ if its path to the root passes through $x$, which is to say it is a child of a child of a\dots of $x$.
+A node $x$ together with all its descendants forms another rooted tree with $x$ as the root.
+% The \textbf{height} of a node is the length of its path to the root; this is always a natural number, and the height of a child of $x$ is one more than the height of $x$.
+A \textbf{branch} is a non-retracing path starting at the root; a rooted tree is \textbf{well-founded} if there are no infinite branches.
+
+If $\sig$ is a signature, then a $\sig$-\textbf{labeled tree} is a rooted tree equipped with a \textbf{labeling} function from nodes to $\sig_1$, along with for every node $x$ labeled by $m\in\cO$, a bijection from the incoming edges of $x$ to $\{1,\dots,\ay(m)\}$ (hence, in particular, that there are exactly $\ay(m)$ such edges).
+There is an obvious notion of \emph{isomorphism} between labeled trees.
+We write $W\sig$ for the set of all isomorphism classes of \emph{well-founded} $\sig$-labeled trees.
+(Note that $W\sig$ is empty unless there is at least one nullary operation.)
+Then $W\sig$ has a $\sig$-algebra structure defined as follows: given $m\in\sig_1$ and a list of trees $t_1,\dots,t_{\ay(m)}$, define a tree $\act m (t_1,\dots,t_{\ay(m)})$ with nodes $\{\star\} \sqcup \bigsqcup_i t_i$, where $\star$ is the root, with label $m$, and its children are the roots of the trees $t_i$.
+
+The central fact is that $W\sig$ is the initial $\sig$-algebra.
+We will give a classical set-theoretic proof of this for the comfort of a certain kind of reader, but readers of a different kind, or who already believe this fact, are welcome to skip the proof.
+(From a constructive type-theoretic point of view, $W\sig$ and its initiality are sometimes a fundamental axiom not reducible to sets.)
+
+\begin{thm}\label{thm:tree-ind}
+  Suppose $P\subseteq W\sig$ has the property that for any $m$ and trees $t_1,\dots,t_{\ay(m)}$ such that each $t_i\in P$, then also $\act m(t_1,\dots,t_{\ay(m)})\in P$.
+  Then $P= W\sig$.
+\end{thm}
+\begin{proof}
+  Suppose not, so there is a well-founded $\sig$-labeled tree not in $P$.
+  Let $m$ be the label of its root and $t_1,\dots,t_{\ay(m)}$ its children; then our given tree is (isomorphic to) $\act m(t_1,\dots,t_{\ay(m)})$.
+  By the contrapositive of our assumption, therefore, there must be some $i$ such that $t_i\notin P$.
+  Iterating, we obtain an infinite branch, contradicting well-foundedness.
+\end{proof}
+
+\begin{thm}\label{thm:tree-rec}
+  For any $\sig$-algebra $A$, there is a unique $\sig$-algebra morphism $W\sig \to A$.
+\end{thm}
+\begin{proof}
+  TODO: standard argument.
+\end{proof}
+
+Now that we have \emph{initial} $\sig$-algebras, note that \emph{free} $\sig$-algebras can be constructed by a simple modification.
+Given $\sig$ and any set $X$, define a new signature $\sig[X]$ by $\sig[X]_1 = \sig_1 \sqcup X$, where $\ay(x)=0$ for all $x\in X$.
+Then a $\sig[X]$-algebra is just a $\sig$-algebra together with a map from $X$ into its underlying set, so the initial such algebra is exactly the free $\sig$-algebra on $X$.
+Thus, the forgetful functor from $\sig$-algebras to sets has a left adjoint.
+
+A different way to express \cref{thm:tree-rec} is that \emph{given an arbitrary set $A$, to define a function $W\sig \to A$ it suffices to define a $\sig$-algebra structure on $A$}.
+This may seem like a trivial reformulation, but it better reflects the way we use it to describe type theories.
+
+In yet other words, we may define a function $f:W\sig \to A$ by specifying $f(\act m(t_1,\dots,t_{\ay(m)}))$ for each $m$, assuming recursively that $f(t_1),\dots,f(t_{\ay(m)})$ have already been defined.
+Formally this is the same as specifying a $\sig$-algebra structure on $A$ --- the definition of ``$f(\act m(t_1,\dots,t_{\ay(m)}))$'' given the ``values of $f(t_1),\dots,f(t_{\ay(m)})$'' is precisely the action $\act m$ on $A$ --- but it often matches our thought processes best.
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:wf-rigid}
+  Prove that a well-founded $\sig$-labeled tree has no nonidentity automorphisms.
+  Thus, the passage to isomorphism classes in the definition of $W\sig$ is ``categorically harmless''.
+\end{ex}
+
+\begin{ex}\label{ex:natw}
+  Exhibit a signature $\sig$ such that $W\sig \cong \dN$ and \cref{thm:tree-ind} reduces to ordinary mathematical induction.
+\end{ex}
+
+
+\section{Indexed trees}
+\label{sec:indexed-trees}
+
+The signatures and algebras in \cref{sec:trees} have only one underlying set, or \emph{sort}, but sometimes algebraic structures have more than one sort.
+As a simple example, we could consider a set together with a group acting on that set to be a single algebraic structure; then the group and the set are two sorts.
+
+Categories could be regarded as having two sets, namely objects and arrows; but it is generally better to treat them differently.
+Specifically, for a fixed set $\cO$, we regard categories with object set \cO as an algebraic structure whose set of sorts is $\cO\times \cO$.
+Thus each hom-set is a separate sort, and each triple $A,B,C$ gives a different binary composition operation
+\[ \circ_{A,B,C} : (\hom(B,C),\hom(A,B)) \to \hom(A,C) \]
+This may seem a little odd, but as we will see it makes sense.
+
+To deal with multi-sorted algebraic structures in general, we augment our signatures with a set $\sig_0$ of \textbf{sorts} together with, for each operation $m\in\sig_1$, an \textbf{output sort} $c_m\in\sig_0$ and also a list of \textbf{input sorts} $d_{m,1},\dots,d_{m,\ay(m)}$.
+For brevity we write such an operation as $m:(d_{m,1},\dots,d_{m,\ay(m)}) \to c_m$.
+From now on we call these \emph{multi-sorted signatures} simply \textbf{signatures}; the simpler signatures of \cref{sec:trees} we re-christen \textbf{one-sorted signatures}.
+(In fact, a multi-sorted signature is essentially exactly the same as a ``multigraph'', \cref{defn:multigraph}.)
+
+For a multi-sorted signature $\sig$, a $\sig$-\textbf{algebra} is a $\sig_0$-indexed family of sets $\{A_i\}_{i\in\sig_0}$ together with for each $m\in\sig_1$ a function $A_{d_{m,1}}\times \cdots \times A_{d_{m,\ay(m)}} \to A_{c_m}$.
+For instance, if $\sig_0 = \{g,s\}$ and $\sig_1=\{m,t\}$ with
+$m : (g,g) \to g$ and $t : (g,s) \to s$,
+then an indexed algebra consists of two sets $A_g$ and $A_s$, a binary operation on $A_g$, and an action of $A_g$ on $A_s$.
+
+Similarly, we define a $\sig$-\textbf{labeled tree} as before, with the additional requirement that if $x$ is the $k^{\mathrm{th}}$ child of $y$, and $x$ is labeled by $m\in\sig_1$ while $y$ is labeled by $p\in\sig_1$, then $c_m = d_{p,k}$.
+For each $i\in\sig_0$, let $W\sig_i$ be the set of isomorphism classes of $\sig$-labeled trees for which the output sort of the root is $i$.
+Then $\{W\sig_i\}_{i\in\sig_0}$ has a similar tautological $\sig$-algebra structure, and is the initial one.
+
+\subsection*{Exercises}
+
+\begin{ex}
+  Prove that $\{W\sig_i\}_{i\in\sig_0}$ is the initial $\sig$-algebra.
+\end{ex}
+
+\section{Free algebras with axioms}
+\label{sec:axioms}
+
+Of course, most algebraic structures of interest contain axioms as well as operations; for instance, multiplication in a group or monoid must be associative and unital.
+The free monoid on a set $X$ is naturally regarded as a quotient of the free pointed magma on $X$ that forces associativity and unitality to hold.
+It turns out that we can construct free algebras of this sort quite generally by defining an equivalence relation \emph{as another indexed free algebra}.
+
+Making this completely precise in general is a bit technical, so we will begin with a concrete example.
+Suppose we want to generate the free semigroup on a set $X$.
+Let $\F\bMag X$ denote the free magma on $X$, constructed as in \cref{sec:trees}.
+(A magma is a set with a single binary operation; a semigroup is a magma whose operation is associative.)
+
+Now define a signature $\sig^{\equivsym}$ with $\sig^{\equivsym}_0 = \F\bMag X\times \F\bMag X$ and the following operations.
+\begin{itemize}
+\item For each $x\in \F\bMag X$, a nullary operation $() \to (x,x)$.
+\item For each $x,y\in \F\bMag X$, a unary operation $((x,y)) \to (y,x)$.
+\item For each $x,y,z\in \F\bMag X$, a binary operation $((x,y),(y,z)) \to (x,z)$.
+\item For each $x,y,z,w\in \F\bMag X$, a binary operation \[((x,y),(z,w)) \to (x\cdot z,y\cdot w),\] where $\cdot$ denotes the binary magma operation on $\F\bMag X$.
+\item For each $x,y,z\in \F\bMag X$, a nullary operation \[() \to (x\cdot (y\cdot z),(x\cdot y)\cdot z).\]
+\end{itemize}
+An algebra for this signature is an $(\F\bMag X\times \F\bMag X)$-indexed family of sets $R(x,y)$ equipped with elements and operations
+\begin{align*}
+  e_x &\in R(x,x)\\
+  R(x,y) &\to R(y,x)\\
+  R(x,y)\times R(y,z) &\to R(x,z)\\
+  R(x,y) \times R(z,w) &\to R(x\cdot z,y\cdot w)\\
+  a_{x,y,z} &\in R(x\cdot (y\cdot z),(x\cdot y)\cdot z)
+\end{align*}
+Now for any such $R$, ``$R(x,y)$ is nonempty'' is a binary \emph{relation} on $\F\bMag X$, which we abusively denote also by $R(x,y)$.
+The above elements and operations imply that this is an equivalence relation that is a congruence for the magma operation and moreover relates $x\cdot (y\cdot z)$ to $(x\cdot y)\cdot z$ for all $x,y,z$.
+And conversely, if we have any such binary relation $\sim$, we can construct an indexed algebra $R$ by setting $R(x,y) = \unit$ if $x\sim y$ and $R(x,y)=\emptyset$ otherwise.
+
+Let $\equivsym$ denote the binary relation obtained as above from nonemptiness of the \emph{initial} algebra for this indexed signature.
+
+\begin{thm}\label{thm:free-monoid}
+  The quotient of $\F\bMag X$ by $\equivsym$ is the free semigroup generated by $X$.
+\end{thm}
+\begin{proof}
+  First we show that it is a semigroup.
+  Given $u,v\in\F\bMag X/\equivsym$, choose representatives $x,y\in\F\bMag X$ for them, and let $u\cdot v$ be the equivalence class of $x\cdot y$.
+  Since $\equiv$ is a congruence for the magma operation, the result is independent of the choice of representatives; thus $\F\bMag X/\equivsym$ is a magma.
+  Now given $u,v,w \in \F\bMag X/\equivsym$, choose representatives $x,y,z$; then since $x\cdot (y\cdot z)\equiv (x\cdot y)\cdot z$, we have $u\cdot (v\cdot w) =  (u\cdot v)\cdot w$.
+  Thus $\F\bMag X/\equivsym$ is a semigroup
+
+  Now let $M$ be any other semigroup and $\psi:X\to M$ a map.
+  Since $M$ is in particular a magma, we have a unique induced magma morphism $\phi : \F\bMag X\to M$.
+  Define a binary relation $R$ on $\F\bMag X$ by saying that $R(x,y)$ means $\phi(x)=\phi(y)$.
+  Since $\phi$ is a magma morphism and $M$ is a semigroup, $R$ can be regarded as an algebra for the above indexed signature.
+  Thus it admits a map from the initial such algebra.
+  Hence, if $x\equiv y$, then $R(x,y)$, i.e.\ $\phi(x)=\phi(y)$; so $\phi$ factors through $\F\bMag X/\equivsym$.
+  It is straightforward to check that this factorization is a semigroup morphism and is the unique such extending $\psi$.
+\end{proof}
+
+In the general case, we proceed as follows.
+Suppose $\sig$ is a (multi-sorted) signature and we have additionally a set $\axes$ of \textbf{axioms}, each of which is a pair $(a,b)$ of elements of the free algebra $W\sig[V]_i$ for some $i\in\sig_0$ and some finite set $V$.
+Then for any $\sig$-algebra $A$, any axiom $a,b\in W\sig[V]_i$, and any function $g:V\to A$ (picking out some finite set of elements of $A$), we have an induced $\sig$-algebra map $\gbar:W\sig[V]\to A$.
+We define a $(\sig,\axes)$-\textbf{algebra} to be a $\sig$-algebra $A$ such that $\gbar(a)=\gbar(b)$ for any $(a,b)\in\axes$ and $g:V\to A$.
+
+For instance, associativity in a magma is represented by the axiom
+\[ \left(
+  \vcenter{\xymatrix@-1.5pc{ & m \ar@{-}[dl] \ar@{-}[dr] \\ x && m \ar@{-}[dl] \ar@{-}[dr] \\ & y && z }},
+  \vcenter{\xymatrix@-1.5pc{ && m \ar@{-}[dl] \ar@{-}[dr] \\ & m \ar@{-}[dl] \ar@{-}[dr] && z \\ x && y }}
+\right)
+\in W\sig[\{x,y,z\}]
+\]
+The $(\sig,\axes)$-algebras in this case are exactly semigroups.
+
+Now, given a set $X$, we define a signature $\sig^{\equivsym}$ with
+\[\sig^{\equivsym}_0 = \setof{(i,x,y) | i\in \sig_0; x,y\in W\sig[X]_i}\]
+and the following operations:
+\begin{itemize}
+\item For each $x\in W\sig[X]_i$, a nullary operation $() \to (i,x,x)$.
+\item For each $x,y\in W\sig[X]_i$, a unary operation $((i,x,y)) \to (i,y,x)$.
+\item For each $x,y,z\in W\sig[X]_i$, a binary operation $((i,x,y),(i,y,z)) \to (i,x,z)$.
+\item For each operation $m:(d_{m,1},\dots,d_{m,\ay(m)}) \to c_m$ in $\sig$, and each collection of pairs of elements $x_k,y_k \in W\sig[X]_{d_{m,k}}$ for $1\le k\le \ay(m)$, an operation
+  \begin{multline*}
+    ((d_{m,1},x_1,y_1),\dots,(d_{m,\ay(m)},x_{\ay(m)},y_{\ay(m)})) \\\too
+    (c_m, \act m(x_1,\dots,x_{\ay(m)}), \act m(y_1,\dots,y_{\ay(m)})).
+  \end{multline*}
+\item For each axiom $a,b\in W\sig[V]_i$ in $\axes$ and each function $g:V\to W\sig[X]$ with unique extension $\gbar:W\sig[V]\to W\sig[X]$, a nullary operation
+  \[ () \to (i,\gbar(a),\gbar(b)). \]
+\end{itemize}
+Let $\equivsym_i$ be the binary relation on $W\sig[X]_i$ defined by $a\equiv_i b$ if the sort $(i,a,b)$ is nonempty in the initial $\sig^{\equivsym}$-algebra.
+
+\begin{thm}\label{thm:tree-quotient}
+  Each $\equivsym_i$ is an equivalence relation and a congruence for the $\sig$-algebra structure, and the quotients $W\sig[X]_i/\equivsym_i$ form the free $(\sig,\axes)$-algebra.\qed
+\end{thm}
+
+As in \cref{sec:trees}, we will usually think of this theorem slightly differently: to define a family of maps $f_i:W\sig[X]_i/\equivsym_i\to A_i$, it suffices to define each $f_{c_m}(\act m(t_1,\dots,t_{\ay(m)}))$ assuming recursively that $f_{d_{m,1}}(t_1),\dots, f_{d_{m,\ay(m)}}(t_{\ay(m)})$ have been defined, and also to check that for any axiom $(a,b)\in W\sig[V]_i$ and $g:V\to W\sig[X]_i$ we have $f_i(\gbar(a))=f_i(\gbar(b))$.
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:tree-quotient}
+  Prove \cref{thm:tree-quotient}.
+\end{ex}
+
+\begin{ex}
+  Why is the axiom of choice required to generalize \cref{thm:tree-quotient} to the case of infinitary operations?
+\end{ex}
+
+
+\section{Rules and deductive systems}
+\label{sec:rules}
+
+The basic machinery of type theory is an iteration and reformulation of the preceding sections in different language, simultaneously introducing convenient notations.
+
+We consider a sequence of signatures $\sig^{(1)},\sig^{(2)},\dots,\sig^{(n)}$ for which the sorts of $\sig^{(k)}$ are defined in terms of the initial algebras $W\sig^{(j)}$ for the previous signatures $j<k$.
+For instance, we might have $\sig^{(2)}_0 = W\sig^{(1)} \times W\sig^{(1)}$.
+A particularly important special case is when $\sig^{(k)}$ is $(\sig^{(j)})^{\equivsym}$ for some $j<k$ and some set of axioms, as in \cref{sec:axioms}.
+
+Each sort in one of the signatures $\sig^{(k)}$ is called a \textbf{judgment}.
+We write $\cJ$ for a generic judgment, but we use more specific and congenial notation in particular cases, such as:
+\begin{itemize}
+\item When categories with object set \cO are regarded as an $(\cO\times\cO)$-sorted theory as mentioned in \cref{sec:indexed-trees}, the sort $(A,B)$ is usually written $A\types B$.
+  This signature (with an $\equivsym$ on top of it) corresponds to the cut-ful type theory for categories from \cref{sec:category-cutful}.
+  The cut-free type theory for categories has different operations but the same sorts, and uses the same notation.
+\item The multicategorical and polycategorical theories of \cref{chap:simple,chap:polycats} use a similar notation for sorts $(\Gamma,\Delta)$ where one or both of $\Gamma$ and $\Delta$ is a list of elements of \cO rather than a single one.
+\item If $\sig^{(1)}$ is a one-sorted signature regarded as describing the \emph{objects} of some categorical structure, then we write its sort as $\type$.
+  We generally then have $\sig^{(2)}_0 = W\sig^{(1)} \times W\sig^{(1)}$ (for a unary type theory), with sorts again written as $A\types B$, where now $A$ and $B$ are elements of the initial $\sig^{(1)}$-algebra rather than elements of a fixed set \cO.
+\item If $\sig^{(k)}=(\sig^{(j)})^{\equivsym}$, then its sort $(\cJ,x,y)$ is usually written $x\equiv y : \cJ$.
+\end{itemize}
+
+In general, each operation $m:(\cJ_1,\dots,\cJ_n) \to \cJ'$ in one of the signatures $\sig^{(k)}$ is called a \textbf{rule}, and written
+\[ \inferrule*[right=$m$]{\cJ_1 \\ \cdots \\ \cJ_n}{\cJ'}. \]
+The input judgments $\cJ_1,\dots,\cJ_n$ of a rule are called its \textbf{premises}, and the output judgment $\cJ'$ is called its \textbf{conclusion}.
+
+Finally, each element of $W\sig^{(k)}$ is called a \textbf{derivation} (sometimes a derivation \emph{of} its root judgment) and written by placing rules on top of each other to form its tree structure.
+For instance, if \cJ denotes the single sort of the signature for semigroups, then the associativity axiom of a monoid is
+\[
+\inferrule*[Right=$m$]{\inferrule*[Right=$x$]{\qquad}{\cJ} \\
+  \inferrule*[Right=$m$]{\inferrule*[Right=$y$]{\qquad}{\cJ}\\\inferrule*[Right=$z$]{\qquad}{\cJ}}{\cJ}}{\cJ}
+\qquad \equiv \qquad
+\inferrule*[Right=$m$]{\inferrule*[Right=$m$]{\inferrule*[Right=$x$]{\qquad}{\cJ}\\\inferrule*[Right=$y$]{\qquad}{\cJ}}{\cJ} \\
+  \inferrule*[Right=$z$]{\qquad}{\cJ}}{\cJ}
+\]
+Note the rules with empty premises, corresponding to nullary operations.
+Similarly, for the cut-ful type theory for categories, associativity is the collection of axioms (one for each $A,B,C\in\cO$)
+\begin{multline*}
+\inferrule*[right=$\circ_{A,B,D}$]{\inferrule*[Right=$x$]{\qquad}{A\types B} \\
+  \inferrule*[Right=$\circ_{B,C,D}$]{\inferrule*[Right=$y$]{\qquad}{B\types C}\\\inferrule*[Right=$z$]{\qquad}{C\types D}}{B\types D}}{A\types D}
+\\ \equiv \qquad
+\inferrule*[right=$\circ_{A,C,D}$]{\inferrule*[right=$\circ_{A,B,C}$]{\inferrule*[Right=$x$]{\qquad}{A\types B}\\\inferrule*[Right=$y$]{\qquad}{B\types C}}{A\types C} \\
+  \inferrule*[Right=$z$]{\qquad}{C\types D}}{A\types D}
+\end{multline*}
+
+The whole sequence of signatures $\sig^{(1)},\sig^{(2)},\dots,\sig^{(n)}$ is called a \textbf{deductive system}.
+Thus, for instance, the signature $\sig[X]$ for semigroups under a fixed set $X$, together with the axiom-signature for monoids under $X$ on top of it, form a single deductive system.
+Some deductive systems (probably not all) deserve to be called \emph{type theories}; but we will not attempt to give any definition of this class except by example (the entire book).
+
+There is one further feature that seems trivial, but is eventually responsible for much of the value of categorical logic.
+Since the judgments in $\sig^{(k)}$ are defined in terms of the \emph{elements} of $W\sig^{(j)}$ for $j<k$, and the latter are rooted trees, the notation would rapidly get unwieldy if each $\cJ$ in a rule contained within it some number of derivation trees.
+Thus, we also represent derivations by \textbf{terms}, which are a ``linear'' syntax containing enough information to reconstruct the derivation.
+For instance, the expressions $x\cdot (y\cdot z)$ and $(x\cdot y)\cdot z$ for the two sides of associativity are terms, in which we have represented the rule $m$ by an infix operation ``$\cdot$''.
+
+If $M$ is a term representing a derivation of the judgment \cJ, we generally write $M:\cJ$.
+We describe a syntax for terms by annotating the rules of a deductive system with terms, so that for instance the multiplication of a semigroup would be
+\[ \inferrule*[Right=$m$]{M:\cJ \\ N:\cJ}{M\cdot N :\cJ} \]
+Here $M$ and $N$ are ``metavariables'' standing for terms, indicating that whatever terms we have representing two derivations of \cJ, we represent their combination by $m$ by juxtaposing them with an infix dot.
+(We always assume that parentheses are added as necessary to ensure correct parsing.)
+For purposes of this discussion, ``terms with variables from the context'' such as $x:A\types M:B$ can be regarded as merely a variant notation of something like $(x.M) : (A\types B)$, so that we still have a single thing called a ``term'' that represents the entire derivation.
+
+There is no unique way to assign terms to a deductive system; all that is necessary is to describe some kind of syntax from which a derivation tree can be algorithmically extracted.
+Since this is not a book about syntax, we will not attempt to make precise exactly what this means, but it is worth saying a bit more about about \emph{how} a linear syntax gives rise to a derivation tree.
+In fact, when a human mathematician reads an expression such as $x\cdot (y\cdot z)$, they generally mentally organize it as a tree without really thinking about it: here the first $\cdot$, being the ``outer'' operation, is the root, with children $x$ and $y\cdot z$, and the latter decomposes further into another $\cdot$ node with children $y$ and $z$.
+This ``internal syntax tree'' is exactly the intended derivation tree.
+An alternative reading where the second $\cdot$ is the root with children ``$x\cdot (y$'' and ``$z)$'' is ruled out by our intuitive understanding of the meaning of parentheses.
+When a computer reads such an expression it likewise constructs an internal tree representation.
+But the programmer has to be explicitly aware of this process, which is called \textbf{parsing}.
+
+If we are given a putative term claiming to represent a derivation of some judgment, then after parsing there is a further step of verifying that the parse tree indeed corresponds to a valid derivation tree.
+This is called \textbf{type-checking}.
+The main point to be made here is that technically, a term must contain enough information to reconstruct the derivation tree \emph{when combined with} the putative type of that term.
+
+For instance, we have noted that the cut-ful type theory for categories technically involves a different composition operation $\circ_{A,B,C}$ for each triple of objects, so that terms would technically have to be written as $h\circ_{A,C,D} (g\circ_{A,B,C} f)$.
+However, if we are given a term whose outer operation is a composition and that claims to represent a derivation of a judgment $A\types D$, then the composition must be $\circ_{A,?,D}$.
+Thus in general it suffices to indicate the object being composed over, as in $h\circ_C (g\circ_B f)$.
+However, in many cases we can omit further information because it can be inferred from context; for instance, if we know that $h:C\to D$ then a term of the form ``$h\circ (-)$'' can only mean ``$h\circ_C (-)$''.
+Human mathematicians omit information informally and unsystematically, while the implementors of electronic mathematicians have elaborate and precise algorithms to make sense of ``inferring from context'' that are far beyond our scope.
+
+With all that said, there are plenty of exceptions.
+Some type theories deviate from this general picture by having terms that do not exactly represent derivations; dependent type theories are probably the most notable example.
+Other (``bidirectional'') type theories distinguish between type \emph{checking}, which is as described above, and type \emph{synthesis}, in which a term determines a whole derivation tree without being given any putative type; perhaps surprisingly this can enable the \emph{omission} of more information.
+However, it is helpful to understand the ``standard'' picture in order to better appreciate these variations.
 
 
 \bibliographystyle{alpha}
