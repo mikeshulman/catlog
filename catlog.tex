@@ -1,5 +1,5 @@
 \documentclass{book}
-\usepackage{mathpartir,cancel,cmll}
+\usepackage{mathpartir,cancel,cmll,appendix}
 \newif\ifcref\creftrue
 \input{decls}
 \title{Categorical logic from a categorical point of view}
@@ -367,13 +367,11 @@ On the categorical side it means, roughly, that we deal with categories rather t
 In some ways the unary case is fairly trivial, but for that very reason it serves as a good place to become familiar with basic notions of type theory and how they correspond to category theory.
 In later chapters we will generalize away from unarity in various ways.
 
-[TODO: Say something about how rules and trees generate a free structure.  Maybe talk first about free structures in sets, like magmas, monoids, groups (including inductively defined equivalence relations too), then in multi-sorted theories like set-with-group-action, then in graphs with fixed object set (being a multi-sorted theory).  Later generalize to graphs whose fixed object set has operations on it (themselves defined as a free structure); we don't need full inductive-inductiveness.  Think about how best to move on to the multi-case from here.]
-
 
 \section{Posets}
 \label{sec:poset}
 
-To begin our formal investigation of categorical logic, we start with the simplest sort of categories: those in which each hom-set has at most one element.
+We start with the simplest sort of categories: those in which each hom-set has at most one element.
 These are well-known to be equivalent to \emph{preordered sets}, where the existence of an arrow $A\to B$ is regarded as the assertion that $A\le B$.
 I will abusively call them \emph{posets}, although traditionally posets (partially ordered sets) also satisfy the antisymmetry axiom (if $A\le B$ and $B\le A$ then $A=B$); from a category-theoretic perspective, antisymmetry means asking a category to be skeletal, which is both unnatural and pointless.
 Conveniently, posets also correspond to the simplest version of logic, namely \emph{propositional} logic.
@@ -420,20 +418,20 @@ with the premises above the line and the conclusion below.
 A rule with $n=0$ is sometimes called an \emph{axiom}.
 The categorical view is that we have a given ``starting'' set of judgments representing some objects and putative morphisms in the ``underlying data'' of a categorical structure, and the closure of this set under application of the rules yields the objects and morphisms in the \emph{free} structure it generates.
 
-This is all very general and abstract, so let's bring it back down to earth in our very simple example.
+We will attempt to make all of this precise in \cref{chap:dedsys}, which the reader is free to consult now.
+However, it is probably more illuminating at the moment to bring it back down to earth in our very simple example.
 Since the properties distinguishing a poset are reflexivity and transitivity, we have two rules:
 \begin{mathpar}
   \inferrule{ }{A\types A} \and
   \inferrule{A\types B \\ B\types C}{A\types C}
 \end{mathpar}
 in which $A,B,C$ represent arbitrary objects.
-In other words, the first rule is that for any object $A$ we have a $0$-ary rule whose conclusion is $A\types A$, while the second is that for any objects $A,B,C$ we have a $2$-ary rule whose premises are $A\types B$ and $B\types C$ (that is, any two judgments of which the consequent of the first is the antecedent of the second) and whose conclusion is $A\types C$.
+In other words, the first says that for any object $A$ we have a $0$-ary rule whose conclusion is $A\types A$, while the second says that for any objects $A,B,C$ we have a $2$-ary rule whose premises are $A\types B$ and $B\types C$ (that is, any two judgments of which the consequent of the first is the antecedent of the second) and whose conclusion is $A\types C$.
 We will refer to the pair of these two rules as the \textbf{free type theory of posets}.
 
 Hopefully it makes sense that we can construct the reflexive-transitive closure of a relational graph by expressing its relations in this funny syntax and then closing up under these two rules, since they are exactly reflexivity and transitivity.
 Categorically, of course, that means identities and composition.
-In type theory the composition/transitivity rule is often called \emph{cut}, and plays a unique role, as we will see later.
-% we will touch on this later on, though it is not as important from a purely categorical standpoint.
+In type theory the composition/transitivity rule is often called \textbf{cut}, and plays a unique role, as we will see later.
 
 In the example we started from,
 \begin{mathpar}
@@ -491,7 +489,11 @@ Formally speaking, what we have observed is the following \emph{initiality theor
 \end{proof}
 
 A different way to phrase such an induction, which is more flexible and more type-theoretic in character, uses what is called \emph{structural induction}.
-[TODO: Say something about that.  If we have a good introduction to rules generating free structures, maybe we can include the general induction/recursion principle there.]
+This means that rather than introduce the auxiliary notion of ``height'' of a derivation, we apply a general principle that \emph{to prove that a property $P$ holds of all derivations, it suffices to show for each rule that if $P$ holds of the premises then it holds of the conclusion}.
+We can also define operations on derivations by \emph{structural recursion}, meaning that it suffices to define what happens to the conclusion of each rule assuming that we have already defined what happens to the premises.
+Structural induction and recursion can be justified formally by set-theoretic arguments --- see \cref{chap:dedsys} for some general statements.
+However, intuitively they implicit in what is meant by saying that ``derivations are what we obtain by applying rules one by one,'' just as ordinary mathematical induction is implicit in saying that ``the natural numbers are what we obtain by starting with zero and constructing successors one by one'', and constructive type-theoretic foundations for mathematics often take them as axiomatic.
+From now on we will use structural induction and recursion on derivations in all type theories without further comment.
 
 However, it is proved, \cref{thm:poset-initial-1} enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
 In our present trivial case this is not very useful, but as we will see it becomes more useful for more complicated structures.
@@ -634,14 +636,29 @@ Now the generators of our equivalence relation look even more familiar:
 \end{align*}
 Again $\phi,\psi,\chi$ denote arbitrary terms, corresponding to the fact that arbitrary derivations can appear at the top of our identified trees; and similarly these identifications can also happen anywhere inside another term, so that for instance
 \[ k\circ (h\circ (g\circ f)) \equiv k\circ ((h\circ g)\circ f).  \]
+
 Of course, we only impose these relations when they make sense.
-We can describe the conditions under which this happens using rules for a secondary judgment $\phi\equiv \psi : (A\types B)$, like so:
+We can describe the conditions under which this happens using rules for a secondary judgment $\phi\equiv \psi : (A\types B)$.
+The rules for our generating equalities are
 \begin{mathpar}
   \inferrule{\phi:(A\types B) \\ \psi:(B\types C) \\ \chi:(C\types D)}{(\phi \circ (\psi \circ \chi) \equiv (\phi\circ\psi)\circ\chi) : (A\types D)}\\
   \inferrule{\phi:(A\types B)}{(\phi \circ \idfunc_A \equiv \phi):(A\types B)}\and
   \inferrule{\phi:(A\types B)}{(\idfunc_B \circ \phi \equiv \phi):(A\types B)}
 \end{mathpar}
-When the rules for $\circ$ and $\idfunc$ are augmented by these rules generating a congruence $\equiv$, and we add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory for categories under \cG}.
+and we must also have rules ensuring that we have an equivalence relation and a congruence:
+\begin{mathpar}
+  \inferrule{\phi:(A\types B)}{(\phi\equiv\phi):(A\types B)}\and
+  \inferrule{(\phi\equiv\psi):(A\types B)}{(\psi\equiv\phi):(A\types B)}\and
+  \inferrule{(\phi\equiv\psi):(A\types B)\\(\psi\equiv\chi):(A\types B)}{(\phi\equiv\chi):(A\types B)}\and
+  \inferrule{(\phi_1\equiv\psi_1):(A\types B)\\(\phi_2\equiv\psi_2):(B\types C)}{(\phi_2\circ \phi_1 \equiv \psi_2\circ\psi_1):(A\types C)}
+\end{mathpar}
+The last of these is sufficient, in our simple case, to ensure we have a congruence; in general we would have to have one such equality rule for each basic rule of the theory (except for those with no premises, like $\idfunc$).
+
+Many of our type theories will involve such an equality judgment, for which we always use the notation $\equivsym$, and the need for the equivalence relation and congruence rules is always the same.
+Thus, we generally decline to mention them, stating only the ``interesting'' generating equalities for the theory.
+A general framework for such equality judgments is described in \cref{sec:axioms}.
+
+In our case, when the rules for $\circ$ and $\idfunc$ are augmented by these rules for $\equiv$, and we also add axioms for the edges of a given directed graph \cG, we call the result the \textbf{cut-ful type theory for categories under \cG}.
 It may seem obvious that this produces the free category on \cG, but again we write it out carefully to help ourselves get used to the patterns.
 In particular, we want to emphasize the role played by the following lemma:
 
@@ -672,7 +689,7 @@ We will always attempt to construct our type theories so that this property hold
 
   Of course, this ``internal'' tree representation of a term is nothing but the corresponding derivation flipped upside-down.
   So in that sense \cref{thm:category-uniqderiv} is actually saying \emph{less} than one might think; the actual work is being done by the silent step of parsing.
-  We will not say much more about parsing, however; we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
+  We will not say much more about parsing, however (though we discuss it a bit further in \cref{chap:dedsys}); we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
   Accordingly, for type theories that satisfy the ``terms are derivations'' principle we will usually simply observe this fact, leaving it to the concerned reader to verify that the parse trees really do correspond to the derivation trees.
   (However, one small additional issue regarding this will arise in the next subsection.)
 \end{rmk}
@@ -741,16 +758,13 @@ So we need the following theorem:
   If we have derivations of $A\types B$ and $B\types C$ in the cut-free type theory for categories under \cG, then we can construct a derivation of $A\types C$.
 \end{thm}
 \begin{proof}
-  We induct on the number of rules appearing in the given derivation of $B\types C$.
-
-  If there is only one rule, then that rule must be $\idfunc$, since all the other rules have a premise and would need a second rule to feed into them.
-  In this case, it be that $B=C$; so our given derivation of $A\types B$ is also a derivation of $A\types C$.
-
-  If there are $n+1$ rules, then we must have $f\in\cG(D,C)$ and our derivation of $B\types C$ ends like this:
+  We induct on the derivation of $B\types C$.
+  If it ends with $\idfunc$, then it must be that $B=C$; so our given derivation of $A\types B$ is also a derivation of $A\types C$.
+  Otherwise, we must have some $f\in\cG(D,C)$ and our derivation of $B\types C$ ends like this:
   \begin{mathpar}
     \inferrule*[right=$f$]{\inferrule*{\sD\\\\\vdots}{B\types D}}{B\types C}
   \end{mathpar}
-  In particular, it contains a derivation \sD of $B\types D$ with only $n$ rules.
+  In particular, it contains a derivation \sD of $B\types D$.
   Thus, by the inductive hypothesis we have a derivation, say $\sD'$, of $A\types D$.
   Now we can simply follow this with the rule for $f$:
   \begin{equation*}
@@ -852,6 +866,7 @@ There is one further remark to make about the correspondence between terms and d
 As written on the page, the judgments $x:A \types f(x):B$ and $y:A \types f(y):B$ are distinct; but clearly they represent the same morphism.
 So there is still an equivalence relation hanging around in the background, but it is a fairly harmless one; it just says that we can rename all the variables as long as we do it consistently.
 (When we consider theories with bound variables later on, the meaning of ``consistently'' will become more complicated, but the principle is the same.)
+\label{sec:alpha}%
 In type-theoretic lingo, the equivalence relation of renaming variables is called \textbf{$\alpha$-equivalence}, and unless explicitly stated otherwise we \emph{always} consider judgments modulo $\alpha$-equivalence.\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
 
 Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:category-cutadm} is not just a statement about derivability.
@@ -958,7 +973,8 @@ A type-theoretic calculus of canonical forms gives a way to answer this question
 (And indeed, cut-elimination methods have frequently been used in the proof of coherence theorems; [TODO: some citations].)
 
 A related remark is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
-The primitive rules of a type theory can be regarded as the ``operations'' of a certain algebraic theory\footnote{More precisely, an ``essentially algebraic theory''.}, and the judgments that can be derived from these rules form (fairly trivially) the initial algebra for this theory, i.e.\ the initial object in a certain category.
+The primitive rules of a type theory can be regarded as the ``operations'' of a certain algebraic theory, and the judgments that can be derived from these rules form the initial algebra for this theory, i.e.\ the initial object in a certain category.
+(See \cref{chap:dedsys} for a precise statement along these lines.)
 The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
 
 \begin{rmk}\label{rmk:admissible-derivable-2}
@@ -1245,7 +1261,7 @@ These properties are characteristic of \emph{natural deduction} theories.
   Because the proof of cut-elimination for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
   Triviality is subjective; but what seems inarguable is that cut-elimination for natural deduction is \emph{saying something different} than cut-elimination for sequent calculus.
   The content of cut-elimination for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}), or to the cut-elimination (``hereditary substitution'') of a canonical/atomic natural deduction (see \cref{sec:catprod-atomcan}).
-  This different is also evident in the fact that we have to assert the full identity rule in natural deduction.
+  This difference is also evident in the fact that we have to assert the full identity rule in natural deduction.
 \end{rmk}
 
 Of course, we should also prove the initiality theorem:
@@ -1348,7 +1364,7 @@ Of course, we should also prove the initiality theorem:
 
 
 \section{Categories with products}
-\label{sec:catprod}
+\label{sec:catprod}\label{sec:beta-eta}
 
 Now we move back from posets to categories.
 Let \bPrCat be the category of categories with specified binary products and a specified terminal object, and functors preserving these strictly.
@@ -1399,14 +1415,12 @@ This is also true quite generally.
 A natural deduction includes both introduction and elimination rules, so we will always be able to introduce a type and then eliminate it, essentially ``doing nothing''.
 By contrast, in a sequent calculus we have ``only introduction rules'' (of both left and right sorts), so this cannot happen.
 
-In fact, it is possible to eliminate both kinds of redundancy!
-For expositional purposes, we will first describe a theory (based on natural deduction) that does contain an equivalence relation, and then the two ``theories of canonical forms'' that do without one.
-
-
-\subsection{$\beta$ and $\eta$}
-\label{sec:beta-eta}
+In fact, in the simple case of categories with products, there are tricks enabling us to eliminate \emph{both} kinds of redundancy, and thereby do without any $\equiv$ for both sequent calculus and natural deduction.
+However, in even slightly more complicated theories the analogous tricks do not eliminate $\equiv$ completely, though they do reduce its complexity.
+Thus, we focus in this section on theories with $\equiv$, relegating the tricks to the ``chapter appendices'' \cref{sec:catprod-atomcan,sec:catprod-focusing}.
 
 It is convenient to describe the reduction rules using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
+[TODO: Introduce pairing, projection.]
 In this syntax, the natural deduction rules from \cref{sec:natded-mslat} become:
 \begin{mathpar}
   \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
@@ -1417,7 +1431,9 @@ In this syntax, the natural deduction rules from \cref{sec:natded-mslat} become:
   \inferrule{x:X\types M:B \\ x:X\types N:C}{x:X\types \pair MN:B\times C}\;\timesI
 \end{mathpar}
 Note how well the natural-deduction choice of ``all rules acting on the right'' matches the use of abstract variables: in all cases we can think of ``applying functions to arguments'' in a familiar way.
-(It is possible to describe sequent calculus derivations using terms as well, but they are less pretty; see for instance \cref{sec:catprod-focusing}.)
+It is possible to describe sequent calculus derivations using terms as well, but they are less pretty; see for instance \cref{sec:catprod-focusing}.
+For this reason, except for \cref{sec:catprod-focusing}, we will henceforth only use sequent calculus for posetal theories.
+
 The need to impose the identity rule for all types (not just those coming from \cG) also makes perfect sense here: a variable in any type is also a term of that type.
 
 Now the above equivalence between the two derivations of the identity $A\to A$ can be written as
@@ -1448,8 +1464,11 @@ In term syntax, this means that
 \end{equation}
 In type-theoretic lingo, the equalities~\eqref{eq:beta-prodcat-1} and~\eqref{eq:beta-prodcat-2} are called \textbf{$\beta$-reductions} while the equality~\eqref{eq:eta-prodcat} is called an \textbf{$\eta$-reduction}.
 They generate an equivalence relation on terms, which we also require to be a congruence for everything else.
+
 We can describe this more formally with an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}.
-In addition to the $\beta$- and $\eta$-reductions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality (this ensures by induction that it is a congruence for substitution).
+Note that in addition to the $\beta$- and $\eta$-reductions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality.
+As remarked in \cref{sec:category-cutful}, all our equality judgments $\equiv$ will be equivalence relations with such a congruence property for all the primitive rules.
+In general we will not bother to state these ``standard'' rules for $\equiv$, but since this is our first encounter with such a relation involving ``abstract variable'' term syntax we have included them explicitly.
 
 \begin{figure}
   \centering
@@ -1476,7 +1495,7 @@ This completes the definition of the \textbf{unary type theory for categories wi
   This suggests that we should be able to ``reduce'' an arbitrary term to a ``simplest possible form'' by successively applying $\beta$- and $\eta$-reductions.
   Such is indeed the case (although for technical reasons the $\eta$-reduction is usually applied in reverse as an ``expansion'').
   This \emph{process of reduction} belongs to the ``computational'' side of type theory, which (though of course important in its own right) is somewhat tangential to our category-theoretic emphasis, so we will not discuss it in detail.
-  However, in \cref{sec:catprod-atomcan} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.
+  (However, in \cref{sec:catprod-atomcan} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.)
 \end{rmk}
 
 \begin{thm}\label{thm:catprod-subadm}
@@ -1498,7 +1517,12 @@ This completes the definition of the \textbf{unary type theory for categories wi
   \end{enumerate}
 \end{proof}
 
-As with \cref{thm:category-cutadm}, this proof can be regarded as \emph{defining} what it means to ``substitute'' $M$ for $y$ in $N$.
+As with \cref{thm:category-cutadm}, this proof can be regarded as \emph{defining} recursively what it means to ``substitute'' $M$ for $y$ in $N$.
+The defining clauses are
+\begin{align*}
+  [TODO]
+\end{align*}
+
 Similarly, we also have:
 
 \begin{thm}\label{thm:catprod-subcong}
@@ -1517,8 +1541,191 @@ Similarly, we also have:
 The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,ex:catprod-subassoc,ex:catprod-initial}.
 
 
-\subsection{Canonical and atomic}
+\section{Categories with coproducts}
+\label{sec:catcoprod}
+
+% [TODO: I'm unsure whether this should be here at all.
+% It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.
+% Note that we also need variable binding for monoidal categories, so if we want to do those before cartesian monoidal categories (as also seems natural, since multicategories are simpler than cartesian multicategories) we need to discuss variable binding sooner than $\lambda$-calculus.]
+
+In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
+However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
+(Of course, we could dualize them to ``co-natural deductions'' in which all rules act only on the \emph{left}, but that would destroy the familiar behavior of terms on variables, as well as make it tricky to combine left and right universal properties, such as for lattices.)
+To describe joins in a natural deduction, we need to ``build an extra cut'' into their universal property:
+\begin{mathpar}
+  \inferrule{X\types A}{X\types A\join B}\;\joinI1\and
+  \inferrule{X\types B}{X\types A\join B}\;\joinI2\and
+  \inferrule{A\types C \\ B\types C \\ X\types A\join B}{X\types C}\;\joinE
+\end{mathpar}
+Note that $\joinE$ is precisely the result of cutting $\joinL$ with an arbitrary sequent:
+\begin{mathpar}
+  \inferrule*[Right=cut]{X\types A\join B \\ \inferrule*[Right=$\joinL$]{A\types C \\ B\types C}{A\join B\types C}}{X\types C}
+\end{mathpar}
+We treat the bottom element similarly:
+\begin{mathpar}
+  \inferrule{X\types \bot \\\types C\type}{X\types C}
+\end{mathpar}
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
+    \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
+    \inferrule{x:X \types M:\emptyt \\ \types C\type}{x:X \types \abort(M):C}\;\emptyt E\\
+    \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
+    \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
+    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \case(M,u.P,v.Q):C}\;\plusE
+  \end{mathpar}
+  \caption{Unary type theory for categories with coproducts}
+  \label{fig:catcoprod}
+\end{figure}
+
+Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts} in which we annotate the judgments with terms, shown in \cref{fig:catcoprod}.
+The two injections $A\to A+B$ and $B\to A+B$ are named $\inl$ and $\inr$ (``in-left'' and ``in-right''), while the unique morphism $\emptyt \to C$ is called $\abort$.
+The term $\case(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
+
+We should start by saying that this term is parsed as $\case(M,(u.P),(v.Q))$: that is, the periods bind more tightly than the commas.
+Now the idea is that $\case(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
+The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
+The morphisms $f$ and $g$, however, are specified (like all morphisms in unary type theory) using term syntax, $u:A\types P:C$ and $v:A\types Q:C$ --- and, as always, the specific variables $u$ and $v$ used are irrelevant (judgments only have meaning up to $\alpha$-equivalence).
+Thus we write $u.P$ and $v.Q$ in the $\case$ term, rather than simply $P$ and $Q$, to indicate what variable is being used.
+These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\case(M,u.f(u),v.g(v))$ has the same meaning as $\case(M,w.f(w),z.g(z))$.
+
+\begin{rmk}
+  In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
+  However, starting in \cref{chap:simple} it will be important to keep track of which variable is being bound, so we establish good habits now.
+\end{rmk}
+
+Now that we understand the $\case$ syntax, we can write down the $\beta$-reduction rules.
+Dualizing the $\beta$-reduction rules for products, the $\beta$-reduction rules for coproducts should say that the map $A+B\to C$ induced by $f:A\to C$ and $g:B\to C$ yields $f$ and $g$ when composed with the coproduct injections.
+Recalling that composition is given by substitution, this leads us to write down
+\begin{align*}
+  \case(\inl(y),u.P,v.Q) &\equiv P[y/u]\\
+  \case(\inr(z),u.P,v.Q) &\equiv Q[z/v]
+\end{align*}
+Similarly, the $\eta$-reduction rule should say that morphisms out of a coproduct are determined uniquely by their composites with the projections:
+\[ \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P \]
+In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' to all of these rules, so that the antecedent of the conclusion is an arbitrary type.
+Thus the actual generating $\equiv$ rules are
+\begin{mathpar}
+  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A}{x:X \types \case(\inl(M),u.P,v.Q) \equiv P[M/u] : C}
+  \and
+  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/v] : C}
+  \and
+  \inferrule{x:X \types M:A+B \\ y:A+B \types P:C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] : C}
+\end{mathpar}
+As usual, we also require $\equiv$ to be an equivalence relation and a congruence for substitution.
+This completes the definition of our \textbf{unary type theory for categories with coproducts under \cG}.
+
+\begin{lem}\label{thm:catcoprod-subadm}
+  Substitution is admissible in the unary type theory for categories with coproducts under \cG.
+  That is, if we have derivations of $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivation of $x:A\types N[M/y]:C$.
+\end{lem}
+\begin{proof}
+  By induction over derivations.
+  As usual for natural deduction theories, there is not much happening: for each rule that might appear last in the derivation of $y:B\types N:C$, we apply the inductive hypothesis to its premises and then re-apply the final rule.
+\end{proof}
+
+\begin{thm}\label{thm:catcoprod-initial}
+  For any directed graph \cG, the free category with coproducts generated by \cG can be described by the unary type theory for categories with coproducts under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the derivable judgments $x:A\types M:B$, modulo the equivalence relation $\equiv$.
+\end{thm}
+\begin{proof}
+  \cref{thm:catcoprod-subadm} defines substitution, and the same sort of induction proves it associative and unital; thus we have a category $\F\bCoprCat\cG$.
+  The rules are defined just so as to give this category the structure of finite coproducts.
+
+  Now if \cM is a category with (specified) finite coproducts and $P:\cG\to\cM$ is a map of graphs, we extend it to the objects of $\F\bCoprCat\cG$ in the obviously unique way (by induction on derivations of $\types A\type$), and to its morphisms by induction on derivations of $x:A\types M:B$.
+  All the non-identity rules are defined by a cut with a generator or one of the coproduct structure maps; thus their images in \cM are uniquely determined by the need for the extension to be a functor and to preserve the specified coproducts.
+  Finally, we show by a further induction that this extension is actually a functor (preserves all composites).
+\end{proof}
+
+As we did in \cref{sec:catprod} for categories with products, we can enhance this type theory to a canonical/atomic calculus to eliminate the need for $\beta$- and $\eta$-reduction; see \cref{fig:catcoprod-atomcan}.
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types X\type}{x:X\types x\atom X}\;\idfunc\and
+    \inferrule{f\in \cG(A,B) \\ x:X\types M\can A}{x:X\types f(M)\can B}\;fI\and
+    \inferrule{x:X \types M\atom \emptyt \\ \types C\type}{x:X \types \abort(M)\atom C}\;\emptyt E\\
+    \inferrule{x:X\types M\can A}{x:X\types \inl(M)\can A + B}\;\plusI1\and
+    \inferrule{x:X\types N\can B}{X\types \inr(N)\can A + B}\;\plusI2\and
+    \inferrule{u:A\types P\can C \\ v:B\types Q\can C \\ x:X\types M\atom A + B}{x:X\types \case(M,u.P,v.Q)\atom C}\;\plusE\and
+    \inferrule{B\in\cG\\ x:A \types M\atom B}{x:A\types M\can B}\;\atomcan
+  \end{mathpar}
+  \caption{Unary canonical/atomic calculus for categories with coproducts}
+  \label{fig:catcoprod-atomcan}
+\end{figure}
+The principle is the same: we prevent ourselves from eliminating on the results of introduction rules by requiring elimination rules to act only on atomic terms.
+The only perhaps surprising thing is that the ``branches'' $P,Q$ of $\case$ can be canonical, though the ``branch term'' $M$ and the $\case$ itself are atomic.
+
+\begin{thm}\label{thm:catcoprod-atomcan-subadm}
+  Hereditary substitution is admissible in the unary canonical/atomic calculus for categories with coproducts under \cG:
+  \begin{enumerate}
+  \item If $x:A\types M\can B$ and $y:B\types N\atom C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catcoprod-atomcan-subadm-1}
+  \item If $x:A\types M\can B$ and $y:B\types N\can C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catcoprod-atomcan-subadm-2}
+  \end{enumerate}
+\end{thm}
+\begin{proof}
+  We sketch the proof by giving the defining clauses of the hereditary substitution operation.
+  \begin{align*}
+    y\hsub{M/y} &= M\\
+    \abort(N)\hsub{M/y} &\quad \text{cannot occur}\\
+    \case(N,u.P,v.Q)\hsub{M/y} &= P[M'/u] \quad\text{if } N\hsub{M/y}=\inl(M')\\
+    \case(N,u.P,v.Q)\hsub{M/y} &= Q[M'/v] \quad\text{if } N\hsub{M/y}=\inr(M')\\
+    f(N)\hsub{M/y} &= f(N\hsub{M/y})\\
+    \inl(N)\hsub{M/y} &= \inl(N\hsub{M/y})\\
+    \inr(N)\hsub{M/y} &= \inr(N\hsub{M/y})
+  \end{align*}
+  In the case of $\abort(N)\hsub{M/y}$, the point is that inductive hypothesis gives $x:A\types N\hsub{M/y}\can \emptyt$, but (by inspection of the rules) there is no way to build a canonical element of $\emptyt$.
+  Similarly in the $\case$ rules, inductively we have $x:A \types N\hsub{M/y}\can A+B$, and so (by inspection of the ways to build a canonical element of $A+B$) it must be of the form $\inl(M')$ or $\inr(M')$.
+\end{proof}
+
+\begin{thm}
+  Identity is admissible in the unary canonical/atomic calculus for categories with coproducts under \cG: if $\types A\type$, then $x:A \types \hid{A}(x)\can A$.
+\end{thm}
+\begin{proof}
+  The defining clauses are
+  \begin{align*}
+    \hid{A}(x) &= x \quad\text{if }A\in \cG\\
+    \hid{\emptyt}(x) &= \dots
+  \end{align*}
+\end{proof}
+
+[TODO: Canonical/atomic, focused sequent calculus, categories with products and coproducts?]
+
+[We seem to need $\atomcan$ for positive types as well as base ones, but then this destroys $\eta$.  There's some suggestion that $\eta$ for positives is not computational.  But focused sequent calculus should be symmetrical!]
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:cat-opfib}
+  A functor $P:\sA\to\sB$ is called an \textbf{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration (as in \cref{ex:catfib}).
+  The dual of $f^*(b)$ is written $f_!(a)$.
+  \begin{enumerate}
+  \item Write down a type theory for opfibrations and prove the initiality theorem.
+    (Remember that we always use natural deduction style when dealing with categories rather than posets, so you can't just dualize \cref{ex:catfib} or categorify \cref{ex:poset-bifib}.)
+  \item Use this type theory to prove that $f_!$ is always a functor.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:cat-prod-coprod}
+  Combine the type theories of \cref{sec:catprod,sec:catcoprod} to obtain a unary type theory for categories with both products and coproducts.
+  Prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:cat-bifib}
+  A functor $P:\sA\to\sB$ is called a \textbf{bifibration} if it is both a fibration and an opfibration.
+  \begin{enumerate}
+  \item Combine the theories of \cref{ex:catfib,ex:cat-opfib} to obtain a type theory for bifibrations.
+  \item If you aren't tired of proving initiality theorems yet, do it for this type theory.
+  \item Use this type theory to prove that in any bifibration, $f_!$ is left adjoint to $f^*$.
+  \end{enumerate}
+\end{ex}
+
+
+
+\begin{subappendices}
+\section{Canonical and atomic}
 \label{sec:catprod-atomcan}
+
+[TODO: Relegate these next two sections to something more appendix-like.  Can we have a ``chapter appendix''?]
 
 As observed in \cref{rmk:beta-reduction}, the $\beta$-reduction rule can be seen as a ``directed simplification'': clearly $M$ is simpler than $\pi_1(\pair M N)$.
 Put differently, the derivation leading to the term $\pi_1(\pair M N)$ is ``redundant'' since it represents a morphism that already had a representative, namely $M$.
@@ -1711,7 +1918,7 @@ For instance, we have
 [TODO: Mention how canonical/atomic also reflects the algorithm of parsing a term that isn't fully annotated into a derivation tree, with $M\can A$ meaning $A$ is given and our job is to check that $M$ has that type while $M\atom A$ means that from $M$ we have to synthesize a type $A$ that it has.  (Remark earlier on that for terms to exactly correspond to derivations they have to be more annotated than we usually do, e.g.\ $g\circ_B f$ instead of $g\circ f$.)  Talking about parsing, here or earlier, may be the way to introduce the ``bottom-up'' view of rules.  How does this check/synthesize POV generalize to type theory that allows redexes?]
 
 
-\subsection{Focusing}
+\section{Focusing}
 \label{sec:catprod-focusing}
 
 For completeness, we now describe how the sequent calculus for meet-semilattices can also be modified to present free categories with products without needing an equivalence relation on terms.
@@ -1993,183 +2200,7 @@ We let the reader complete the argument (\cref{ex:focused-catprod-cutassoc,ex:fo
 \end{ex}
 
 
-\section{Categories with coproducts}
-\label{sec:catcoprod}
-
-% [TODO: I'm unsure whether this should be here at all.
-% It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.
-% Note that we also need variable binding for monoidal categories, so if we want to do those before cartesian monoidal categories (as also seems natural, since multicategories are simpler than cartesian multicategories) we need to discuss variable binding sooner than $\lambda$-calculus.]
-
-In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
-However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
-(Of course, we could dualize them to ``co-natural deductions'' in which all rules act only on the \emph{left}, but that would destroy the familiar behavior of terms on variables, as well as make it tricky to combine left and right universal properties, such as for lattices.)
-To describe joins in a natural deduction, we need to ``build an extra cut'' into their universal property:
-\begin{mathpar}
-  \inferrule{X\types A}{X\types A\join B}\;\joinI1\and
-  \inferrule{X\types B}{X\types A\join B}\;\joinI2\and
-  \inferrule{A\types C \\ B\types C \\ X\types A\join B}{X\types C}\;\joinE
-\end{mathpar}
-Note that $\joinE$ is precisely the result of cutting $\joinL$ with an arbitrary sequent:
-\begin{mathpar}
-  \inferrule*[Right=cut]{X\types A\join B \\ \inferrule*[Right=$\joinL$]{A\types C \\ B\types C}{A\join B\types C}}{X\types C}
-\end{mathpar}
-We treat the bottom element similarly:
-\begin{mathpar}
-  \inferrule{X\types \bot \\\types C\type}{X\types C}
-\end{mathpar}
-
-\begin{figure}
-  \centering
-  \begin{mathpar}
-    \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
-    \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
-    \inferrule{x:X \types M:\emptyt \\ \types C\type}{x:X \types \abort(M):C}\;\emptyt E\\
-    \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
-    \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
-    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \case(M,u.P,v.Q):C}\;\plusE
-  \end{mathpar}
-  \caption{Unary type theory for categories with coproducts}
-  \label{fig:catcoprod}
-\end{figure}
-
-Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts} in which we annotate the judgments with terms, shown in \cref{fig:catcoprod}.
-The two injections $A\to A+B$ and $B\to A+B$ are named $\inl$ and $\inr$ (``in-left'' and ``in-right''), while the unique morphism $\emptyt \to C$ is called $\abort$.
-The term $\case(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
-
-We should start by saying that this term is parsed as $\case(M,(u.P),(v.Q))$: that is, the periods bind more tightly than the commas.
-Now the idea is that $\case(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
-The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
-The morphisms $f$ and $g$, however, are specified (like all morphisms in unary type theory) using term syntax, $u:A\types P:C$ and $v:A\types Q:C$ --- and, as always, the specific variables $u$ and $v$ used are irrelevant (judgments only have meaning up to $\alpha$-equivalence).
-Thus we write $u.P$ and $v.Q$ in the $\case$ term, rather than simply $P$ and $Q$, to indicate what variable is being used.
-These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\case(M,u.f(u),v.g(v))$ has the same meaning as $\case(M,w.f(w),z.g(z))$.
-
-\begin{rmk}
-  In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
-  However, starting in \cref{chap:simple} it will be important to keep track of which variable is being bound, so we establish good habits now.
-\end{rmk}
-
-Now that we understand the $\case$ syntax, we can write down the $\beta$-reduction rules.
-Dualizing the $\beta$-reduction rules for products, the $\beta$-reduction rules for coproducts should say that the map $A+B\to C$ induced by $f:A\to C$ and $g:B\to C$ yields $f$ and $g$ when composed with the coproduct injections.
-Recalling that composition is given by substitution, this leads us to write down
-\begin{align*}
-  \case(\inl(y),u.P,v.Q) &\equiv P[y/u]\\
-  \case(\inr(z),u.P,v.Q) &\equiv Q[z/v]
-\end{align*}
-Similarly, the $\eta$-reduction rule should say that morphisms out of a coproduct are determined uniquely by their composites with the projections:
-\[ \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P \]
-In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' to all of these rules, so that the antecedent of the conclusion is an arbitrary type.
-Thus the actual generating $\equiv$ rules are
-\begin{mathpar}
-  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A}{x:X \types \case(\inl(M),u.P,v.Q) \equiv P[M/u] : C}
-  \and
-  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/v] : C}
-  \and
-  \inferrule{x:X \types M:A+B \\ y:A+B \types P:C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] : C}
-\end{mathpar}
-As usual, we also require $\equiv$ to be an equivalence relation and a congruence for substitution.
-This completes the definition of our \textbf{unary type theory for categories with coproducts under \cG}.
-
-\begin{lem}\label{thm:catcoprod-subadm}
-  Substitution is admissible in the unary type theory for categories with coproducts under \cG.
-  That is, if we have derivations of $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivation of $x:A\types N[M/y]:C$.
-\end{lem}
-\begin{proof}
-  By induction over derivations.
-  As usual for natural deduction theories, there is not much happening: for each rule that might appear last in the derivation of $y:B\types N:C$, we apply the inductive hypothesis to its premises and then re-apply the final rule.
-\end{proof}
-
-\begin{thm}\label{thm:catcoprod-initial}
-  For any directed graph \cG, the free category with coproducts generated by \cG can be described by the unary type theory for categories with coproducts under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the derivable judgments $x:A\types M:B$, modulo the equivalence relation $\equiv$.
-\end{thm}
-\begin{proof}
-  \cref{thm:catcoprod-subadm} defines substitution, and the same sort of induction proves it associative and unital; thus we have a category $\F\bCoprCat\cG$.
-  The rules are defined just so as to give this category the structure of finite coproducts.
-
-  Now if \cM is a category with (specified) finite coproducts and $P:\cG\to\cM$ is a map of graphs, we extend it to the objects of $\F\bCoprCat\cG$ in the obviously unique way (by induction on derivations of $\types A\type$), and to its morphisms by induction on derivations of $x:A\types M:B$.
-  All the non-identity rules are defined by a cut with a generator or one of the coproduct structure maps; thus their images in \cM are uniquely determined by the need for the extension to be a functor and to preserve the specified coproducts.
-  Finally, we show by a further induction that this extension is actually a functor (preserves all composites).
-\end{proof}
-
-As we did in \cref{sec:catprod} for categories with products, we can enhance this type theory to a canonical/atomic calculus to eliminate the need for $\beta$- and $\eta$-reduction; see \cref{fig:catcoprod-atomcan}.
-\begin{figure}
-  \centering
-  \begin{mathpar}
-    \inferrule{\types X\type}{x:X\types x\atom X}\;\idfunc\and
-    \inferrule{f\in \cG(A,B) \\ x:X\types M\can A}{x:X\types f(M)\can B}\;fI\and
-    \inferrule{x:X \types M\atom \emptyt \\ \types C\type}{x:X \types \abort(M)\atom C}\;\emptyt E\\
-    \inferrule{x:X\types M\can A}{x:X\types \inl(M)\can A + B}\;\plusI1\and
-    \inferrule{x:X\types N\can B}{X\types \inr(N)\can A + B}\;\plusI2\and
-    \inferrule{u:A\types P\can C \\ v:B\types Q\can C \\ x:X\types M\atom A + B}{x:X\types \case(M,u.P,v.Q)\atom C}\;\plusE\and
-    \inferrule{B\in\cG\\ x:A \types M\atom B}{x:A\types M\can B}\;\atomcan
-  \end{mathpar}
-  \caption{Unary canonical/atomic calculus for categories with coproducts}
-  \label{fig:catcoprod-atomcan}
-\end{figure}
-The principle is the same: we prevent ourselves from eliminating on the results of introduction rules by requiring elimination rules to act only on atomic terms.
-The only perhaps surprising thing is that the ``branches'' $P,Q$ of $\case$ can be canonical, though the ``branch term'' $M$ and the $\case$ itself are atomic.
-
-\begin{thm}\label{thm:catcoprod-atomcan-subadm}
-  Hereditary substitution is admissible in the unary canonical/atomic calculus for categories with coproducts under \cG:
-  \begin{enumerate}
-  \item If $x:A\types M\can B$ and $y:B\types N\atom C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catcoprod-atomcan-subadm-1}
-  \item If $x:A\types M\can B$ and $y:B\types N\can C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catcoprod-atomcan-subadm-2}
-  \end{enumerate}
-\end{thm}
-\begin{proof}
-  We sketch the proof by giving the defining clauses of the hereditary substitution operation.
-  \begin{align*}
-    y\hsub{M/y} &= M\\
-    \abort(N)\hsub{M/y} &\quad \text{cannot occur}\\
-    \case(N,u.P,v.Q)\hsub{M/y} &= P[M'/u] \quad\text{if } N\hsub{M/y}=\inl(M')\\
-    \case(N,u.P,v.Q)\hsub{M/y} &= Q[M'/v] \quad\text{if } N\hsub{M/y}=\inr(M')\\
-    f(N)\hsub{M/y} &= f(N\hsub{M/y})\\
-    \inl(N)\hsub{M/y} &= \inl(N\hsub{M/y})\\
-    \inr(N)\hsub{M/y} &= \inr(N\hsub{M/y})
-  \end{align*}
-  In the case of $\abort(N)\hsub{M/y}$, the point is that inductive hypothesis gives $x:A\types N\hsub{M/y}\can \emptyt$, but (by inspection of the rules) there is no way to build a canonical element of $\emptyt$.
-  Similarly in the $\case$ rules, inductively we have $x:A \types N\hsub{M/y}\can A+B$, and so (by inspection of the ways to build a canonical element of $A+B$) it must be of the form $\inl(M')$ or $\inr(M')$.
-\end{proof}
-
-\begin{thm}
-  Identity is admissible in the unary canonical/atomic calculus for categories with coproducts under \cG: if $\types A\type$, then $x:A \types \hid{A}(x)\can A$.
-\end{thm}
-\begin{proof}
-  The defining clauses are
-  \begin{align*}
-    \hid{A}(x) &= x \quad\text{if }A\in \cG\\
-    \hid{\emptyt}(x) &= \dots
-  \end{align*}
-\end{proof}
-
-[TODO: Canonical/atomic, focused sequent calculus, categories with products and coproducts?]
-
-[We seem to need $\atomcan$ for positive types as well as base ones, but then this destroys $\eta$.  There's some suggestion that $\eta$ for positives is not computational.  But focused sequent calculus should be symmetrical!]
-
-\subsection*{Exercises}
-
-\begin{ex}\label{ex:cat-opfib}
-  A functor $P:\sA\to\sB$ is called an \textbf{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration (as in \cref{ex:catfib}).
-  The dual of $f^*(b)$ is written $f_!(a)$.
-  \begin{enumerate}
-  \item Write down a type theory for opfibrations and prove the initiality theorem.
-    (Remember that we always use natural deduction style when dealing with categories rather than posets, so you can't just dualize \cref{ex:catfib} or categorify \cref{ex:poset-bifib}.)
-  \item Use this type theory to prove that $f_!$ is always a functor.
-  \end{enumerate}
-\end{ex}
-
-\begin{ex}\label{ex:cat-prod-coprod}
-  Combine the type theories of \cref{sec:catprod,sec:catcoprod} to obtain a unary type theory for categories with both products and coproducts.
-  Prove the initiality theorem.
-\end{ex}
-
-\begin{ex}\label{ex:cat-bifib}
-  A functor $P:\sA\to\sB$ is called a \textbf{bifibration} if it is both a fibration and an opfibration.
-  \begin{enumerate}
-  \item Combine the theories of \cref{ex:catfib,ex:cat-opfib} to obtain a type theory for bifibrations.
-  \item If you aren't tired of proving initiality theorems yet, do it for this type theory.
-  \item Use this type theory to prove that in any bifibration, $f_!$ is left adjoint to $f^*$.
-  \end{enumerate}
-\end{ex}
+\end{subappendices}
 
 
 \chapter{Simple type theories}
@@ -2858,7 +2889,7 @@ We define a \textbf{prop} to be a symmetric polygraph \cP together with the foll
   % $g\circ_\Psi \idfunc_\Psi = g$ and $\idfunc_\Psi\circ_\Psi f = f$.
   $g\circ_A \idfunc_A = g$ and $\idfunc_A\circ_A f = f$.
 \item Composition is associative: given $f:\Gamma\to (\Xi,\Theta,\Psi)$ and $g:(\Psi,\Phi)\to (\Delta,\Upsilon)$ and $h:(\Upsilon,\Theta,\Lambda)\to \Omega$, we have
-  \[h \circ_{\Upsilon,\Theta} (g\circ_\Psi f) = (h\circ_\Upsilon g) \circ_{\Theta,\Psi} f \qquad \text{(as morphisms} (\Gamma,\Phi,\Lambda) \to (\Xi,\Delta,\Omega). \]
+  \[h \circ_{\Upsilon,\Theta} (g\circ_\Psi f) = (h\circ_\Upsilon g) \circ_{\Theta,\Psi} f \qquad \text{(as morphisms} (\Gamma,\Phi,\Lambda) \to (\Xi,\Delta,\Omega)). \]
 \item Composition is interchanging: $g\circ_{()}f = f\circ_{()}g$ (modulo a symmetry action).
 \end{enumerate}
 By composing along empty lists, we get a ``tensor product'' of morphisms: if $f:\Gamma\to\Xi$ and $g:\Phi\to\Delta$, then $g\circ_{()}f : (\Gamma,\Phi) \to (\Xi,\Delta)$.
@@ -3810,7 +3841,7 @@ We write $\cJ$ for a generic judgment, but we use more specific and congenial no
   This signature (with an $\equivsym$ on top of it) corresponds to the cut-ful type theory for categories from \cref{sec:category-cutful}.
   The cut-free type theory for categories has different operations but the same sorts, and uses the same notation.
 \item The multicategorical and polycategorical theories of \cref{chap:simple,chap:polycats} use a similar notation for sorts $(\Gamma,\Delta)$ where one or both of $\Gamma$ and $\Delta$ is a list of elements of \cO rather than a single one.
-\item If $\sig^{(1)}$ is a one-sorted signature regarded as describing the \emph{objects} of some categorical structure, then we write its sort as $\type$.
+\item If $\sig^{(1)}$ is a one-sorted signature regarded as describing the \emph{objects} of some categorical structure, then we denote its sort by ``$\mathsf{type}$''.
   We generally then have $\sig^{(2)}_0 = W\sig^{(1)} \times W\sig^{(1)}$ (for a unary type theory), with sorts again written as $A\types B$, where now $A$ and $B$ are elements of the initial $\sig^{(1)}$-algebra rather than elements of a fixed set \cO.
 \item If $\sig^{(k)}=(\sig^{(j)})^{\equivsym}$, then its sort $(\cJ,x,y)$ is usually written $x\equiv y : \cJ$.
 \end{itemize}
@@ -3848,11 +3879,15 @@ Thus, we also represent derivations by \textbf{terms}, which are a ``linear'' sy
 For instance, the expressions $x\cdot (y\cdot z)$ and $(x\cdot y)\cdot z$ for the two sides of associativity are terms, in which we have represented the rule $m$ by an infix operation ``$\cdot$''.
 
 If $M$ is a term representing a derivation of the judgment \cJ, we generally write $M:\cJ$.
+(A notable exception is that if \cJ is the sort of a one-sorted $\sig^{(1)}$ presenting the objects of a category, as mentioned above, we usually write ``$A\type$'' or ``$\types A\type$'' rather than ``$A:\mathsf{type}$''.)
 We describe a syntax for terms by annotating the rules of a deductive system with terms, so that for instance the multiplication of a semigroup would be
 \[ \inferrule*[Right=$m$]{M:\cJ \\ N:\cJ}{M\cdot N :\cJ} \]
 Here $M$ and $N$ are ``metavariables'' standing for terms, indicating that whatever terms we have representing two derivations of \cJ, we represent their combination by $m$ by juxtaposing them with an infix dot.
 (We always assume that parentheses are added as necessary to ensure correct parsing.)
+
 For purposes of this discussion, ``terms with variables from the context'' such as $x:A\types M:B$ can be regarded as merely a variant notation of something like $(x.M) : (A\types B)$, so that we still have a single thing called a ``term'' that represents the entire derivation.
+Similarly, an equality judgment like $x:A \types M\equiv N:B$ is shorthand for $(x.M)\equiv (x.N) : (A\types B)$.
+We always consider terms of this form modulo ``$\alpha$-equivalence'', i.e.\ the consistent renaming of variables, as discussed on page~\pageref{sec:alpha} in \cref{sec:alpha}.
 
 There is no unique way to assign terms to a deductive system; all that is necessary is to describe some kind of syntax from which a derivation tree can be algorithmically extracted.
 Since this is not a book about syntax, we will not attempt to make precise exactly what this means, but it is worth saying a bit more about about \emph{how} a linear syntax gives rise to a derivation tree.
