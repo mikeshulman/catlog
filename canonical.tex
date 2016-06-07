@@ -1,0 +1,642 @@
+\chapter{Computation and Canonicity}
+\label{cha:canonical}
+
+[TODO: Is this chapter a good idea at all?]
+
+As observed in \cref{rmk:beta-reduction}, the $\beta$-reduction rule can be seen as a ``directed simplification'': clearly $M$ is simpler than $\pi_1(\pair M N)$.
+Put differently, the derivation leading to the term $\pi_1(\pair M N)$ is ``redundant'' since it represents a morphism that already had a representative, namely $M$.
+In this chapter we study theories that (at least partially) prevent such redundancy from occurring, eliminating (or reducing) the need for the equivalence relations $\equiv$ in presenting free categories.
+
+The idea is to prevent application of elimination rules (such as $\pi_1$) to terms resulting from introduction rules (such as $\pair M N$).
+We do, of course, have to be able to apply elimination rules to some terms, in order to derive, say, $x:A\times B \types \pi_1(x):A$.
+To distinguish between the ``terms that can be eliminated'' and those that can't, we replace the single judgment $x:A\types M:B$ with two:
+\begin{mathpar}
+  x:A \types M\atom B\and
+  x:A \types M\can B.
+\end{mathpar}
+We read $M\atom B$ as ``$M$ is an \textbf{atomic} term of type $B$'' and $M\can B$ as ``$M$ is a \textbf{canonical} term of type $B$''.
+Intuitively, the canonical terms are a subset of the ordinary ones with the property of being ``canonical representatives'' of a morphism in a free category.
+If we succeed at proving an initiality theorem without needing to impose any equivalence relation on terms, then it will follow that in fact, every $\equiv$-equivalence class of ordinary terms has \emph{exactly one} representative that is ``canonical'' in the current sense.
+Moreover, by translating the theories with $\equiv$ into the theories without $\equiv$ we obtain a ``reduction'' operation that computes the canonical form of any term.
+
+
+\section{Categories with products}
+\label{sec:atomcan-catprod}
+
+We consider first the case of categories with products only.
+We assert the same natural deduction rules as before, but now with annotations describing which terms are canonical and which are atomic.
+\begin{mathpar}
+  \inferrule{\types X\type}{x:X\types x\atom X}\;\idfunc\and
+  \inferrule{f\in \cG(A,B) \\ x:X\types M\can A}{x:X\types f(M)\atom B}\;fI\and
+  \inferrule{\types X\type}{x:X\types \ttt\can \unit}\;\unit I\and
+  \inferrule{x:X\types M\atom B\times C}{x:X \types \pi_1(M)\atom B}\;\timesE1\and
+  \inferrule{x:X\types M\atom B\times C}{x:X \types \pi_2(M)\atom C}\;\timesE2\and
+  \inferrule{x:X\types M\can B \\ x:X\types N\can C}{x:X\types \pair MN\can B\times C}\;\timesI
+\end{mathpar}
+Note particularly that in the $\timesE$ rules, $M$ must be atomic; whereas in the $\timesI$ rule, $\pair MN$ is only canonical; thus $\pi_1(\pair MN)$ cannot be formed.
+We allow $M$ and $N$ in the $\timesI$ rule to also be canonical, so that we can form iterated pairs such as $\pair M{\pair NP}$; while similarly we say that $\pi_1(M)$ and $\pi_2(M)$ are again atomic, so that we can form iterated projections such as $\pi_1(\pi_2(M))$.
+All variables are atomic, so that we can form $x:A\times B \types \pi_1(x):A$.
+
+Of course, this division into atomic and canonical is an artifact of the syntax; it has no natural counterpart in category theory.
+Thus, to extract a description of a free category with products, we need some way to combine the two kinds of terms to describe one kind of morphism.
+It turns out that the best way to do this is to assert that any atomic term \emph{belonging to a base type} (i.e.\ an object of \cG) is also canonical:
+\begin{mathpar}
+  \inferrule{B\in\cG \\ x:A \types M\atom B}{x:A\types M\can B}\;\atomcan
+\end{mathpar}
+and then regard the canonical terms as the morphisms.
+This completes the definition of our \textbf{unary canonical/atomic calculus for categories with products}.
+
+At this point it is a little difficult to explain why we regard a term of the form $f(M)$ to be atomic but allow the argument $M$ to be canonical.
+It doesn't make much difference what choice we make regarding this rule in our current very simple theory, since both $M$ and $f(M)$ always belong to a base type, and for base types there is no difference between atomic and canonical terms (the only way to make a canonical term of a base type is to apply $\atomcan$).
+So we just ask the reader to take our word for it that this choice is the best one; it will make more sense later [TODO].
+
+The restriction $B\in\cG$ in $\atomcan$ is what removes the redundancy expressed by the \emph{other} generator of $\equiv$, namely the $\eta$-conversion $\pair{\pi_1(M)}{\pi_2(M)}\equiv M$.
+However, it deals with it in a surprising way: it is the seemingly ``more complicated'' term $\pair{\pi_1(M)}{\pi_2(M)}$ that we regard as canonical!
+For example, when $x=M$ we have the following derivation in our new system:
+\begin{mathpar}
+  \inferrule*[Right=\timesI]{
+    \inferrule*[Right=\atomcan]{
+      \inferrule*[Right=\timesE]{\inferrule*{ }{x:A\times B\types x\atom A\times B}}{x:A\times B \types \pi_1(x)\atom A}
+    }{x:A\times B \types \pi_1(x)\can A} \\
+    \inferrule*[Right=\atomcan]{
+      \inferrule*[Right=\timesE]{\inferrule*{ }{x:A\times B\types x\atom A\times B}}{x:A\times B \types \pi_2(x)\atom B}
+    }{x:A\times B \types \pi_2(x)\can B}
+  }{
+    x:A\times B \types \pair{\pi_1(x)}{\pi_2(x)}\can A\times B
+  }
+\end{mathpar}
+but while we have $x:A\times B\types x\atom A\times B$, we cannot apply $\atomcan$ to deduce $x:A\times B\types x\can A\times B$ since $A\times B$ is not a base type.
+Put differently, when transforming an arbitrary term into a canonical one, we regard the $\beta$-conversion as a reduction, but the $\eta$-conversion as an \emph{expansion}.
+
+There are various reasons for this choice, foremost among which is that it works well.
+Philosophically, it can be justified by saying that the type $A\times B$ is supposed to be a ``type whose elements are pairs'', and therefore the \emph{canonical form} of any element of it (even a variable) should \emph{be a pair}.
+A category theorist can gain some intuition for it by thinking of $\beta$-reduction as analogous to the multiplication transformation $T^2\to T$ of a monad, while the $\eta$-expansion is analogous to the unit transformation $\mathsf{Id}\to T$.
+In an example such as the free monoid monad, the multiplication ``simplifies'' a list $((a,b),(),(c,d,e))$ by removing redundant parentheses to get $(a,b,c,d,e)$, while the unit makes an element $a$ into a list $(a)$ by \emph{adding} parentheses.
+Na\"ively one might say that $(a)$ is more complicated than $a$, but it has the virtue of being in the same ``canonical form'' as every other list.
+
+\begin{rmk}
+  Recall that we generally want to regard terms as simply a different syntactic representation of derivations, with a parse tree that inverts the derivation tree.
+  This is almost true for our current system: the only rule that breaks it is $\atomcan$, which uses the same term $M$ to represent two different derivations (one of $M\atom B$, and one of $M\can B$ obtained by following the former with $\atomcan$).
+  However, this can be regarded as simply a convenient abuse of notation: since otherwise the syntaxes producing atomic and canonical terms are disjoint, if when parsing $M\can B$ we see that $M$ looks like an atomic term, it must be that it was deduced from $\atomcan$ and so we can insert an appropriate node into the tree.
+\end{rmk}
+
+The central lemma that justifies this theory is, as usual, the admissibility of cut/substitution.
+
+\begin{lem}\label{thm:catprod-atomcan-subadm}
+  The following two cut rules are admissible in the unary canonical/atomic calculus for categories with products.
+  \begin{enumerate}
+  \item If $x:A\types M\can B$ and $y:B\types N\atom C$ are derivable, then either $x:A\types P\atom C$ or $x:A\types P\can C$ is derivable for some $P$.\label{item:catprod-atomcan-subadm-1}
+  \item If $x:A\types M\can B$ and $y:B\types N\can C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catprod-atomcan-subadm-2}
+  \end{enumerate}
+\end{lem}
+For purposes of composition in a free category with products, we are mainly interested in~\ref{item:catprod-atomcan-subadm-2}.
+However, for the induction to go through we must also prove~\ref{item:catprod-atomcan-subadm-1} by a simultaneous induction on derivations of both.
+\begin{proof}
+  Here are the inductive cases for the derivation of $y:B\types N\atom C$:
+  \begin{itemize}
+  \item If it ends with $\idfunc$, then $B=C$ and $N=y$, whence $x:A\types M\can B$ is our desired result.
+  \item If it ends with $fI$ for some $f\in\cG(D,C)$, then $N=f(N')$ and $y:B\types N'\can D$.
+    Thus, by the inductive hypothesis of~\ref{item:catprod-atomcan-subadm-2}, we have $x:A\types P'\can D$.
+    Applying $fI$ again, we have $x:A\types f(P')\atom C$.
+  \item If it ends with $\timesE1$, then we have $N=\pi_1(N')$ and $y:B\types N'\atom C\times D$.
+    Thus, inductively we have $x:A\types P'\can C\times D$.
+    This is where the interesting thing happens: since $P'$ is canonical rather than atomic, we can't apply $\timesE1$ directly to obtain $\pi_1(P')$.
+    Instead we observe that \emph{any canonical term of $C\times D$ must be of the form $\pair PQ$}, simply because the only rule that builds canonical terms of a product type is $\timesI$.
+    Thus, we must have $P'=\pair PQ$ where $x:A\types P\can C$ and $x:A\types Q\can D$.
+    But $x:A\types P\can C$ is exactly what we wanted.
+    (Of course, the case of $\timesE2$ is symmetric.)
+  \end{itemize}
+  And here are the inductive cases for the derivation of $y:B\types N\can C$:
+  \begin{itemize}
+  \item If it ends with $\unit I$, then $C=\unit$ and so $x:A\types \ttt\can \unit$.
+  \item If it ends with $\timesI$, then $N=\pair{N_1}{N_2}$ with $y:B\types N_1\can C_1$ and $y:B\types N_2\can C_2$.
+    Thus, inductively we have $x:A\types P_1:C_1$ and $x:A\types P_2:C_2$, whence $x:A\types \pair{P_1}{P_2}\can C$.
+  \item If it ends with $\atomcan$, then we have $y:B\types N\atom C$, and hence by the inductive hypothesis of~\ref{item:catprod-atomcan-subadm-1} we have either $x:A\types P\atom C$ or $x:A\types P\can C$.
+    In the second case we are done.
+    In the first case, since we already applied $\atomcan$ at type $C$, $C$ must be a base type, so we can apply $\atomcan$ again to conclude $x:A\types P\can C$.\qedhere
+  \end{itemize}
+\end{proof}
+
+Like \cref{thm:category-cutadm,thm:catprod-subadm}, the proof of \cref{thm:catprod-atomcan-subadm} defines a ``substitution'' operation (well, technically, two operations) on terms, which we write as $N\hsub{M/y}$.
+However, compared to ordinary substitution, this operation is more powerful: it also performs ``$\beta$-simplification'' as it goes.
+For instance, we have
+\[ \pi_1(y)\hsub{\pair M N/y} = M \]
+whereas ordinary substitution would give $\pi_1(\pair M N)$.
+In type-theoretic lingo, this ``reducing substitution'' is called \textbf{hereditary substitution}.
+Its recursive defining clauses are
+\begin{align*}
+  y\hsub{M/y} &= M\\
+  f(N)\hsub{M/y} &= f(N\hsub{M/y})\\
+  \ttt\hsub{M/y} &= \ttt\\
+  \pi_1(N)\hsub{M/y} &= P \qquad\text{where }N\hsub{M/y}=\pair P Q\\
+  \pi_2(N)\hsub{M/y} &= Q \qquad\text{where }N\hsub{M/y}=\pair P Q\\
+  \pair P Q \hsub{M/y} &= \pair{P\hsub{M/y}}{Q\hsub{M/y}}.
+\end{align*}
+
+In particular, hereditary substitution implies that the usual natural deduction rules are also \emph{admissible} for canonical terms.
+For instance, given a canonical term $x:X \types M\can A\times B$, we can construct a canonical term $x:X\types M' \can A$, even though $\pi_1$ cannot be applied directly to canonical terms; we can take $M' = \pi_1(y)\hsub{M/y}$.
+(It may be tempting to write this as ``$\pi_1(M)$'', but that would probably be confusing since it hides the fact that a meta-operation on syntax is occurring, as we can't directly apply $\pi_1$ to $M$.)
+
+This gives our promised way to ``reduce'' terms in the type theory from \cref{sec:beta-eta}.
+Like we did in \cref{sec:category-cutadm} for the cut-ful type theory of \cref{sec:category-cutful}, since all the rules of \cref{sec:beta-eta} are admissible in our canonical/atomic calculus, we can interpret any derivation --- and hence any term --- in that type theory into our current one.
+With projections defined in terms of hereditary substitution as in the previous paragraph, the net effect of this is to automatically reduce all applications of a projection to a pair.
+
+Now recall that in ordinary natural deduction, we don't need to (and, indeed, can't) prove that identity rule $A\types A$ is also admissible; hence we assume the ``use a variable'' rule $x:A\types x:A$.
+However, in the canonical/atomic calculus, we have only assumed that variables are \emph{atomic}; thus we need to also prove that there are \emph{canonical} identities.
+
+\begin{lem}\label{thm:catprod-atomcan-idadm}
+  If $\types A\type$ is derivable, then there is a term $\hid{A}(x)$ such that $x:A \types \hid{A}(x)\can A$.
+\end{lem}
+\begin{proof}
+  We induct on the derivation of $\types A\type$.
+  \begin{itemize}
+  \item If $A\in\cG$ is a base type, then we can apply $\atomcan$ to derive $x:A \types x\can A$.
+  \item If $A=\unit$, then $x:\unit \types \ttt\can \unit$.
+  \item If $A=A_1\times A_2$, then by induction we have $y:A_1 \types \hid{A_1}(y)\can A_1$ and $z:A_2 \types \hid{A_2}(z)\can A_2$.
+    Thus, $x:A \types \hid{A_1}(y)\hsub{\pi_1(x)/y}\can A_1$ and $x:A \types \hid{A_2}(z)\hsub{\pi_2(x)/z}\can A_2$, so we have
+    \[ x:A \types \pair{\hid{A_1}(y)\hsub{\pi_1(x)/y}}{\hid{A_2}(z)\hsub{\pi_2(x)/z}} \can A.\qedhere\]
+  \end{itemize}
+\end{proof}
+
+As a recursively defined operation, the clauses of $\hid{A}$ are thus
+\begin{align*}
+  \hid{A}(x) &= x \qquad\text{if }{A\in\cG}\\
+  \hid{\unit}(x) &= \ttt\\
+  \hid{A\times B}(x) &= \pair{\hid{A}(y)\hsub{\pi_1(x)/y}}{\hid{B}(z)\hsub{\pi_2(x)/z}}.
+\end{align*}
+Note that the hereditary substitution in the last clause is not doing any $\beta$-reduction, since the identity terms being substituted into are built only out of variables and pairs.
+For instance, we have
+\[ \hid{A\times (B\times C)}(x) = \pair{\pi_1(x)}{\pair{\pi_1(\pi_2(x))}{\pi_2(\pi_2(x))}} \]
+
+\begin{lem}\label{thm:atomcan-catprod-subassoc}
+  Hereditary substitution and identities form a category:
+  \begin{align*}
+    P\hsub{N/z}\hsub{M/y} &= P\hsub{N\hsub{M/y}/z}\\
+    \hid{A}(y)\hsub{M/y} &= M\\
+    N\hsub{\hid{A}(x)/y} &= N[x/y].
+  \end{align*}
+\end{lem}
+\begin{proof}
+  Left to the reader as \cref{ex:atomcan-catprod-subassoc}.
+\end{proof}
+
+\begin{thm}\label{thm:atomcan-catprod-initial}
+  For any directed graph \cG, the free category with finite products generated by \cG can be described by the unary canonical/atomic calculus for categories with products under \cG, without any quotienting: its objects are the types $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M\can B$ is derivable.
+\end{thm}
+\begin{proof}
+  \cref{thm:atomcan-catprod-subassoc} gives us a category, which we denote $\F\bPrCat\cG$.
+  The interesting thing is the proof that $\F\bPrCat\cG$ has finite products.
+  The product of $A$ and $B$ is, of course, supposesd to be $A\times B$, with projections
+  \begin{align*}
+    z:A\times B &\types \pi_1(w)\hsub{z/w}\can A\\
+    z:A\times B &\types \pi_2(w)\hsub{z/w}\can B
+  \end{align*}
+  (We can't write $\pi_1(z)$ because $A$ may not be a base type.)
+  Now given any morphisms $x:X \types M\can A$ and $x:X \types N\can B$, we can certainly form $x:X \types \pair M N \can A\times B$, and its composite with $\pi_1$ is
+  \[ \pi_1(w)\hsub{z/w}\hsub{\pair M N/z} = \pi_1(w)\hsub{z\hsub{\pair M N/z}/w} = \pi_1(w)\hsub{\pair M N/w} = M \]
+  using the associativity of hereditary substitution and the definition of hereditary substitution on $\pi_1$.
+  Of course, the case of $\pi_2$ is similar.
+  In the other direction, given any morphism $x:X \types P\can A\times B$, as observed in the proof of \cref{thm:catprod-atomcan-subadm} $P$ must be a pair $\pair M N$ where $x:X\types M\can A$ and $x:X\types N\can B$, and for the same reasons $M$ and $N$ are the composites of $P$ with $\pi_1$ and $\pi_2$ respectively.
+  Thus, $A\times B$ has the universal property of a product with respect to \emph{syntactic equality} of terms/derivations.
+
+  Now if \cM is a category with finite products and $P:\cG\to\cM$ a graph morphism, we extend $P$ to $\F\bPrCat\cG$ just as before by recursion on derivations.
+  We have to define $P$ on both atomic and canonical terms for the recursion to go through (since the atomic and canonical terms are defined by mutual induction); since there is no separation between ``atomic and canonical morphisms'' in \cM we just send both kinds of term to ordinary morphisms in \cM.
+  As usual, the defining clauses in this recursion are forced by functoriality and product-preservation, and we can then prove by induction on derivations that the resulting operation actually is a functor.
+\end{proof}
+
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:atomcan-catprod-subassoc}
+  Prove \cref{thm:atomcan-catprod-subassoc} (hereditary substitution is associative).
+\end{ex}
+
+\begin{ex}\label{ex:atomcan-catfib}
+  Formulate a canonical/atomic calculus for fibrations of categories and prove its initiality theorem.
+  Then do the same for fibrations of categories with products, as in \cref{ex:catprod-fib}.
+\end{ex}
+
+
+\section{Categories with coproducts}
+\label{sec:atomcan-catcoprod}
+
+Now we consider a canonical/atomic calculus for categories with coproducts.
+In general, objects with left (``mapping out'') universal properties are trickier to deal with in natural deduction systems, because our terms only appear on the \emph{right} of the $\types$.
+We begin by rewriting the theory of \cref{sec:catcoprod} with atomic and canonical annotations; see \cref{fig:catcoprod-atomcan}.
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types X\type}{x:X\types x\atom X}\;\idfunc\and
+    \inferrule{f\in \cG(A,B) \\ x:X\types M\can A}{x:X\types f(M)\atom B}\;fI\and
+    \inferrule{x:X \types M\atom \zero \\ \types C\type}{x:X \types \abort(M)\can C}\;\zeroE\\
+    \inferrule{x:X\types M\can A}{x:X\types \inl(M)\can A + B}\;\plusI1\and
+    \inferrule{x:X\types N\can B}{X\types \inr(N)\can A + B}\;\plusI2\and
+    \inferrule{u:A\types P\can C \\ v:B\types Q\can C \\ x:X\types M\atom A + B}{x:X\types \case(M,u.P,v.Q)\can C}\;\plusE\and
+    \inferrule{B\in\cG\\ x:A \types M\atom B}{x:A\types M\can B}\;\atomcan
+  \end{mathpar}
+  \caption{Unary canonical/atomic calculus for categories with coproducts}
+  \label{fig:catcoprod-atomcan}
+\end{figure}
+The principle is the same: we prevent ourselves from eliminating on the results of introduction rules by requiring elimination rules to act only on atomic terms.
+The only perhaps surprising thing is that the ``branches'' $P,Q$ of $\case$, and the $\case$ term itself, are canonical, though the ``branch term'' $M$ must be atomic.
+
+The proof of admissibility of (hereditary) substitution for this theory is more complicated because of the presence of the rules $\zeroE$ and $\plusE$.
+In \cref{sec:atomcan-catprod} we could see by inspection that canonical terms of a certain type must have a certain form, but $\zeroE$ and $\plusE$ can produce canonical terms of any type at all.
+
+\begin{thm}\label{thm:atomcan-catcoprod-subadm}
+  The following rules are admissible in the unary canonical/atomic calculus for categories with coproducts under \cG:
+  \begin{enumerate}
+  \item Hereditary substitution into atomic terms: if $x:A\types M\can B$ and $y:B\types N\atom C$ are derivable, then either $x:A\types P\atom C$ or $x:A\types P\can C$ is derivable for some $P$.\label{item:catcoprod-atomcan-subadm-1}
+  \item Hereditary substitution into canonical terms: if $x:A\types M\can B$ and $y:B\types N\can C$ are derivable, then $x:A\types P\can C$ is derivable for some $P$.\label{item:catcoprod-atomcan-subadm-2}
+  \end{enumerate}
+\end{thm}
+\begin{proof}
+  By mutual induction.
+  We outline the cases for each statement as follows.
+  \begin{enumerate}
+  \item A derivation of $y:B\types N\atom C$ can only end with $\idfunc$ and $fI$.
+    Both cases are just like those in \cref{thm:catprod-atomcan-subadm};
+    recall that the second case uses the inductive hypothesis of~\ref{item:catcoprod-atomcan-subadm-2}.
+  \item A derivation of $y:B\types N\can C$ can end with $\atomcan$, $\plusI1$, $\plusI2$, $\zeroE$, or $\plusE$.
+    \begin{itemize}
+    \item If it ends with $\atomcan$, we apply the inductive hypothesis of~\ref{item:catcoprod-atomcan-subadm-1}.
+    \item If $N=\inl(N')$ with $y:B\types N'\can C_1$, then by the inductive hypothesis $x:A\types N'\hsub{M/y}\can C_1$ and so $x:A\types \inl(N'\hsub{M/y})\can C$.
+      The case of $\inr$ is dual.
+    \item If $N=\case(N',u.P,v.Q)$ with $y:B\types N'\atom D+E$ and $u:D\types P\can C$ and $v:E\types Q\can C$, then since the only rule that can produce an atomic term of type $D+E$ is $\idfunc$, we must have $B=D+E$ and $N'=y$.
+      % In a more general case, we would inspect the last rule in the derivation; the other ways to produce an atomic term could then be substituted by the inductive hypothesis of~\ref{item:catcoprod-atomcan-subadm-1} to give an atomic $N'\hsub{M/y}\atom D+E$ that we can apply $\case$ to directly.
+      Now we do a secondary inner induction on the derivation of $x:A\types M\can B$, which can likewise end with $\plusI1$, $\plusI2$, or $\zeroE$ or $\plusE$.
+      \begin{itemize}
+      \item If $M=\inl(M')$, then by the inductive hypothesis we have $x:A\types P\hsub{M'/u}\can C$.
+      \item Dually, if $M=\inr(M')$, we have $x:A\types Q\hsub{M'/v}\can C$.
+      \item If $M=\abort(M')$, then $x:A\types \abort(M')\can C$.
+      \item If $M=\case(M',w.S,z.T)$ with $x:A\types M'\atom F+G$ and $w:F\types S\can D+E$ and $z:G\types T\can D+E$, then
+        by the inner inductive hypothesis we have $w:F\types S'\can C$ and $z:G\types T'\can C$.
+        Thus, applying $\plusE$ we have $x:A\types \case(M',w.S',z.T')\can C$.
+      \end{itemize}
+    \item The case when $N=\abort(N')$ with $y:B\types N'\atom\zero$ is similar, but simpler.
+      We must have $B=\zero$ and $N'=y$, and we induct on the derivation of $x:A\types M\can B$, which must end with $\zeroE$ or $\plusE$.
+      \begin{itemize}
+      \item If $M=\abort(M')$, then $x:A\types \abort(M')\can C$.
+      \item If $M=\case(M',w.S,z.T)$ with $x:A\types M'\atom F+G$ and $w:F\types S\can \zero$ and $z:G\types T\can \zero$, then
+        by the inner inductive hypothesis we have $w:F\types S'\can C$ and $z:G\types T'\can C$, whence $x:A \types \case(M',w.S',z.T')\can C$.\qedhere
+      \end{itemize}
+    \end{itemize}
+  \end{enumerate}
+\end{proof}
+
+\begin{figure}
+  \centering
+  \begin{align*}
+    y\hsub{M/y} &= M\\
+    f(N)\hsub{M/y} &= f(N\hsub{M/y})\\
+    \inl(N)\hsub{M/y} &= \inl(N\hsub{M/y})\\
+    \inr(N)\hsub{M/y} &= \inr(N\hsub{M/y})\\
+    \abort(y)\hsub{M/y} &= \abort'(M)\\
+    \case(y,u.P,v.Q)\hsub{M/y} &= \case'(M,u.P,v.Q)\\
+    \\
+    \abort'(\abort(M)) &= \abort(M)\\
+    \abort'(\case(M,u.P,v.Q)) &= \case(M,u.\abort'(P),v.\abort'(Q))\\
+    \\
+    \case'(\inl(M),u.P,v.Q) &= P\hsub{M/u}\\
+    \case'(\inr(M),u.P,v.Q) &= Q\hsub{M/v}\\
+    \case'(\abort(M),u.P,v.Q) &= \abort(M)\\
+    \case'(\case(M,w.S,z.T),u.P,v.Q) &= \case(M,w.\case'(S,u.P,v.Q),z.\case'(T,u.P,v.Q))
+  \end{align*}
+  \caption{Hereditary substitution for categories with coproducts}
+  \label{fig:catcoprod-hsub}
+\end{figure}
+
+The resulting definition of hereditary substitution is shown in \cref{fig:catcoprod-atomcan}.
+We have introduced notation $\abort'$ and $\case'$ for the operations defined by the inner recursions in the proof.
+Note that these essentially constitute proofs that the unrestricted $\zeroE$ and $\plusE$ rules are admissible, just as the hereditary substitution from \cref{sec:atomcan-catprod} yielded an admissible unrestricted $\timesE$.
+
+The identity rule is much easier:
+
+\begin{thm}\label{thm:atomcan-catcoprod-idadm}
+  The canonincal identity rule is admissible: if $\types A\type$, then $x:A \types \hid{A}(x)\can A$.
+\end{thm}
+\begin{proof}
+  The defining clauses are
+  \begin{align*}
+    \hid{A}(x) &= x \quad\text{if }A\in \cG\\
+    \hid{\zero}(x) &= \abort(x)\\
+    \hid{A+B}(x) &= \case(x,u.\hid{A}(u),v.\hid{B}(v))\qedhere
+  \end{align*}
+\end{proof}
+
+Like the admissible $\pi_1$ from \cref{sec:atomcan-catprod}, $\match'$ satisfies $\beta$-conversion as a syntactic equality (this is its first two defining clauses).
+Unfortunately, this theory still does not validate the full $\eta$ rule for coproducts as a syntactic equality.
+We do have the following weaker property:
+
+\begin{lem}\label{thm:atomcan-catcoprod-weaketa}
+  If $x:X \types M\can A+B$, then $M = \case'(M,u.\inl(u),v.\inr(v))$.
+  Similarly, if $x:X\types M\can\zero$, then $M=\abort'(M)$.
+\end{lem}
+\begin{proof}
+  An easy induction over the defining clauses of $\case'$ and $\abort'$.
+\end{proof}
+
+In other words, it is still true (see footnote~\ref{fn:weak-eta}) that every term \emph{of type $A+B$} has a canonical form.
+However, unlike the case of products this is insufficient to ensure the full uniqueness aspect of the universal property, since the ``mapping out'' universal property of $A+B$ constructs terms not of type $A+B$ itself but of some other type.
+For instance, if we have
+\begin{mathpar}
+  f\in\cG(A,C)\and
+  g\in\cG(B,C)\and
+  h\in\cG(C,D)\and
+\end{mathpar}
+then the induced morphism $A+B\to D$ is represented by both of the terms
+\begin{align*}
+  x:A+B &\types \case(x,u.h(f(u)),v.h(g(v)))\can D\\
+  x:A+B &\types h(\case(x,u.f(u),v.g(v)))\can D
+\end{align*}
+and these two terms are (syntactically) different, despite both yielding $h(f(u))$ and $h(g(v))$ under the hereditary substitutions $\hsub{\inl(u)/x}$ and $\hsub{\inr(v)/x}$.
+
+Thus, the terms/derivations in this type theory don't present a category with finite coproducts unless we impose some equivalence relation on them.
+The above example also points the way to the correct equivalence relation.
+We no longer need to assert $\beta$-conversion, nor do we need the weak form of $\eta$-conversion expressed by \cref{thm:atomcan-catcoprod-weaketa}; but we do need the relations shown in \cref{fig:catcoprod-commconv}.
+\begin{figure}
+  \centering
+  \begin{align*}
+    f(\case(M,u.P,v.Q)) &\equiv \case(M,u.f(P),v.f(Q))\\
+    \inl(\case(M,u.P,v.Q)) &\equiv \case(M,u.\inl(P),v.\inl(Q))\\
+    \inr(\case(M,u.P,v.Q)) &\equiv \case(M,u.\inr(P),v.\inr(Q))\\
+    \case(\case(M,u.P,v.Q),w.R,z.S) &\equiv \case(M,u.\case(P,w.R,z.S),v.\case(Q,w.R,z.S))\\
+    \abort(\case(M,u.P,v.Q)) &\equiv \case(M,u.\abort(P),v.\abort(Q))
+  \end{align*}
+  \caption{Commuting conversions for coproducts}
+  \label{fig:catcoprod-commconv}
+\end{figure}
+These are called \textbf{commuting conversions}.
+They are a consequence of the strong form of $\eta$-conversion~\eqref{eq:catcoprod-eta}:
+\begin{equation}
+  \inferrule{x:X \types M\atom A+B \\ y:A+B \types P\can C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] \can C}\label{eq:catcoprod-eta-again}
+\end{equation}
+(take $P$ to be the left-hand side of each commuting conversion with $y$ in place of $M$).
+Conversely, when combined with the weak $\eta$-conversion, the commuting conversions imply the strong $\eta$-conversion:
+
+\begin{thm}\label{thm:atomcan-catcoprod-eta}
+  If we augment the canonical/atomic calculus for categories with coproducts by an $\equiv$ on canonical terms generated by the relations in \cref{fig:catcoprod-commconv} (plus the usual congruence properties), then the strong $\eta$-rule~\eqref{eq:catcoprod-eta-again} is admissible.
+\end{thm}
+\begin{proof}
+  Induction on the derivation of $P$; each commuting conversion handles exactly one of the cases.
+\end{proof}
+
+\begin{thm}\label{thm:atomcan-catcoprod-initial}
+  The free category with coproducts generated by a directed graph \cG can be presented by the canonical/atomic calculus for categories with coproducts modulo $\equiv$.
+\end{thm}
+\begin{proof}
+  Left to the reader as \cref{ex:atomcan-catcoprod-initial}.
+\end{proof}
+
+[TODO: Molecular?]
+
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:atomcan-catcoprod-initial}
+  Prove \cref{thm:atomcan-catcoprod-initial} (initiality for the canonical/atomic calculus for categories with coproducts).
+\end{ex}
+
+\begin{ex}\label{ex:atomcan-opfib}
+  Formulate a canonical/atomic calculus for opfibrations of categories, with an $\equiv$ for commuting conversions only, and prove its initiality theorem.
+  Then do the same for opfibrations of categories with coproducts.
+\end{ex}
+
+\begin{ex}\label{ex:atomcan-prodcoprod}
+  Combine \cref{sec:atomcan-catprod,sec:atomcan-catcoprod} to give a canonical/atomic calculus for categories with both products and coproducts, and prove its initiality theorem.
+  (You will need some commuting conversions relating to $\timesI$ as well.)
+\end{ex}
+
+
+\section{Focusing}
+\label{sec:focusing}
+
+For completeness, we now describe how the sequent calculus for meet-semilattices can also be modified to present free categories with products without needing an equivalence relation on terms.
+This version is not as commonly used in categorical logic, but it is important in other applications of type theory, such as automated proof search; it is called \emph{focusing}.
+
+If we inspect the derivations of canonical terms in the type theory of \cref{sec:atomcan-catprod}, we see that they have the following form: first they apply some number of projections to variables, then they apply $\atomcan$, they apply some number of generating arrows between base types, and finally they apply some number of pairings.
+For instance, if $f\in \cG(C,D)$ we have
+\[x:(A\times B)\times C \types \pair{f(\pi_2(x))}{\pi_2(\pi_1(x))}\can D\times B\]
+with derivation
+\begin{mathpar}
+\let\mytimes\times
+\def\times{\mathord{\mytimes}}
+  \inferrule*{
+    \inferrule*{\inferrule*{\inferrule*{
+          x:(A\times B)\times C \types x\atom (A\times B)\times C
+        }{x:(A\times B)\times C \types \pi_2(x) \atom C
+        }}{x:(A\times B)\times C \types \pi_2(x) \can C
+      }}{x:(A\times B)\times C \types f(\pi_2(x)) \can D}
+    \\
+    \inferrule*{\inferrule*{\inferrule*{
+          x:(A\times B)\times C \types x\atom (A\times B)\times C
+        }{x:(A\times B)\times C \types \pi_1(x)\atom A\times B
+        }}{x:(A\times B)\times C \types \pi_2(\pi_1(x))\atom B}
+    }{x:(A\times B)\times C \types \pi_2(\pi_1(x))\can B}
+  }{x:(A\times B)\times C \types \pair{f(\pi_2(x))}{\pi_2(\pi_1(x))}\can D\times B}
+\end{mathpar}
+This suggests that we ought to consider as ``canonical'' the sequent calculus derivation that is closest to the above.
+Roughly speaking, this means first applying left rules, then generators, then right rules\footnote{To be honest, we should point out that the fact that the canonical derivations can be described so simply is an artifact of the relative triviality of our current theory, with essentially only one operation $\times$.
+One can still formulate canonical/atomic and focused versions of more general theories, but the canonical forms don't have as simple a description.}, as in the following derivation:
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{\inferrule*{C\types C
+      }{(A\times B)\times C \types C
+      }}{(A\times B)\times C \types D}
+      \\
+    \inferrule*{\inferrule*{B \types B
+      }{A\times B \types B
+      }}{(A\times B)\times C \types B}
+  }{(A\times B)\times C \types D\times B}
+\end{mathpar}
+As in the natural deduction case, we can rule out the undesired sequent calculus derivations by using two judgments to indicate whether we are in the ``left phase'' or the ``right phase''.
+We denote these by
+\[ \focus{A} \types B
+\qquad\text{and}\qquad
+%A\types\focus{B}
+A\types B
+\]
+respectively.
+The brackets in the first case indicate that we are ``focused'' on the left side of the sequent.
+You might think that in the second case we should write $A\types \focus B$ to indicate that we are focused on the right side, but in fact in the latter case we are not really ``focused'' at all; in more complicated situations there is also a ``right-focused'' judgment $A\types \focus B$ that is different from both $\focus A \types B$ and $A\types B$.
+The asymmetry we see here is due to the fact that all universal properties we are considering are of the ``mapping in'' sort.
+
+We now modify the sequent calculus rules from \cref{sec:seqcalc-mslat} by stipulating that
+the right rules only apply when we are in the right phase,
+% \begin{mathpar}
+%   \inferrule{A\types \focus{B} \\ A\types \focus{C}}{A\types \focus{B\times C}}\and
+%   \inferrule{f\in \cG(A,B) \\ X\types \focus{A}}{X\types \focus{B}}\and
+%   \inferrule{\types A\type}{A\types \focus{\top}}\and
+% \end{mathpar}
+while the left rules apply only in the left phase;
+% \begin{mathpar}
+%   \inferrule{A\in \cG}{\focus A\types A}\and
+%   \inferrule{\focus A\types C \\ \types B\type}{\focus {A\times B} \types C}\and
+%   \inferrule{\focus B\types C \\ \types A\type}{\focus{A\times B} \types C}\and
+% \end{mathpar}
+and we can transition from the left to the right phase, but not vice versa.
+% \[ \inferrule{\focus A \types B}{A\types\focus B}\]
+Since we are interested in distinguishing between derivations, we also annotate our sequents with terms; and
+because the left rules of sequent calculus are not well-adapted to the use of formal variables, we go back to annotating the entire sequent with a term.
+The rules with annotations for this \textbf{unary focused sequent calculus for categories with products} are shown in \cref{fig:catprod-focused-seqcalc}.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    % \inferrule{\phi:(A\types \focus{B}) \\ \psi:(A\types \focus{C})}{\pair{\phi}{\psi}:(A\types \focus{B\times C})}\and
+    % \inferrule{f\in \cG(A,B) \\ \phi:(X\types \focus{A})}{\postc f\phi:(X\types \focus{B})}\and
+    % \inferrule{\types A\type}{\ttt:(A\types \focus{\top})}\and
+    \inferrule{\phi:(A\types {B}) \\ \psi:(A\types {C})}{\pair{\phi}{\psi}:(A\types {B\times C})}\and
+    \inferrule{f\in \cG(A,B) \\ \phi:(X\types {A})}{\postc f\phi:(X\types {B})}\and
+    \inferrule{\types A\type}{\ttt:(A\types {\top})}\and
+    \inferrule{A\in \cG}{\idfunc_A:(\focus A\types A)}\and
+    \inferrule{\phi:(\focus A\types C) \\ \types B\type}{\prec{\phi}{\pi_1}:(\focus {A\times B} \types C)}\and
+    \inferrule{\phi:(\focus B\types C) \\ \types A\type}{\prec{\phi}{\pi_2}:(\focus{A\times B} \types C)}\and
+    \inferrule{\phi:(\focus A \types B)}{\phi:(A\types B)}
+  \end{mathpar}
+  \caption{Unary focused sequent calculus for categories with products}
+  \label{fig:catprod-focused-seqcalc}
+\end{figure}
+
+For instance, the above derivation of $(A\times B)\times C \types D\times B$ can be given in the focused sequent calculus with term annotations as follows:
+\begin{mathpar}
+  \let\mytimes\times
+  \def\times{\mathord{\mytimes}}
+  \inferrule*{
+    \inferrule*{\inferrule*{\inferrule*{\idfunc_C:(\focus C\types C)
+        }{\prec{\idfunc_C}{\pi_2}:(\focus{(A\times B)\times C} \types C)
+        }}{\prec{\idfunc_C}{\pi_2}:((A\times B)\times C \types C)
+      }}{\postc{f}{\prec{\idfunc_C}{\pi_2}}:((A\times B)\times C \types D)}
+    \\
+    \inferrule*{\inferrule*{\inferrule*{\idfunc_B:(\focus B \types B)
+        }{\prec{\idfunc_B}{\pi_2}:(\focus{A\times B} \types B)
+        }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:(\focus{(A\times B)\times C} \types B)
+      }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:((A\times B)\times C \types B)}
+  }{\pair{\postc{f}{\prec{\idfunc_C}{\pi_2}}}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}}
+    :((A\times B)\times C \types {D\times B})}
+  % \inferrule*{
+  %   \inferrule*{\inferrule*{\inferrule*{\idfunc_C:(\focus C\types C)
+  %       }{\prec{\idfunc_C}{\pi_2}:(\focus{(A\times B)\times C} \types C)
+  %       }}{\prec{\idfunc_C}{\pi_2}:((A\times B)\times C \types \focus C)
+  %     }}{\postc{f}{\prec{\idfunc_C}{\pi_2}}:((A\times B)\times C \types \focus D)}
+  %   \\
+  %   \inferrule*{\inferrule*{\inferrule*{\idfunc_B:(\focus B \types B)
+  %       }{\prec{\idfunc_B}{\pi_2}:(\focus{A\times B} \types B)
+  %       }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:(\focus{(A\times B)\times C} \types B)
+  %     }}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}:((A\times B)\times C \types \focus B)}
+  % }{\pair{\postc{f}{\prec{\idfunc_C}{\pi_2}}}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}}
+  %   :((A\times B)\times C \types \focus{D\times B})}
+\end{mathpar}
+
+As usual, we need to prove the admissibility of identity and cut.
+The proof of cut is very similar to that of \cref{thm:catprod-atomcan-subadm}.
+
+\begin{lem}\label{thm:focused-catprod-cutadm}
+  The following two cut rules are admissible in the unary focused sequent calculus for categories with products.
+  \begin{enumerate}
+    \item If $A\types B$ and $\focus B\types C$, then $A\types C$.\label{item:focused-catprod-cutadm-1}
+    \item If $A\types B$ and $B\types C$, then $A\types C$.\label{item:focused-catprod-cutadm-2}
+  \end{enumerate}
+\end{lem}
+\begin{proof}
+  First we prove~\ref{item:focused-catprod-cutadm-1} by induction on the derivation of $\focus B\types C$.
+  \begin{itemize}
+  \item If it is $\idfunc_B$, then $A\types B$ is $A\types C$.
+  \item If it ends with $\pi_1$, then $B$ is $B_1\times B_2$ and we have $\focus B_1\types C$.
+    Now consider the derivation of $A\types B$, i.e.\ $A\types B_1\times B_2$.
+    \textit{A priori} this could end either with the ``unfocus'' rule or with the $\times R$ rule.
+    But in fact, the unfocus rule is impossible, because it is impossible to derive $\focus A\types B$ unless $B$ is a base type (this is an easy induction).
+    Thus, we must have $A\types B_1$ and $A\types B_2$, so we can apply the inductive hypothesis on $B_1$ to get $A\types C$.
+  \end{itemize}
+  Now we prove~\ref{item:focused-catprod-cutadm-2}, by induction on the derivation of $B\types C$.
+  \begin{itemize}
+  \item If it ends with the right rule for $\times$ or $\unit$, or the generator rule for $f$, we can simply apply the inductive hypothesis and then the same rule, as usual.
+  \item If it ends with the unfocus rule, then we apply part~\ref{item:focused-catprod-cutadm-1}.\qedhere
+  \end{itemize}
+\end{proof}
+
+However, if we try to prove admissibility of identity directly, we run into problems.
+We need the following lemma first.
+
+\begin{lem}\label{thm:focused-catprod-leftadm}
+  The unfocused left rules for $\times$ are admissible in the unary focused sequent calculus for categories with products.
+  That is, if we have a derivation of $A\types C$ and $\types B\type$, we can construct a derivation of $A\times B\types C$, and dually.
+\end{lem}
+\begin{proof}
+  We induct on the derivation of $A\types C$.
+  \begin{itemize}
+  \item If it ends with the ``unfocus'' rule, whose premise is $\focus A\types C$, then we can apply the focused left rule to this to conclude $\focus{A\times B}\types C$, and then unfocus it to obtain $A\times B\types C$.
+  \item If it ends with the right rule for $\times$, then $C=C_1\times C_2$ and we have derivations of $A\types C_1$ and $A\types C_2$.
+    By the inductive hypothesis we get $A\times B\types C_1$ and $A\times B\types C_2$, whence $A\times B\types C$ by the right rule for $\times$.
+  \item If it ends with the generator rule for $f\in \cG(D,C)$, then we have a derivation of $A\types D$.
+    By the inductive hypothesis we get $A\times B\types D$, whence $A\times B\types C$.
+  \item Finally, if it ends with the right rule for $\unit$, then $C=\unit$, and so the same rule yields $A\times B\types C$.\qedhere
+  \end{itemize}
+\end{proof}
+
+\begin{lem}\label{thm:focused-catprod-idadm}
+  The unfocused identity rule is admissible in the unary focused sequent calculus for categories with products.
+  That is, if $\types A\type$, then $A\types A$.
+\end{lem}
+\begin{proof}
+  Given \cref{thm:focused-catprod-leftadm}, we can use the same proof as \cref{thm:seqcalc-mslat-idadm}.
+\end{proof}
+
+Of course, although the inductive argument for \cref{thm:focused-catprod-idadm} written in English is the same as that for \cref{thm:seqcalc-mslat-idadm}, the end result is different because we have the inductive construction of \cref{thm:focused-catprod-leftadm} frobnicating the results at each inductive step rather than simply applying the primitive left rule.
+For instance, on $(A\times B)\times C$ the unmodified proof of \cref{thm:seqcalc-mslat-idadm} would give the derivation
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{\inferrule*{\inferrule*{A\types A}{A\times B\types A}\\
+        \inferrule*{B\types B}{A\times B\types B}
+      }{A\times B\types A\times B}
+    }{(A\times B)\times C \types A\times B}\\
+    \inferrule*{C\types C
+    }{(A\times B)\times C \types C}
+  }{(A\times B)\times C \types (A\times B)\times C}
+\end{mathpar}
+which cannot be ``focalized'' since it applies a left rule after a right rule.
+Instead, from \cref{thm:focused-catprod-idadm} we obtain
+\begin{mathpar}
+  \inferrule*{
+    \inferrule*{
+      \inferrule*{\inferrule*{\inferrule*{\focus A\types A}{\focus{A\times B}\types A}
+        }{\focus{(A\times B)\times C} \types A}
+      }{(A\times B)\times C \types A}\\
+      \inferrule*{\inferrule*{\inferrule*{\focus B\types B}{\focus{A\times B}\types B}
+        }{\focus{(A\times B)\times C} \types B}
+      }{(A\times B)\times C \types B}
+    }{(A\times B)\times C \types A\times B}\\
+    \inferrule*{\inferrule*{\focus C\types C
+      }{\focus {(A\times B)\times C} \types C}
+    }{(A\times B)\times C \types C}
+  }{(A\times B)\times C \types (A\times B)\times C}
+\end{mathpar}
+The resulting term is
+\[ \pair{\pair{\prec{\prec{\idfunc_A}{\pi_1}}{\pi_1}}{\prec{\prec{\idfunc_B}{\pi_2}}{\pi_1}}}{\prec{\idfunc_C}{\pi_2}} :
+({(A\times B)\times C \types (A\times B)\times C})\]
+
+We let the reader complete the argument (\cref{ex:focused-catprod-cutassoc,ex:focused-catprod-initial}).
+
+\begin{lem}\label{thm:focused-catprod-cutassoc}
+  Cut is associative and unital in the unary focused sequent calculus for categories with products.\qed
+\end{lem}
+
+\begin{thm}\label{thm:focused-catprod-initial}
+  For any directed graph \cG, the free category with finite products generated by \cG can be described by the unary focused sequent calculus for categories with products under \cG, without any quotienting: its objects are the types $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $M:(A \types B)$ is derivable.\qed
+\end{thm}
+
+
+[TODO: Does focusing continue to identify unique canonical derivations in more complicated theories (with both positives and negatives)?  Right now I think the answer is no, that we still need commuting conversions.  How does focusing compare to canonical/atomic in theories with both positives and negatives?  In theories with just positives, focusing should work just as well as in theories with just negatives, although canonical/atomic fails to give $\eta$.]
+
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:focused-catprod-cutassoc}
+  Prove \cref{thm:focused-catprod-cutassoc} (cut is associative and unital in the unary focused sequent calculus for categories with products).
+\end{ex}
+
+\begin{ex}\label{ex:focused-catprod-initial}
+  Prove \cref{thm:focused-catprod-initial} (initiality for the unary focused sequent calculus for categories with products).
+\end{ex}
+
+
