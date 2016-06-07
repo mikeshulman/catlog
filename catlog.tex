@@ -1,5 +1,6 @@
 \documentclass{book}
-\usepackage{mathpartir,cancel,cmll,appendix}
+\usepackage{mathpartir,cancel,cmll}
+%\usepackage{appendix}  % for chapter appendices, use \begin{subappendices}
 \newif\ifcref\creftrue
 \input{decls}
 \title{Categorical logic from a categorical point of view}
@@ -1264,7 +1265,7 @@ These properties are characteristic of \emph{natural deduction} theories.
 \begin{rmk}
   Because the proof of cut-elimination for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
   Triviality is subjective; but what seems inarguable is that cut-elimination for natural deduction is \emph{saying something different} than cut-elimination for sequent calculus.
-  The content of cut-elimination for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}), or to the cut-elimination (``hereditary substitution'') of a canonical/atomic natural deduction (see \cref{sec:atomcan}).
+  The content of cut-elimination for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}), or to the cut-elimination (``hereditary substitution'') of a canonical/atomic natural deduction (see \cref{cha:canonical}).
   This difference is also evident in the fact that we have to assert the full identity rule in natural deduction.
 \end{rmk}
 
@@ -1421,7 +1422,7 @@ By contrast, in a sequent calculus we have ``only introduction rules'' (of both 
 
 In fact, in the simple case of categories with products, there are tricks enabling us to eliminate \emph{both} kinds of redundancy, and thereby do without any ``$\equiv$'' for both the sequent calculus and the natural deduction.
 However, in even slightly more complicated theories the analogous tricks do not eliminate $\equiv$ completely, though they do reduce its complexity.
-Thus, we focus in this section on theories with $\equiv$, relegating the tricks to the ``chapter appendices'' \cref{sec:atomcan,sec:focusing}.
+Thus, we focus in this section on theories with $\equiv$; we will return to the tricks in \cref{cha:canonical}.
 
 It is convenient to describe the reduction rules using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
 If we think of $A\times B$ as the ``type of pairs consisting of one element of $A$ and one element of $B$'', then it is natural to represent the $\timesI/\timesR$ rule as a pair of terms, one in $A$ and one in $B$.
@@ -1499,7 +1500,7 @@ This completes the definition of the \textbf{unary type theory for categories wi
   This suggests that we should be able to ``reduce'' an arbitrary term to a ``simplest possible form'' by successively applying $\beta$- and $\eta$-conversions.
   Such is indeed the case (although for technical reasons the $\eta$-conversion is usually applied in the less intuitive right-to-left direction and called an ``expansion'' rather than a ``reduction''.).
   This \emph{process of reduction} (and expansion) belongs to the ``computational'' side of type theory, which (though of course important in its own right) is somewhat tangential to our category-theoretic emphasis, so we will not discuss it in detail.
-  (However, in \cref{sec:atomcan} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.)
+  (However, in \cref{cha:canonical} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.)
 \end{rmk}
 
 \begin{thm}\label{thm:catprod-subadm}
@@ -1694,7 +1695,7 @@ Recalling that composition is given by substitution, this leads us to write down
 Similarly, the $\eta$-conversion rule\footnote{In fact, for types such as coproducts with a left universal property, there is no consensus on exactly what equality ``$\eta$'' refers to.\label{fn:weak-eta}
   From a categorical point of view this equality is the most natural, since like the $\eta$-conversion rule for products it expresses the uniqueness aspect of the universal property.
   But sometimes $\eta$ is used to refer only to the special case $\case(y,u.\inl(u),v.\inr(v))\equiv y$, which is also analogous to the $\eta$ rule for products in that it says that elements \emph{of the type in question} have a canonical form (a pair in a product or a case-split in a coproduct).
-  The relationship between these two, which involves ``commuting conversions'', is discussed further in \cref{sec:atomcan}.} should say that morphisms out of a coproduct are determined uniquely by their composites with the projections:
+  The relationship between these two, which involves ``commuting conversions'', is discussed further in \cref{cha:canonical}.} should say that morphisms out of a coproduct are determined uniquely by their composites with the projections:
 \begin{equation}
   \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P\label{eq:catcoprod-eta}
 \end{equation}
@@ -1731,8 +1732,8 @@ This completes the definition of our \textbf{unary type theory for categories wi
   Finally, we show by a further induction that this extension is actually a functor (preserves all composites).
 \end{proof}
 
-This is the end of the main material in \cref{chap:unary}; the reader is free (after doing some exercises) to move on directly to \cref{chap:simple}.
-However, if you want to understand $\equiv$ a little more deeply, you may also continue with the ``chapter appendices'' \cref{sec:atomcan,sec:focusing}.
+At this point the reader is free (after doing some exercises) to move on directly to \cref{chap:simple}.
+However, if you want to understand $\equiv$ a little more deeply, you may also continue with the somewhat digressive \cref{cha:canonical}.
 
 
 \subsection*{Exercises}
@@ -1803,27 +1804,29 @@ However, if you want to understand $\equiv$ a little more deeply, you may also c
 \end{ex}
 
 
-\begin{subappendices}
-\section{Canonical and atomic}
-\label{sec:atomcan}
+\chapter{Computation and Canonicity}
+\label{cha:canonical}
+
+[TODO: Is this chapter a good idea at all?]
 
 As observed in \cref{rmk:beta-reduction}, the $\beta$-reduction rule can be seen as a ``directed simplification'': clearly $M$ is simpler than $\pi_1(\pair M N)$.
 Put differently, the derivation leading to the term $\pi_1(\pair M N)$ is ``redundant'' since it represents a morphism that already had a representative, namely $M$.
-We now present a theory that prevents such redundancy from occurring.
+In this chapter we study theories that (at least partially) prevent such redundancy from occurring, eliminating (or reducing) the need for the equivalence relations $\equiv$ in presenting free categories.
 
 The idea is to prevent application of elimination rules (such as $\pi_1$) to terms resulting from introduction rules (such as $\pair M N$).
-We do, of course, have to be able to apply elimination rules to some terms, in order to derive say $x:A\times B \types \pi_1(x):A$.
+We do, of course, have to be able to apply elimination rules to some terms, in order to derive, say, $x:A\times B \types \pi_1(x):A$.
 To distinguish between the ``terms that can be eliminated'' and those that can't, we replace the single judgment $x:A\types M:B$ with two:
 \begin{mathpar}
   x:A \types M\atom B\and
   x:A \types M\can B.
 \end{mathpar}
 We read $M\atom B$ as ``$M$ is an \textbf{atomic} term of type $B$'' and $M\can B$ as ``$M$ is a \textbf{canonical} term of type $B$''.
-Intuitively, the canonical terms are a subset of the ordinary ones with the property of being ``canonical representatives'' of a morphism in a free category with products.
+Intuitively, the canonical terms are a subset of the ordinary ones with the property of being ``canonical representatives'' of a morphism in a free category.
 If we succeed at proving an initiality theorem without needing to impose any equivalence relation on terms, then it will follow that in fact, every $\equiv$-equivalence class of ordinary terms has \emph{exactly one} representative that is ``canonical'' in the current sense.
-However, we will see below that this is not always possible.
+Moreover, by translating the theories with $\equiv$ into the theories without $\equiv$ we obtain a ``reduction'' operation that computes the canonical form of any term.
 
-\subsection{Categories with products}
+
+\section{Categories with products}
 \label{sec:atomcan-catprod}
 
 We consider first the case of categories with products only.
@@ -2007,7 +2010,20 @@ For instance, we have
   As usual, the defining clauses in this recursion are forced by functoriality and product-preservation, and we can then prove by induction on derivations that the resulting operation actually is a functor.
 \end{proof}
 
-\subsection{Categories with coproducts}
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:atomcan-catprod-subassoc}
+  Prove \cref{thm:atomcan-catprod-subassoc} (hereditary substitution is associative).
+\end{ex}
+
+\begin{ex}\label{ex:atomcan-catfib}
+  Formulate a canonical/atomic calculus for fibrations of categories and prove its initiality theorem.
+  Then do the same for fibrations of categories with products, as in \cref{ex:catprod-fib}.
+\end{ex}
+
+
+\section{Categories with coproducts}
 \label{sec:atomcan-catcoprod}
 
 Now we consider a canonical/atomic calculus for categories with coproducts.
@@ -2047,8 +2063,9 @@ In \cref{sec:atomcan-catprod} we could see by inspection that canonical terms of
   \item A derivation of $y:B\types N\atom C$ can only end with $\idfunc$ and $fI$.
     Both cases are just like those in \cref{thm:catprod-atomcan-subadm};
     recall that the second case uses the inductive hypothesis of~\ref{item:catcoprod-atomcan-subadm-2}.
-  \item A derivation of $y:B\types N\can C$ can end with $\plusI1$, $\plusI2$, $\zeroE$, or $\plusE$.
+  \item A derivation of $y:B\types N\can C$ can end with $\atomcan$, $\plusI1$, $\plusI2$, $\zeroE$, or $\plusE$.
     \begin{itemize}
+    \item If it ends with $\atomcan$, we apply the inductive hypothesis of~\ref{item:catcoprod-atomcan-subadm-1}.
     \item If $N=\inl(N')$ with $y:B\types N'\can C_1$, then by the inductive hypothesis $x:A\types N'\hsub{M/y}\can C_1$ and so $x:A\types \inl(N'\hsub{M/y})\can C$.
       The case of $\inr$ is dual.
     \item If $N=\case(N',u.P,v.Q)$ with $y:B\types N'\atom D+E$ and $u:D\types P\can C$ and $v:E\types Q\can C$, then since the only rule that can produce an atomic term of type $D+E$ is $\idfunc$, we must have $B=D+E$ and $N'=y$.
@@ -2133,7 +2150,7 @@ For instance, if we have
   g\in\cG(B,C)\and
   h\in\cG(C,D)\and
 \end{mathpar}
-then the induced map $A+B\to D$ is represented by both of the terms
+then the induced morphism $A+B\to D$ is represented by both of the terms
 \begin{align*}
   x:A+B &\types \case(x,u.h(f(u)),v.h(g(v)))\can D\\
   x:A+B &\types h(\case(x,u.f(u),v.g(v)))\can D
@@ -2142,7 +2159,7 @@ and these two terms are (syntactically) different, despite both yielding $h(f(u)
 
 Thus, the terms/derivations in this type theory don't present a category with finite coproducts unless we impose some equivalence relation on them.
 The above example also points the way to the correct equivalence relation.
-We no longer need $\beta$-conversion, nor do we need the weak form of $\eta$-conversion expressed by \cref{thm:atomcan-catcoprod-weaketa}; instead we need the relations shown in \cref{fig:catcoprod-commconv}.
+We no longer need to assert $\beta$-conversion, nor do we need the weak form of $\eta$-conversion expressed by \cref{thm:atomcan-catcoprod-weaketa}; but we do need the relations shown in \cref{fig:catcoprod-commconv}.
 \begin{figure}
   \centering
   \begin{align*}
@@ -2163,25 +2180,37 @@ They are a consequence of the strong form of $\eta$-conversion~\eqref{eq:catcopr
 (take $P$ to be the left-hand side of each commuting conversion with $y$ in place of $M$).
 Conversely, when combined with the weak $\eta$-conversion, the commuting conversions imply the strong $\eta$-conversion:
 
-\begin{thm}
+\begin{thm}\label{thm:atomcan-catcoprod-eta}
   If we augment the canonical/atomic calculus for categories with coproducts by an $\equiv$ on canonical terms generated by the relations in \cref{fig:catcoprod-commconv} (plus the usual congruence properties), then the strong $\eta$-rule~\eqref{eq:catcoprod-eta-again} is admissible.
 \end{thm}
 \begin{proof}
   Induction on the derivation of $P$; each commuting conversion handles exactly one of the cases.
 \end{proof}
 
+\begin{thm}\label{thm:atomcan-catcoprod-initial}
+  The free category with coproducts generated by a directed graph \cG can be presented by the canonical/atomic calculus for categories with coproducts modulo $\equiv$.
+\end{thm}
+\begin{proof}
+  Left to the reader as \cref{ex:atomcan-catcoprod-initial}.
+\end{proof}
 
+[TODO: Molecular?]
 
 
 \subsection*{Exercises}
 
-\begin{ex}\label{ex:atomcan-catprod-subassoc}
-  Prove \cref{thm:atomcan-catprod-subassoc} (hereditary substitution is associative).
+\begin{ex}\label{ex:atomcan-catcoprod-initial}
+  Prove \cref{thm:atomcan-catcoprod-initial} (initiality for the canonical/atomic calculus for categories with coproducts).
 \end{ex}
 
-\begin{ex}\label{ex:atomcan-catfib}
-  Formulate a canonical/atomic calculus for fibrations of categories and prove its initiality theorem.
-  Then do the same for fibrations of categories with products, as in \cref{ex:catprod-fib}.
+\begin{ex}\label{ex:atomcan-opfib}
+  Formulate a canonical/atomic calculus for opfibrations of categories, with an $\equiv$ for commuting conversions only, and prove its initiality theorem.
+  Then do the same for opfibrations of categories with coproducts.
+\end{ex}
+
+\begin{ex}\label{ex:atomcan-prodcoprod}
+  Combine \cref{sec:atomcan-catprod,sec:atomcan-catcoprod} to give a canonical/atomic calculus for categories with both products and coproducts, and prove its initiality theorem.
+  (You will need some commuting conversions relating to $\timesI$ as well.)
 \end{ex}
 
 
@@ -2191,7 +2220,7 @@ Conversely, when combined with the weak $\eta$-conversion, the commuting convers
 For completeness, we now describe how the sequent calculus for meet-semilattices can also be modified to present free categories with products without needing an equivalence relation on terms.
 This version is not as commonly used in categorical logic, but it is important in other applications of type theory, such as automated proof search; it is called \emph{focusing}.
 
-If we inspect the derivations of canonical terms in the type theory of \cref{sec:atomcan}, we see that they have the following form: first they apply some number of projections to variables, then they apply $\atomcan$, they apply some number of generating arrows between base types, and finally they apply some number of pairings.
+If we inspect the derivations of canonical terms in the type theory of \cref{sec:atomcan-catprod}, we see that they have the following form: first they apply some number of projections to variables, then they apply $\atomcan$, they apply some number of generating arrows between base types, and finally they apply some number of pairings.
 For instance, if $f\in \cG(C,D)$ we have
 \[x:(A\times B)\times C \types \pair{f(\pi_2(x))}{\pi_2(\pi_1(x))}\can D\times B\]
 with derivation
@@ -2416,8 +2445,6 @@ We let the reader complete the argument (\cref{ex:focused-catprod-cutassoc,ex:fo
   Prove \cref{thm:focused-catprod-initial} (initiality for the unary focused sequent calculus for categories with products).
 \end{ex}
 
-
-\end{subappendices}
 
 
 \chapter{Simple type theories}
@@ -3023,17 +3050,6 @@ The $\beta$- and $\eta$-conversion rules implement the universal properties:
 \end{proof}
 
 
-\section{Symmetric monoidal categories}
-\label{sec:symmoncat}
-
-[Symmetric multicategories and their type theory, exchange rule, structural rules in general.  How exactly do the structural rules work with initiality?  Should we use finite sets (e.g.\ of variables) instead of natural numbers to index the domains of morphisms in our symmetric multicategories?]
-
-We can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
-I've never seen that done before, but I think it's more standard that we can make exchange, contraction, and weakening all admissible by allowing the variable rule to extract from anywhere in the context.
-
-Can we also make sense of ``multisets''?
-
-
 \section{Introduction to cartesian multicategories}
 \label{sec:cartmulti}
 
@@ -3045,6 +3061,17 @@ Can we also make sense of ``multisets''?
 
 [Not sure exactly where the section boundaries should be here, or how to mix introducing the categorical structures with the type theories.
 Where to talk about distributive categories and distributive lattices?]
+
+
+\section{Symmetric monoidal categories}
+\label{sec:symmoncat}
+
+[Symmetric multicategories and their type theory, exchange rule, structural rules in general.  How exactly do the structural rules work with initiality?  Should we use finite sets (e.g.\ of variables) instead of natural numbers to index the domains of morphisms in our symmetric multicategories?]
+
+We can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
+I've never seen that done before, but I think it's more standard that we can make exchange, contraction, and weakening all admissible by allowing the variable rule to extract from anywhere in the context.
+
+Can we also make sense of ``multisets''?
 
 
 \section{Algebraic theories and operads}
@@ -4125,7 +4152,7 @@ Thus in general it suffices to indicate the object being composed over, as in $h
 
 In many cases we can omit further information because it can be inferred from context; for instance, if we know that $h:C\to D$ then a term of the form ``$h\circ (-)$'' can only mean ``$h\circ_C (-)$''.
 Human mathematicians omit information informally and unsystematically, and we have done the same throughout the book.
-The implementors of electronic mathematicians have elaborate and precise algorithms for ``inferring from context'' enabling the omission of information, but most of these are far beyond our scope.\footnote{One that is worth mentioning, however, is that a canonical/atomic calculus like that of \cref{sec:atomcan} can be type-checked in a ``bidirectional'' way. canonical terms $M\can A$ are type-checked as usual with both $M$ and $A$ being given, while atomic terms $M\atom A$ instead ``type-synthesize'': only $M$ is given and its type $A$ is deduced.
+The implementors of electronic mathematicians have elaborate and precise algorithms for ``inferring from context'' enabling the omission of information, but most of these are far beyond our scope.\footnote{One that is worth mentioning, however, is that a canonical/atomic calculus like that of \cref{sec:atomcan-catprod} can be type-checked in a ``bidirectional'' way. canonical terms $M\can A$ are type-checked as usual with both $M$ and $A$ being given, while atomic terms $M\atom A$ instead ``type-synthesize'': only $M$ is given and its type $A$ is deduced.
   Paradoxically, this sometimes enables the omission of more information.
   For instance, if when type-checking a function application $f(a)\can B$ the term $f$ can synthesize its type $A\to B$ (note that it is atomic since application is an elimination rule for a negative type), then we can extract the type $A$ at which we have to type-check the argument $a\can A$; thus the notation for function application doesn't need to notate the type $A$.}
 
