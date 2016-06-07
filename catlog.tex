@@ -977,6 +977,7 @@ For instance, the classical coherence theorem of MacLane for monoidal categories
 A type-theoretic calculus of canonical forms gives a way to answer this question, by translating a cut-ful theory into a cut-free one.
 (And indeed, cut-elimination methods have frequently been used in the proof of coherence theorems; [TODO: some citations].)
 
+\label{sec:identifying-initial-objects}
 A related remark is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
 The primitive rules of a type theory can be regarded as the ``operations'' of a certain algebraic theory, and the judgments that can be derived from these rules form the initial algebra for this theory, i.e.\ the initial object in a certain category.
 (See \cref{chap:dedsys} for a precise statement along these lines.)
@@ -1888,15 +1889,30 @@ On the categorical side, what we will study are \emph{multicategories} of variou
 An ordinary multicategory is like a category but whose morphisms can have any finite list of objects as their domain, say $f:(A_1,\dots,A_n) \to B$, with a straightforward composition law.
 There are many possible variations on this definition: in a symmetric multicategory the finite lists can be permuted, in a cartesian multicategory we can add unrelated objects and collapse equal ones, and so on.
 All of these categorical structures are known as \emph{generalized multicategories}.
-There is an abstract theory of generalized multicategories [TODO: cite] that includes these examples and many others, but (at least in the current version of this chapter) we will simply work with concrete examples.
+There is an abstract theory of generalized multicategories~\cite{cs:multicats,hermida:coh-univ,leinster:higher-opds,burroni:t-cats} that includes these examples and many others, but (at least in the current version of this chapter) we will simply work with concrete examples.
 
 Our approach to the semantics of simple type theory can be summed up in the following additional principle:
 \begin{equation}\label{princ:structural}
-  \parbox{4in}{\centering The shape of the context and the structural rules in a simple type theory, including admissible rules such as cut, should mirror the categorical structure of a generalized multicategory.}\tag{$\ddagger$}
+  \parbox{4.3in}{\centering The shape of the context and the structural rules in a simple type theory should mirror the categorical structure of a generalized multicategory.}\tag{$\ddagger$}
 \end{equation}
 The \emph{structural rules} are the rules that don't refer to any operation on types, such as identity and cut.
-(Later on we will meet other structural rules, such as exchange, contraction, and weakening.)
-Principle~\eqref{princ:ump} then tells us that the \emph{non-structural} rules (which are sometimes called \emph{logical} rules) should all correspond to objects with universal properties in a generalized multicategory.
+(In this chapter we will meet other structural rules, such as exchange --- corresponding to permutation of domains in a symmetric multicategory -- and contraction and weakening --- corresponding to diagonals and projections in a cartesian multicategory.)
+Principle~\eqref{princ:ump} then tells us that the \emph{non-structural} rules (which are sometimes called \emph{logical} rules) should all correspond to objects with universal properties in a generalized multicategory, and principle~\eqref{princ:independence} tells us that each non-structural rule should involve only \emph{one} such object.
+
+We might formulate one further principle based on our experience in \cref{chap:unary}:
+\begin{equation}\label{princ:adm}
+  \parbox{4in}{\centering Insofar as possible, structural rules should\\ be admissible rather than primitive.}\tag{\S}
+\end{equation}
+It is not generally possible to make \emph{all} the structural rules admissible; for instance, we have seen that for sequent calculus we need a primitive identity rule at base types, while for natural deduction we need a primitive identity rule at all types.
+However, in \cref{chap:unary} we were always able to make the substitution/cut/compostion rule admissible rather than primitive.
+That will continue to be the case in this chapter, and we will also strive for admissibility of the new structural rules we introduce (exchange, weakeining, and contraction).
+
+Note that together our four principles say that insofar as possible, the ``algebraic operations'' in a categorical structure (such as composition and identities in a category or multicategory, permutation of domains in a symmetric multicategory, and so on) are exactly what we do \emph{not} include as primitive rules in type theory!
+To put this differently, recall from the end of \cref{sec:identifying-initial-objects} that the initiality theorems for type theory are about showing that two different categories have the same initial object; we might then say that the effect of the above principles is to ensure that these two categories are \emph{as different as possible}.
+This may seem strange, but to paraphrase John Baez\footnote{``Every interesting equation is a lie.''}, a proof that two things are the same is more interesting (and more useful) the more different the two things appear to begin with.
+
+Another way to say it is that in category theory we take the algebraic structure of a category as primitive, and use them to define and characterize objects with universal properties; whereas in type theory we take the universal properties as primitive and deduce that the algebraic structure is admissible.
+Put this way, one might say that type theory is even more category-theoretic than category theory; for what is more category-theoretic than universal properties?
 
 In sum, we have the following table of correspondences:
 \begin{center}
