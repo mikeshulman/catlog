@@ -68,15 +68,14 @@ _↓⟦_⟧ : {A B C : ty} → (B ↓ C) → (A ↑ B) → (A ↑ C)
 var A ↓⟦ M ⟧ = M
 
 _↕⟦_⟧ : {A B C : ty} → (B ↕ C) → (A ↑ B) → (A ↑ C)
-
-_↑⟦_⟧ : {A B C : ty} → (B ↑ C) → (A ↑ B) → (A ↑ C)
-
-case' : {X A B C : ty} → (X ↑ A + B) → (A ↑ C) → (B ↑ C) → (X ↑ C)
-
 ↓↕ N ↕⟦ M ⟧ = N ↓⟦ M ⟧
 ar f N ↕⟦ M ⟧ = ar' f (N ↕⟦ M ⟧)
 inl N ↕⟦ M ⟧ = inl' (N ↕⟦ M ⟧)
 inr N ↕⟦ M ⟧ = inr' (N ↕⟦ M ⟧)
+
+_↑⟦_⟧ : {A B C : ty} → (B ↑ C) → (A ↑ B) → (A ↑ C)
+
+case' : {X A B C : ty} → (X ↑ A + B) → (A ↑ C) → (B ↑ C) → (X ↑ C)
 
 ↕↑ N ↑⟦ M ⟧ = N ↕⟦ M ⟧
 abort N ↑⟦ M ⟧ =  abort' (N ↓⟦ M ⟧)
