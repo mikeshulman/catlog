@@ -2565,6 +2565,27 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
   Now if \cM is a monoidal category and $P:\cG\to\cM$ a map of multigraphs, we extend it to $\F\bMonCat\cG$ by induction on derivations (of objects and morphisms and equalities) using the fact that \cM is a representable multicategory, observe that this definition is forced by functoriality and (strict) preservation of the monoidal structure, and then prove by induction that it is indeed a functor.
 \end{proof}
 
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:multicat-finprod}
+  We say that a multicategory has \emph{(binary) products} if every pair of morphisms $(A_1,\dots,A_n) \to B$ and $(A_1,\dots,A_n) \to C$ factors uniquely through the projections from $B\times C$ to $B$ and $C$, for any $n$ and any $A_1,\dots,A_n$.
+  Similarly, an object $1$ is \emph{terminal} in a multicategory if for any $n$ and $A_1,\dots,A_n$ there is a unique morphism $(A_1,\dots,A_n)\to 1$.
+  Write down a type theory for multicategories with finite products (i.e.\ binary products and terminal objects), and prove its initiality.
+\end{ex}
+
+\begin{ex}\label{ex:repmulticat-moncat}
+  Our proof of \cref{thm:moncat-initial} relied on the fact that monoidal categories are equivalent to representable multicategories, which we sketched but did not prove carefully.
+  If we don't assume this fact, then our proof of \cref{thm:moncat-initial} is actually just about free representable multicategories.
+  Using this version of the theorem, prove \emph{using type theory} that any representable multicategory is monoidal: that is, its tensor product is coherently associative and unital.
+\end{ex}
+
+\begin{ex}\label{ex:moncat-coprod}
+  Generalize \cref{ex:monpos-jslat} from posets to categories, by introducing terms for the rules given therein (along the lines of those used in \cref{sec:catcoprod} for the unary case) and then some appropriate $\beta$- and $\eta$-conversions.
+  What categorical structure does it correspond to?
+  Prove the initiality theorem.
+\end{ex}
+
+
 
 \section{Introduction to cartesian multicategories}
 \label{sec:cartmulti}
