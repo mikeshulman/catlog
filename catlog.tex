@@ -1908,21 +1908,6 @@ The \emph{structural rules} are the rules that don't refer to any operation on t
 (In this chapter we will meet other structural rules, such as exchange --- corresponding to permutation of domains in a symmetric multicategory -- and contraction and weakening --- corresponding to diagonals and projections in a cartesian multicategory.)
 Principle~\eqref{princ:ump} then tells us that the \emph{non-structural} rules (which are sometimes called \emph{logical} rules) should all correspond to objects with universal properties in a generalized multicategory, and principle~\eqref{princ:independence} tells us that each non-structural rule should involve only \emph{one} such object.
 
-We might formulate one further principle based on our experience in \cref{chap:unary}:
-\begin{equation}\label{princ:adm}
-  \parbox{4in}{\centering Insofar as possible, structural rules should\\ be admissible rather than primitive.}\tag{\S}
-\end{equation}
-It is not generally possible to make \emph{all} the structural rules admissible; for instance, we have seen that for sequent calculus we need a primitive identity rule at base types, while for natural deduction we need a primitive identity rule at all types.
-However, in \cref{chap:unary} we were always able to make the substitution/cut/compostion rule admissible rather than primitive.
-That will continue to be the case in this chapter, and we will also strive for admissibility of the new structural rules we introduce (exchange, weakeining, and contraction).
-
-Note that together our four principles say that insofar as possible, the ``algebraic operations'' in a categorical structure (such as composition and identities in a category or multicategory, permutation of domains in a symmetric multicategory, and so on) are exactly what we do \emph{not} include as primitive rules in type theory!
-To put this differently, recall from the end of \cref{sec:identifying-initial-objects} that the initiality theorems for type theory are about showing that two different categories have the same initial object; we might then say that the effect of the above principles is to ensure that these two categories are \emph{as different as possible}.
-This may seem strange, but to paraphrase John Baez\footnote{``Every interesting equation is a lie.''}, a proof that two things are the same is more interesting (and more useful) the more different the two things appear to begin with.
-
-Another way to say it is that in category theory we take the algebraic structure of a category as primitive, and use them to define and characterize objects with universal properties; whereas in type theory we take the universal properties as primitive and deduce that the algebraic structure is admissible.
-Put this way, one might say that type theory is even more category-theoretic than category theory; for what is more category-theoretic than universal properties?
-
 In sum, we have the following table of correspondences:
 \begin{center}
   \begin{tabular}{c|c}
@@ -1932,6 +1917,21 @@ In sum, we have the following table of correspondences:
   \end{tabular}
 \end{center}
 Here by ``independent universal properties'' I mean that the universal property of each object can be defined on its own without reference to any other objects defined by universal properties (unlike, for instance, the exponential in a cartesian closed category).
+
+We might formulate one further principle based on our experience in \cref{chap:unary}:
+\begin{equation}\label{princ:adm}
+  \parbox{4in}{\centering Insofar as possible, structural rules should\\ be admissible rather than primitive.}\tag{\S}
+\end{equation}
+It is not generally possible to make \emph{all} the structural rules admissible; for instance, we have seen that for sequent calculus we need a primitive identity rule at base types, while for natural deduction we need a primitive identity rule at all types.
+However, in \cref{chap:unary} we were always able to make the substitution/cut/composition rule admissible rather than primitive.
+That will continue to be the case in this chapter, and we will also strive for admissibility of the new structural rules we introduce (exchange, weakening, and contraction).
+
+Note that together our four principles say that insofar as possible, the ``algebraic operations'' in a categorical structure (such as composition and identities in a category or multicategory, permutation of domains in a symmetric multicategory, and so on) are exactly what we do \emph{not} include as primitive rules in type theory!
+To put this differently, recall from the end of \cref{sec:identifying-initial-objects} that the initiality theorems for type theory are about showing that two different categories have the same initial object; we might then say that the effect of the above principles is to ensure that these two categories are \emph{as different as possible}.
+This may seem strange, but to paraphrase John Baez\footnote{``Every interesting equation is a lie.''~\cite{baez:why-ncats}}, a proof that two things are the same is more interesting (and more useful) the more different the two things appear to begin with.
+
+Another way to say it is that in category theory we take the algebraic structure of a category as primitive, and use them to define and characterize objects with universal properties; whereas in type theory we take the universal properties as primitive and deduce that the algebraic structure is admissible.
+Put this way, one might say that type theory is even more category-theoretic than category theory; for what is more category-theoretic than universal properties?
 
 This all been very abstract, so I recommend the reader come back to this section again at the end of this chapter.
 However, for completeness let me point out now that this general correspondence is particularly useful when designing new type theories and when looking for categorical semantics of existing type theories.
@@ -2584,7 +2584,6 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
   What categorical structure does it correspond to?
   Prove the initiality theorem.
 \end{ex}
-
 
 
 \section{Introduction to cartesian multicategories}
