@@ -311,17 +311,32 @@ Informally, it says that the morphisms in a free categorical structure can be pr
 This is a bit of a cheat, because as we will see, in fact what we do is to build just enough ``implicit'' reference to composition into our rules to ensure that we no longer need to talk about composition explicitly.
 However, this does not make the process trivial, and it can still yield valuable results.
 
-(As a simple example of nontriviality, if an arrow is constructed by applying a universal property, then that property automatically determines some of the composites of that arrow.
+As a simple example of nontriviality, if an arrow is constructed by applying a universal property, then that property automatically determines some of the composites of that arrow.
 For instance, a pairing $\pair{f}{g}:X\to A\times B$ must compose with the projections $\pi_1:A\times B\to A$ and $\pi_2:A\times B\to B$ to give $f$ and $g$ respectively.
-Thus, composites of this sort do not need to be ``built in'' by hand; this provides an interesting point of view on the value of universal properties.)
+Thus, composites of this sort do not need to be ``built in'' by hand; this provides an interesting point of view on the value of universal properties.
 
-Foremost among the categorical applications of ensuring cut-elimination is that it simplifies the presentation of free structures by isolating a class of \emph{canonical forms}, reducing the need for equivalence relations.
-For instance, when composition is obtained by cut-elimination, we can present the free category on a directed graph without needing to impose any equivalence relation.
-There are many other simple cases where we can do without any equivalence relation at all; in more complicated situations we can still make do with a much simplified one.
+Another interesting fact about cut-elimination is that the composition it produces is automatically associative (and unital), despite the fact that we do not apparently put associativity in anywhere (even implicitly).
+Do\v{s}en~\cite{dosen:cutelim-cats}\footnote{[TODO: Read Do\v{s}en and Petri\'{c}, \textit{Proof-Theoretical Coherence}, \url{http://www.mi.sanu.ac.rs/~kosta/publications.htm}]} uses this to ``explain'' or ``justify'' the definition of category (and other basic category-theoretic notions) in terms of cut-elimination.
+Of course, for our intended audience of category theorists it is cut-elimination, rather than associativity, that requires explanation and justification; but nevertheless the relationship is intriguing.
 
-These presentations of free structures are often presented as \emph{term calculi} that exhibit another characteristic advantage of categorical logic: we can use ``set-like'' reasoning to prove things about arbitrary categories.
+Foremost among the concrete categorical applications of cut-elimination is that it simplifies the presentation of free structures by isolating a class of \emph{canonical forms}, reducing the need for equivalence relations.
+For instance, when composition is obtained by cut-elimination, we can present the free category on a directed graph without needing to impose any equivalence relation (because associativity comes for free).
+In more complicated situations we still need an equivalence relation, but we can make do with a much simplified one.
+
+Another characteristic advantage of categorical logic is that it enables us to use ``set-like'' reasoning to prove things about arbitrary categories, by means of ``term calculi'' associated to its presentations of free structures.
 From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
 This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
+
+Despite the usefulness of terms, we will emphasize throughout that terms are usually just a convenient notation for derivation trees.
+This perspective has many advantages.
+For instance, it means that a (constructive) proof of cut-elimination \emph{is already} a definition of substitution into terms; it is not necessary to separately define a notion of ``substitution into terms'' and then prove that this \emph{separately defined} notion of substitution is admissible.
+It also deals quite nicely with the problems of $\alpha$-equivalence and bound variable renaming: as an operation on derivations, substitution doesn't need to care about ``whether a free variable is going to get captured''; the point is just that when we choose a term to represent the substituted derivation we have to accord with the general rules for how terms are assigned to derivations.
+
+For similar reasons, we present our type theories so as to ensure that as many structural rules as possible are admissible rather than primitive: not only cut/substitution, but also exchange, contraction, and weakening.
+Many introductions to type theory are somewhat vague about exactly how these rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
+However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which requires being explicit about exactly how exchange works.
+If we make exchange admissible, then it is automatically functorial, just as making substitution admissible gives associativity for free; this considerably simplifies the theory.
+Having structural rules as primitive would also make the notation quite tedious if we continued to adhere to the principle that terms are just a notation for derivations.
 
 Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts, including also the still more general ``polycategories'' and their generalizations).
 Although multicategories have been present in categorical logic from close to the beginnings of both (Lambek's original definition of multicategory~\cite{lambek:dedsys-ii} was motivated by logical considerations), they are rarely mentioned in introductions to the subject.
@@ -345,13 +360,7 @@ Pedagogically, it can help the category theorist, who believes in universal prop
 It also makes the ``initiality theorems'' more modular: first we model the judgmental structure with a multicategory, and then we add more type formers corresponding to objects with various universal properties.
 Finally, it provides a guide for new applications of categorical logic: when seeking a categorical structure to model a given type theory, we should look for a kind of multicategory corresponding to its judgments; while when seeking an internal logic for a categorical structure, we should represent it using universal properties in some kind of multicategory, from which we can extract an appropriate judgmental structure.
 
-These facts about cut-elimination and multicategories have surely been known in some form to experts for a long time, but I am not aware of a clear presentation of them for the beginner coming from a category-theoretic background.\footnote{One reference that seems more related than it is is~\cite{dosen:cutelim-cats}.
-  Like us, Do\v{s}en also emphasizes how cut-elimination presents free categorical structures without explicit composition.
-  But his goal is to ``explain'' or ``justify'' categorical notions using cut-elimination, whereas our goal is rather the reverse; and
-%  He also considers only sequent calculus, whereas we attempt to be even-handed between sequent calculus and natural deduction (although the latter is what yields set-like term calculi for internal reasoning, so we are somewhat biased towards it).
-  says hardly anything about multicategories, which are central to our approach.
-  % , appear in \textit{ibid.}\ only briefly in the third-to-last paragraph of the book.
-  [TODO: Read Do\v{s}en and Petri\'{c}, \textit{Proof-Theoretical Coherence}, \url{http://www.mi.sanu.ac.rs/~kosta/publications.htm}]}
+These facts about cut-elimination and multicategories have surely been known in some form to experts for a long time, but I am not aware of a clear presentation of them for the beginner coming from a category-theoretic background.
 They are not strictly necessary if one wants simply to use type theory for internal reasoning about categories, and there are plenty of excellent introductions that take a geodesic route to that application.
 However, we believe that they yield a deeper understanding of the type/category correspondence; and they are especially valuable when it comes to designing type theories that correspond to new categorical structures (or vice versa).
 
