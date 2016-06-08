@@ -938,7 +938,7 @@ This statement is actually too narrow; as we will see later on, type theory is n
 However, canonical forms do play a very important role.
 
 From the perspective of category theory, the reason for the importance of canonical forms is that we can easily decide whether two canonical forms are equal.
-In the cut-free type theory for categories, two terms present the same morphism in a free category just when they are literally equal (modulo $\alpha$-conversion); whereas to check whether two terms are equal in the cut-ful theory we have to remove the identities and reassociate them all to the left or the right.
+In the cut-free type theory for categories, two terms present the same morphism in a free category just when they are literally equal (modulo $\alpha$-equivalence); whereas to check whether two terms are equal in the cut-ful theory we have to remove the identities and reassociate them all to the left or the right.
 
 In fact, a good algorithm for checking equality of terms in the cut-ful theory is to \emph{interpret them into the cut-free theory}!
 That is, we note that every rule of the cut-ful theory is admissible in the cut-free theory, so any term (i.e.\ derivation) in the cut-ful theory yields a derivation in the cut-free theory.
@@ -1942,10 +1942,11 @@ Put differently, $V\tensor W$ is a representing object for the functor $\mathrm{
 
 Of course, this property determines the tensor product up to isomorphism (though of course one still needs some more or less explicit construction to ensure that such a representing object exists).
 However, unlike many universal properties, it is not quite sufficient on its own to show that the tensor product behaves as desired.
-In particular, to show that the tensor product is associative, we would naturally like to show that $V\tensor (W\tensor U)$ and $(V\tensor W)\tensor U$ are both representing objects for the functor of \emph{trilinear} maps $\mathrm{Trilin}(V,W,U;-)$; but this is not an abstract consequence of the fact that each binary tensor product represents bilinear maps.
-What we need is a sort of ``relative representability'' $\mathrm{Trilin}(V,W,U;-) \cong \mathrm{Bilin}(V\tensor W,U;-)$, and similarly.
+In particular, to show that the tensor product is associative, we would naturally like to show that $V\tensor (W\tensor U)$ and $(V\tensor W)\tensor U$ are both representing objects for the functor of \emph{trilinear} maps $\mathrm{Trilin}(V,W,U;-)$, and hence isomorphic.
+But this is not an abstract consequence of the fact that each binary tensor product represents bilinear maps;
+what we need is a sort of ``relative representability'' such as $\mathrm{Trilin}(V,W,U;-) \cong \mathrm{Bilin}(V\tensor W,U;-)$.
 
-Finally, when we come to prove that these associativity isomorphisms satisfy the pentagon axiom of a monoidal category, we need analogous facts about quadrilinear maps, at which point it is clear that we should be talking about a general $n$.
+Finally, when we come to prove that these associativity isomorphisms satisfy the pentagon axiom of a monoidal category, we need analogous facts about quadrilinear maps, at which point it is clear that we should be talking about $n$-linear maps for a general $n$.
 A multicategory is the categorical context in which to do this: in addition to ordinary morphisms like an ordinary category (e.g.\ linear maps) it also contains $n$-ary maps for all $n\in\dN$ (e.g.\ multilinear maps).
 Formally, just as a category is a directed graph with composition and identities, a multicategory is a \emph{multigraph} with composition and identities.
 
@@ -2001,7 +2002,7 @@ that satisfy the following properties:
 Conversely, given the $\circ_i$ operations one may define
 \[ g\circ (f_1,\dots,f_m) = (\cdots((g \circ_m f_m) \circ_{m-1} f_{m-1}) \cdots \circ_2 f_2) \circ_1 f_1 \]
 to recover the original definition of multicategory.
-We leave the details to the interested reader (\cref{ex:multicat-defns})
+The details can be worked out by the interested reader (\cref{ex:multicat-defns}) or looked up in a reference such as~\cite{leinster:higher-opds}.
 
 With multicategories in hand, we can give an abstract version of the characterization of the tensor product of vector spaces using multilinear maps.
 \begin{defn}
@@ -2050,8 +2051,9 @@ We consider the adjunction between the category \bMPos of multiposets and the ca
 We would like to construct the free multiposet on a relational multigraph \cG using a type theory.
 
 Its objects, of course, will be those of \cG, so we do not yet need a type judgment.
-We represent its relations using a judgment written ``$A_1,A_2,\dots,A_n \types B$''.
-As is customary, we use capital Greek letters such as $\Gamma$ and $\Delta$ to stand for finite lists (possibly empty) of types.
+We represent its relations using a judgment written
+\[A_1,A_2,\dots,A_n \types B.\]
+As is customary, we use capital Greek letters such as $\Gamma$ and $\Delta$ to stand for finite lists (possibly empty) of types; thus the above general judgment can also be written $\Gamma\types B$.
 We write ``$\Gamma_1,\Gamma_2,\dots,\Gamma_n$'' for the concatenation of such lists, and we also write for instance ``$\Gamma,A,\Delta$'' to indicate a list containing the type $A$ somewhere the middle.
 
 At the moment, the only rules for this judgment will be identities and those coming from \cG.
@@ -2094,21 +2096,28 @@ First of all, we need a type judgment $\types A\type$, with unsurprising rules:
 \end{mathpar}
 
 Second, in addition to the rules from \cref{sec:multiposets}, we have rules for $\tensor$.
-Once again we need to make a choice between sequent calculus and natural deduction.
+Once again we need to make a choice between sequent calculus and natural deduction; we treat these one at a time.
 
 \subsection{Sequent calculus for monoidal posets}
 \label{sec:seqcalc-monpos}
 
-In sequent calculus the left rule expresses the universal property; while
-the right rule should be the universal relation $A,B\types A\tensor B$, but we have to Yoneda-ify it using the multicomposition.
+The additional rules for the \textbf{sequent calculus for monoidal posets under \cG} are shown in \cref{fig:seqcalc-monpos}.
+Since $A\tensor B$ has a ``mapping out'' universal property like a coproduct, the left rule expresses this universal property.
+The right rule should be the universal relation $A,B\types A\tensor B$, but we have to Yoneda-ify it using the multicomposition.
 The rules for $\one$ are similar.
-\begin{mathpar}
-  \inferrule{\Gamma,A,B,\Delta\types C}{\Gamma,A\tensor B,\Delta\types C}\;\tensorL\and
-  \inferrule{\Gamma\types A \\ \Delta\types B}{\Gamma,\Delta\types A\tensor B}\;\tensorR\and
-  \inferrule{\Gamma,\Delta\types A}{\Gamma,\one,\Delta\types A}\;\one L\and
-  \inferrule{ }{\types \one}\;\one R
-\end{mathpar}
-This defines the \textbf{sequent calculus for monoidal posets under \cG}.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\Gamma,A,B,\Delta\types C}{\Gamma,A\tensor B,\Delta\types C}\;\tensorL\and
+    \inferrule{\Gamma\types A \\ \Delta\types B}{\Gamma,\Delta\types A\tensor B}\;\tensorR\and
+    \inferrule{\Gamma,\Delta\types A}{\Gamma,\one,\Delta\types A}\;\one L\and
+    \inferrule{ }{\types \one}\;\one R
+  \end{mathpar}
+  \caption{Sequent calculus for monoidal posets}
+  \label{fig:seqcalc-monpos}
+\end{figure}
+
 Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$ and $\one L$, which corresponds to the strong universal property of a tensor product in a multicategory referring to $n$-ary arrows for all $n$.
 
 \begin{thm}\label{thm:monpos-identity}
@@ -2141,7 +2150,7 @@ Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$
 \end{thm}
 \begin{proof}
   As always, we induct on the derivation of $\Delta,A,\Psi\types B$.
-  The cases of the identity and of relations from \cG are just as in \cref{thm:multiposet-cutadm}
+  The cases of the identity and of relations from \cG are just as in \cref{thm:multiposet-cutadm}.
   It cannot end with a $\one R$.
   If it ends with a $\tensorR$, we use the inductive hypotheses on its premises and apply $\tensorR$ again.
 
@@ -2225,7 +2234,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
     \Gamma,\Psi,\Delta\types C
   }\;\one E
 \end{mathpar}
-We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}).
+We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is also subsumed by the categorified version discussed in more detail in the next section.
 
 \subsection*{Exercises}
 
@@ -2254,6 +2263,7 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}).
       A\tensor (B\join C) &\types (A\tensor B)\join (A\tensor C)
     \end{align*}
   \item What categorical structure do you think models this type theory?
+    Verify your guess by proving the initiality theorem.
   \end{enumerate}
 \end{ex}
 
@@ -2268,12 +2278,37 @@ Now we are ready to move back up to categories, distinguishing between derivatio
 
 Categorically, we begin with the adjunction between the category $\bMCat$ of multicategories and the category $\bMGr$ of multigraphs.
 Let \cG be a multigraph; we now augment the cut-free theory of \cref{sec:multiposets} with terms that exactly represent the structure of derivations, as we did in \cref{sec:categories,sec:catprod,sec:catcoprod}.
+
+Since our antecedents are now lists of formulas, we assign an abstract variable to \emph{each} of them, and we assign a single term involving these variables to the consequent.
+Thus, for instance, we might have a judgment such as
+\[ x:A, y:B, z:C \types f(x,g(y,z)):E \]
+where $f\in\cG(A,D;E)$ and $g\in\cG(B,C;D)$.
+Note that as always, the symbol $\types$ is the ``outermost''.
+Moreover, the comma between abstract variable assignmentss binds more loosely than the typing colons; the above judgment should be read as
+\[ ((x:A), (y:B), (z:C)) \types (f(x,g(y,z)):E). \]
+
+As we now have multiple formal variables appearing in one sequent, it becomes important to keep track of which is which.
+We still consider the syntactic label of a formal variable to be insignificant (that is, we work modulo $\alpha$-equivalence), but now that label carries more information: namely, a correspondence between a type in the antecedent and a ``variable occurrence'' in the consequent term.
+For instance, if $f\in\cG(A,A;A)$ then we can write four sequents
+\[
+\begin{array}{c@{\qquad}c}
+  x:A, y:A \types f(x,y):A &
+  x:A, y:A \types f(y,x):A \\\\
+  y:A, x:A \types f(y,x):A &
+  y:A, x:A \types f(x,y):A
+\end{array}
+\]
+We regard the two in the left column as identical, by $\alpha$-equivalence; and similarly the two in the right column are identical.
+However, the columns are distinct from each other.
+(In fact, in the type theory of the present section, the sequents in the right-hand column are impossible; but in the theories to be considered in \cref{sec:cartmoncat,sec:symmoncat} they will be possible.)
+If you are ever in doubt about the meaning of variables or what sorts of renamings are possible, remember that terms (including terms with formal variables) are intended to simply be a more concise syntax for derivation trees.
+
+With terms assigned in this way, the rules for the \textbf{cut-free type theory for multicategories under \cG} are:
 \begin{mathpar}
   \inferrule{A\in\cG}{x:A\types x:A}\and
   \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
 \end{mathpar}
-We call this the \textbf{cut-free type theory for multicategories under \cG}.
-Note that it has the following property.
+We note that this theory has the following property.
 
 \begin{lem}\label{thm:multicat-linear}
   If $\Gamma\types M:B$ is derivable, then every variable in $\Gamma$ appears exactly once in $M$.
@@ -2284,7 +2319,41 @@ Note that it has the following property.
   And in the conclusion of the generator rule each variable appears in exactly one $\Gamma_i$, hence can only appear in one of the $M_i$'s, and by induction it appears exactly once there; hence it appears exactly once in $f(M_1,\dots,M_n)$.
 \end{proof}
 
-In type-theoretic lingo, \cref{thm:multicat-linear} says that this type theory is \textbf{linear} (just like a linear polynomial uses each variable exactly once, a linear type theory uses each variable exactly once).
+Just like we have not formally defined what a ``term'' is, we have not formally defined what an ``occurrence of a variable'' in a term is.
+But since our terms are really just an alternative syntax for derivation trees, we can understand \cref{thm:multicat-linear} more precisely in terms of the latter.
+In that language, it says that each occurrence of a type in the antecedent of a derivable sequent can be traced back up exactly one branch of the derivation tree.
+For instance, in the following derivation
+\begin{mathpar}
+  \inferrule*{\inferrule*{ }{x:A\types x:A}\\
+    \inferrule*{\inferrule*{ }{y:B\types y:B}\\
+      \inferrule*{ }{z:A\types z:A
+      }}{y:B,z:A \types g(y,z):X}\\
+    \inferrule*{\inferrule*{ }{w:C\types w:C}}{w:C \types h(w):Y}
+  }{x:A,y:B,z:A,w:C \types f(x,g(y,z),h(w)):Z}
+\end{mathpar}
+we can trace the occurrences of types in the antecedent of the conclusion as follows (omitting the variables and terms for brevity):
+\begin{mathpar}
+  \inferrule*{\inferrule*{ }{\tikz[remember picture] \node[red,rectangle,inner sep=0pt] (a2) {$A$};\types A}\\
+    \inferrule*{\inferrule*{ }{\tikz[remember picture] \node[blue,rectangle,inner sep=0pt] (b3) {$B$};\types B}\\
+      \inferrule*{ }{\tikz[remember picture] \node[green,rectangle,inner sep=0pt] (aa3) {$A$};\types A
+      }}{\tikz[remember picture] \node[blue,rectangle,inner sep=0pt] (b2) {$B$};,
+      \tikz[remember picture] \node[green,rectangle,inner sep=0pt] (aa2) {$A$}; \types X}\\
+    \inferrule*{\inferrule*{ }{\tikz[remember picture] \node[purple,rectangle,inner sep=0pt] (c3) {$C$};\types C
+      }}{\tikz[remember picture] \node[purple,rectangle,inner sep=0pt] (c2) {$C$}; \types Y}
+  }{\tikz[remember picture] \node[red,rectangle,inner sep=0pt] (a1) {$A$};,
+    \tikz[remember picture] \node[blue,rectangle,inner sep=0pt] (b1) {$B$};,
+    \tikz[remember picture] \node[green,rectangle,inner sep=0pt] (aa1) {$A$};,
+    \tikz[remember picture] \node[purple,rectangle,inner sep=0pt] (c1) {$C$};
+    \types Z}
+\begin{tikzpicture}[remember picture,overlay]
+  \draw[->,red] (a1) -- (a2);
+  \draw[->,blue] (b1) -- (b2); \draw[->,blue] (b2) -- (b3);
+  \draw[->,green] (aa1) -- (aa2); \draw[->,green] (aa2) -- (aa3);
+  \draw[->,purple] (c1) -- (c2); \draw[->,purple] (c2) -- (c3);
+\end{tikzpicture}
+\end{mathpar}
+
+In type-theoretic lingo, \cref{thm:multicat-linear} says that our current type theory is \textbf{linear} (just like a linear polynomial uses each variable exactly once, a ``linear type theory'' uses each variable exactly once).
 Note that linearity is a property of a system that we \emph{prove}, not a requirement that we impose from outside.
 
 \begin{thm}\label{thm:multicat-subadm}
@@ -2325,14 +2394,15 @@ where $i$ is the unique index such that $x$ occurs in $N_i$ (which exists by \cr
   \end{equation*}
 \end{proof}
 
+If you did \cref{ex:multicat-defns}, feel free to verify that \cref{thm:multicat-subassoc} really does express the same property as the axioms for the $\circ_i$ operations.
+The ``matching up of occurrences'' indicated by the abstract variables conveys the same information as the arithmetic formulas for $k,\ell$ in terms of $i,j$; but for most purposes, abstract variables are much more comprehensible!
+
 \begin{thm}\label{thm:multicat-initial}
   For any multigraph \cG, the free multicategory generated by \cG can be described by the cut-free type theory for multicategories under \cG: its objects are those of \cG, and its morphisms $\Gamma\to B$ are the derivable judgments $\Gamma\types M:B$.
 \end{thm}
 \begin{proof}
   \cref{thm:multicat-subadm} tells us how to compose multimorphisms in the $\circ_i$ style, and \cref{thm:multicat-subassoc} verifies the associativity/interchange axiom for these.
-  (If you did \cref{ex:multicat-defns}, feel free to verify this by translating the conclusions of \cref{thm:multicat-subassoc} back into numerical indices.
-  Note how much more comprehensible it is when expressed using abstract variables.)
-  The two identity axioms are $x[M/x]=M$ (one of the defining clauses of substitution) and ``$M[y/x] = M$'', which looks false or nonsensical but is actually just an instance of $\alpha$-equivalence (recall that we always consider type theories up to $\alpha$-equivalence, i.e.\ renaming of variables).
+  The two identity axioms are $x[M/x]=M$ (one of the defining clauses of substitution) and ``$M[y/x] = M$'', which looks false or nonsensical but is actually just an instance of $\alpha$-equivalence (renaming of variables).
 
   Thus, we have a multicategory $\F\bMCat\cG$.
   Let \cM be any multicategory and $P:\cG\to\cM$ a map of multigraphs; as usual we extend $P$ to the morphisms of $\F\bMCat\cG$ by induction on derivations, and such an extension is forced since the rules are all instances of functoriality.
