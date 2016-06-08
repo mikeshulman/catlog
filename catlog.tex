@@ -1682,7 +1682,7 @@ Now the idea is that $\case(y,f,g)$ denotes the image of $y:A+B$ under the morph
 The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
 The morphisms $f$ and $g$, however, are specified (like all morphisms in unary type theory) using term syntax, $u:A\types P:C$ and $v:A\types Q:C$ --- and, as always, the specific variables $u$ and $v$ used are irrelevant (judgments only have meaning up to $\alpha$-equivalence).
 Thus we write $u.P$ and $v.Q$ in the $\case$ term, rather than simply $P$ and $Q$, to indicate what variable is being used.
-These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\case(M,u.f(u),v.g(v))$ has the same meaning as $\case(M,w.f(w),z.g(z))$.
+These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\case(M,u.f(u),v.g(v))$ has the same meaning as $\case(M,w.f(w),z.g(z))$ (without needing to change any variables anywhere else).
 
 \begin{rmk}
   In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
@@ -2280,14 +2280,21 @@ Categorically, we begin with the adjunction between the category $\bMCat$ of mul
 Let \cG be a multigraph; we now augment the cut-free theory of \cref{sec:multiposets} with terms that exactly represent the structure of derivations, as we did in \cref{sec:categories,sec:catprod,sec:catcoprod}.
 
 Since our antecedents are now lists of formulas, we assign an abstract variable to \emph{each} of them, and we assign a single term involving these variables to the consequent.
+Of course, we must assign distinct variables to distinct types in the list (or, more precisely, to distinct \emph{occurrences} of types, since the same type might occur more than once, and these occurrences should be assigned distinct variables).
+
 Thus, for instance, we might have a judgment such as
 \[ x:A, y:B, z:C \types f(x,g(y,z)):E \]
 where $f\in\cG(A,D;E)$ and $g\in\cG(B,C;D)$.
 Note that as always, the symbol $\types$ is the ``outermost''.
-Moreover, the comma between abstract variable assignmentss binds more loosely than the typing colons; the above judgment should be read as
+Moreover, the comma between abstract variable assignments binds more loosely than the typing colons; the above judgment should be read as
 \[ ((x:A), (y:B), (z:C)) \types (f(x,g(y,z)):E). \]
 
-As we now have multiple formal variables appearing in one sequent, it becomes important to keep track of which is which.
+When considering calculi with terms of this sort, we also use capital Greek letters such as $\Gamma$ to denote lists of types \emph{with variables attached}; as usual we also call these \emph{contexts}.
+Thus, if $\Gamma = (x:A, y:B, z:C)$ then the above sequent would be $\Gamma\types f(x,g(y,z)):E$.
+As usual, we write $\Gamma,\Delta$ to indicate the concatenation of such lists.
+If it is necessary to indicate the name assigned to a particular variable but not to the other variables in the context, we can write $\Gamma, x:A, \Delta$.
+
+Since we now have multiple formal variables appearing in one sequent, it becomes important to keep track of which is which.
 We still consider the syntactic label of a formal variable to be insignificant (that is, we work modulo $\alpha$-equivalence), but now that label carries more information: namely, a correspondence between a type in the antecedent and a ``variable occurrence'' in the consequent term.
 For instance, if $f\in\cG(A,A;A)$ then we can write four sequents
 \[
@@ -2360,7 +2367,16 @@ Note that linearity is a property of a system that we \emph{prove}, not a requir
   Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
 \end{thm}
 \begin{proof}
-  Just like \cref{thm:multiposet-cutadm}.
+  Essentially just like \cref{thm:multiposet-cutadm}, recalling that terms are just a notation for derivation trees.
+  There is one thing to be said: recall that in the givens $\Gamma\types M:A$ and $\Delta,x:A,\Psi \types N:B$, the contexts $\Gamma$, $\Delta$, and $\Psi$ \emph{include} abstract variables assigned to each type they contain.
+  Since the variables used in any context must be distinct, it must be that the variables in $\Delta$ and $\Psi$ are pairwise distinct, and all of them are distinct from $x$.
+
+  However, in order to even write down $\Delta,\Gamma,\Psi\types M[N/x]:B$, it must be that all the variables in $\Delta,\Psi$ are also pairwise distinct from those in $\Gamma$.
+  In other words, we may have to apply an $\alpha$-equivalence before we can literally substitute.
+  For instance, if we have $y:C\types f(y):A$ and $y:C,x:A,z:D\types g(y,x,z):B$, we cannot naively conclude $y:C,y:C,z:D\types g(y,f(y),z):B$; we have to rename one of the $y$'s first and get $y:C,w:C,z:D\types g(y,f(w),z):B$.
+
+  When type theory is presented with an explicit description of the syntax of terms involving strings of symbols, this is an issue that has to be dealt with formally.
+  However, if we regard terms as merely a notation for derivations, it essentially takes care of itself: the proof of \cref{thm:multiposet-cutadm}, which doesn't mention variables or terms at all, \emph{is already} an operation on derivations, and the renaming of variables only arises when we notate those derivations in a particular way.
 \end{proof}
 
 As before, note that we can regard this as defining substitution; its inductive clauses are
@@ -2417,10 +2433,7 @@ We proceed to annotate the natural deduction for monoidal posets from \cref{sec:
 
 As noted in \cref{sec:natded-monpos}, since the tensor product has a ``mapping out'' universal property like that of a coproduct, its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
 Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\pair{x}{y}$.''
-And just as the term syntax $\case(M,u.P,v.Q)$ for coproducts binds the variables $u$ in $P$ and $v$ in $Q$, the term syntax $\match_\tensor(M,xy.N)$ binds the variables $x$ and $y$ in $N$.
-
-The case of the unit is similar but simpler: to do something with an element of $\one$, it suffices to assume that it is $\ttt$ --- hence gives no extra information, i.e.\ no new variables are bound.
-Thus, the term syntax $\match_\one(M,N)$ binds nothing in $N$, it simply allows us to ignore $M$.
+And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\case(M,u.P,v.Q)$ for coproducts, the variables $x$ and $y$ are bound in the term syntax $\match_\tensor(M,xy.N)$.
 
 \begin{figure}
   \centering
@@ -2446,14 +2459,32 @@ Thus, the term syntax $\match_\one(M,N)$ binds nothing in $N$, it simply allows 
   \label{fig:moncat}
 \end{figure}
 
-The $\beta$- and $\eta$-conversion rules implement the universal properties:
+There is one new thing going on relative to \cref{sec:catcoprod}: because the context can now contain multiple variables, the term $N$ can contain variables that are \emph{not} bound, in addition to the unbound variables appearing in the term $M$.
+Unbound variables are called \emph{free}; they are those that appear in the context of the term.
+Thus, for instance, the following application of $\tensorI$:
+\begin{mathpar}
+  \inferrule*{u:C, v:D \types \pair{f(u)}{g(v)}:A\tensor B\\
+  z:G,x:A,y:B,w:H \types h(z,x,y,w):K
+  }{z:G,u:C,v:D,w:H\types \match_\tensor(\pair{f(u)}{g(v)}, xy.h(z,x,y,w)):K}
+\end{mathpar}
+produces a term $\match_\tensor(\pair{f(u)}{g(v)}, xy.h(z,x,y,w))$ in which the variables $z,w$ in $h(z,x,y,w)$ are free, in addition to the free variables $u,v$ in $\pair{f(u)}{g(v)}$.
+(This term is also a counterexample to a natural conjecture that the variables in a term must appear in the same order that they do in the context.)
+
+The case of $\one$ is similar to that of $\tensor$ but simpler: to do something with an element of $\one$, it suffices to assume that it is $\ttt$.
+This gives no extra information, so no new variables are bound.
+That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allows us to ignore $M$ (while keeping the free variables of $M$ in the context).
+
+Finally, we also have $\beta$- and $\eta$-conversion rules that implement the universal properties.
 \begin{mathpar}
   \match_\tensor(\pair M N,xy.P) \equiv P[M/x,N/y]\and
   \match_\tensor(M,xy.N[\pair xy/u]) \equiv N[M/u]\\
   \match_\one(\ttt,N) \equiv N\and
   \match_\one(M,N[\ttt/u]) \equiv N[M/u]
 \end{mathpar}
-[TODO: Maybe say more here, depending on what we said about coproducts.]
+As before, the $\beta$-conversion rule says that the map out of $A\tensor B$ defined by its universal property has the correct composite with the universal morphism $(A,B)\to A\tensor B$, while the $\eta$-conversion rule says that any map out of $A\tensor B$ is determined by the universal property from its composite with the universal morphism.
+The rules for $\one$ are similar.
+
+Like the theory of \cref{sec:multicats}, this theory is linear:
 
 \begin{lem}\label{thm:moncat-linear}
   If $\Gamma\types M:B$ is derivable in the simple type theory for monoidal categories under \cG, then every variable in $\Gamma$ appears exactly once in $M$.
@@ -2471,7 +2502,11 @@ The $\beta$- and $\eta$-conversion rules implement the universal properties:
   Moreover, it is associative and interchanging in the same sense as \cref{thm:multicat-subassoc}.
 \end{lem}
 \begin{proof}
-  We sketch the proof by giving the defining clauses for the substitution operation:
+  The method is the same as that of \cref{thm:multiposet-cutadm}.
+  Given judgments $\Gamma\types M:A$ and $\Delta,x:A,\Psi \types N:B$ (involving disjoint variables), we induct on the derivation of $N$.
+  If the derivation is $\idfunc$, then $\Delta$ and $\Psi$ are empty and $N=x$, in which case we can just use $M$ itself.
+  In all other cases, by \cref{thm:moncat-linear} the variable $x$ must appear in exactly one of the premises of the last rule applied to derive $N$ (which is to say, in exactly one of the subterms appearing in $N$ itself), and we inductively perform the substitution there.
+  Explicitly, the defining clauses of the substitution operation are:
   \begin{alignat*}{2}
     x[M/x] &= M\\
     f(N_1,\dots,N_n)[M/x] &= f(N_1,\dots,N_i[M/x],\dots,N_n) &&\quad\text{if $x$ occurs in $N_i$}\\
@@ -2483,11 +2518,34 @@ The $\beta$- and $\eta$-conversion rules implement the universal properties:
     \match_\one(N,P)[M/x] &= \match_\one(N[M/x],P) &&\quad\text{if $x$ occurs in $N$}\\
     \match_\one(N,P)[M/x] &= \match_\one(N,P[M/x]) &&\quad\text{if $x$ occurs in $P$}
   \end{alignat*}
-  To summarize, we simply check which of the input terms the variable being substituted for appears in, and substitute recursively in that term.
-  As in \cref{sec:catcoprod} [TODO], we are assuming that the bound variables $u,v$ are distinct from the variable $x$ being substituted for; if they are not then we have to rename them first.
-
+  (The case of $\ttt$ actually does fit the general pattern discussed above, remembering that the rule $\one I$ has \emph{no} premises.)
   The proof of associativity and interchange is essentially the same as before: all the other rules behave just like the generator rules, except for $\ttt$ where the claim is trivial.
 \end{proof}
+
+In the proof of \cref{thm:multiposet-cutadm} we remarked that sometimes we have to rename the variables appearing in one of the terms before doing a substitution, to ensure that the variables in the context of the substituted term are all distinct; but that this essentially happens automatically when we regard substitution as acting on derivations.
+Something else similar happens here in the rule $\match_\tensor(N,uv.P)[M/x] = \match_\tensor(N,uv.P[M/x])$: we must ensure (by $\alpha$-equivalence if necessary) that the bound variables $u$ and $v$ do not appear in $M$.
+(This didn't arise in \cref{sec:catcoprod} because there it was not possible to substitute into the subterms $u.P$ and $v.Q$ of a $\case$ term containing bound variables, since they could not contain any \emph{other} variables to be substituted for.)
+
+When talking about syntax of terms explicitly, one generally says that this is because otherwise, a $u$ or $v$ in $M$ would after substitution be ``in the scope'' of the binding of $u$ or $v$, whereas all the variables of $M$ ought to be free in the substituted term.
+But in terms of derivations, the point is just that when applying a cut after $\tensorE$:
+\begin{mathpar}
+  \inferrule*[Right=cut]{
+    \Gamma\types M:A \\
+    \inferrule*[Right=$\tensorE$]{
+      \Xi \types N:C\tensor D\\
+      \Delta_1,x:A,\Delta_2,u:C,v:D,\Psi \types P:B
+    }{\Delta_1,x:A,\Delta_2,\Xi,\Psi \types \match_\tensor(N,uv.P):B
+    }}{\Delta_1,\Gamma,\Delta_2,\Xi,\Psi \types \match_\tensor (N,uv.P[M/x]:B}
+\end{mathpar}
+we have to inductively cut 
+\begin{mathpar}
+  \inferrule*[Right=cut]{
+    \Gamma\types M:A \\
+    \Delta_1,x:A,\Delta_2,u:C,v:D,\Psi \types P:B
+  }{\Delta_1,\Gamma,\Delta_2,u:C,v:D,\Psi \types P[M/x]:B}
+\end{mathpar}
+and in order for \emph{this} cut to satisfy the variable condition explained in \cref{thm:multicat-subadm}, it must be that $u$ and $v$ do not occur in $\Gamma$.
+Once again, the ``variable management'' is fairly automatic if we consider derivations as basic, with term annotations applied afterwards modulo $\alpha$-equivalence.
 
 \begin{thm}\label{thm:moncat-initial}
   The free monoidal category generated by a multigraph \cG (or, more precisely, its underlying multicategory) can be described by the simple type theory for monoidal categories under \cG: its objects are the $A$ such that $\types A\type$, and its morphisms are the term judgments $\Gamma\types M:A$ modulo the congruence $\equiv$.
