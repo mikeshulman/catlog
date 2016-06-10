@@ -2798,8 +2798,26 @@ See \cref{ex:relevance-moncat}.
 \end{ex}
 
 \begin{ex}\label{ex:relevance-moncat}
-  Define a notion of \emph{relevance monoidal category}, by adding ``natural diagonals'' to a symmetric monoidal category, and show that such monoidal categories are equivalent to representable relevance multicategories.
+  Define a notion of \textbf{relevance monoidal category}, by adding ``natural diagonals'' to a symmetric monoidal category, and show that such monoidal categories are equivalent to representable relevance multicategories.
   (See~\cite{dp:relevant-cats}.)
+\end{ex}
+
+\begin{ex}\label{ex:distribcat}
+  We define a \textbf{binary coproduct} in a multicategory \cM to be an object $A+B$ with injections $A\to A+B$ and $B\to A+B$ composing with which induces bijections
+  \begin{multline*}
+    \cM(C_1,\dots,C_n,A+B,D_1,\dots,D_m;E) \toiso\\
+    \cM(C_1,\dots,C_n,A,D_1,\dots,D_m;E) \times \cM(C_1,\dots,C_n,B,D_1,\dots,D_m;E).
+  \end{multline*}
+  Similarly, an \textbf{initial object} is an object $\zero$ such that for any $C_1,\dots,C_n$ and $D_1,\dots, D_M$ and $E$, there is a unique morphism $(C_1,\dots,C_n,\zero,D_1,\dots,D_m)\to E$.
+  We say a multicategory \textbf{has coproducts} if it has a specified binary coproduct for each pair of objects and a specified initial object.
+
+  Recall that a \textbf{distributive category} is one with finite products and coproducts and such that the canonical maps $A\times(B+C) \to (A\times B)+(A\times C)$ are isomorphisms.
+  Prove:
+  \begin{enumerate}
+  \item The underlying cartesian multicategory of a distributive category has coproducts.
+  \item If a cartesian multicategory is representable and has coproducts, then the cartesian monoidal category it induces is distributive.
+  \item These constructions define an equivalence of categories.
+  \end{enumerate}
 \end{ex}
 
 
