@@ -2014,7 +2014,7 @@ to recover the original definition of multicategory.
 The details can be worked out by the interested reader (\cref{ex:multicat-defns}) or looked up in a reference such as~\cite{leinster:higher-opds}.
 
 With multicategories in hand, we can give an abstract version of the characterization of the tensor product of vector spaces using multilinear maps.
-\begin{defn}
+\begin{defn}\label{defn:multicat-tensor}
   Given objects $A_1,\dots,A_n$ in a multicategory \cM, a \textbf{tensor product} of them is an object $\bigtensor_i A_i$ with a morphism $\chi:(A_1,\dots,A_n) \to \bigtensor_i A_i$ such that all the maps $(-\circ_i \chi)$ are bijections.
 \end{defn}
 
@@ -2586,10 +2586,91 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
 \end{ex}
 
 
-\section{Introduction to cartesian multicategories}
+\section{Some generalized multicategories}
 \label{sec:cartmulti}
 
-[Define cartesian multicategories, cartesian multiposets, representability, products have both universal properties]
+Now let us consider monoidal categories with ``something extra'', such as symmetric monoidal categories or cartesian monoidal categories.
+To describe a type theory for monoidal categories of this sort, principle~\eqref{princ:structural} from \cref{sec:why-multicats} suggests that we should ask what additional structure this ``something extra'' induces on their underlying multicategories.
+Because the morphisms $(A_1,\dots,A_n) \to B$ in the underlying multicategory of a monoidal category \cC are, by definition, the morphisms $A_1\tensor\cdots\tensor A_n \to B$ in \cC, the answer to this question depends on what morphisms between tensor products exist ``generically'' in monoidal categories of our desired sort.
+Here are some examples.
+\begin{enumerate}
+\item If \cC is a symmetric monoidal category, we have symmetry isomorphisms $A_1\tensor\cdots\tensor A_n\toiso A_{\sigma 1}\tensor\cdots\tensor A_{\sigma n}$ for any permutation $\sigma\in S_n$.
+  Thus, by precomposing with these isomorphisms, we obtain functions between multicategorical hom-sets
+  \[\sigma^*: \cC(A_{\sigma 1},\dots,A_{\sigma n}; B) \to \cC(A_1,\dots,A_n;B) \]
+  that satisfy appropriate axioms.
+\item If \cC is a cartesian monoidal category, we have symmetries but also diagonals such as $A\to A\times A$ and projections such as $A\times B \to B$.
+  In general, for any function $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ we have a morphism
+  \[ A_1\times \cdots\times A_n \too A_{\sigma 1} \times\dots\times A_{\sigma m} \]
+  whose component $A_1\times \cdots\times A_n \to A_{\sigma k}$ is the projection onto the $(\sigma k)^{\mathrm{th}}$ factor.
+  Precomposition with these morphisms yields analogous functions
+  \begin{equation}
+    \sigma^*: \cC(A_{\sigma 1},\dots,A_{\sigma m}; B) \to \cC(A_1,\dots,A_n;B).\label{eq:cartmulticat-action}
+  \end{equation}
+\item Less well-known than symmetric and cartesian monoidal categories are \emph{semicartesian} monoidal categories, whose unit object is the terminal object, but whose tensor product is not necessarily the cartesian product.
+  (An example familiar to higher category theorists is the category $\mathbf{2Cat}$ with its Gray tensor product.)
+  In this case we have projections but not diagonals, leading to functions~\eqref{eq:cartmulticat-action} only when $\sigma$ is \emph{injective}.
+\item Even less well-known are \emph{relevance} monoidal categories, which are equipped with a coherent system of diagonals $A \to A\tensor A$ but whose unit object is not in general terminal.
+  A familiar example is the category of pointed sets with its smash product [TODO: Reference].
+  In this case we have functions~\eqref{eq:cartmulticat-action} only when $\sigma$ is \emph{surjective}.
+\end{enumerate}
+
+All of these cases can be encompassed by the following definitions.
+
+\begin{defn}
+  Let \fF be the full subcategory of \bSet whose objects are the sets $\{1,\dots, n\}$ for all integers $n\ge 0$.
+  We regard it as a \emph{cocartesian} strict monoidal category, under the disjoint union operation $\{1,\dots,n\} + \{1,\dots,m\} = \{1,\dots,n+m\}$.
+  Moreover, for any $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ and $k_1,\dots,k_n$, let $\sigma \wr (k_1,\dots,k_n)$ denote the composite function
+  \begin{align*}
+    \{1,\dots,\textstyle\sum_{i=1}^m k_{\sigma i} \}
+    & \toiso \bigsqcup_{i=1}^m \{1,\dots,k_{\sigma i}\}\\
+    & \xto{\widehat{\sigma}} \bigsqcup_{j=1}^n \{1,\dots,k_{j}\}\\
+    & \toiso \{1,\dots,\textstyle\sum_{j=1}^n k_j \}
+  \end{align*}
+  where $\widehat{\sigma}$ acts as the identity from the $i^{\mathrm{th}}$ summand to the $(\sigma i)^{\mathrm{th}}$ summand.
+  A \textbf{faithful cartesian club} is a subcategory $\fS\subseteq \fF$ such that
+  \begin{enumerate}
+  \item \fS contains all the objects of \fF.
+  \item \fS is closed under the cocartesian monoidal structure, i.e.\ if $\sigma$ and $\tau$ are morphisms of $\fS$ then so is $\sigma\sqcup \tau$.
+  \item \fS is closed under $\wr$, i.e.\ whenever it contains $\sigma$ it also contains $\sigma \wr (k_1,\dots,k_n)$.
+  \end{enumerate}
+\end{defn}
+
+The above examples are the cases when \fS consists of the bijections, all the functions, the injections, or the surjections respectively.
+There is also the trivial case when \fS contains only the identities.
+
+\begin{defn}
+  Let \fS be a faithful cartesian club.
+  An \textbf{\fS-multicategory} is a multicategory \cM together with operations
+  \begin{align*}
+    \cM(A_{\sigma 1},\dots,A_{\sigma m}; B) &\to \cM(A_1,\dots,A_n;B)\\
+    f &\mapsto f\sigma^*
+  \end{align*}
+  for all functions $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ in \fS, satisfying the following axioms:
+  \begin{itemize}
+  \item $f \sigma^* \tau^* = f(\tau\sigma)^*$
+  \item $f \idfunc_n^* = f$
+  \item $g\circ (f_1 \sigma_1^* ,\dots, f_n \sigma_n^*) = (g \circ (f_1,\dots,f_n))(\sigma_1\sqcup \cdots \sqcup \sigma_n)^*$
+  \item $g\sigma^* \circ (f_1,\dots,f_n) = (g\circ (f_{\sigma 1},\dots, f_{\sigma m}))(\sigma \wr (k_1,\dots,k_n))^*$ where $k_i$ is the arity of $f_i$.
+  \end{itemize}
+  If each hom-set $\cM(A_1,\dots,A_n;B)$ has at most one element, we call \cM an \textbf{\fS-multiposet}.
+\end{defn}
+
+As special cases we have:
+\begin{center}
+\begin{tabular}{c|c}
+  When $\fS=$ & $\fS$-multicategories are called\\\hline
+  bijections & \textbf{symmetric multicategories}\\
+  all functions & \textbf{cartesian multicategories}\\
+  injections & \textbf{semicartesian multicategories}\\
+  surjections & \textbf{relevance multicategories}\\
+  only identities & (ordinary) multicategories
+\end{tabular}
+\end{center}
+
+Now, recall the definition of tensor products in a multicategory from \cref{defn:multicat-tensor}, and the result of \cref{thm:multicat-repr} that having all tensor products is equivalent to being a monoidal category.
+We now extend that to \fS-multicategories.
+
+[TODO: representability, products have both universal properties]
 
 
 \section{Cartesian monoidal categories}
@@ -2618,6 +2699,10 @@ Can we also make sense of ``multisets''?
 
 \section{Closed monoidal categories}
 \label{sec:clmoncat}
+
+
+\section{Simply typed $\lambda$-calculus}
+\label{sec:stlc}
 
 
 \section{Intuitionistic propositional logic}
