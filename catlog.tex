@@ -51,7 +51,7 @@
 \def\joinE{\mathord{\join}E}
 \def\joinI{\mathord{\join}I}
 % unit
-\def\unit{\mathbf{1}}
+\def\unit{\top}%{\mathbf{1}}
 \def\ttt{\mathsf{tt}}
 % product
 \def\timesE{\ensuremath{\mathord{\times}E}}
@@ -2128,7 +2128,7 @@ Let $\bRepMCat$ denote the category of representable multicategories and functor
 
 There are plenty of good references on multicategories, so we will not belabor them further here.
 See for instance~\cite{hermida:multicats,leinster:higher-opds}.
-However we will need notions of limit and colimit in multicategories, which are less well-known, so we review them here.
+However, we will need notions of limit and colimit in multicategories, and since these are less well-known we review them here.
 
 We say that an object $\unit$ of a multicategory is \textbf{terminal} if for any $A_1,\dots, A_n$ there is a unique morphism $(A_1,\dots, A_n)\to \unit$.
 Similarly, a \textbf{binary product} of $A$ and $B$ in a multicategory is an object $A\times B$ with projections $A\times B \to A$ and $A\times B\to B$, composing with which yields bijections
@@ -2245,7 +2245,8 @@ By contrast, it is traditional to formulate the cut rule in terms of the $\circ_
 \begin{proof}
   We induct on the derivation of $\Delta,A,\Psi\types B$.
   If it is the identity rule, then $A=B$ and $\Delta$ and $\Psi$ are empty, so our given derivation of $\Gamma\types A$ is all we need.
-  Otherwise, it comes from some relation $A_1,\dots,A_n \le B$ in \cG, where we have derivations of $\Gamma_i \types A_i$, and there is an $i$ such that $\Gamma_i = \Gamma_i',A,\Gamma_i''$, while $\Delta = \Gamma_1,\dots,\Gamma_{i-1},\Gamma_i'$ and $\Psi = \Gamma_i'',\Gamma_{i+1},\dots,\Gamma_n$.
+  Otherwise, it comes from some relation $A_1,\dots,A_n \le B$ in \cG, where we have derivations of $\Gamma_i \types A_i$.
+  Since then $\Delta,A,\Psi = \Gamma_1,\dots,\Gamma_n$, there msut be an $i$ such that $\Gamma_i = \Gamma_i',A,\Gamma_i''$, while $\Delta = \Gamma_1,\dots,\Gamma_{i-1},\Gamma_i'$ and $\Psi = \Gamma_i'',\Gamma_{i+1},\dots,\Gamma_n$.
   Now by the inductive hypothesis, we can construct a derivation of $\Gamma_i',\Gamma,\Gamma_i''\types A_i$.
   Applying the rule for $A_1,\dots,A_n \le B$ again, with this derivation in place of the original $\Gamma_i \types A_i$, gives the desired result.
 \end{proof}
@@ -2330,17 +2331,41 @@ Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$
   The cases when it ends with a left rule introduce a new feature that we have not seen before in cut-admissibility proofs.
   Suppose it ends with a $\one L$.
   If $A$ is the $\one$ that was introduced by this rule, then we proceed basically as before: if $\Gamma\types A$ is $\one R$, so that $\Gamma$ is empty, then we are in the principal case and we can simply use the given derivation of $\Delta,\Psi\types B$; while if it is a left rule then we can apply a secondary induction.
-  But it might also happen that $A$ is a different type, appearing in $\Delta$ or $\Psi$.
+  But it might also happen that $A$ is a different type, with the introduced $\one$ appearing in $\Delta$ or $\Psi$.
   However, this case is also easily dealt with by applying the inductive hypothesis to $\Gamma\types A$ and the given $\Delta,\Psi\types B$ (with $A$ appearing somewhere in its antecedents).
+  In a direct argument for cut-elimination, we are transforming
+  \begin{equation*}
+    \inferrule*[right=cut]{
+      \derivof{\Gamma\types A}\\
+      \inferrule*[Right=$\one L$]{\derivof{\Delta_1,\Delta_2,A,\Psi\types B}}{\Delta_1,\one,\Delta_2,A,\Psi \types B}
+    }{\Delta_1,\one,\Delta_2,\Gamma,\Psi\types B}
+    \quad\leadsto\quad
+    \inferrule*[right=$\one L$]{\inferrule*[Right=cut]{
+      \derivof{\Gamma\types A}\\
+      \derivof{\Delta_1,\Delta_2,A,\Psi\types B}
+    }{\Delta_1,\Delta_2,\Gamma,\Psi\types B}}{\Delta_1,\one,\Delta_2,\Gamma,\Psi\types B}
+  \end{equation*}
 
   The case of $\tensorL$ is similar.
-  In the interesting (principal) case, when the sequent $\Delta,A_1\tensor A_2,\Psi\types B$ is derived from $\Delta,A_1,A_2,\Psi\types B$, while $\Gamma\types A_1\tensor A_2$ is derived using $\tensorR$ from $\Gamma_1\types A_1$ and $\Gamma_2\types A_2$ (so that necessarily $\Gamma = \Gamma_1,\Gamma_2$), then we can apply the inductive hypothesis twice as follows:
+  In the interesting (principal) case, when the sequent $\Delta,A_1\tensor A_2,\Psi\types B$ is derived from $\Delta,A_1,A_2,\Psi\types B$, while $\Gamma\types A_1\tensor A_2$ is derived using $\tensorR$ from $\Gamma_1\types A_1$ and $\Gamma_2\types A_2$ (so that necessarily $\Gamma = \Gamma_1,\Gamma_2$), then we can apply the inductive hypothesis twice to transform
+  \begin{equation*}
+    \inferrule*[right=cut]{
+      \inferrule*[right=$\tensorR$]{
+        \derivof{\Gamma_1\types A_1}\\
+        \derivof{\Gamma_2\types A_2}
+      }{\Gamma_1,\Gamma_2\types A_1\tensor A_2}\\
+      \inferrule*[Right=$\tensorL$]{
+        \derivof{\Delta,A_1,A_2,\Psi\types B}
+      }{\Delta,A_1\tensor A_2,\Psi\types B
+      }}{\Delta,\Gamma_1,\Gamma_2,\Psi\types B}
+  \end{equation*}
+  into
   \begin{equation*}
     \inferrule*[Right=cut]{
-      \Gamma_2\types A_2\\
+      \derivof{\Gamma_2\types A_2}\\
       \inferrule*[Right=cut]{
-        \Gamma_1\types A_1\\
-        \Delta,A_1,A_2,\Psi\types B
+        \derivof{\Gamma_1\types A_1}\\
+        \derivof{\Delta,A_1,A_2,\Psi\types B}
       }{
         \Delta,\Gamma_1,A_2,\Psi\types B
       }
@@ -2407,9 +2432,21 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
     \Gamma,\Psi,\Delta\types C
   }\;\one E
 \end{mathpar}
-[TODO: ``natural deduction'' means ``arbitrary on the left'', here ``arbitrary context'', except that we have a splitting of it; that could appear on top.]
 
 We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is also subsumed by the categorified version discussed in more detail in the next section.
+
+\begin{rmk}
+  In \cref{sec:natded-mslat} we remarked that in (unary) natural deductions, the conclusions of rules always have an arbitrary type as antecedent.
+  For simple type theories, the corresponding property is that the conclusions of rules should have an arbitrary \emph{context} on the left.
+  This is not quite true for the above presentation of the rules, since most of their conclusions have an antecedent obtained by concatenating two or more contexts.
+  However, such a rule is always equivalent to one whose conclusion involves an arbitrary context that is decomposed as a concatenation by an additional premise.
+  For instance, the rule $\tensorI$ could equivalently be formulated as
+  \begin{mathpar}
+    \inferrule{\Psi = \Gamma,\Delta \\ \Gamma\types A \\ \Delta\types B}{\Psi\types A\tensor B}\;\tensorI\and
+  \end{mathpar}
+  This is the appropriate point of view when reading rules ``bottom-up'' for type-checking or proof search, as discussed at the end of \cref{sec:rules}: to type-check or prove $\Psi\types A\tensor B$ we need to find an appropriate decomposition $\Psi = \Gamma,\Delta$ for which we can type-check or prove $\Gamma\types A$ and $\Delta\types B$.
+  However, because this transformation is so straightforward, when writing informally one generally uses the simpler form with concatenated contexts in the conclusion.
+\end{rmk}
 
 \subsection*{Exercises}
 
@@ -2609,7 +2646,7 @@ The ``matching up of occurrences'' indicated by the abstract variables conveys t
 
 We proceed to annotate the natural deduction for monoidal posets from \cref{sec:natded-monpos} with terms, obtaining the \textbf{simple type theory for monoidal categories under \cG} as shown in \cref{fig:moncat}.
 
-As noted in \cref{sec:natded-monpos}, since the tensor product has a ``mapping out'' universal property like that of a coproduct, its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
+As noted in \cref{sec:natded-monpos}, since the tensor product has a ``mapping out'' universal property like that of a coproduct (that is, it is a ``positive type''), its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
 Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\pair{x}{y}$.''
 And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\case(M,u.P,v.Q)$ for coproducts, the variables $x$ and $y$ are bound in the term syntax $\match_\tensor(M,xy.N)$.
 
@@ -2705,7 +2742,7 @@ Something else similar happens here in the rule $\match_\tensor(N,uv.P)[M/x] = \
 (This didn't arise in \cref{sec:catcoprod} because there it was not possible to substitute into the subterms $u.P$ and $v.Q$ of a $\case$ term containing bound variables, since they could not contain any \emph{other} variables to be substituted for.)
 
 When talking about syntax of terms explicitly, one generally says that this is because otherwise, a $u$ or $v$ in $M$ would after substitution be ``in the scope'' of the binding of $u$ or $v$, whereas all the variables of $M$ ought to be free in the substituted term.
-But in terms of derivations, the point is just that when applying a cut after $\tensorE$:
+But when we regard substitution as an operation on derivations, the point is just that to eliminate a cut after $\tensorE$ of the following sort:
 \begin{mathpar}
   \inferrule*[Right=cut]{
     \Gamma\types M:A \\
