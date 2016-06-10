@@ -18,6 +18,9 @@
 \def\axes{\Lambda}
 \def\act#1{[#1]}
 \def\equivsym{\mathord{\equiv}}
+% derivations
+\def\derivof#1{\inferrule*{\vdots}{#1}}
+\def\labderivof#1#2{\inferrule*{#1\\\\\vdots}{#2}}
 % judgments
 \let\types\vdash
 \def\type{\;\ftype}
@@ -811,7 +814,41 @@ is not \emph{part of the type theory} as defined, it is nevertheless true that w
   We will return to this distinction in \cref{rmk:admissible-derivable-2}.
 \end{rmk}
 
-Another way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
+Closely related to cut-admissibility is \textbf{cut-elimination}, which in our theory takes the following form.
+
+\begin{thm}\label{thm:category-cutelim}
+  Consider the cut-free type theory for categories under \cG with the cut rule \emph{added} as primitive.
+  If $A\types B$ has a derivation in this new theory, then it also has a derivation in the cut-free theory.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $A\types B$.
+  If it ends with $\idfunc$, it is already cut-free.
+  If it ends like this for some $f\in\cG(C,B)$:
+  \begin{mathpar}
+    \inferrule*[right=$f$]{\inferrule*{\sD\\\\\vdots}{A\types C}}{A\types B}
+  \end{mathpar}
+  then by induction, $A\types C$ has a cut-free derivation, to which we can apply the $f$ rule to obtain a cut-free derivation of $A\types B$.
+  Finally, if it ends with the cut rule:
+  \begin{mathpar}
+    \inferrule*[right=cut]{\inferrule*{\sD_1\\\\\vdots}{A\types C} \\ \inferrule*{\sD_2\\\\\vdots}{C\types B}}{A\types B}
+  \end{mathpar}
+  then by induction $A\types C$ and $C\types B$ have cut-free derivations, and thus by \cref{thm:category-cutadm} so does $A\types B$.
+\end{proof}
+
+Note that cut-elimination is a fairly straightforward consequence of cut-admissibility: the latter allows us to eliminate each cut one by one.
+This will nearly always be true for our type theories, so we will usually just prove cut admissibility and rarely remark on the cut-elimination theorem that follows from it.
+On the other hand, cut admissibility is a special case of cut-elimination, and sometimes people prove cut-elimination directly without explicitly using cut-elimination as a lemma.
+Under this approach, the inductive step in cut-admissibility is viewed instead as a step of ``pushing cuts upwards'' through a derivation: given a derivation as on the left below in the theory with cut, we transform it into the derivation on the right in which the cut is higher up.
+\begin{equation*}
+  \inferrule*[right=cut]{\inferrule*{\sD_1\\\\\vdots}{A\types B} \\
+    \inferrule*[Right=$f$]{\inferrule*{\sD_2\\\\\vdots}{B\types C}}{B\types D}}{A\types D}
+  \quad\leadsto\quad
+  \inferrule*[right=$f$]{\inferrule*[Right=cut]{\inferrule*{\sD_1\\\\\vdots}{A\types B} \\
+    \inferrule*{\sD_2\\\\\vdots}{B\types C}}{A\types C}}{A\types D}
+\end{equation*}
+Because our derivation trees are finite (or, more generally, well-founded) this process must eventually terminate with all the cuts eliminated.
+
+A more category-theoretic way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
 We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
 
 We could prove the initiality theorem by appealing to this known fact about free categories, but as before, we prefer to give a more explicit proof to illustrate the patterns of type theory.
@@ -822,8 +859,8 @@ We can do this with terms directly constructed so that their parse tree will mir
   \inferrule{\phi:(X\types A)}{\postc f\phi:(X\types B)} \,f
 \end{mathpar}
 Then a term derivation and corresponding parse tree would look like
-\begin{mathpar}
-\inferrule*[Right=$h$]{
+\begin{equation*}
+\inferrule*[right=$h$]{
     \inferrule*[Right=$g$]{
       \inferrule*[Right=$f$]{
         \inferrule*[Right=$\idfunc$]{ }{\idfunc_A:(A\types A)}
@@ -836,14 +873,14 @@ Then a term derivation and corresponding parse tree would look like
   }{
     \postc h{\postc g{\postc f{\idfunc_A}}}:(A\types D)
   }
-  \and\leadsto\and
-  \vcenter{\xymatrix@-1pc{
+  \qquad\leadsto\qquad
+  \raisebox{2.75cm}{\xymatrix@-1pc{
       \postcsym h \ar@{-}[d] \\
       \postcsym g \ar@{-}[d] \\
       \postcsym f \ar@{-}[d] \\
       \idfunc_A
     }}
-\end{mathpar}
+\end{equation*}
 However, now there is another option available to us, which begins to show more of the characteristic behavior of type-theoretic terms.
 Rather than describing the entire judgment $A\types B$ with a term, the way we did for the cut-ful theory, we assign a \emph{formal variable} such as $x$ to the domain $A$, and then an expression containing $x$ to the codomain $B$.
 For the theory of plain categories that we are working with here, the only possible expressions are repeated applications of function symbols to the variable, such as $h(g(f(x)))$.
@@ -954,7 +991,7 @@ From the perspective of category theory, the reason for the importance of canoni
 In the cut-free type theory for categories, two terms present the same morphism in a free category just when they are literally equal (modulo $\alpha$-equivalence); whereas to check whether two terms are equal in the cut-ful theory we have to remove the identities and reassociate them all to the left or the right.
 
 In fact, a good algorithm for checking equality of terms in the cut-ful theory is to \emph{interpret them into the cut-free theory}!
-That is, we note that every rule of the cut-ful theory is admissible in the cut-free theory, so any term (i.e.\ derivation) in the cut-ful theory yields a derivation in the cut-free theory.
+That is, we note that every rule of the cut-ful theory is admissible in the cut-free theory, and hence eliminable; so any term (i.e.\ derivation) in the cut-ful theory yields a derivation in the cut-free theory.
 For instance, to translate the cut-ful term $h\circ ((\id_C\circ g) \circ f)$ into the cut-free theory, we first write it as a derivation
 \begin{mathpar}
   \inferrule*[Right=$\circ$]{
@@ -1187,16 +1224,27 @@ Next we prove that the cut rule is admissible for this sequent calculus too.
     \item If it ends with $\meetL1$, then $A=A_1\meet A_2$ and we can derive $A_1\types B$.
       By the inductive hypothesis, we can derive $A_1 \types C$, and hence by $\meetL1$ also $A \types C$.
       The case of $\meetL2$ is similar.
-    \item Finally, if it ends with $\meetR$, then we can derive $A\types B_1$ and $A\types B_2$.
+    \item If it ends with $\meetR$, then we can derive $A\types B_1$ and $A\types B_2$.
       Recall that we are also assuming a derivation of $B_1\types C$.
       Thus, by the inductive hypothesis on $A\types B_1$ and $B_1\types C$, we can derive $A\types C$.
       \label{item:mslat-principal-cut}\qedhere
     \end{enumerate}
+    The case when it ends with $\meetL2$ is similar.
   \end{enumerate}
 \end{proof}
 
 This simple proof already displays many of the characteristic features of a cut-admissibility argument.
 The final case~\ref{item:mslat-principal-cut} is called the \textbf{principal case} for the operation $\meet$, when the type $B$ we are composing over (also called the \textbf{cut formula}) is obtained from $\meet$ and both sequents are also obtained from the $\meet$ rules.
+In a direct argument for cut-elimination such as that sketched after \cref{thm:category-cutelim}, this case becomes the following transformation on derivations:
+\begin{equation*}
+  \let\mymeet\meet
+  \def\meet{\mathord{\mymeet}}
+  \inferrule*[right=cut]{
+    \inferrule*[right=$\meetR$]{\labderivof{\sD_1}{A\types B_1} \\ \labderivof{\sD_2}{A\types B_2}}{A\types B_1\meet B_2}\\
+    \inferrule*[Right=$\meetL1$]{\labderivof{\sD_3}{B_1\types C}}{B_1\meet B_2\types C}}{A\types C}
+  \quad\leadsto\quad
+  \inferrule*[right=cut]{\labderivof{\sD_1}{A\types B_1} \\ \labderivof{\sD_3}{B_1\types C}}{A\types C}
+\end{equation*}
 
 \begin{rmk}
   It may seem somewhat odd that we can prove the admissibility of all cuts (compositions), but we have to assert identities as a primitive rule for base/generating types.
@@ -1281,11 +1329,11 @@ These properties are characteristic of \emph{natural deduction} theories.
 (Later on we will be able to give a more convincing explanation of the origin of the phrase ``natural deduction''.)
 
 \begin{rmk}
-  Because the proof of cut-elimination for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
-  Triviality is subjective; but what seems inarguable is that cut-elimination for natural deduction is \emph{saying something different} than cut-elimination for sequent calculus.
-  The content of cut-elimination for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}).
+  Because the proof of cut admissibility for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
+  Triviality is subjective; but what seems inarguable is that cut-admissibility for natural deduction is \emph{saying something different} than cut-admissibility for sequent calculus.
+  The content of cut-admissibility for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}).
   % or to the cut-elimination (``hereditary substitution'') of a canonical/atomic natural deduction (see \cref{cha:canonical}).
-  This difference is also evident in the fact that we have to assert the full identity rule in natural deduction.
+  Similarly, the admissibility of the identity rule for sequent calculus corresponds to the $\eta$-conversion rule in natural deduction (see \cref{sec:beta-eta}).
 \end{rmk}
 
 Of course, we should also prove the initiality theorem:
@@ -1320,12 +1368,12 @@ Of course, we should also prove the initiality theorem:
 \end{ex}
 
 \begin{ex}\label{ex:jslat}
-  Describe a sequent calculus for \emph{join-semilattices} (posets with a bottom element and binary joins), and prove the initiality theorems for it (including the identity and cut admissibility theorems).
+  Describe a sequent calculus for \emph{join-semilattices} (posets with a bottom element and binary joins), and prove the admissibility and initiality theorems for it.
   The rules for $\bot$ and $\join$ should be exactly dual to the rules for $\top$ and $\meet$.
 \end{ex}
 
 \begin{ex}\label{ex:lattices}
-  By putting together the rules for meet- and join-semilattices, describe a sequent calculus for \emph{lattices} (posets with a top and bottom element and binary meets and joins), and prove the initiality theorem.
+  By putting together the rules for meet- and join-semilattices, describe a sequent calculus for \emph{lattices} (posets with a top and bottom element and binary meets and joins), and prove the admissibility and initiality theorems for it.
 \end{ex}
 
 \begin{ex}\label{ex:lattices-invertible}
@@ -1441,8 +1489,9 @@ A natural deduction includes both introduction and elimination rules, so we will
 By contrast, in a sequent calculus we have ``only introduction rules'' (of both left and right sorts), so this cannot happen.
 
 In fact, in the simple case of categories with products, there are tricks enabling us to eliminate {both} kinds of redundancy, and thereby do without any ``$\equiv$'' for both the sequent calculus and the natural deduction.
+(For sequent calculus the trick is called ``focusing'', and for natural deduction the trick is called ``canonical/atomic terms''.)
 However, in even slightly more complicated theories the analogous tricks do not eliminate $\equiv$ completely (though they do reduce its complexity).
-Thus, we will focus on theories with $\equiv$.
+Thus, we will not spend any time on these tricks, but instead bite the bullet and deal with $\equiv$.
 % ; we will return to the tricks in \cref{cha:canonical}.
 
 It is convenient to describe the rules for $\equiv$ using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
@@ -1530,7 +1579,8 @@ This completes the definition of the \textbf{unary type theory for categories wi
   That is, if we have derivations of $x:A\types M:B$ and $y:B \types N:C$, then we have a derivation of $x:A \types N[M/y]:C$.
 \end{thm}
 \begin{proof}
-  We induct on the derivation of $y:B \types N:C$.
+  The proof is essentially the same as that of \cref{thm:natded-mslat-cutadm}, but we write it out again explicitly with terms present.
+  As always, we induct on the derivation of $y:B \types N:C$.
   \begin{enumerate}
   \item If it ends with $\idfunc$, then we can use the given derivation $M$.
   \item If it ends swith $fI$ for $f\in \cG(C',C)$, then we have $y:B \types N':C'$, so by induction we have $x:A\types N'[M/y]:C'$ and hence $x:A\types f(N'[M/y]):C'$.
@@ -1778,6 +1828,9 @@ As in the dual case, by a \textbf{category with coproducts} we mean a category w
 % At this point the reader is free (after doing some exercises) to move on directly to \cref{chap:simple}.
 % However, if you want to understand $\equiv$ a little more deeply, you may also continue with the somewhat digressive \cref{cha:canonical}.
 
+This seems an appropriate place to introduce some more type-theoretic lingo.
+Roughly speaking, types corresponding to objects with ``mapping out'' universal properties, such as $A+B$, are called \textbf{positive}, while types corresponding to objects with ``mapping in'' universal properties, such as $A\times B$, are called \textbf{negative}.
+The precise meanings of these terms relate to ``focusing'' and are more directly applicable to sequent calculus than to natural deduction, but they are often used informally in this broad sense, and we will sometimes do the same.
 
 \subsection*{Exercises}
 
@@ -2364,6 +2417,10 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is 
   Prove the well-formedness, cut-admissibility, and initiality theorems for the natural deduction for monoidal posets.
 \end{ex}
 
+\begin{ex}\label{ex:monpos-invertible}
+  Prove that the rules $\tensorL$ and $\one L$ in the sequent calculus for monoidal posets are invertible in the sense of \cref{ex:mslat-invertible}: whenever we have a derivation of their conclusions, we also have derivations of their premises.
+\end{ex}
+
 \begin{ex}\label{ex:monpos-mslat}
   Write down either a sequent calculus or a natural deduction for monoidal posets that are also meet-semilattices, and prove its initiality theorem.
 \end{ex}
@@ -2689,7 +2746,7 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
 \section{Products and coproducts}
 \label{sec:multicat-prod-coprod}
 
-[TODO: multicategories with products and coproducts]
+[TODO: multicategories with products and coproducts.]
 
 
 \section{Some generalized multicategories}
