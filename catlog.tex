@@ -1,5 +1,5 @@
 \documentclass{book}
-\usepackage{mathpartir,cancel,cmll}
+\usepackage{mathpartir,cancel,cmll,textcomp}
 %\usepackage{appendix}  % for chapter appendices, use \begin{subappendices}
 \newif\ifcref\creftrue
 \input{decls}
@@ -86,6 +86,7 @@
 % \def\fletp#1:{\mathsf{let}'\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
 % \def\@fletdoublecolon:=#1in{\Coloneqq #1\;\mathsf{in}\;}
 % \def\@fletsinglecolon=#1in{\coloneqq #1\;\mathsf{in}\;}
+\def\tpair#1#2{\text{\textlquill} #1,#2 \text{\textrquill}}%{\llparenthesis #1,#2\rrparenthesis}
 \let\bigtensor\bigotimes
 % hom
 \let\linhom\multimap
@@ -2663,7 +2664,7 @@ The ``matching up of occurrences'' indicated by the abstract variables conveys t
 We proceed to annotate the natural deduction for monoidal posets from \cref{sec:natded-monpos} with terms, obtaining the \textbf{simple type theory for monoidal categories under \cG} as shown in \cref{fig:moncat}.
 
 As noted in \cref{sec:natded-monpos}, since the tensor product has a ``mapping out'' universal property like that of a coproduct (that is, it is a ``positive type''), its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
-Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\pair{x}{y}$.''
+Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\tpair{x}{y}$.''
 And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\case(M,u.P,v.Q)$ for coproducts, the variables $x$ and $y$ are bound in the term syntax $\match_\tensor(M,xy.N)$.
 
 \begin{figure}
@@ -2671,7 +2672,7 @@ And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\case(M,
   \begin{mathpar}
     \inferrule{\types A\type}{x:A\types x:A}\and
     \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
-    \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \pair{M}{N}:A\tensor B}\;\tensorI\and
+    \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \tpair{M}{N}:A\tensor B}\;\tensorI\and
     \inferrule{
       \Psi \types M:A\tensor B \\
       \Gamma,x:A,y:B,\Delta\types N:C
@@ -2694,11 +2695,11 @@ There is one new thing going on relative to \cref{sec:catcoprod}: because the co
 Unbound variables are called \emph{free}; they are those that appear in the context of the term.
 Thus, for instance, the following application of $\tensorI$:
 \begin{mathpar}
-  \inferrule*{u:C, v:D \types \pair{f(u)}{g(v)}:A\tensor B\\
+  \inferrule*{u:C, v:D \types \tpair{f(u)}{g(v)}:A\tensor B\\
   z:G,x:A,y:B,w:H \types h(z,x,y,w):K
-  }{z:G,u:C,v:D,w:H\types \match_\tensor(\pair{f(u)}{g(v)}, xy.h(z,x,y,w)):K}
+  }{z:G,u:C,v:D,w:H\types \match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w)):K}
 \end{mathpar}
-produces a term $\match_\tensor(\pair{f(u)}{g(v)}, xy.h(z,x,y,w))$ in which the variables $z,w$ in $h(z,x,y,w)$ are free, in addition to the free variables $u,v$ in $\pair{f(u)}{g(v)}$.
+produces a term $\match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w))$ in which the variables $z,w$ in $h(z,x,y,w)$ are free, in addition to the free variables $u,v$ in $\tpair{f(u)}{g(v)}$.
 (This term is also a counterexample to a natural conjecture that the variables in a term must appear in the same order that they do in the context.)
 
 The case of $\one$ is similar to that of $\tensor$ but simpler: to do something with an element of $\one$, it suffices to assume that it is $\ott$.
@@ -2707,8 +2708,8 @@ That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allo
 
 Finally, we also have $\beta$- and $\eta$-conversion rules that implement the universal properties.
 \begin{mathpar}
-  \match_\tensor(\pair M N,xy.P) \equiv P[M/x,N/y]\and
-  \match_\tensor(M,xy.N[\pair xy/u]) \equiv N[M/u]\\
+  \match_\tensor(\tpair M N,xy.P) \equiv P[M/x,N/y]\and
+  \match_\tensor(M,xy.N[\tpair xy/u]) \equiv N[M/u]\\
   \match_\one(\ott,N) \equiv N\and
   \match_\one(M,N[\ott/u]) \equiv N[M/u]
 \end{mathpar}
@@ -2723,7 +2724,7 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
 \begin{proof}
   By induction on the derivation.
   The cases of variables and generators are as in \cref{thm:multicat-linear}.
-  For a pair $\pair M N$ coming from $\tensorI$, each variable in $\Gamma,\Delta$ appears in exactly one of $\Gamma$ and $\Delta$, hence in exactly one of $M$ and $N$; we then apply the inductive hypotheses to $M$ or $N$ respectively.
+  For a pair $\tpair M N$ coming from $\tensorI$, each variable in $\Gamma,\Delta$ appears in exactly one of $\Gamma$ and $\Delta$, hence in exactly one of $M$ and $N$; we then apply the inductive hypotheses to $M$ or $N$ respectively.
   Similarly, for $\match_\tensor(M,xy.N)$ coming from $\tensorE$, each variable in $\Gamma,\Psi,\Delta$ must appear in exactly one of $\Gamma$, $\Psi$, or $\Delta$; by induction then in the first and third cases it must appear exactly once in $N$, and in the second case it must appear exactly once in $M$.
   The case of $\one E$ is similar, while there are no variables at all in $\ott$.
 \end{proof}
@@ -2741,8 +2742,8 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
   \begin{alignat*}{2}
     x[M/x] &= M\\
     f(N_1,\dots,N_n)[M/x] &= f(N_1,\dots,N_i[M/x],\dots,N_n) &&\quad\text{if $x$ occurs in $N_i$}\\
-    \pair P Q[M/x] &= \pair{P[M/x]}{Q} &&\quad\text{if $x$ occurs in $P$}\\
-    \pair P Q[M/x] &= \pair{P}{Q[M/x]} &&\quad\text{if $x$ occurs in $Q$}\\
+    \tpair P Q[M/x] &= \tpair{P[M/x]}{Q} &&\quad\text{if $x$ occurs in $P$}\\
+    \tpair P Q[M/x] &= \tpair{P}{Q[M/x]} &&\quad\text{if $x$ occurs in $Q$}\\
     \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
     \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N,uv.P[M/x]) &&\quad\text{if $x$ occurs in $P$}\\
     \ott[M/x] &&&\quad\text{cannot occur}\\
@@ -3694,11 +3695,11 @@ For this purpose we reformulate the sequent calculus rules for these as a natura
       \Gamma\types^{\fL_1} M\pc A \\ \Gamma\types^{\fL_2} N\pc B \\
       \fa\notin \fL_1\cup\fL_2
     }{
-      \Gamma\types^{\fL_1\cup\fL_2\cup\{\fa\}} \pair{M}{N}^\fa \pc A\tensor B
+      \Gamma\types^{\fL_1\cup\fL_2\cup\{\fa\}} \tpair{M}{N}^\fa \pc A\tensor B
     }\and
     \inferrule{\fL \finsubset \fA \\ \fa\notin\fL}{\Gamma\types^{\fL\cup\{\fa\}} \ott^\fa\pc\one}\and
-    \inferrule{\Gamma\types^\fL M\pc A\tensor B \\ \fa\notin\fL}{\Gamma\types^{\fL\cup\{\fa\}} \pi_1^\fa(M) \pc A}\and
-    \inferrule{\Gamma\types^\fL M\pc A\tensor B \\ \fa\notin\fL}{\Gamma\types^{\fL\cup\{\fa\}} \pi_2^\fa(M) \pc B}\and
+    \inferrule{\Gamma\types^\fL M\pc A\tensor B \\ \fa\notin\fL}{\Gamma\types^{\fL\cup\{\fa\}} \varpi_1^\fa(M) \pc A}\and
+    \inferrule{\Gamma\types^\fL M\pc A\tensor B \\ \fa\notin\fL}{\Gamma\types^{\fL\cup\{\fa\}} \varpi_2^\fa(M) \pc B}\and
     \inferrule{\Gamma\types^\fL M\pc \one \\ \fa\notin\fL}{\Gamma\types^{\fL\cup\{\fa\}} \cancel{M}^\fa:()}\and
   \end{mathpar}
   \caption{Pre-terms for symmetric monoidal categories}
@@ -3712,13 +3713,13 @@ For this purpose we reformulate the sequent calculus rules for these as a natura
       \Gamma\types^\fL (\vec{M},N,P\mid\vec{Z}):(\Delta,A,B)\\
       \fa\notin\fL
     }{
-      \Gamma\types^{\fL\cup\{\fa\}} (\vec{M},\pair{N}{P}^\fa \mid\vec{Z}):(\Delta,A\tensor B)
+      \Gamma\types^{\fL\cup\{\fa\}} (\vec{M},\tpair{N}{P}^\fa \mid\vec{Z}):(\Delta,A\tensor B)
     }\;\tensorI\and
     \inferrule{
       \Gamma\types^\fL (\vec{M},P\mid\vec{Z}):(\Delta,A\tensor B)\\
       \fa\notin\fL
     }{
-      \Gamma\types^{\fL\cup\{\fa\}} (\vec{M},\pi_1^\fa(P),\pi_2^\fa(P)\mid\vec{Z}):(\Delta,A,B)
+      \Gamma\types^{\fL\cup\{\fa\}} (\vec{M},\varpi_1^\fa(P),\varpi_2^\fa(P)\mid\vec{Z}):(\Delta,A,B)
     }\;\tensorE\\
     \inferrule{
       \Gamma\types^\fL(\vec M\mid\vec Z):\Delta\\
@@ -3760,9 +3761,9 @@ Thus, it incorporates the permutation quotients (a) and (b) from \cref{thm:prop-
 
 Relative to the above closure conditions, $\equiv$ is generated by the following relations on individual pre-terms (occurring anywhere in a list):
 \begin{mathpar}
-  \pi_1^\fa(\pair M N^\fb) \equiv M\and
-  \pi_2^\fa(\pair M N^\fb) \equiv N\and
-  \pair{\pi_1^\fa(P)}{\pi_2^\fa(P)}^\fb \equiv P\and
+  \varpi_1^\fa(\tpair M N^\fb) \equiv M\and
+  \varpi_2^\fa(\tpair M N^\fb) \equiv N\and
+  \tpair{\varpi_1^\fa(P)}{\varpi_2^\fa(P)}^\fb \equiv P\and
   \cancel{\ott^\fa}^\fb \equiv ()\and
 \end{mathpar}
 and also the following relation on lists:
