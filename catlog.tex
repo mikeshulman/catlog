@@ -290,7 +290,7 @@ In the next section we will rewind back to the beginning and start with very sim
 \label{sec:generalities}
 
 Since there are many other introductions to categorical logic (a non-exhaustive list could include~\cite{mr:focl,ls:hocl,jacobs:cltt,goldblatt:topoi,ptj:elephant}), it seems appropriate to say a few words about what distinguishes this one.
-These words may not make very much sense to the beginner who doesn't yet know what we are talking about, but it may help to orient the expert, and as the beginner becomes more expert he or she can return to it later on.
+Our description may not make very much sense to the beginner who doesn't yet know what we are talking about, but it may help to orient the expert, and as the beginner becomes more expert he or she can return to it later on.
 
 Our perspective is very much that of the category theorist: our primary goal is to use type theory as a convenient syntax to prove things about categories.
 The way that it does this is by giving concrete presentations of \emph{free} categorical structures, so that by working in those presentations we can deduce conclusions about \emph{any} such structure.
@@ -387,7 +387,8 @@ In later chapters we will generalize away from unarity in various ways.
 
 We start with the simplest sort of categories: those in which each hom-set has at most one element.
 These are well-known to be equivalent to \emph{preordered sets}, where the existence of an arrow $A\to B$ is regarded as the assertion that $A\le B$.
-I will abusively call them \emph{posets}, although traditionally posets (partially ordered sets) also satisfy the antisymmetry axiom (if $A\le B$ and $B\le A$ then $A=B$); from a category-theoretic perspective, antisymmetry means asking a category to be skeletal, which is both unnatural and pointless.
+I will abusively call them \emph{posets}, although traditionally posets (partially ordered sets) also satisfy the antisymmetry axiom (if $A\le B$ and $B\le A$ then $A=B$).
+From a category-theoretic perspective, antisymmetry means asking a category to be skeletal, which is both unnatural and pointless.
 Conveniently, posets also correspond to the simplest version of logic, namely \emph{propositional} logic.
 
 From a category-theoretic perspective, the question we are concerned with is the following.
@@ -1001,17 +1002,21 @@ The initiality theorems we care about, however, show that these initial objects 
 
 \subsection*{Exercises}
 
-% [I think we should do this one in the text.]
-% \begin{ex}
-%   Prove \cref{thm:category-initial-2}.
-%   You will have to start by proving that the composition defined in \cref{thm:category-cutadm} is in fact associative and unital, so that it forms a category.
-% \end{ex}
-
 \begin{ex}\label{ex:categories-over}
   Let \sM be a fixed category; then we have an induced adjunction between $\bCat/\sM$ and $\bGr/\sM$.
   Describe a cut-free type theory for presenting the free category-over-\sM on a directed-graph-over-\sM, and prove the initiality theorem (the analogue of \cref{thm:category-initial-2}).
   Note that you will have to prove that cut is admissible first.
   \textit{(Hint: index the judgments by arrows in \sM, so that for instance $A\types_\alpha B$ represents an arrow lying over a given arrow $\alpha$ in $\sM$.)}
+\end{ex}
+
+\begin{ex}\label{ex:cat-2free}
+  Category theorists are accustomed to consider \bCat as a 2-category, but our free category $\F\bCat\cG$ only has a 1-categorical universal property, expressed by the 1-categorical adjunction between $\bCat$ and $\bGr$.
+  It is not immediately obvious how it could be otherwise, since unlike \bCat, \bGr is only a 1-category; but there is something along these lines that we can say.
+  \begin{enumerate}
+  \item Suppose \cG is a directed graph and \cC a category; define a category $\bGr(\cG,\cC)$ whose objects are graph morphisms $\cG\to\cC$ and whose morphisms are an appropriate kind of ``natural transformation''.
+  \item Prove that $\bGr(\cG,-)$ is a 2-functor $\bCat\to\bCat$.
+  \item Using the cut-free presentation of $\F\bCat\cG$, prove that it is a representing object for this 2-functor.
+  \end{enumerate}
 \end{ex}
 
 
@@ -1642,6 +1647,23 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   Generalize \cref{ex:mslat-fib} from posets to categories, combining your type theory from \cref{ex:catfib} with the one for categories with products from \cref{sec:beta-eta}.
 \end{ex}
 
+\begin{ex}\label{ex:catprod-2free}
+  The category $\bPrCat$ is a 2-category whose 2-cells are arbitrary natural transformations (that is, there is no nonvacuous notion of a ``product-preserving natural transformation'').
+  Let \cG be a directed graph; as in \cref{ex:cat-2free}, define a 2-functor $\bGr(\cG,-):\bPrCat\to\bCat$, and show that $\F\bPrCat\cG$ is a representing object for it.
+  \textit{(Use induction over the derivations of the judgments in its type-theoretic description.)}
+\end{ex}
+
+\begin{ex}\label{ex:catprod-flexible}
+  \cref{ex:cat-2free,ex:catprod-2free} address one worry that a category theorist might have about the strictness of our constructions.
+  Another such worry is that the morphisms in \bPrCat preserve specified products \emph{strictly}, while it is usually more natural in category theory to preserve products only up to isomorphism.
+  This is not a problem if our main purpose is to have a syntax to describe objects and morphisms in particular categories with products; indeed, it is exactly what we would want.
+  However, for abstract reasons it may be nice to also be able to say something about less strict functors.
+
+  With this in mind, prove that for any \cG, the category with products $\F\bPrCat\cG$ is \emph{semi-flexible} in the sense of~\cite{bkp:2dmonads}: that is, if \cM has chosen products, then every functor $\F\bPrCat\cG \to \cM$ that preserves products in the usual up-to-isomorphism sense is naturally isomorphic to a functor that preserves the chosen products strictly.
+  \textit{(Again, use induction over derivations in the type-theoretic description.)}
+  Deduce that $\F\bPrCat\cG$ satisfies a universal property relative to the 2-category of categories with products and functors that preserve them up to isomorphism.
+\end{ex}
+
 
 \section{Categories with coproducts}
 \label{sec:catcoprod}
@@ -1650,8 +1672,8 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
 % It seems a natural thing to expect, but on the other hand it involves variable binding in terms, which might be easier to introduce first with simply-typed $\lambda$-calculus in \cref{chap:simple}.
 % Note that we also need variable binding for monoidal categories, so if we want to do those before cartesian monoidal categories (as also seems natural, since multicategories are simpler than cartesian multicategories) we need to discuss variable binding sooner than $\lambda$-calculus.]
 
-In \cref{ex:jslat}, you obtained a \emph{sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
-However, \emph{natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
+In \cref{ex:jslat}, you obtained a {sequent calculus} for join-semilattices by dualizing the sequent calculus for meet-semilattices.
+However, {natural deductions} don't dualize as straightforwardly, due to the insistence that all rules act only on the right.
 (Of course, we could dualize them to ``co-natural deductions'' in which all rules act only on the \emph{left}, but that would destroy the familiar behavior of terms on variables, as well as make it tricky to combine left and right universal properties, such as for lattices.)
 To describe joins in a natural deduction, we need to ``build an extra cut'' into their universal property:
 \begin{mathpar}
@@ -1818,6 +1840,10 @@ This completes the definition of our \textbf{unary type theory for categories wi
   \end{enumerate}
 \end{ex}
 
+% Is this worth it?  I think there's not much to say beyond \label{ex:catprod-2free}.
+% \begin{ex}\label{ex:2free-catcoprod}
+%   As in \cref{ex:cat-2free,ex:catprod-2free} show that $\F\bCoprCat\cG$ is a representing object for a suitable 2-functor $\bGr(\cG,-):\bCoprCat\to\bCat$.
+% \end{ex}
 
 
 \chapter{Simple type theories}
