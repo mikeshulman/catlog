@@ -74,7 +74,8 @@
 \def\abort{\match_{\zero}}
 % one
 \def\one{\mathbf{1}}
-\def\discard#1in{\mathsf{discard}\; #1 \; \mathsf{in} \;}
+%\def\discard#1in{\mathsf{discard}\; #1 \; \mathsf{in} \;}
+% TODO: currently we're using \ttt for both \unit and \one; find a better name for one of them!
 % tensor
 \let\tensor\otimes
 \def\tensorL{\mathord{\tensor}L}
@@ -1539,7 +1540,12 @@ In term syntax, this means that
   \pair{\pi_1(M)}{\pi_2(M)} \equiv M\label{eq:eta-prodcat}
 \end{equation}
 In type-theoretic lingo, the equalities~\eqref{eq:beta-prodcat-1} and~\eqref{eq:beta-prodcat-2} are called \textbf{$\beta$-conversion} while the equality~\eqref{eq:eta-prodcat} is called an \textbf{$\eta$-conversion}.
-They generate an equivalence relation on terms, which we also require to be a congruence for everything else.
+For $\unit$ there is no $\beta$-conversion rule, while the $\eta$-conversion rule is
+\begin{equation}\label{eq:eta-unit}
+  \ttt \equiv M
+\end{equation}
+for any term $M:\unit$.
+These conversions generate an equivalence relation on terms, which we also require to be a congruence for everything else.
 
 We can describe this more formally with an additional judgment ``$x:X\types M\equiv N :A$'', with rules shown in  \cref{fig:catprod-equality}.
 Note that in addition to the $\beta$- and $\eta$-conversions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality.
@@ -1552,6 +1558,7 @@ In general we will not bother to state these ``standard'' rules for $\equiv$, bu
     \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pi_1(\pair M N) \equiv M :A}\and
     \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pi_2(\pair M N) \equiv N :B}\and
     \inferrule{x:X\types M:A\times B}{x:X\types \pair{\pi_1(M)}{\pi_2(M)} \equiv M:A\times B}\and
+    \inferrule{x:X\types M:\unit}{x:X\types \ttt\equiv M:\unit}\and
     \inferrule{x:X\types M:A}{x:X \types M\equiv M:A}\and
     \inferrule{x:X\types M\equiv N:A}{x:X\types N\equiv M:A}\and
     \inferrule{x:X\types M\equiv N:A \\ x:X\types N\equiv P:A}{x:X\types M\equiv P:A}\and
@@ -1790,15 +1797,24 @@ Similarly, the $\eta$-conversion rule\footnote{In fact, for types such as coprod
 \begin{equation}
   \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P\label{eq:catcoprod-eta}
 \end{equation}
+and similarly that morphisms out of the initial object are unique:
+\[ \abort(y) \equiv P. \]
 In fact, to ensure that $\equiv$ is a congruence, we should ``build in a cut'' to all of these rules, so that the antecedent of the conclusion is an arbitrary type.
-Thus the actual generating $\equiv$ rules are
-\begin{mathpar}
-  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A}{x:X \types \case(\inl(M),u.P,v.Q) \equiv P[M/u] : C}
-  \and
-  \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/v] : C}
-  \and
-  \inferrule{x:X \types M:A+B \\ y:A+B \types P:C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] : C}
-\end{mathpar}
+Thus the actual generating $\equiv$ rules are those shown in \cref{fig:catcoprod-equiv}.
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A}{x:X \types \case(\inl(M),u.P,v.Q) \equiv P[M/u] : C}
+    \and
+    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types N:B}{x:X \types \case(\inr(N),u.P,v.Q) \equiv Q[N/v] : C}
+    \and
+    \inferrule{x:X \types M:A+B \\ y:A+B \types P:C}{x:X \types \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y] : C}
+    \and
+    \inferrule{x:X\types M:\zero \\ y:\zero \types P:C}{x:X \types \abort(M) \equiv P[M/y] :C}
+  \end{mathpar}
+  \caption{$\beta$- and $\eta$-conversions for categories with coproducts}
+  \label{fig:catcoprod-equiv}
+\end{figure}
 As usual, we also require $\equiv$ to be an equivalence relation and a congruence for substitution.
 This completes the definition of our \textbf{unary type theory for categories with coproducts under \cG}.
 
