@@ -78,11 +78,14 @@
 \def\tensorR{\mathord{\tensor}R}
 \def\tensorI{\mathord{\tensor}I}
 \def\tensorE{\mathord{\tensor}E}
+% \def\flet#1:{\mathsf{let}\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
+% \def\fletp#1:{\mathsf{let}'\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
+% \def\@fletdoublecolon:=#1in{\Coloneqq #1\;\mathsf{in}\;}
+% \def\@fletsinglecolon=#1in{\coloneqq #1\;\mathsf{in}\;}
 \let\bigtensor\bigotimes
-\def\flet#1:{\mathsf{let}\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
-\def\fletp#1:{\mathsf{let}'\;#1 \@ifnextchar:\@fletdoublecolon\@fletsinglecolon}
-\def\@fletdoublecolon:=#1in{\Coloneqq #1\;\mathsf{in}\;}
-\def\@fletsinglecolon=#1in{\coloneqq #1\;\mathsf{in}\;}
+% hom
+\let\linhom\multimap
+% 
 \makeatother
 \begin{document}
 \maketitle
@@ -2072,6 +2075,65 @@ Let $\bRepMCat$ denote the category of representable multicategories and functor
 
 There are plenty of good references on multicategories, so we will not belabor them further here.
 See for instance~\cite{hermida:multicats,leinster:higher-opds}.
+However we will need notions of limit and colimit in multicategories, which are less well-known, so we review them here.
+
+We say that an object $\unit$ of a multicategory is \textbf{terminal} if for any $A_1,\dots, A_n$ there is a unique morphism $(A_1,\dots, A_n)\to \unit$.
+Similarly, a \textbf{binary product} of $A$ and $B$ in a multicategory is an object $A\times B$ with projections $A\times B \to A$ and $A\times B\to B$, composing with which yields bijections
+\[ \cM(C_1,\dots,C_n;A\times B) \too \cM(C_1,\dots,C_n;A) \times \cM(C_1,\dots,C_n;B)\]
+for any $C_1,\dots,C_n$.
+We will say a multicategory \textbf{has products} if it has a specified terminal object and a specified binary product for each pair of objects.
+The following is entirely straightforward.
+
+\begin{thm}\label{thm:multicat-prod}
+  A monoidal category has products (in the sense of \cref{sec:catprod}) if and only if its underlying multicategory has products, and this yields an equivalence of categories.\qed
+\end{thm}
+
+Colimits in a multicategory are a bit more subtle.
+We define a \textbf{binary coproduct} in a multicategory \cM to be an object $A+B$ with injections $A\to A+B$ and $B\to A+B$ composing with which induces bijections
+\begin{multline*}
+  \cM(C_1,\dots,C_n,A+B,D_1,\dots,D_m;E) \toiso\\
+  \cM(C_1,\dots,C_n,A,D_1,\dots,D_m;E) \times \cM(C_1,\dots,C_n,B,D_1,\dots,D_m;E).
+\end{multline*}
+for all $C_1,\dots,C_n$ and $D_1,\dots, D_M$ and $E$.
+Similarly, an \textbf{initial object} is an object $\zero$ such that for any $C_1,\dots,C_n$ and $D_1,\dots, D_M$ and $E$, there is a unique morphism $(C_1,\dots,C_n,\zero,D_1,\dots,D_m)\to E$.
+We say a multicategory \textbf{has coproducts} if it has a specified binary coproduct for each pair of objects and a specified initial object.
+
+By a \textbf{distributive monoidal category}, we mean a monoidal category thath has coproducts (in the sense of \cref{sec:catcoprod}) and such that the canonical maps
+\begin{mathpar}
+(A\tensor B)+(A\tensor C)\to A\tensor(B+C)\and
+(B\tensor A)+(C\tensor A)\to (B+C)\tensor A\and
+\zero \to A\tensor \zero\and
+\zero\to \zero\tensor A
+\end{mathpar}
+are isomorphisms.
+(A \textbf{distributive category} is a distributive cartesian monoidal category.)
+
+\begin{thm}\label{thm:multicat-coprod}
+  A monoidal category is distributive if and only if its underlying representable multicategory has coproducts, and this yields an equivalence of categories.
+\end{thm}
+\begin{proof}
+  If \cM is distributive, then by induction we have
+  \[ \textstyle
+  \Big((\bigotimes_i C_i)\tensor A \tensor (\bigotimes_j D_j)\Big) +
+  \Big((\bigotimes_i C_i)\tensor B \tensor (\bigotimes_j D_j)\Big)
+  \;\cong\;
+  (\bigotimes_i C_i)\tensor (A+B) \tensor (\bigotimes_j D_j)
+  \]
+  and similarly
+  \[ \zero \;\cong\; \textstyle (\bigotimes_i C_i)\tensor \zero \tensor (\bigotimes_j D_j).\]
+  Since the morphisms in the underlying multicategory of \cM are maps out of iterated tensor products in \cM, these isomorphisms imply that the latter has coproducts.
+
+  Conversely, if the underlying multicategory of \cM has coproducts, then taking $n=m=0$ in their universal property we see that the ordinary category \cM has coproducts.
+  Moreover, the universal property with $n=1$ and $m=0$ applied to the composites
+  \begin{mathpar}
+    (C,A) \to C\tensor A \to (C\tensor A)+(C\tensor B)\and
+    (C,B) \to C\tensor B \to (C\tensor A)+(C\tensor B)
+  \end{mathpar}
+  gives a map $(C,A+B) \to (C\tensor A)+(C\tensor B)$, and the universal property of $\tensor$ then yields a map
+  \[C\tensor(A+B) \to (C\tensor A)+(C\tensor B). \]
+  It is straightforward to show that this is an inverse to the canonical map that exists in any monoidal category with coproducts, and similarly in the other cases; thus \cM is distributive.
+  Finally, one can check that these constructions are inverse.
+\end{proof}
 
 
 \subsection*{Exercises}
@@ -2090,6 +2152,10 @@ See for instance~\cite{hermida:multicats,leinster:higher-opds}.
 
 \begin{ex}\label{ex:mcat-strong-func}
   Show that the category of representable multicategories and functors that ``preserve tensor products'', in the sense that if $\chi:(A_1,\dots,A_n) \to \bigtensor_i A_i$ is a tensor product then $F(\chi)$ is also \emph{a} tensor product, is equivalent to the category of monoidal categories and \emph{strong} monoidal functors.
+\end{ex}
+
+\begin{ex}\label{ex:multicat-coprod}
+  Fill in the details in the proof of \cref{thm:multicat-coprod}.
 \end{ex}
 
 
@@ -2253,7 +2319,7 @@ As always, the morphisms in our categories will be completely strict: so in part
 
 In natural deduction, the introduction rules $\tensorI$ and $\one I$ will coincide with the right rules $\tensorR$ and $\one R$ from the sequent calculus, but now we need elimination rules.
 Since $\tensor$ and $\one$ in a multicategory have a ``mapping out'' universal property, these elimination rules will be reminiscent of the ``case analysis'' rules from \cref{sec:catcoprod}.
-Formally speaking, they can be obtained by simply cutting $\tensorL$ and $\one L$ with an arbitrary sequent:
+Formally speaking, they can be obtained by simply cutting $\tensorL$ and $\one L$ with an arbitrary sequent (thereby ``building in cuts'' to make the cut-admissiblity theorem easier).
 \begin{mathpar}
   \inferrule*[Right=cut]{
     \Psi \types A\tensor B \\
@@ -2288,6 +2354,8 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
     \Gamma,\Psi,\Delta\types C
   }\;\one E
 \end{mathpar}
+[TODO: ``natural deduction'' means ``arbitrary on the left'', here ``arbitrary context'', except that we have a splitting of it; that could appear on top.]
+
 We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is also subsumed by the categorified version discussed in more detail in the next section.
 
 \subsection*{Exercises}
@@ -2316,8 +2384,7 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is 
       (A\tensor B)\join (A\tensor C) &\types  A\tensor (B\join C)\\
       A\tensor (B\join C) &\types (A\tensor B)\join (A\tensor C)
     \end{align*}
-  \item What categorical structure do you think models this type theory?
-    Verify your guess by proving the initiality theorem.
+  \item Prove that this sequent calculus constructs the initial distributive monoidal poset (see \cref{thm:multicat-coprod}).
   \end{enumerate}
 \end{ex}
 
@@ -2612,23 +2679,17 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
 
 \subsection*{Exercises}
 
-\begin{ex}\label{ex:multicat-finprod}
-  We say that a multicategory has \emph{(binary) products} if every pair of morphisms $(A_1,\dots,A_n) \to B$ and $(A_1,\dots,A_n) \to C$ factors uniquely through the projections from $B\times C$ to $B$ and $C$, for any $n$ and any $A_1,\dots,A_n$.
-  Similarly, an object $1$ is \emph{terminal} in a multicategory if for any $n$ and $A_1,\dots,A_n$ there is a unique morphism $(A_1,\dots,A_n)\to 1$.
-  Write down a type theory for multicategories with finite products (i.e.\ binary products and terminal objects), and prove its initiality.
-\end{ex}
-
 \begin{ex}\label{ex:repmulticat-moncat}
   Our proof of \cref{thm:moncat-initial} relied on the fact that monoidal categories are equivalent to representable multicategories, which we sketched but did not prove carefully.
   If we don't assume this fact, then our proof of \cref{thm:moncat-initial} is actually just about free representable multicategories.
   Using this version of the theorem, prove \emph{using type theory} that any representable multicategory is monoidal: that is, its tensor product is coherently associative and unital.
 \end{ex}
 
-\begin{ex}\label{ex:moncat-coprod}
-  Generalize \cref{ex:monpos-jslat} from posets to categories, by introducing terms for the rules given therein (along the lines of those used in \cref{sec:catcoprod} for the unary case) and then some appropriate $\beta$- and $\eta$-conversions.
-  What categorical structure does it correspond to?
-  Prove the initiality theorem.
-\end{ex}
+
+\section{Products and coproducts}
+\label{sec:multicat-prod-coprod}
+
+[TODO: multicategories with products and coproducts]
 
 
 \section{Some generalized multicategories}
@@ -2731,7 +2792,7 @@ We now extend that to \fS-multicategories.
   It is straightforward to verify that these constructions are inverses up to isomorphism.
 \end{proof}
 
-We say that an object $1$ of a multicategory is \textbf{terminal} if for any $A_1,\dots, A_n$ there is a unique morphism $(A_1,\dots, A_n)\to 1$.
+Recall from \cref{sec:multicats-catth} the definition of products in a multicategory.
 
 \begin{thm}\label{thm:semicart-multicat-repr}
   If \fS includes all injections, then an object $\one$ is terminal if and only if it is a unit object (i.e.\ there is a universal tensor product morphism $()\to \one$).
@@ -2746,10 +2807,10 @@ We say that an object $1$ of a multicategory is \textbf{terminal} if for any $A_
   In particular, $e_{\one} \circ \chi = e_{()} = \chi$; so by the universal property of $\chi$, we have $e_{\one} = \idfunc_{\one}$.
   A standard argument (generalized from categories to multicategories) now implies that $\one$ is terminal.
 
-  Conversely, suppose $1$ is terminal.
-  Then in particular, we have a unique morphism $\chi : ()\to 1$, and acting on $\chi$ by the injection $\emptyset \to \{1,\dots,n\}$ can only yield the unique morphism $(A_1,\dots,A_n)\to 1$.
+  Conversely, suppose $\unit$ is terminal.
+  Then in particular, we have a unique morphism $\chi : ()\to \unit$, and acting on $\chi$ by the injection $\emptyset \to \{1,\dots,n\}$ can only yield the unique morphism $(A_1,\dots,A_n)\to \unit$.
   Now we have to show that
-  \[ (-\circ_{n+1} \chi) : \cM(A_1,\dots,A_n,1,B_1,\dots,B_m; C) \to \cM(A_1,\dots,A_n,B_1,\dots,B_m; C) \]
+  \[ (-\circ_{n+1} \chi) : \cM(A_1,\dots,A_n,\unit,B_1,\dots,B_m; C) \to \cM(A_1,\dots,A_n,B_1,\dots,B_m; C) \]
   is a bijection.
   But we have a map in the other direction given by acting with an appropriate injection, and the equivariance properties imply that this is an inverse.
 
@@ -2758,10 +2819,6 @@ We say that an object $1$ of a multicategory is \textbf{terminal} if for any $A_
   defined by mapping each $A_j$ not in the image of $\sigma$ to the terminal object $1$, then removing those copies of $1$ from the tensor product since they are also the tensor unit (and finally permuting if necessary).
   It is straightforward to verify that these actions give a semicartesian multicategory, and that that these constructions are inverses up to isomorphism.
 \end{proof}
-
-Similarly, we say that a \textbf{product} of $A$ and $B$ in a multicategory is an object $A\times B$ with projections $A\times B \to A$ and $A\times B\to B$, composing with which yields bijections
-\[ \cM(C_1,\dots,C_n;A\times B) \too \cM(C_1,\dots,C_n;A) \times \cM(C_1,\dots,C_n;B)\]
-for any $C_1,\dots,C_n$.
 
 \begin{thm}\label{thm:cart-multicat-repr}
   If \fS consists of all functions (i.e.\ we are in a cartesian multicategory), then products $A\times B$ are in bijective correspondence with tensor products $A\tensor B$.
@@ -2782,6 +2839,22 @@ Note although the first conclusion of \cref{thm:cart-multicat-repr} refers only 
 Indeed, the monoidal category of pointed sets with its smash product has an underlying multicategory that is relevance (i.e.\ admits an action by all surjections), but the smash product is different from the cartesian product.
 See \cref{ex:relevance-moncat}.
 
+Finally, we observe that closedness can be naturally characterized multicategorically.
+Suppose for simplicity that \fS contains at least all bijections.
+Then we say an \fS-multicategory is \textbf{closed} if for each pair of objects $A$ and $B$ there is a specified object $A\linhom B$ and a morphism $\chi : (A\linhom B,A) \to B$ postcomposition with which defines bijections
+\[ (\chi\circ_1 -): \cM(C_1,\dots,C_n;A\linhom B) \toiso \cM(C_1,\dots,C_n,A;B) \]
+for all $C_1,\dots,C_n$.
+(If \fS does not contain the bijections, we would just have to consider ``left and right closedness'' separately.)
+The following is then straightforward.
+
+\begin{thm}\label{thm:moncat-repr-closed}
+  A symmetric monoidal category is closed if and only if its underlying multicategory is.
+  Moreover, for all the above values of \fS that contain the bijections, this defines an equivalence of categories.\qed
+\end{thm}
+
+Of course, cartesian closed categories are just closed cartesian monoidal categories, so they are equivalent to closed cartesian multicategories.
+
+
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:gen-multicat-repr}
@@ -2797,46 +2870,89 @@ See \cref{ex:relevance-moncat}.
   \end{enumerate}
 \end{ex}
 
+\begin{ex}\label{ex:distrib}
+  Show that representable cartesian multicategories with coproducts are equivalent to distributive categories.
+\end{ex}
+
 \begin{ex}\label{ex:relevance-moncat}
   Define a notion of \textbf{relevance monoidal category}, by adding ``natural diagonals'' to a symmetric monoidal category, and show that such monoidal categories are equivalent to representable relevance multicategories.
   (See~\cite{dp:relevant-cats}.)
 \end{ex}
 
-\begin{ex}\label{ex:distribcat}
-  We define a \textbf{binary coproduct} in a multicategory \cM to be an object $A+B$ with injections $A\to A+B$ and $B\to A+B$ composing with which induces bijections
-  \begin{multline*}
-    \cM(C_1,\dots,C_n,A+B,D_1,\dots,D_m;E) \toiso\\
-    \cM(C_1,\dots,C_n,A,D_1,\dots,D_m;E) \times \cM(C_1,\dots,C_n,B,D_1,\dots,D_m;E).
-  \end{multline*}
-  Similarly, an \textbf{initial object} is an object $\zero$ such that for any $C_1,\dots,C_n$ and $D_1,\dots, D_M$ and $E$, there is a unique morphism $(C_1,\dots,C_n,\zero,D_1,\dots,D_m)\to E$.
-  We say a multicategory \textbf{has coproducts} if it has a specified binary coproduct for each pair of objects and a specified initial object.
 
-  Recall that a \textbf{distributive category} is one with finite products and coproducts and such that the canonical maps $A\times(B+C) \to (A\times B)+(A\times C)$ are isomorphisms.
-  Prove:
-  \begin{enumerate}
-  \item The underlying cartesian multicategory of a distributive category has coproducts.
-  \item If a cartesian multicategory is representable and has coproducts, then the cartesian monoidal category it induces is distributive.
-  \item These constructions define an equivalence of categories.
-  \end{enumerate}
-\end{ex}
+\section{From linear logic to intuitionistic logic}
+\label{sec:logic}
+
+We are now aiming at type theories for the generalized multicategories considered in \cref{sec:cartmulti}, along with the extra structures that they may have (tensor products, cartesian products, coproducts, and closedness).
+In this section we start with the posetal case, which is also where our type theory at last begins to look rather like \emph{logic}.
+
+According to principle~\eqref{princ:structural} from \cref{sec:why-multicats}, the additional action by $\sigma$'s in an \fS-multicategory should be represented by \emph{structural rules} in a type theory.
+These rules are generally formulated and named as follows.
+\begin{mathpar}
+  \inferrule*[right=exchange]{\Gamma,A,B,\Delta\types C}{\Gamma,B,A,\Delta\types C}\and
+  \inferrule*[right=weakening]{\Gamma,\Delta\types C}{\Gamma,A,\Delta\types C}\and
+  \inferrule*[right=contraction]{\Gamma,A,A,\Delta\types C}{\Gamma,A,\Delta\types C}\and
+\end{mathpar}
+The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or exchange without contraction, just as one might consider non-symmetric semicartesian or relevance multicategories, but this takes us rather far afield from categorical structures of general interest, so we leave it to the interested reader.} should not be surprising:
+\begin{center}
+\begin{tabular}{c|c}
+  $\fS$-multicategories & structural rules\\\hline
+  {symmetric multicategories} & exchange\\
+  {cartesian multicategories} & exchange, weakening, contraction\\
+  {semicartesian (symmetric) multicategories} & exchange, weakening\\
+  {relevance multicategories} & exchange, contraction
+\end{tabular}
+\end{center}
+
+What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
+In this section we will ignore this question and take these rules (when we want them) as \emph{primitive}.
+This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
+
+For the rest of this section, let \fS be one of the four possibilities above.
+All our type theories will then include the appropriate primitive structural rules, according to the above table.
+Since we are in the posetal world, we can consider sequent calculus as well as natural deduction; we start with the former.
+
+\subsection{Sequent calculus}
+\label{sec:logic-seqcalc}
+
+[We've seen most of the connectives before, except $\linhom$.]
+
+[TODO: After initiality, mention $\mathbf{2}$ as a particular poset, also Heyting algebras, etc.]
+
+
+\subsection{Natural deduction}
+\label{sec:logic-natded}
+
+
+[TODO: Also mention the traditional syntax for natural deduction.]
 
 
 \section{Cartesian monoidal categories}
 \label{sec:cartmoncat}
 
-[Not sure exactly where the section boundaries should be here, or how to mix introducing the categorical structures with the type theories.
-Where to talk about distributive categories and distributive lattices?]
+We now move back up the ladder from posets to categories.
+In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible; otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
+
+In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case and also the easiest.
+
+[TODO: Use the same context all the way through to make all the structural rules admissible.]
+
+
+\section{Simply typed $\lambda$-calculus}
+\label{sec:stlc}
+
+[TODO: Should this be a separate section, or part of the previous one?]
 
 
 \section{Symmetric monoidal categories}
 \label{sec:symmoncat}
 
-[Symmetric multicategories and their type theory, exchange rule, structural rules in general.  How exactly do the structural rules work with initiality?  Should we use finite sets (e.g.\ of variables) instead of natural numbers to index the domains of morphisms in our symmetric multicategories?]
+[TODO: I think we can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
+I've never seen that done before, but I think it's more standard that we can make exchange, contraction, and weakening all admissible by allowing the variable rule to extract from anywhere in the context.]
 
-We can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
-I've never seen that done before, but I think it's more standard that we can make exchange, contraction, and weakening all admissible by allowing the variable rule to extract from anywhere in the context.
+[Can we also make sense of ``multisets''?]
 
-Can we also make sense of ``multisets''?
+[Also include closedness.]
 
 
 \section{Algebraic theories and operads}
@@ -2845,21 +2961,9 @@ Can we also make sense of ``multisets''?
 [A multigraph is also known as a signature of function symbols.  An arbitrary set of equations between terms can be added to $\equiv$, thereby describing a ``presented'' rather than a free categorical structure.  For cartesian monoidal categories, this is a (multi-sorted) algebraic theory.  For (symmetric) monoidal categories, it is a syntactic approach to (colored) operads.]
 
 
-\section{Closed monoidal categories}
-\label{sec:clmoncat}
-
-
-\section{Simply typed $\lambda$-calculus}
-\label{sec:stlc}
-
-
-\section{Intuitionistic propositional logic}
-\label{sec:int-logic}
-
 
 \chapter{Classical type theories}
 \label{chap:polycats}
-
 
 
 \section{Polycategories and linear logic}
