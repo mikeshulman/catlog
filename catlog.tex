@@ -1189,7 +1189,7 @@ However, we don't need to assume explicitly as premises that \emph{all} types ap
   \begin{itemize}
   \item If it is the $\idfunc$ rule, then $A\in\cG$ and so $\types A\type$.
   \item If it ends with the rule $f$ for some $f\in\cG(A,B)$, then $B\in \cG$ and so $\types A\type$, while $X\types A$ and so $\types X\type$ by the inductive hypothesis.
-  \item If it ends with the rule $\top R$, then $\types A\type$ by assumption.  
+  \item If it ends with the rule $\top R$, then $\types A\type$ by assumption.
   \item If it ends with the rule $\meetL1$, then $\types B\type$ by assumption, while $\types A\type$ and $\types C\type$ by the inductive hypothesis; thus also $\types A\meet B\type$.
   \item The cases for $\meetL2$ and $\meetR$ are similar.\qedhere
   \end{itemize}
@@ -2862,7 +2862,7 @@ But when we regard substitution as an operation on derivations, the point is jus
     }{\Delta_1,x:A,\Delta_2,\Xi,\Psi \types \match_\tensor(N,uv.P):B
     }}{\Delta_1,\Gamma,\Delta_2,\Xi,\Psi \types \match_\tensor (N,uv.P[M/x]):B}
 \end{mathpar}
-we have to inductively cut 
+we have to inductively cut
 \begin{mathpar}
   \inferrule*[Right=cut]{
     \Gamma\types M:A \\
@@ -2926,13 +2926,193 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
 \section{Products and coproducts}
 \label{sec:multicat-prod-coprod}
 
-[TODO: multicategories with products and coproducts.]
+Now that we understand the simple type theories of multicategories and monoidal categories, let's add products and coproducts back in.
+For the most part this just consists of ``putting together'' the rules from \cref{sec:multicat-moncat,sec:catprod,sec:catcoprod}, although there is a little extra work to generalize the rules for products and coproducts to the non-unary case.
+
+In \cref{ex:monpos-mslat,ex:monpos-jslat} you studied sequent calculi for monoidal posets with meets and distributive monoidal posets.
+Now we formulate similar rules in natural deduction style, annotated with terms; the entire \textbf{simple type theory for distributive monoidal categories with products} (except for the obvious rules governing the judgment $\types A\type$) is shown in \cref{fig:moncat-prod-coprod}.
+(To obtain theories for monoidal categories with products only, or distributive monoidal categories, or multicategories with products and coproducts, and so on, we can simply omit some of these rules and the corresponding clauses, along with the following proofs.)
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types A\type}{x:A\types x:A}\;\idfunc
+    \and
+    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\;fI
+    \and
+    \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \tpair{M}{N}:A\tensor B}\;\tensorI
+    \and
+    \inferrule{
+      \Psi \types M:A\tensor B \\
+      \Gamma,x:A,y:B,\Delta\types N:C
+    }{
+      \Gamma,\Psi,\Delta \types \match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N):C
+    }\;\tensorE
+    \\
+    \inferrule{ }{()\types \ott:\one}\;\one I
+    \and
+    \inferrule{
+      \Psi\types M:\one \\
+      \Gamma,\Delta\types N:C
+    }{
+      \Gamma,\Psi,\Delta\types \match_\one(M,N):C
+    }\;\one E
+    \\
+    \inferrule{\Gamma\types M:A \\ \Gamma\types N:B}{\Gamma\types \pair{M}{N} :A\times B}\;\timesI
+    \and
+    \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr1AB(M):A}\;\timesE1
+    \and
+    \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr2AB(M):B}\;\timesE2
+    \\
+    \inferrule{ }{\Gamma\types \ttt(\Gamma):\unit}\;\unit I
+    \and
+    \inferrule{\Psi\types M:\zero}{\Gamma,\Psi,\Delta\types \abort^{\Gamma,\Delta}(M):C}\;\zero E
+    \\
+    \inferrule{\Gamma\types M:A}{\Gamma\types \inl(M):A+B}\;\plusI1
+    \and
+    \inferrule{\Gamma\types N:B}{\Gamma\types \inr(N):A+B}\;\plusI2
+    \and
+    \inferrule{
+      \Psi\types M:A+B \\ \Gamma,u:A,\Delta \types P:C \\ \Gamma,v:B,\Delta\types Q:C
+    }{\Gamma,\Psi,\Delta \types\acase AB^{\Gamma|\Delta}(M,u.P,v.Q):C}\;\plusE
+  \end{mathpar}
+  \caption{Distributive monoidal categories with products}
+  \label{fig:moncat-prod-coprod}
+\end{figure}
+
+A few things are worth remarking on.
+Firstly, the types $\tensor,\one,+,\zero$ are ``positive'' (have ``mapping out'' universal properties), while the types $\times,\unit$ are ``negative'' (have ``mapping in'' universal properties).
+All the positive types have elimination rules involving a $\match$ that binds variables (perhaps zero of them), while the negative types do not.
+This is a general feature of the behavior of positive and negative types with respect to abstract variables.
+
+Secondly, as in \cref{ex:monpos-jslat}, the elimination rules for $\zero$ and $A+B$ act on a single type in the context, leaving the others untouched.
+This corresponds to the definition of coproducts in a multicategory from \cref{thm:multicat-coprod}.
+
+Thirdly, notice the difference between $\one I$ and $\unit I$: both have no premises, but in $\one I$ the context of the conclusion must be empty, whereas in $\unit I$ it can be arbitrary.
+Similarly, the difference between $\tensorI$ and $\timesI$ is that in $\tensorI$ the contexts are concatenated in the conclusion, while in $\timesI$ both premises must have the same context, which is repeated in the conclusion.
+
+Finally, there are some curious annotations.
+As in \cref{sec:moncat}, the superscripts $\Gamma|\Delta$ on $\match_\tensor$ and $\match_+$ are to ensure type-checking, and can usually be omitted; and similarly for the superscript $AB$ on $\pi_i$ as in \cref{sec:catprod}.
+The superscript $\Gamma,\Delta$ on $\abort$, however, is there for a different purpose, which is the same purpose as the passing of all the variables in the context as arguments to $\ttt$.
+
+Unlike the theory of \cref{sec:multicat-moncat}, this type theory is not globally ``linear'': for instance in $x:A \types \pair x x : A\times A$ the variable $x$ appears twice.
+But by including the unused variables in $\unit I$ and $\zero E$ we can ensure the following weaker property.
+
+\begin{lem}\label{thm:moncat-prod-coprod-superlin}
+  In any derivable sequent $\Gamma\types M:A$, every variable in $\Gamma$ appears at least once (free) in the term $M$.
+\end{lem}
+\begin{proof}
+  An easy induction over derivations.
+\end{proof}
+
+This ``superlinearity'' property guarantees that terms are derivations.
+
+\begin{lem}\label{thm:moncat-prod-coprod-tad}
+  A derivable sequent $\Gamma\types M:A$ uniquely determines a derivation.
+\end{lem}
+\begin{proof}
+  By induction as usual.
+  The cases involving $f$, $\tensor$, and $\one$ are essentially just like in \cref{thm:moncat-tad}; \cref{thm:moncat-prod-coprod-superlin} ensures that each variable appears at least once in the term, and if the term is derivable then each variable must appear in only one subterm, determining the context splitting.
+  The cases involving $\times,\unit,+,\zero$ are straightforward.
+\end{proof}
+
+A concrete example where we need the extra arguments to $\ttt$ is:
+\begin{mathpar}
+  \inferrule*{\inferrule*{ }{x:A \types \ttt(x):\unit} \\
+    \inferrule*{ }{\cdot \types \ttt():\unit}}
+  {x:A \types \tpair{\ttt(x)}{\ttt()} : \unit\tensor\unit}
+  \and
+  \inferrule*{\inferrule*{ }{()\types \ttt():\unit} \\
+    \inferrule*{ }{x:A \types \ttt(x):\unit}}
+  {x:A \types \tpair{\ttt()}{\ttt(x)} : \unit\tensor\unit}
+\end{mathpar}
+Unlike with the annotations $\Gamma|\Delta$ on $\match$es (see \cref{ex:moncat-context-splitting}), these terms really can represent distinct morphisms. % in a distributive monoidal category with products.
+
+\begin{thm}\label{thm:moncat-prod-coprod-subadm}
+  Substitution is admissible in the {simple type theory for distributive monoidal categories with products}: given derivations of
+  $\Gamma\types M:A$ and $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
+  Moreover, it is associative and interchanging.
+\end{thm}
+\begin{proof}
+  The defining equations are shown in \cref{fig:moncat-prod-coprod-sub}.
+  They basically augment the rules from \cref{fig:moncat-sub} with versions of the rules from \cref{thm:catprod-subadm,thm:catcoprod-subadm}.
+  Note the difference between the cases for $\tpair P Q$ and $\pair P Q$: in the first we recurse into only one of the subterms, while in the second we recurse into both.
+  Also there are a couple of new rules for $\abort$ and $\case$ to deal with the fact that a free variable might not occur in the discriminee.
+\end{proof}
+
+\begin{figure}
+  \centering
+  \begin{alignat*}{2}
+    x[M/x] &= M\\
+    f(N_1,\dots,N_n)[M/x] &= f(N_1,\dots,N_i[M/x],\dots,N_n) &&\quad\text{if $x$ occurs in $N_i$}\\
+    \tpair P Q[M/x] &= \tpair{P[M/x]}{Q} &&\quad\text{if $x$ occurs in $P$}\\
+    \tpair P Q[M/x] &= \tpair{P}{Q[M/x]} &&\quad\text{if $x$ occurs in $Q$}\\
+    \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
+    \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N,uv.P[M/x]) &&\quad\text{if $x$ occurs in $P$}\\
+    % \match_\tensor^{\Gamma|\Delta}(N,uv.P)[M/x] &= \match_\tensor^{\Gamma|\Delta}(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
+    % \match_\tensor^{\Gamma_1,x,\Gamma_2|\Delta}(N,uv.P)[M/x] &= \match_\tensor^{\Gamma_1,\Psi,\Gamma_2|\Delta}(N,uv.P[M/x]) &&\quad\text{$\Psi$ the context of $M$}\\
+    % \match_\tensor^{\Gamma|\Delta_1,x,\Delta_2}(N,uv.P)[M/x] &= \match_\tensor^{\Gamma|\Delta_1,\Psi,\Delta_2}(N,uv.P[M/x]) &&\quad\text{$\Psi$ the context of $M$}\\
+    \ott[M/x] &&&\quad\text{cannot happen}\\
+    \match_\one(N,P)[M/x] &= \match_\one(N[M/x],P) &&\quad\text{if $x$ occurs in $N$}\\
+    \match_\one(N,P)[M/x] &= \match_\one(N,P[M/x]) &&\quad\text{if $x$ occurs in $P$}\\
+    \ttt(\Gamma,x,\Delta)[M/x] &= \ttt(\Gamma,\Psi,\Delta) &&\quad\text{$\Psi$ the context of $M$}\\
+    (\pi_1(N))[M/x] &= \pi_1(N[M/x])\\
+    (\pi_2(N))[M/x] &= \pi_2(N[M/x])\\
+    \pair{P}{Q}[M/x] &= \pair{P[M/x]}{Q[M/x]}\\
+    \abort(N)[M/x] &= \abort(N[M/x]) &&\quad\text{if $x$ occurs in $N$}\\
+    \abort(N)[M/x] &= \abort(N) &&\quad\text{if $x$ not in $N$}\\
+    \inl(N)[M/x] &= \inl(N[M/x])\\
+    \inr(N)[M/x] &= \inr(N[M/x])\\
+    \case(N,u.P,v.Q)[M/x] &= \case(N[M/x],u.P,v.Q) &&\quad\text{if $x$ occurs in $N$}\\
+    \case(N,u.P,v.Q)[M/x] &= \case(N,u.P[M/x],v.Q[M/x]) &&\quad\text{if $x$ occurs in $P,Q$}
+  \end{alignat*}
+  \caption{Substitution for distributive monoidal categories with products}
+  \label{fig:moncat-prod-coprod-sub}
+\end{figure}
+
+The $\beta$- and $\eta$-conversion rules are likewise obtained by combining those of \cref{sec:multicat-moncat,sec:catprod,sec:catcoprod}; they are shown in \cref{fig:moncat-prod-coprod-equiv}.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \match_\tensor(\tpair M N,xy.P) \equiv P[M/x,N/y]\and
+    \match_\tensor(M,xy.N[\tpair xy/u]) \equiv N[M/u]\\
+    \match_\one(\ott,N) \equiv N\and
+    \match_\one(M,N[\ott/u]) \equiv N[M/u]\\
+    \pi_1(\pair M N) \equiv M\and
+    \pi_2(\pair M N) \equiv N\and
+    \pair{\pi_1(M)}{\pi_2(M)} \equiv M\and
+    \ttt(\Gamma) \equiv M \and
+    \case(\inl(M),u.P,v.Q) \equiv P[M/u]\and
+    \case(\inr(M),u.P,v.Q) \equiv P[M/v]\and
+    \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y]\and
+    \abort(M) \equiv P[M/y]\and
+  \end{mathpar}
+  \caption{Equality rules for distributive monoidal categories with products}
+  \label{fig:moncat-prod-coprod-equiv}
+\end{figure}
+
+\begin{thm}\label{thm:moncat-prod-coprod-initial}
+  The free distributive monoidal category with products generated by a multigraph \cG is presented by this theory in the usual way: its morphisms are the derivable terms $\Gamma\types M:A$ modulo $\equiv$.
+\end{thm}
+\begin{proof}
+  As usual, \cref{thm:moncat-prod-coprod-subadm} gives us a multicategory, and the rules for the operations $\tensor,\one,\times,\ttt,+,\zero$ make it representable and give it products and coproducts.
+  Initiality then follows by the usual induction over derivations.
+\end{proof}
+
+There are two important things to note here.
+Firstly, while there are a lot of rules in this type theory, each of them is essentially something we already understood from a previous section, and we were able to put them together essentially independently without worrying about how they interact.
+This is a good example of the ``modularity'' of type theory, and the value of principle~\eqref{princ:independence} from \cref{sec:why-multicats}.
+
+Secondly, even though the rules for $\tensor$ and $+$ are completely independent, we nevertheless obtained a nontrivial interaction between them (distributivity), \emph{because of the structure of the context} and how it mirrors the categorical notion of multicategory.
+This suggests that we could obtain further properties and relationships between type operations by modifying the judgmental/context structure.
+The categorical side of this involves moving to \emph{generalized multicategories}.
 
 
 \section{Some generalized multicategories}
 \label{sec:cartmulti}
 
-Now let us consider monoidal categories with ``something extra'', such as symmetric monoidal categories or cartesian monoidal categories.
+We want to consider monoidal categories with ``something extra'', such as symmetric monoidal categories or cartesian monoidal categories.
 To describe a type theory for monoidal categories of this sort, principle~\eqref{princ:structural} from \cref{sec:why-multicats} suggests that we should ask what additional structure this ``something extra'' induces on their underlying multicategories.
 Because the morphisms $(A_1,\dots,A_n) \to B$ in the underlying multicategory of a monoidal category \cC are, by definition, the morphisms $A_1\tensor\cdots\tensor A_n \to B$ in \cC, the answer to this question depends on what morphisms between tensor products exist ``generically'' in monoidal categories of our desired sort.
 Here are some examples.
@@ -3911,7 +4091,7 @@ while the generators of $\equiv$ are the bimonoid axioms.
 Here is another example.
 If $A$ is an object of a prop, a \textbf{dual} of $A$ is an object $A^*$ with morphisms $\eta:()\to (A,A^*)$ and $\ep:(A^*,A)\to ()$ such that $\ep \circ_{A^*} \eta = \idfunc_A$ and $\ep \circ_{A} \eta = \idfunc_A^*$.
 (In a symmetric monoidal category this reduces to the usual notion of dual.)
-If $A$ has a dual $A^*$, and $f:A\to A$, the \textbf{trace} of $f$ is the composite 
+If $A$ has a dual $A^*$, and $f:A\to A$, the \textbf{trace} of $f$ is the composite
 \[ \tr(f) = \ep \circ_{A,A^*} (f \circ_A \eta) \]
 or equivalently $(\ep \circ_A f)\circ_{A,A^*} \eta$.
 In the type theory for props, the axioms of a dual say
