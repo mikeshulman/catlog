@@ -38,6 +38,8 @@
 \newcommand{\hid}[1]{\mathbbb{id}_{#1}}
 % free functors
 \newcommand{\F}[1]{\mathfrak{F}_{#1}}
+% composition
+\def\comp#1{\circ_{#1}}
 % meet
 \let\meet\wedge
 \def\meetL{\mathord{\meet}L}
@@ -59,11 +61,13 @@
 \def\timesR{\ensuremath{\mathord{\times}R}}
 \def\timesL{\ensuremath{\mathord{\times}L}}
 \def\pair#1#2{\langle #1,#2\rangle}
+\def\pr#1#2#3{\pi_{#1}^{#2,#3}}
 % coproduct
 \def\plusE{\mathord{+}E}
 \def\plusI{\mathord{+}I}
 \def\inl{\mathsf{inl}}
 \def\inr{\mathsf{inr}}
+\def\acase#1#2{\mathsf{match}_{#1+#2}}
 \def\case{\mathsf{match}_+}
 % general positives
 \def\match{\mathsf{match}}
@@ -636,9 +640,9 @@ We begin by labeling each judgment with a one-dimensional syntactic representati
       \inferrule*[right=$\idfunc$]{ }{\idfunc_B:(B\types B)} \\
       \inferrule*[right=$f$]{ }{f:(A\types B)}
     }{
-      (\idfunc_B\circ f):(A\types B)
+      (\idfunc_B\comp{B} f):(A\types B)
     }}{
-    (g\circ (\idfunc_B\circ f)) : (A\types C)
+    (g\comp{B} (\idfunc_B\comp{B} f)) : (A\types C)
   }
 \end{mathpar}
 These labels are called \emph{terms}.
@@ -647,24 +651,24 @@ Formally, this means the rules are now:
 \begin{mathpar}
   \inferrule{f\in\cG(A,B)}{f:(A\types B)}\and
   \inferrule{A\in\cG}{\idfunc_A : (A\types B)}\and
-  \inferrule{\phi:(A\types B) \\ \psi:(B\types C)}{\psi\circ \phi:(A\types C)}
+  \inferrule{\phi:(A\types B) \\ \psi:(B\types C)}{\psi\comp{B} \phi:(A\types C)}
 \end{mathpar}
 % TODO: Mention somewhere the assumptions of "external" facts as premises
 Here $\phi,\psi$ denote arbitrary terms, and if they contain $\circ$'s themselves then we put parentheses around them, as in the example above.
 Now the generators of our equivalence relation look even more familiar:
 \begin{align*}
-  \phi \circ (\psi \circ \chi) &\equiv (\phi\circ\psi)\circ\chi\\
-  \phi \circ \idfunc_A &\equiv \phi\\
-  \idfunc_B \circ \phi &\equiv \phi
+  \chi \comp{C} (\psi \comp{B} \phi) &\equiv (\chi\comp{C}\psi)\comp{B}\phi\\
+  \phi \comp{A} \idfunc_A &\equiv \phi\\
+  \idfunc_B \comp{B} \phi &\equiv \phi
 \end{align*}
 Again $\phi,\psi,\chi$ denote arbitrary terms, corresponding to the fact that arbitrary derivations can appear at the top of our identified trees; and similarly these identifications can also happen anywhere inside another term, so that for instance
-\[ k\circ (h\circ (g\circ f)) \equiv k\circ ((h\circ g)\circ f).  \]
+\[ k\comp{C} (h\comp{B} (g\comp{A} f)) \equiv k\comp{C} ((h\comp{B} g)\comp{A} f).  \]
 
 Of course, we only impose these relations when they make sense.
 We can describe the conditions under which this happens using rules for a secondary judgment $\phi\equiv \psi : (A\types B)$.
 The rules for our generating equalities are
 \begin{mathpar}
-  \inferrule{\phi:(A\types B) \\ \psi:(B\types C) \\ \chi:(C\types D)}{(\phi \circ (\psi \circ \chi) \equiv (\phi\circ\psi)\circ\chi) : (A\types D)}\\
+  \inferrule{\phi:(A\types B) \\ \psi:(B\types C) \\ \chi:(C\types D)}{(\chi \comp{C} (\psi \comp{B} \phi) \equiv (\chi\comp{C}\psi)\comp{B}\phi) : (A\types D)}\\
   \inferrule{\phi:(A\types B)}{(\phi \circ \idfunc_A \equiv \phi):(A\types B)}\and
   \inferrule{\phi:(A\types B)}{(\idfunc_B \circ \phi \equiv \phi):(A\types B)}
 \end{mathpar}
@@ -673,7 +677,7 @@ and we must also have rules ensuring that we have an equivalence relation and a 
   \inferrule{\phi:(A\types B)}{(\phi\equiv\phi):(A\types B)}\and
   \inferrule{(\phi\equiv\psi):(A\types B)}{(\psi\equiv\phi):(A\types B)}\and
   \inferrule{(\phi\equiv\psi):(A\types B)\\(\psi\equiv\chi):(A\types B)}{(\phi\equiv\chi):(A\types B)}\and
-  \inferrule{(\phi_1\equiv\psi_1):(A\types B)\\(\phi_2\equiv\psi_2):(B\types C)}{(\phi_2\circ \phi_1 \equiv \psi_2\circ\psi_1):(A\types C)}
+  \inferrule{(\phi_1\equiv\psi_1):(A\types B)\\(\phi_2\equiv\psi_2):(B\types C)}{(\phi_2\comp{B} \phi_1 \equiv \psi_2\comp{B}\psi_1):(A\types C)}
 \end{mathpar}
 The last of these is sufficient, in our simple case, to ensure we have a congruence; in general we would have to have one such equality rule for each basic rule of the theory (except for those with no premises, like $\idfunc$).
 
@@ -685,36 +689,45 @@ In our case, when the rules for $\circ$ and $\idfunc$ are augmented by these rul
 It may seem obvious that this produces the free category on \cG, but again we write it out carefully to help ourselves get used to the patterns.
 In particular, we want to emphasize the role played by the following lemma:
 
-\begin{lem}\label{thm:category-uniqderiv}
+\begin{lem}\label{thm:category-tad}
   If $\phi :(A\types B)$ is derivable in the cut-ful type theory for categories under \cG, then it has a unique derivation.
 \end{lem}
 \begin{proof}
   The point is that the terms produced by all the rules have disjoint forms.
-  If $\phi$ is of the form ``$f$'' for some $f\in\cG(A,B)$, then it can only be derived by the first rule; if it is of the form ``$\idfunc_A$'' then it can only be derived by the identity rule, and if it is of the form ``$\psi\circ\phi$'' it can only be derived by the composition rule.
-  In the third case, we apply induction to show that $\phi$ and $\psi$ also have unique derivations.
+  If $\phi$ is of the form ``$f$'' for some $f\in\cG(A,B)$, then it can only be derived by the first rule applied to $f$.
+  If it is of the form ``$\idfunc_A$'', then it can only be derived by the identity rule applied to $A$.
+  Finally, if it is of the form ``$\psi\comp{C}\phi$'' it can only be derived by the composition rule applied to $\phi:(A\types C)$ and $\psi:(C\types B)$, and by induction the latter judgments also have unique derivations.
 \end{proof}
 
 In other words, the terms (before we impose the relation $\equiv$ on them) really are simply one-dimensional representations of derivations, as we intended.
-This will not be true of all type theories; but those for which it fails tend to be much more complicated to analyze and prove the initiality theorem for.
-We will always attempt to construct our type theories so that this property holds, and we will remark on it only when it fails.
+Not everything that ``looks like a term'' represents a derivation, but if it does, it represents a unique one.
+It is easy to see that conversely every derivation is represented by a unique term, since the above rules for annotating derivations by terms are deterministic.
+
+The above simple inductive proof of \cref{thm:category-tad} depends in particular on the presence of the subscript on the symbol $\circ$.
+Similar annotations will reappear in many subsequent theories.
+In the present case we could omit these annotations and still reconstruct a unique derivation, because we know the domain and codomain of all the generating morphisms in \cG.
+However, this would require a more ``global'' analysis of the term; whereas a clean inductive proof such as the above has the advantage that it can be regarded as a recursively defined \emph{algorithm for type-checking}.
+This can be programmed into a computer, and arguably represents reasonably faithfully what human mathematicians do when reading syntax.
+With that said, when writing for a human reader (and even an electronic reader whose programmer has been clever enough) it is often possible to leave off annotations of this sort without fear of ambiguity, and we will often do so.
+
+Not all type theories have the property that terms uniquely determine their derivations by a direct inductive algorithm; but those that don't tend to be much more complicated to analyze and prove the initiality theorem for.
+We will call this property \textbf{terms are derivations} or \textbf{type-checking is possible}, and we will always attempt to construct our type theories so that it holds.
 
 \begin{rmk}
   Technically, there is either more or less happening here than may appear (depending on your point of view).
-  A term as we write it on the page is really just a string of symbols, whereas in the proof of \cref{thm:category-uniqderiv} we have assumed that a term such as ``$f\circ (g\circ h)$'' can uniquely be read as $\circ$ applied to ``$f$'' and ``$g\circ h$''.
-  This simple string of symbols could technically be regarded as $\circ$ applied to ``$f\circ (g$'' and ``$h)$'', but of course that would make no sense because those are not meaningful terms in their own right (in particular, they contain unbalanced parentheses).
+  A term as we write it on the page is really just a string of symbols, whereas in the proof of \cref{thm:category-tad} we have assumed that a term such as ``$f\comp{B} (g\comp{A} h)$'' can uniquely be read as $\comp{B}$ applied to ``$f$'' and ``$g\comp{A} h$''.
+  This simple string of symbols could technically be regarded as $\comp{A}$ applied to ``$f\comp{B} (g$'' and ``$h)$'', but of course that would make no sense because those are not meaningful terms in their own right (in particular, they contain unbalanced parentheses).
 
   Thus, something \emph{more} must be happening, and that something else is called \emph{parsing} a term.
   Human mathematicians do it instinctively without thinking; electronic mathematicians have to be programmed to do it.
   In either case, the result of parsing a string of symbols is an ``internal'' representation (a mental idea for humans, a data structure for computers) that generally has the form of a tree, indicating the ``outermost'' operation as the root with its operands as branches, and so on, for instance:
-  \[ f\circ (g\circ h) \qquad\leadsto\qquad \vcenter{\xymatrix@-1pc{ & \circ \ar@{-}[dl] \ar@{-}[dr]\\
-      f && \circ \ar@{-}[dl]\ar@{-}[dr]\\
+  \[ f\comp{B} (g\comp{A} h) \qquad\leadsto\qquad \vcenter{\xymatrix@-1pc{ & \comp{B} \ar@{-}[dl] \ar@{-}[dr]\\
+      f && \comp{A} \ar@{-}[dl]\ar@{-}[dr]\\
       & g && h }} \]
 
   Of course, this ``internal'' tree representation of a term is nothing but the corresponding derivation flipped upside-down.
-  So in that sense \cref{thm:category-uniqderiv} is actually saying \emph{less} than one might think; the actual work is being done by the silent step of parsing.
+  So in that sense \cref{thm:category-tad} is actually saying \emph{less} than one might think; the actual work is being done by the silent step of parsing.
   We will not say much more about parsing, however (though we discuss it a bit further in \cref{chap:dedsys}); we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
-  Accordingly, for type theories that satisfy the ``terms are derivations'' principle we will usually simply observe this fact, leaving it to the concerned reader to verify that the parse trees really do correspond to the derivation trees.
-  (However, one small additional issue regarding this will arise in the next subsection.)
 \end{rmk}
 
 Now we can prove the initiality theorem.
@@ -729,8 +742,8 @@ Now we can prove the initiality theorem.
   Then $P$ extends uniquely to the objects of $\F\bCat\cG$, since they are the same as those of \cG.
   But unlike the case of posets, we have to define it on the morphisms of $\F\bCat\cG$ as well.
 
-  If $\phi :(A\types B)$ is derivable, then by \cref{thm:category-uniqderiv} it has a unique derivation; thus we can define $P(\phi)$ by recursion on the derivation of $\phi$.
-  Of course, if the derivation of $\phi$ ends with $f\in\cG(A,B)$, then we define $P(\phi)=P(f)$; if it ends with $\idfunc_A$ we define $P(\phi)=\idfunc_{P(A)}$; and if it ends with $\psi\circ\chi$ we define $P(\phi) = P(\psi)\circ P(\chi)$.
+  If $\phi :(A\types B)$ is derivable, then by \cref{thm:category-tad} it has a unique derivation; thus we can define $P(\phi)$ by recursion on the derivation of $\phi$.
+  Of course, if the derivation of $\phi$ ends with $f\in\cG(A,B)$, then we define $P(\phi)=P(f)$; if it ends with $\idfunc_A$ we define $P(\phi)=\idfunc_{P(A)}$; and if it ends with $\psi\comp{C}\chi$ we define $P(\phi) = P(\psi)\circ P(\chi)$.
 
   We also have to show that this definition respects the equivalence relation $\equiv$.
   This is clear since $\cA$ is a category; formally it would be another induction on the derivations of $\equiv$ judgments.
@@ -888,10 +901,10 @@ Rather than describing the entire judgment $A\types B$ with a term, the way we d
 For the theory of plain categories that we are working with here, the only possible expressions are repeated applications of function symbols to the variable, such as $h(g(f(x)))$.
 We write this as
 \[ x:A \types h(g(f(x))) : B\]
-The identity rules and axiom rules can now be written as
+The identity and generator rules can now be written as
 \begin{mathpar}
   \inferrule{ }{x:A\types x:A}\,\idfunc \and
-  \inferrule{x:X\types M:A}{x:X\types f(M):B} \,f
+  \inferrule{x:X\types M:A \\ f\in\cG(A,B)}{x:X\types f(M):B} \,f
 \end{mathpar}
 Here $M$ denotes an arbitrary term, which will generally involve the variable $x$.
 Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
@@ -919,12 +932,31 @@ If we used precomposition instead, then the analogous syntax would be backwards:
 At a formal level, there would be little difference, but it feels much more familiar to apply functions to variables than to co-apply functions to co-variables.
 (We can still dualize at the level of the categorical models; we already mentioned in \cref{sec:intro} that we could apply the type theory of categories with finite products to the opposite of the category of commutative rings.)
 
-There is one further remark to make about the correspondence between terms and derivations in this theory.
-As written on the page, the judgments $x:A \types f(x):B$ and $y:A \types f(y):B$ are distinct; but clearly they represent the same morphism.
+Now we observe that terms are still derivations in this theory.
+
+\begin{lem}\label{thm:category-tad}
+  If $x:X \types M:B$ is derivable in the cut-free type theory for categories under \cG, then it has a unique derivation.
+\end{lem}
+\begin{proof}
+  If $M$ is the variable $x$, then the only possible derivation is $\idfunc$.
+  And if $M = f(N)$, where $f\in\cG(A,B)$, then it can only be obtained from the generator rule for $f$ applied to $x:X \types N:A$.
+\end{proof}
+
+Note that the terms in this theory are simpler than those in the cut-ful theory in that we don't need the type subscripts on the composition operation $\comp{A}$.
+This is because each rule composes with only one generator $f$, and each such generator ``knows'' its domain, so the premise of the rule is determined by the conclusion.
+
+However, the introduction of abstract variables appears to break the converse property (that derivations determine unique terms).
+As written on the page, the judgments $x:A \types f(x):B$ and $y:A \types f(y):B$ are distinct; but they represent the same derivation (if we remove the term annotations) and the same morphism:
+\begin{mathpar}
+  \inferrule*[right=$f$]{\inferrule*[Right=$\idfunc$]{ }{x:A\types x:A}}{x:A\types f(x):B}
+  \and
+  \inferrule*[right=$f$]{\inferrule*[Right=$\idfunc$]{ }{y:A\types y:A}}{y:A\types f(y):B}
+\end{mathpar}
 So there is still an equivalence relation hanging around in the background, but it is a fairly harmless one; it just says that we can rename all the variables as long as we do it consistently.
 (When we consider theories with bound variables later on, the meaning of ``consistently'' will become more complicated, but the principle is the same.)
 \label{sec:alpha}%
-In type-theoretic lingo, the equivalence relation of renaming variables is called \textbf{$\alpha$-equivalence}, and unless explicitly stated otherwise we \emph{always} consider judgments modulo $\alpha$-equivalence.\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
+In type-theoretic lingo, the equivalence relation of renaming variables is called \textbf{$\alpha$-equivalence}, and unless explicitly stated otherwise we \emph{always} consider terms modulo $\alpha$-equivalence.\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
+With this modification, we can say that a derivation does determine a unique ($\alpha$-equivalence class of) term.
 
 Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:category-cutadm} is not just a statement about derivability.
 Rather, its proof constructs, recursively, an \emph{operation} on derivations, and hence on terms: given derivable term judgments $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivable judgment $x:A\types P:C$.
@@ -994,7 +1026,7 @@ In the cut-free type theory for categories, two terms present the same morphism 
 
 In fact, a good algorithm for checking equality of terms in the cut-ful theory is to \emph{interpret them into the cut-free theory}!
 That is, we note that every rule of the cut-ful theory is admissible in the cut-free theory, and hence eliminable; so any term (i.e.\ derivation) in the cut-ful theory yields a derivation in the cut-free theory.
-For instance, to translate the cut-ful term $h\circ ((\id_C\circ g) \circ f)$ into the cut-free theory, we first write it as a derivation
+For instance, to translate the cut-ful term $h\comp{C} ((\id_C\comp{C} g) \comp{B} f)$ into the cut-free theory, we first write it as a derivation
 \begin{mathpar}
   \inferrule*[Right=$\circ$]{
     h:(C\types D)\\
@@ -1002,10 +1034,10 @@ For instance, to translate the cut-ful term $h\circ ((\id_C\circ g) \circ f)$ in
       \inferrule*[Right=$\circ$]{
         \id_C:(C\types C)\\
         g:(B\types C)}
-      {(\id_C\circ g):(B\types C)}\\
+      {(\id_C\comp{C} g):(B\types C)}\\
       f:(A\types B)
-    }{((\id_C\circ g) \circ f):(A\types C)}
-  }{(h\circ ((\id_C\circ g) \circ f)):(A\types D)}
+    }{((\id_C\comp{C} g) \comp{B} f):(A\types C)}
+  }{(h\comp{C} ((\id_C\comp{C} g) \comp{B} f)):(A\types D)}
 \end{mathpar}
 and then annotate the same derivation by cut-free terms, using substitution for composition:
 \begin{mathpar}
@@ -1503,24 +1535,26 @@ This idea leads us to write the natural deduction rules from \cref{sec:natded-ms
   \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
   \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
   \inferrule{\types X\type}{x:X\types \ttt:\unit}\;\unit I\and
-  \inferrule{x:X\types M:B\times C}{x:X \types \pi_1(M):B}\;\timesE1\and
-  \inferrule{x:X\types M:B\times C}{x:X \types \pi_2(M):C}\;\timesE2\and
+  \inferrule{x:X\types M:B\times C}{x:X \types \pr1BC(M):B}\;\timesE1\and
+  \inferrule{x:X\types M:B\times C}{x:X \types \pr2BC(M):C}\;\timesE2\and
   \inferrule{x:X\types M:B \\ x:X\types N:C}{x:X\types \pair MN:B\times C}\;\timesI
 \end{mathpar}
 Note how well the natural-deduction choice of ``all rules acting on the right'' matches the use of abstract variables: in all cases we can think of ``applying functions to arguments'' in a familiar way.
 It is possible to describe sequent calculus derivations using terms as well, but they are less pretty.
-For this reason, we will henceforth use sequent calculus only for posetal theories.
+For this reason, \emph{we will henceforth use sequent calculus only for posetal theories}.
 % with a brief exception in \cref{sec:focusing}.
-
 The need to impose the identity rule for all types (not just those coming from \cG) also makes perfect sense from the abstract variable standpoint: a variable in any type is also a term of that type.
+
+The superscript type annotations on the projections $\pr1BC$ and $\pr2BC$ are necessary to make type-checking possible, since otherwise it would not be clear from a term such as $x:A \types \pi_1(M):B$ what the type of $M$ should be in the premise.
+However, in practice we often omit them.
 
 Now the above equivalence between the two derivations of the identity $A\to A$ can be written as
 \begin{equation}
-  \pi_1(\pair M N) \equiv M\label{eq:beta-prodcat-1}
+  \pr1AB(\pair M N) \equiv M\label{eq:beta-prodcat-1}
 \end{equation}
 and of course we should also have
 \begin{equation}
-  \pi_2(\pair M N) \equiv N\label{eq:beta-prodcat-2}
+  \pr2AB(\pair M N) \equiv N\label{eq:beta-prodcat-2}
 \end{equation}
 Note that in these equalities we allow $M$ and $N$ to be arbitrary terms.
 Categorically speaking, therefore, we are asserting that the maps $X\to A\times B$ induced by the universal property of the product (the $\timesI$ rule) do in fact have the desired composites with the projections.
@@ -1538,7 +1572,7 @@ This corresponds to a dual family of simplifications: we want to identify the fo
 \end{mathpar}
 In term syntax, this means that
 \begin{equation}
-  \pair{\pi_1(M)}{\pi_2(M)} \equiv M\label{eq:eta-prodcat}
+  \pair{\pr1AB(M)}{\pr2AB(M)} \equiv M\label{eq:eta-prodcat}
 \end{equation}
 In type-theoretic lingo, the equalities~\eqref{eq:beta-prodcat-1} and~\eqref{eq:beta-prodcat-2} are called \textbf{$\beta$-conversion} while the equality~\eqref{eq:eta-prodcat} is called an \textbf{$\eta$-conversion}.
 For $\unit$ there is no $\beta$-conversion rule, while the $\eta$-conversion rule is
@@ -1556,16 +1590,16 @@ In general we will not bother to state these ``standard'' rules for $\equiv$, bu
 \begin{figure}
   \centering
   \begin{mathpar}
-    \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pi_1(\pair M N) \equiv M :A}\and
-    \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pi_2(\pair M N) \equiv N :B}\and
-    \inferrule{x:X\types M:A\times B}{x:X\types \pair{\pi_1(M)}{\pi_2(M)} \equiv M:A\times B}\and
+    \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pr1AB(\pair M N) \equiv M :A}\and
+    \inferrule{x:X\types M:A \\ x:X\types N:B}{x:X\types \pr2AB(\pair M N) \equiv N :B}\and
+    \inferrule{x:X\types M:A\times B}{x:X\types \pair{\pr1AB(M)}{\pr2AB(M)} \equiv M:A\times B}\and
     \inferrule{x:X\types M:\unit}{x:X\types \ttt\equiv M:\unit}\and
     \inferrule{x:X\types M:A}{x:X \types M\equiv M:A}\and
     \inferrule{x:X\types M\equiv N:A}{x:X\types N\equiv M:A}\and
     \inferrule{x:X\types M\equiv N:A \\ x:X\types N\equiv P:A}{x:X\types M\equiv P:A}\and
-    \inferrule{f\in \cG(A,B) \\ x:X\types M\equiv N:A}{x:X\types f(M)\equiv f(N):B}\and
-    \inferrule{x:X\types M\equiv N:B\times C}{x:X \types \pi_1(M)\equiv \pi_1(N):B}\and
-    \inferrule{x:X\types M\equiv N:B\times C}{x:X \types \pi_2(M)\equiv \pi_2(N):B}\and
+    \inferrule{f\in \cG(A,B) \\ x:X\types M\equiv N:A}{x:X\types f(M)\equiv f(N):B}\\
+    \inferrule{x:X\types M\equiv N:B\times C}{x:X \types \pr1BC(M)\equiv \pr1BC(N):B}\and
+    \inferrule{x:X\types M\equiv N:B\times C}{x:X \types \pr2BC(M)\equiv \pr2BC(N):B}\and
     \inferrule{x:X\types M\equiv M':B \\ x:X\types N\equiv N':C}{x:X\types \pair MN\equiv \pair{M'}{N'}:B\times C}
   \end{mathpar}
   \caption{Equality rules for categories with products}
@@ -1603,10 +1637,10 @@ As with \cref{thm:category-cutadm}, this proof can be regarded as \emph{defining
 The defining clauses are
 \begin{align*}
   N[M/y] &= M\\
-  (f(N'))[M/y] &= f(N'[M/y])\\
+  (f(N))[M/y] &= f(N[M/y])\\
   \ttt[M/y] &= \ttt\\
-  (\pi_1(N'))[M/y] &= \pi_1(N'[M/y])\\
-  (\pi_2(N'))[M/y] &= \pi_2(N'[M/y])\\
+  (\pi_1(N))[M/y] &= \pi_1(N[M/y])\\
+  (\pi_2(N))[M/y] &= \pi_2(N[M/y])\\
   \pair{N_1}{N_2}[M/y] &= \pair{N_1[M/y]}{N_2[M/y]}
 \end{align*}
 
@@ -1760,7 +1794,7 @@ We treat the bottom element similarly:
     \inferrule{x:X \types M:\zero \\ \types C\type}{x:X \types \abort(M):C}\;\zeroE\\
     \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
     \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
-    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \case(M,u.P,v.Q):C}\;\plusE
+    \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \acase AB(M,u.P,v.Q):C}\;\plusE
   \end{mathpar}
   \caption{Unary type theory for categories with coproducts}
   \label{fig:catcoprod}
@@ -1768,14 +1802,16 @@ We treat the bottom element similarly:
 
 Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts} in which we annotate the judgments with terms, shown in \cref{fig:catcoprod}.
 The two injections $A\to A+B$ and $B\to A+B$ are named $\inl$ and $\inr$ (``in-left'' and ``in-right''), while the unique morphism $\zero \to C$ is called $\abort$.
-The term $\case(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
+The term $\acase AB(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
 
-We should start by saying that this term is parsed as $\case(M,(u.P),(v.Q))$: that is, the periods bind more tightly than the commas.
-Now the idea is that $\case(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
+To start with, this term is parsed as $\acase AB(M,(u.P),(v.Q))$: that is, the periods bind more tightly than the commas.
+Now the idea is that $\acase AB(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
 The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
+And we annotate it with the type $A+B$ in order to make type-checking possible (but often we will simplify it by writing just $\case$).
+
 The morphisms $f$ and $g$, however, are specified (like all morphisms in unary type theory) using term syntax, $u:A\types P:C$ and $v:A\types Q:C$ --- and, as always, the specific variables $u$ and $v$ used are irrelevant (judgments only have meaning up to $\alpha$-equivalence).
 Thus we write $u.P$ and $v.Q$ in the $\case$ term, rather than simply $P$ and $Q$, to indicate what variable is being used.
-These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\case(M,u.f(u),v.g(v))$ has the same meaning as $\case(M,w.f(w),z.g(z))$ (without needing to change any variables anywhere else).
+These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\acase AB(M,u.f(u),v.g(v))$ has the same meaning as $\acase AB(M,w.f(w),z.g(z))$ (without needing to change any variables anywhere else).
 
 \begin{rmk}
   In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
@@ -1826,6 +1862,15 @@ This completes the definition of our \textbf{unary type theory for categories wi
 \begin{proof}
   By induction over derivations.
   As usual for natural deduction theories, there is not much happening: for each rule that might appear last in the derivation of $y:B\types N:C$, we apply the inductive hypothesis to its premises and then re-apply the final rule.
+  The defining equations of the substitution operation are:
+  \begin{align*}
+    y[M/y] &= M\\
+    f(N)[M/y] &= f(N[M/y])\\
+    \abort(N)[M/y] &= \abort(N[M/y])\\
+    \inl(N)[M/y] &= \inl(N[M/y])\\
+    \inr(N)[M/y] &= \inr(N[M/y])\\
+    \case(N,u.P,v.Q)[M/y] &= \case(N[M/y],u.P,v.Q)
+  \end{align*}
 \end{proof}
 
 As in the dual case, by a \textbf{category with coproducts} we mean a category with specified binary coproducts and a specified initial object, and in the category of such the functors preserve the specified structure strictly.
@@ -2441,7 +2486,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
   }{
     \Gamma,\Psi,\Delta \types C
   }\;\tensorE\\
-  \inferrule{ }{\types \one}\;\one I\and
+  \inferrule{ }{()\types \one}\;\one I\and
   \inferrule{
     \Psi\types \one \\
     \Gamma,\Delta\types A
@@ -2452,7 +2497,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
 
 We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is also subsumed by the categorified version discussed in more detail in the next section.
 
-\begin{rmk}
+\begin{rmk}\label{rmk:context-splitting-1}
   In \cref{sec:natded-mslat} we remarked that in (unary) natural deductions, the conclusions of rules always have an arbitrary type as antecedent.
   For simple type theories, the corresponding property is that the conclusions of rules should have an arbitrary \emph{context} on the left.
   This is not quite true for the above presentation of the rules, since most of their conclusions have an antecedent obtained by concatenating two or more contexts.
@@ -2461,6 +2506,8 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is 
   \begin{mathpar}
     \inferrule{\Psi = \Gamma,\Delta \\ \Gamma\types A \\ \Delta\types B}{\Psi\types A\tensor B}\;\tensorI\and
   \end{mathpar}
+  while $\one I$ could be written
+  \[ \inferrule{\Gamma=()}{\Gamma\types \one}\;\one I \]
   This is the appropriate point of view when reading rules ``bottom-up'' for type-checking or proof search, as discussed at the end of \cref{sec:rules}: to type-check or prove $\Psi\types A\tensor B$ we need to find an appropriate decomposition $\Psi = \Gamma,\Delta$ for which we can type-check or prove $\Gamma\types A$ and $\Delta\types B$.
   However, because this transformation is so straightforward, when writing informally one generally uses the simpler form with concatenated contexts in the conclusion.
 \end{rmk}
@@ -2503,13 +2550,18 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is 
 \section{Multicategories and monoidal categories}
 \label{sec:multicat-moncat}
 
-Now we are ready to move back up to categories, distinguishing between derivations by introducing a term calculus.
+Now we are ready to move back up from posets to categories; but here we encounter a bit of an expositional conundrum.
+We have started with ordinary (non-symmetric, non-cartesian) multicategories since they are simpler from a category-theoretic perspective; in \cref{sec:cartmulti} we will introduce symmetric and cartesian multicategories by adding extra structure.
+However, in type theory there are some ways in which the \emph{cartesian} case is the simplest.
+This is essentially because intuitively ``variables can be used anywhere'', whereas in a non-cartesian type theory we have to control how many times a variable is used (and, in the non-symmetric case, what order they are used in).
+Nevertheless we begin in this section (and the next) with a type theory for ordinary multicategories, as it introduces several important ideas that are clearer without the symmetric and cartesian structure to worry about; but we encourage the reader not to get too bogged down in details.
+
 
 \subsection{Multicategories}
 \label{sec:multicats}
 
 Categorically, we begin with the adjunction between the category $\bMCat$ of multicategories and the category $\bMGr$ of multigraphs.
-Let \cG be a multigraph; we now augment the cut-free theory of \cref{sec:multiposets} with terms that exactly represent the structure of derivations, as we did in \cref{sec:categories,sec:catprod,sec:catcoprod}.
+Let \cG be a multigraph; we augment the cut-free theory of \cref{sec:multiposets} with terms that represent the structure of derivations, as we did in \cref{sec:categories,sec:catprod,sec:catcoprod}.
 
 Since our antecedents are now lists of formulas, we assign an abstract variable to \emph{each} of them, and we assign a single term involving these variables to the consequent.
 Of course, we must assign distinct variables to distinct types in the list (or, more precisely, to distinct \emph{occurrences} of types, since the same type might occur more than once, and these occurrences should be assigned distinct variables).
@@ -2595,6 +2647,15 @@ we can trace the occurrences of types in the antecedent of the conclusion as fol
 In type-theoretic lingo, \cref{thm:multicat-linear} says that our current type theory is \textbf{linear} (just like a linear polynomial uses each variable exactly once, a ``linear type theory'' uses each variable exactly once).
 Note that linearity is a property of a system that we \emph{prove}, not a requirement that we impose from outside.
 
+\begin{lem}\label{thm:multicat-tad}
+  If $\Gamma\types N:B$ is derivable in the cut-free type theory for multicategories under \cG, then it has a unique derivation.
+\end{lem}
+\begin{proof}
+  If $N=x$, then the derivation can only be $\idfunc$.
+  And if $N=f(M_1,\dots,M_n)$, then by linearity each variable in $\Gamma$ must occur in exactly one of the subterms $M_1,\dots,M_n$.
+  If $\Gamma\types N:B$ is derivable, then it must be that this partition of $\Gamma$ is ordered, $\Gamma=\Gamma_1,\dots,\Gamma_n$, and this (together with the known domain $(A_1,\dots,A_n)$ of $f$) determines the premises $\Gamma_i \types M_i:A_i$ that must be recursively checked (c.f.\ \cref{rmk:context-splitting-1})
+\end{proof}
+
 \begin{thm}\label{thm:multicat-subadm}
   Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
 \end{thm}
@@ -2662,10 +2723,12 @@ The ``matching up of occurrences'' indicated by the abstract variables conveys t
 \label{sec:moncat}
 
 We proceed to annotate the natural deduction for monoidal posets from \cref{sec:natded-monpos} with terms, obtaining the \textbf{simple type theory for monoidal categories under \cG} as shown in \cref{fig:moncat}.
+We are using a ``pairing'' syntax for terms in $A\tensor B$ similar to the one we used for terms in $A\times B$ in \cref{sec:catprod}, but because it behaves differently we use a different notation $\tpair M N$ instead of $\pair M N$.
 
-As noted in \cref{sec:natded-monpos}, since the tensor product has a ``mapping out'' universal property like that of a coproduct (that is, it is a ``positive type''), its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$.
+In particular, because the tensor product has a ``mapping out'' universal property like a coproduct (that is, it is a ``positive type''), its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$, rather than a pair of projections.
 Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\tpair{x}{y}$.''
-And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\case(M,u.P,v.Q)$ for coproducts, the variables $x$ and $y$ are bound in the term syntax $\match_\tensor(M,xy.N)$.
+And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\acase AB(M,u.P,v.Q)$ for coproducts, the variables $x$ and $y$ are bound in the term syntax $\match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N)$.
+The annotations $A\tensor B$ and $\Gamma|\Delta$ are to make type-checking possible (see \cref{thm:moncat-tad}); but generally we will omit them and write simply $\match_\tensor$.
 
 \begin{figure}
   \centering
@@ -2677,9 +2740,9 @@ And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\case(M,
       \Psi \types M:A\tensor B \\
       \Gamma,x:A,y:B,\Delta\types N:C
     }{
-      \Gamma,\Psi,\Delta \types \match_\tensor(M,xy.N):C
+      \Gamma,\Psi,\Delta \types \match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N):C
     }\;\tensorE\\
-    \inferrule{ }{\types \ott:\one}\;\one I\and
+    \inferrule{ }{()\types \ott:\one}\;\one I\and
     \inferrule{
       \Psi\types M:\one \\
       \Gamma,\Delta\types N:A
@@ -2719,7 +2782,7 @@ The rules for $\one$ are similar.
 Like the theory of \cref{sec:multicats}, this theory is linear:
 
 \begin{lem}\label{thm:moncat-linear}
-  If $\Gamma\types M:B$ is derivable in the simple type theory for monoidal categories under \cG, then every variable in $\Gamma$ appears exactly once in $M$.
+  If $\Gamma\types M:B$ is derivable in the simple type theory for monoidal categories under \cG, then every variable in $\Gamma$ appears exactly once (free) in $M$.
 \end{lem}
 \begin{proof}
   By induction on the derivation.
@@ -2727,6 +2790,25 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
   For a pair $\tpair M N$ coming from $\tensorI$, each variable in $\Gamma,\Delta$ appears in exactly one of $\Gamma$ and $\Delta$, hence in exactly one of $M$ and $N$; we then apply the inductive hypotheses to $M$ or $N$ respectively.
   Similarly, for $\match_\tensor(M,xy.N)$ coming from $\tensorE$, each variable in $\Gamma,\Psi,\Delta$ must appear in exactly one of $\Gamma$, $\Psi$, or $\Delta$; by induction then in the first and third cases it must appear exactly once in $N$, and in the second case it must appear exactly once in $M$.
   The case of $\one E$ is similar, while there are no variables at all in $\ott$.
+\end{proof}
+
+The qualification ``(free)'' in \cref{thm:moncat-linear} is because bound variables can have any name, so it is technically possible for a bound variable to have the same name as a variable occurring free elsewhere (though not inside the ``scope'' of the bound variable).
+For instance, we could have
+\[ x:A\tensor B, u:C \types f(\match_\tensor(x,uv.g(u,v)),u):D \]
+However, this is arguably bad style, so we will generally assume that it is not done (we can always apply $\alpha$-equivalence to avoid it).
+
+\begin{lem}\label{thm:moncat-tad}
+  If $\Gamma\types N:B$ is derivable in the simple type theory for monoidal categories under \cG, then it has a unique derivation.
+\end{lem}
+\begin{proof}
+  The cases of $\idfunc$ and $f$ are as in \cref{thm:multicat-tad}, and the case of $\tensorI$ is similar, while $\one I$ is trivial.
+  For $\match_\one(M,N)$, by linearity each variable occurs in exactly one of $M$ or $N$.
+  If such a term is derivable, then the variables occurring in $M$ must be contiguous in the context, thereby splitting it as $\Gamma,\Psi,\Delta$ and determining the premises.
+  If it should happen that \emph{no} variables occur in $M$ (such as if $M=\star$), then of course $\Psi=()$, but the splitting $\Gamma,\Delta$ is not uniquely determined; however since the premise has a re-joined context $\Gamma,\Delta$ anyway this doesn't matter.
+
+  In the case of $\tensorE$, however, this latter point makes a difference, because the premise \emph{does} depend on which variables end up in $\Gamma$ and which in $\Delta$.
+  This is why we have included the $\Gamma|\Delta$ annotation on $\match_\tensor^{\Gamma|\Delta}(M,xy.N)$, so that the context splitting is determined even if $M$ contains no variables.
+  (See \cref{ex:moncat-context-splitting}.)
 \end{proof}
 
 \begin{lem}\label{thm:moncat-subadm}
@@ -2738,7 +2820,15 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
   Given judgments $\Gamma\types M:A$ and $\Delta,x:A,\Psi \types N:B$ (involving disjoint variables), we induct on the derivation of $N$.
   If the derivation is $\idfunc$, then $\Delta$ and $\Psi$ are empty and $N=x$, in which case we can just use $M$ itself.
   In all other cases, by \cref{thm:moncat-linear} the variable $x$ must appear in exactly one of the premises of the last rule applied to derive $N$ (which is to say, in exactly one of the subterms appearing in $N$ itself), and we inductively perform the substitution there.
-  Explicitly, the defining clauses of the substitution operation are:
+
+  Explicitly, the defining clauses of the substitution operation are shown in \cref{fig:moncat-sub}.
+%  (The case of $\ott$ actually does fit the general pattern discussed above, remembering that the rule $\one I$ has \emph{no} premises.)
+  (Technically we also ought to indicate how the $\Gamma|\Delta$ superscripts on $\match_\tensor$ are frobnicated, but we leave that to the fastidious reader.)
+  The proof of associativity and interchange is essentially the same as before: all the other rules behave just like the generator rules, except for $\ott$ where the claim is trivial.
+\end{proof}
+
+\begin{figure}
+  \centering
   \begin{alignat*}{2}
     x[M/x] &= M\\
     f(N_1,\dots,N_n)[M/x] &= f(N_1,\dots,N_i[M/x],\dots,N_n) &&\quad\text{if $x$ occurs in $N_i$}\\
@@ -2746,13 +2836,16 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
     \tpair P Q[M/x] &= \tpair{P}{Q[M/x]} &&\quad\text{if $x$ occurs in $Q$}\\
     \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
     \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N,uv.P[M/x]) &&\quad\text{if $x$ occurs in $P$}\\
-    \ott[M/x] &&&\quad\text{cannot occur}\\
+    % \match_\tensor^{\Gamma|\Delta}(N,uv.P)[M/x] &= \match_\tensor^{\Gamma|\Delta}(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
+    % \match_\tensor^{\Gamma_1,x,\Gamma_2|\Delta}(N,uv.P)[M/x] &= \match_\tensor^{\Gamma_1,\Psi,\Gamma_2|\Delta}(N,uv.P[M/x]) &&\quad\text{$\Psi$ the context of $M$}\\
+    % \match_\tensor^{\Gamma|\Delta_1,x,\Delta_2}(N,uv.P)[M/x] &= \match_\tensor^{\Gamma|\Delta_1,\Psi,\Delta_2}(N,uv.P[M/x]) &&\quad\text{$\Psi$ the context of $M$}\\
+    \ott[M/x] &&&\quad\text{cannot happen}\\
     \match_\one(N,P)[M/x] &= \match_\one(N[M/x],P) &&\quad\text{if $x$ occurs in $N$}\\
     \match_\one(N,P)[M/x] &= \match_\one(N,P[M/x]) &&\quad\text{if $x$ occurs in $P$}
   \end{alignat*}
-  (The case of $\ott$ actually does fit the general pattern discussed above, remembering that the rule $\one I$ has \emph{no} premises.)
-  The proof of associativity and interchange is essentially the same as before: all the other rules behave just like the generator rules, except for $\ott$ where the claim is trivial.
-\end{proof}
+  \caption{Substitution in the simple type theory for monoidal categories}
+  \label{fig:moncat-sub}
+\end{figure}
 
 In the proof of \cref{thm:multiposet-cutadm} we remarked that sometimes we have to rename the variables appearing in one of the terms before doing a substitution, to ensure that the variables in the context of the substituted term are all distinct; but that this essentially happens automatically when we regard substitution as acting on derivations.
 Something else similar happens here in the rule $\match_\tensor(N,uv.P)[M/x] = \match_\tensor(N,uv.P[M/x])$: we must ensure (by $\alpha$-equivalence if necessary) that the bound variables $u$ and $v$ do not appear in $M$.
@@ -2788,6 +2881,7 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
   Now if \cM is a monoidal category and $P:\cG\to\cM$ a map of multigraphs, we extend it to $\F\bMonCat\cG$ by induction on derivations (of objects and morphisms and equalities) using the fact that \cM is a representable multicategory, observe that this definition is forced by functoriality and (strict) preservation of the monoidal structure, and then prove by induction that it is indeed a functor.
 \end{proof}
 
+
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:repmulticat-moncat}
@@ -2795,6 +2889,38 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
   If we don't assume this fact, then our proof of \cref{thm:moncat-initial} is actually just about free representable multicategories.
   Using this version of the theorem, prove \emph{using type theory} that any representable multicategory is monoidal: that is, its tensor product is coherently associative and unital.
 \end{ex}
+
+\begin{ex}\label{ex:moncat-context-splitting}
+  The annotation $\Gamma|\Delta$ on $\match_{A\tensor B}^{\Gamma|\Delta}$ is something that appears only in the non-symmetric case, so we encourage the reader not to worry overmuch about it.
+  However, for the reader who nevertheless insists on worrying, here is some extra reassurance.
+  \begin{enumerate}
+  \item We noted in \cref{thm:moncat-tad} that this annotation on $\match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N)$ is only necessary if $M$ contains no variables.
+    To see that it can actually matter in that case, find an example of two distinct derivations whose corresponding terms differ \emph{only} in their annotations $\Gamma|\Delta$.\label{item:moncat-context-splitting-1}
+  % \begin{mathpar}
+  %   \inferrule*{()\types \tpair\star\star:\one\tensor \one\\
+  %     \inferrule*{
+  %       x:\one \types x:\one\\
+  %       \inferrule*{
+  %         y:\one \types y:\one\\
+  %         u:C \types u:C
+  %       }{u:C,y:\one \types \match_\one(y,u):C}
+  %     }{u:C,x:\one,y:\one \types \match_\one(x,\match_\one(y,u)):C}
+  %   }{u:C \types \match_\tensor(\tpair\star\star, xy.\match_\one(x,\match_\one(y,u))) : C}
+  %   \and
+  %   \inferrule*{()\types \tpair\star\star:\one\tensor \one\\
+  %     \inferrule*{
+  %       x:\one \types x:\one\\
+  %       \inferrule*{
+  %         y:\one \types y:\one\\
+  %         u:C \types u:C
+  %       }{y:\one,u:C \types \match_\one(y,u):C}
+  %     }{x:\one,y:\one,u:C \types \match_\one(x,\match_\one(y,u)):C}
+  %   }{u:C \types \match_\tensor(\tpair\star\star, xy.\match_\one(x,\match_\one(y,u))) : C}
+  % \end{mathpar}
+  \item Prove that any two terms as in \ref{item:moncat-context-splitting-1} are related by $\equiv$.
+  \end{enumerate}
+\end{ex}
+
 
 
 \section{Products and coproducts}
@@ -3004,7 +3130,7 @@ These rules are generally formulated and named as follows.
   \inferrule*[right=weakening]{\Gamma,\Delta\types C}{\Gamma,A,\Delta\types C}\and
   \inferrule*[right=contraction]{\Gamma,A,A,\Delta\types C}{\Gamma,A,\Delta\types C}\and
 \end{mathpar}
-The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or exchange without contraction, just as one might consider non-symmetric semicartesian or relevance multicategories, but this takes us rather far afield from categorical structures of general interest, so we leave it to the interested reader.} should not be surprising:
+The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or exchange without contraction, just as one might consider non-symmetric semicartesian or relevance multicategories, but this takes us rather far afield from categorical structures of general interest, so we leave it to the reader.} should not be surprising:
 \begin{center}
 \begin{tabular}{c|c}
   $\fS$-multicategories & structural rules\\\hline
