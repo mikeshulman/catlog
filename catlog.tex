@@ -3254,12 +3254,20 @@ Recall from \cref{sec:multicats-catth} the definition of products in a multicate
 
 Note although the first conclusion of \cref{thm:cart-multicat-repr} refers only to binary products, it still requires the presence of \emph{injections} in \fS in addition to surjections.
 Indeed, the monoidal category of pointed sets with its smash product has an underlying multicategory that is relevance (i.e.\ admits an action by all surjections), but the smash product is different from the cartesian product.
-See \cref{ex:relevance-moncat}.
+It is also possible to characterize the \fS-monoidal categories when \fS is the injections, but we leave this to the interested reader; see \cref{ex:relevance-moncat}.
+
+\begin{rmk}\label{rmk:absolute}
+  \cref{thm:semicart-multicat-repr,thm:cart-multicat-repr} identify an object having a ``mapping out'' universal property (a tensor product or unit object in a multicategory) with an object having a ``mapping in'' universal property (a cartesian product or terminal object), in the strong sense that if either exists then it is also the other.
+  This sort of ``ambidextrous'' universal property appears elsewhere in category theory as well.
+  For instance, the splitting of an idempotent can be regarded as either a limit or a colimit; in a category enriched over abelian monoids, finite products and coproducts coincide; and more generally for any kind of enrichment there is a notion of ``absolute (co)limit''~\cite{street:absolute}.
+  Thus, although multicategories are not ``enriched categories'' in the usual sense, we could say informally that in a cartesian multicategory products are absolute limits, while in a semicartesian multicategory terminal objects are.
+  See also \cref{ex:absolute}.
+\end{rmk}
 
 Finally, we observe that closedness can be naturally characterized multicategorically.
 Suppose for simplicity that \fS contains at least all bijections.
-Then we say an \fS-multicategory is \textbf{closed} if for each pair of objects $A$ and $B$ there is a specified object $A\linhom B$ and a morphism $\chi : (A\linhom B,A) \to B$ postcomposition with which defines bijections
-\[ (\chi\circ_1 -): \cM(C_1,\dots,C_n;A\linhom B) \toiso \cM(C_1,\dots,C_n,A;B) \]
+Then we say an \fS-multicategory is \textbf{closed} if for each pair of objects $A$ and $B$ there is a specified object $A\hom B$ and a morphism $\chi : (A\hom B,A) \to B$ postcomposition with which defines bijections
+\[ (\chi\circ_1 -): \cM(C_1,\dots,C_n;A\hom B) \toiso \cM(C_1,\dots,C_n,A;B) \]
 for all $C_1,\dots,C_n$.
 (If \fS does not contain the bijections, we would just have to consider ``left and right closedness'' separately.)
 The following is then straightforward.
@@ -3289,6 +3297,15 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
 
 \begin{ex}\label{ex:distrib}
   Show that representable cartesian multicategories with coproducts are equivalent to distributive categories.
+\end{ex}
+
+\begin{ex}\label{ex:absolute}
+  Of course, for any \fS a \textbf{functor} between \fS-multicategories is required to preserve the $\sigma$-actions.
+  Prove that:
+  \begin{enumerate}
+  \item Any functor between semicartesian multicategories must preserve unit objects / terminal objects.
+  \item Any functor between cartesian multicategories must preserve tensor products / cartesian products.
+  \end{enumerate}
 \end{ex}
 
 \begin{ex}\label{ex:relevance-moncat}
