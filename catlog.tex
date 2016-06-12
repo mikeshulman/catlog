@@ -93,7 +93,11 @@
 \def\tpair#1#2{\text{\textlquill} #1,#2 \text{\textrquill}}%{\llparenthesis #1,#2\rrparenthesis}
 \let\bigtensor\bigotimes
 % hom
-\let\linhom\multimap
+\let\hom\multimap
+\def\homL{\mathord{\hom}L}
+\def\homR{\mathord{\hom}R}
+\def\homI{\mathord{\hom}I}
+\def\homE{\mathord{\hom}E}
 % 
 \makeatother
 \begin{document}
@@ -105,6 +109,7 @@
 \chapter{Introduction}
 \label{chap:intro}
 
+% [TODO: Introduce the word "connective" somewhere; maybe only for posets?]
 
 \section{Appetizer: inverses in group objects}
 \label{sec:intro}
@@ -2139,7 +2144,7 @@ We say that an arrow in $\cG(A_1,\dots,A_n;B)$ is \textbf{$n$-ary}; the special 
 The objects and unary arrows in a multicategory form a category; indeed, a multicategory with only unary arrows is exactly a category.
 Vector spaces and multilinear maps, as discussed above, are a good example to build intuition.
 
-While the above definition is the natural one from a certain categorical perspective, there is another equivalent way to define multicategories.
+While the above definition is the most natural one from a certain categorical perspective, there is another equivalent way to define multicategories.
 If in the ``multi-composition'' $g\circ (f_1,\dots,f_m)$ all the $f_j$'s for $j\neq i$ are identities, we write it as $g \circ_i f_i$.
 We may also write it as $g\circ_{B_i} f_i$ if there is no danger of ambiguity (e.g.\ if none of the other $B_j$'s are equal to $B_i$).
 Thus we have operations
@@ -2298,8 +2303,8 @@ Based on the lessons we learned from unary type theory, we represent the latter 
   \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}
 \end{mathpar}
 We call this the \textbf{cut-free type theory for multiposets under \cG}.
-Note that we have chosen to use the ``multi-composition'' in Yoneda-ifying the relations in \cG; this will be necessary for admissibility of cut.
-By contrast, it is traditional to formulate the cut rule in terms of the $\circ_i$ compositions.
+Note that we use the ``multi-composition'' in Yoneda-ifying the relations in \cG; this is absolutely necessary for the admissibility of cut.
+By contrast, it is traditional to formulate the cut rule itself in terms of the $\circ_i$ compositions:
 
 \begin{thm}\label{thm:multiposet-cutadm}
   In the cut-free type theory for multiposets under \cG, the following cut rule is admissible: if we have derivations of $\Gamma\types A$ and of $\Delta,A,\Psi\types B$, then we can construct a derivation of $\Delta,\Gamma,\Psi\types B$.
@@ -2312,6 +2317,21 @@ By contrast, it is traditional to formulate the cut rule in terms of the $\circ_
   Now by the inductive hypothesis, we can construct a derivation of $\Gamma_i',\Gamma,\Gamma_i''\types A_i$.
   Applying the rule for $A_1,\dots,A_n \le B$ again, with this derivation in place of the original $\Gamma_i \types A_i$, gives the desired result.
 \end{proof}
+
+However, we can also prove admissibility of ``multi-cut'' directly:
+
+\begin{thm}\label{thm:multiposet-multicutadm}
+  In the cut-free type theory for multiposets under \cG, the following multi-cut rule is admissible: if we have derivations of $\Psi_i\types A_i$ for $1\le i\le n$, and also $A_1,\dots,A_n \types B$, then we can construct a derivation of $\Psi_1,\dots,\Psi_n\types B$.
+\end{thm}
+\begin{proof}
+  If $A_1,\dots,A_n \types B$ ends with the identity rule, then $n=1$ and $A_1=B$, whence $\Psi_1\types A_1$ is what we want.
+  Otherwise, it comes from some relation $C_1,\dots,C_m \le B$, where we have a partition $A_1,\dots,A_n = \Gamma_1,\dots,\Gamma_m$ and derivations of $\Gamma_j \types C_j$.
+  Let $\Phi_j$ be the concatenation of all the $\Psi_i$ such that $A_i \in \Gamma_j$; then by the inductive hypothesis we can get $\Phi_j\types C_j$.
+  Applying the generator rule again, we get $\Phi_1,\dots,\Phi_m \types B$, which is the desired result.
+\end{proof}
+
+The notation is certainly a bit heavier when constructing multi-cuts directly.
+However, as we will see later on, in more complicated situations there are definite advantages to the latter.
 
 \begin{thm}\label{thm:multiposet-initial}
   For any relational multigraph \cG, the free multiposet it generates has the same objects, and the relation $(A_1,\dots,A_n)\le B$ holds just when the sequent $A_1,\dots,A_n\types B$ is derivable in the cut-free type theory for multiposets under \cG.
@@ -2381,16 +2401,18 @@ Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$
   \end{equation*}
 \end{proof}
 
+The proof of cut-admissibility in this case has two new features we have not seen before.
+
 \begin{thm}\label{thm:monpos-cutadm}
   Cut is admissible in the sequent calculus for monoidal posets under \cG: if we have derivations of $\Gamma\types A$ and of $\Delta,A,\Psi\types B$, then we can construct a derivation of $\Delta,\Gamma,\Psi\types B$.
 \end{thm}
 \begin{proof}
-  As always, we induct on the derivation of $\Delta,A,\Psi\types B$.
-  The cases of the identity and of relations from \cG are just as in \cref{thm:multiposet-cutadm}.
+  % As always, we induct on the derivation of $\Delta,A,\Psi\types B$.
+  If the derivation of $\Delta,A,\Psi\types B$ ends with the identity rule or a generating relation from \cG, we proceed just as in \cref{thm:multiposet-cutadm}.
   It cannot end with a $\one R$.
   If it ends with a $\tensorR$, we use the inductive hypotheses on its premises and apply $\tensorR$ again.
 
-  The cases when it ends with a left rule introduce a new feature that we have not seen before in cut-admissibility proofs.
+  The cases when it ends with a left rule introduce one new feature.
   Suppose it ends with a $\one L$.
   If $A$ is the $\one$ that was introduced by this rule, then we proceed basically as before: if $\Gamma\types A$ is $\one R$, so that $\Gamma$ is empty, then we are in the principal case and we can simply use the given derivation of $\Delta,\Psi\types B$; while if it is a left rule then we can apply a secondary induction.
   But it might also happen that $A$ is a different type, with the introduced $\one$ appearing in $\Delta$ or $\Psi$.
@@ -2408,9 +2430,10 @@ Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$
     }{\Delta_1,\Delta_2,\Gamma,\Psi\types B}}{\Delta_1,\one,\Delta_2,\Gamma,\Psi\types B}
   \end{equation*}
 
-  The case of $\tensorL$ is similar.
-  In the interesting (principal) case, when the sequent $\Delta,A_1\tensor A_2,\Psi\types B$ is derived from $\Delta,A_1,A_2,\Psi\types B$, while $\Gamma\types A_1\tensor A_2$ is derived using $\tensorR$ from $\Gamma_1\types A_1$ and $\Gamma_2\types A_2$ (so that necessarily $\Gamma = \Gamma_1,\Gamma_2$), then we can apply the inductive hypothesis twice to transform
-  \begin{equation*}
+  The case when $\Delta,A,\Psi\types B$ ends with $\tensorL$ has a similar ``commutativity'' possibility.
+  However, in this case there is also something new in the principal case, where $\Delta,A_1\tensor A_2,\Psi\types B$ is derived from $\Delta,A_1,A_2,\Psi\types B$, while $\Gamma\types A_1\tensor A_2$ is derived using $\tensorR$ from $\Gamma_1\types A_1$ and $\Gamma_2\types A_2$ (so that necessarily $\Gamma = \Gamma_1,\Gamma_2$).
+  We would like to apply the inductive hypothesis twice to transform
+  \begin{equation}\label{eq:monpos-cutam-1}
     \inferrule*[right=cut]{
       \inferrule*[right=$\tensorR$]{
         \derivof{\Gamma_1\types A_1}\\
@@ -2420,9 +2443,9 @@ Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$
         \derivof{\Delta,A_1,A_2,\Psi\types B}
       }{\Delta,A_1\tensor A_2,\Psi\types B
       }}{\Delta,\Gamma_1,\Gamma_2,\Psi\types B}
-  \end{equation*}
+  \end{equation}
   into
-  \begin{equation*}
+  \begin{equation}\label{eq:monpos-cutam-2}
     \inferrule*[Right=cut]{
       \derivof{\Gamma_2\types A_2}\\
       \inferrule*[Right=cut]{
@@ -2434,12 +2457,63 @@ Note the presence of the additional contexts $\Gamma$ and $\Delta$ in $\tensorL$
     }{
       \Delta,\Gamma_1,\Gamma_2,\Psi\types B
     }
-  \end{equation*}
-  We have to apply it twice because we are formulating our cut rule using $\circ_i$ composition.
-  If we were using multicomposition then we would only need to apply it once; but the notation for the whole argument would become much less wieldy that way.
+  \end{equation}
+  However, this is a problem for our usual style of induction.
+  We can certainly apply the inductive hypothesis to $\Gamma_1\types A_1$ and $\Delta,A_1,A_2,\Psi\types B$ to get a derivation of $\Delta,\Gamma_1,A_2,\Psi\types B$.
+  But this resulting derivation need not be ``smaller'' than our given derivation of $\Delta,A_1\tensor A_2,\Psi\types B$, so our inductive hypothesis does not apply to it.
+
+  Probably the most common solution to this problem is to formulate the induction differently.
+  Rather than inducting directly on the derivation of $\Delta,A,\Psi\types B$, we induct first on the type $A$ (the ``cut formula'')), and then do an ``inner'' induction on the derivation.
+  All the ``commutativity'' cases do not change the cut formula, so there the inner inductive hypothesis continues to apply.
+  But in the principal case for $\tensor$, both of the cuts we want to do inductively have smaller cut formulas than the one we started with ($A_1$ and $A_2$ versus $A_1\tensor A_2$), so they can be handled by the outer inductive hypothesis regardless of how large of derivations we need to apply them to.
 \end{proof}
 
-We are ready to prove the initiality theorem, relating to an adjunction between the categoris \bRelMGr of relational multigraphs and \bMonPos of monoidal posets.
+A different approach, however, is to prove the admissibility of multi-cut directly:
+
+\begin{thm}\label{thm:monpos-multicutadm}
+  Multi-cut is admissible in the sequent calculus for monoidal posets under \cG: if we have derivations of $\Psi_i\types A_i$ for $1\le i\le n$, and also $A_1,\dots,A_n \types B$, then we can construct a derivation of $\Psi_1,\dots,\Psi_n\types B$.
+\end{thm}
+\begin{proof}
+  In this case we can return to inducting directly on the derivation of $A_1,\dots,A_n \types B$.
+  The cases of identity and generator rules are just like in \cref{thm:multiposet-multicutadm}, and $\tensorR$ is just like the generator case.
+  Unlike in \cref{thm:monpos-cutadm} it \emph{could} end with $\one R$, but in this case $n=0$ and there is nothing to be done.
+
+  If it ends with $\one L$, then some $A_i = \one$, and we can forget about the corresponding $\Psi_i\types A_i$ and proceed inductively with the rest of them.
+  (Note how even this case is simpler than in \cref{thm:monpos-cutadm}.)
+
+  Finally, if it ends with $\tensorL$, then some $A_i = C\tensor D$, say, and we perform our secondary induction on $\Psi_i\types A_i$.
+  Since $A_i=C\tensor D$ is not a base type, this derivation cannot end with the identity or generator rules, and of course it cannot end with $\one R$.
+  If it ends with a left rule, we inductively cut with the premise of that rule and then apply it afterwards.
+  The remaining case is when it ends with $\tensorR$, so that we have derivations of $\Gamma\types C$ and $\Delta\types D$ with $\Psi_i = \Gamma,\Delta$.
+  But now we can inductively cut our given premise $A_1,\dots,A_{i-1},C,D,A_{i+1},\dots,A_n \types B$ with these two and also the given $\Psi_j\types A_j$ for $j\neq i$.
+\end{proof}
+
+That is, instead of transforming~\eqref{eq:monpos-cutam-1} into~\eqref{eq:monpos-cutam-2}, where we have to feed the output of one inductive cut into another inductive cut (which is what creates the problem), we transform
+\begin{equation*}
+  \inferrule*[right=cut]{
+    \derivof{\Psi_j \types A_j} \\ % \;(A_j\neq C\tensor D)\\
+    \inferrule*[right=$\tensorR$]{
+      \derivof{\Gamma\types C}\\
+      \derivof{\Gamma\types D}
+    }{\Gamma,\Delta \types C\tensor D}\\
+    \inferrule*[Right=$\tensorL$]{
+      \derivof{A_1,\dots,C,D,\dots,A_n\types B}
+    }{A_1,\dots,C\tensor D,\dots, A_n\types B
+    }}{\Psi_1,\dots,\Gamma,\Delta,\dots,\Psi_n\types B}
+\end{equation*}
+into
+\begin{equation*}
+  \inferrule*[right=cut]{
+    \derivof{\Psi_j \types A_j} \\ % \;(A_j\neq C\tensor D)\\
+    \derivof{\Gamma\types C}\\
+    \derivof{\Gamma\types D}\\
+    \derivof{A_1,\dots,C,D,\dots,A_n\types B}
+    }{\Psi_1,\dots,\Gamma,\Delta,\dots,\Psi_n\types B}
+\end{equation*}
+Thus, the multicategorical perspective leads to a simpler inductive proof of cut admissibility.
+(Note, though, that to recover the $\circ_i$-style cut from the multi-cut requires composing with identities, hence invoking \cref{thm:monpos-identity} as well.)
+
+In any case, we are ready to prove the initiality theorem, relating to an adjunction between the categoris \bRelMGr of relational multigraphs and \bMonPos of monoidal posets.
 As always, the morphisms in our categories will be completely strict: so in particular the morphisms in \bMonPos are \emph{strict} monoidal functors.
 
 \begin{thm}\label{thm:monpos-initial}
@@ -2655,6 +2729,11 @@ Note that linearity is a property of a system that we \emph{prove}, not a requir
   And if $N=f(M_1,\dots,M_n)$, then by linearity each variable in $\Gamma$ must occur in exactly one of the subterms $M_1,\dots,M_n$.
   If $\Gamma\types N:B$ is derivable, then it must be that this partition of $\Gamma$ is ordered, $\Gamma=\Gamma_1,\dots,\Gamma_n$, and this (together with the known domain $(A_1,\dots,A_n)$ of $f$) determines the premises $\Gamma_i \types M_i:A_i$ that must be recursively checked (c.f.\ \cref{rmk:context-splitting-1})
 \end{proof}
+
+For substitution, we may again choose between the $\circ_i$-style and the multi-cut.
+We choose the former, because the notation is less heavy, and because it matches the more common path taken in type theory.
+(The advantage of multi-cut that we saw in \cref{sec:seqcalc-monpos} is not relevant for natural deduction where there are no left rules; though we will see something analogous in \cref{sec:logic}.)
+But we encourage the interested reader to write down a multi--substitution too (\cref{ex:moncat-multisubadm}).
 
 \begin{thm}\label{thm:multicat-subadm}
   Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
@@ -2890,6 +2969,10 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
   Using this version of the theorem, prove \emph{using type theory} that any representable multicategory is monoidal: that is, its tensor product is coherently associative and unital.
 \end{ex}
 
+\begin{ex}\label{ex:moncat-multisubadm}
+  Formulate and prove the admissibility of a ``multi-substitution'' rule like \cref{thm:multiposet-multicutadm} for the type theories considered in this section.
+\end{ex}
+
 \begin{ex}\label{ex:moncat-context-splitting}
   The annotation $\Gamma|\Delta$ on $\match_{A\tensor B}^{\Gamma|\Delta}$ is something that appears only in the non-symmetric case, so we encourage the reader not to worry overmuch about it.
   However, for the reader who nevertheless insists on worrying, here is some extra reassurance.
@@ -2926,8 +3009,8 @@ Once again, the ``variable management'' is fairly automatic if we consider deriv
 \section{Products and coproducts}
 \label{sec:multicat-prod-coprod}
 
-Now that we understand the simple type theories of multicategories and monoidal categories, let's add products and coproducts back in.
-For the most part this just consists of ``putting together'' the rules from \cref{sec:multicat-moncat,sec:catprod,sec:catcoprod}, although there is a little extra work to generalize the rules for products and coproducts to the non-unary case.
+Now that we understand the simple type theories of multicategories and monoidal categories, let's add products and coproducts as well.
+This is where we start to see the value of principle~\eqref{princ:independence} from \cref{sec:why-multicats}: for the most part we can just ``put together'' the rules from \cref{sec:multicat-moncat,sec:catprod,sec:catcoprod}, although there is a little extra work to generalize the rules for products and coproducts to the non-unary case.
 
 In \cref{ex:monpos-mslat,ex:monpos-jslat} you studied sequent calculi for monoidal posets with meets and distributive monoidal posets.
 Now we formulate similar rules in natural deduction style, annotated with terms; the entire \textbf{simple type theory for distributive monoidal categories with products} (except for the obvious rules governing the judgment $\types A\type$) is shown in \cref{fig:moncat-prod-coprod}.
@@ -3194,7 +3277,8 @@ As special cases we have, by definition:
 \end{center}
 
 Now, recall the definition of tensor products in a multicategory from \cref{defn:multicat-tensor}, and the result of \cref{thm:multicat-repr} that having all tensor products (being ``representable'') is equivalent to being a monoidal category.
-We now extend that to \fS-multicategories.
+For a general faithful cartesian club \fS, we might as well \emph{define} an \textbf{\fS-monoidal category} to be an \fS-multicategory that is representable.
+However, in many cases this is equivalent to a more familiar notion.
 
 \begin{thm}\label{thm:symm-multicat-repr}
   If \fS includes all bijections, then the monoidal category obtained from any representable \fS-multicategory is symmetric.
@@ -3327,7 +3411,7 @@ These rules are generally formulated and named as follows.
   \inferrule*[right=weakening]{\Gamma,\Delta\types C}{\Gamma,A,\Delta\types C}\and
   \inferrule*[right=contraction]{\Gamma,A,A,\Delta\types C}{\Gamma,A,\Delta\types C}\and
 \end{mathpar}
-The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or exchange without contraction, just as one might consider non-symmetric semicartesian or relevance multicategories, but this takes us rather far afield from categorical structures of general interest, so we leave it to the reader.} should not be surprising:
+The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or contraction without exchange, just as one might consider non-symmetric semicartesian or relevance multicategories, but this takes us rather far afield from categorical structures of general interest, so we leave it to the reader.} should not be surprising:
 \begin{center}
 \begin{tabular}{c|c}
   $\fS$-multicategories & structural rules\\\hline
@@ -3342,23 +3426,143 @@ What is somewhat less clear is how these rules can be made \emph{admissible} in 
 In this section we will ignore this question and take these rules (when we want them) as \emph{primitive}.
 This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
 
-For the rest of this section, let \fS be one of the four possibilities above.
+For the rest of this section, let \fS be one of the four possibilities above (so in particular, it will always contain the bijections).
 All our type theories will then include the appropriate primitive structural rules, according to the above table.
-Since we are in the posetal world, we can consider sequent calculus as well as natural deduction; we start with the former.
-
-\subsection{Sequent calculus}
-\label{sec:logic-seqcalc}
-
-[We've seen most of the connectives before, except $\linhom$.]
-
-[TODO: After initiality, mention $\mathbf{2}$ as a particular poset, also Heyting algebras, etc.]
-
+Our type operations will be the posetal versions of all the ones we saw in \cref{sec:multicat-prod-coprod} --- $\tensor,\one,\meet,\top,\join,\bot$ --- and also an internal-hom for $\tensor$, which we denote by $A\hom B$.
+(We postponed introducing the internal-hom until now only to avoid worrying about left- versus right-closedness in non-symmetric multicategories.)
+Thus, the categorical structure in question is \emph{closed \fS-monoidal lattices}.
+Of course, as in \cref{sec:multicat-prod-coprod} we can remove any of these operations without affecting the others, obtaining a type theory for weaker categorical structures.
 
 \subsection{Natural deduction}
 \label{sec:logic-natded}
 
+The primitive rules of the \textbf{natural deduction for closed \fS-monoidal lattices} are shown in \cref{fig:natded-logic}.
+Except for the structural rules (discussed above) and $\hom$, they are all obtained by removing the term annotations from the theory of \cref{sec:multicat-prod-coprod}.
+The only other change is that since we always include the exchange rule as primitive, in the rules $\tensorE,\one E,\joinE,\zero E$ we don't need to put $\Psi$ in the middle of the context but are free to put it on one side.
+As usual, we have also omitted the rules for the judgment $\types A\type$, which just say that all the objects of $\cG$ are types, as are $\one,\top,\bot$ and $A\tensor B, A\meet B, A\join B, A\hom B$ if $A$ and $B$ are.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+  \inferrule*[right=exchange]{\Gamma,A,B,\Delta\types C}{\Gamma,B,A,\Delta\types C}\\
+  \inferrule*[right=weakening]{\Gamma,\Delta\types C}{\Gamma,A,\Delta\types C}\;\text{if injections}\subseteq\fS\\
+  \inferrule*[right=contraction]{\Gamma,A,A,\Delta\types C}{\Gamma,A,\Delta\types C}\;\text{if surjections}\subseteq\fS\\
+  \inferrule{\types A\type}{A\types A}\and
+  \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}\and
+  \inferrule{\Gamma\types A \\ \Delta\types B}{\Gamma,\Delta\types A\tensor B}\;\tensorI\and
+  \inferrule{
+    \Psi \types A\tensor B \\
+    \Gamma,A,B\types C
+  }{
+    \Gamma,\Psi \types C
+  }\;\tensorE\\
+  \inferrule{ }{()\types \one}\;\one I\and
+  \inferrule{
+    \Psi\types \one \\
+    \Gamma\types A
+  }{
+    \Gamma,\Psi\types C
+  }\;\one E\\
+    \inferrule{\Gamma\types A \\ \Gamma\types B}{\Gamma\types A\meet B}\;\meetI
+    \and
+    \inferrule{\Gamma\types A\meet B}{\Gamma\types A}\;\meetE1
+    \and
+    \inferrule{\Gamma\types A\meet B}{\Gamma\types B}\;\meetE2
+    \\
+    \inferrule{ }{\Gamma\types \unit}\;\unit I
+    \and
+    \inferrule{\Psi\types \zero}{\Gamma,\Psi\types C}\;\zero E
+    \\
+    \inferrule{\Gamma\types A}{\Gamma\types A\join B}\;\joinI1
+    \and
+    \inferrule{\Gamma\types B}{\Gamma\types A\join B}\;\joinI2
+    \and
+    \inferrule{
+      \Psi\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+    }{\Gamma,\Psi \types C}\;\joinE\\
+    \inferrule{\Gamma,A\types B}{\Gamma\types A\hom B}\;\homI\and
+    \inferrule{\Gamma\types A\hom B \\ \Psi\types A}{\Gamma,\Psi\types B}\;\homE
+  \end{mathpar}
+  \caption{Natural deduction for closed \fS-monoidal lattices}
+  \label{fig:natded-logic}
+\end{figure}
+
+The introduction rule for $\hom$ is simply one direction of its universal property from \cref{sec:multicats-catth}.
+The elimination rule is the inverse direction, but with a cut built in to make the context of the conclusion general (modulo a splitting).
+
+The cut-admissibility theorem now has a new wrinkle.
+Let us first consider the straightforward cases.
+
+\begin{lem}\label{thm:natded-logic-cutadm}
+  If \fS consists of the bijections or the injections, then cut is admissible in the natural deduction for closed \fS-monoidal lattices: if we have derivations of $\Psi\types A$ and $\Gamma,A,\Delta\types B$ then we also have $\Gamma,\Psi,\Delta\types B$.
+\end{lem}
+\begin{proof}
+  As always, we induct on the derivation of $\Gamma,A,\Delta\types B$.
+  The cases for most of the connectives are just like those in \cref{thm:moncat-prod-coprod-subadm}, and those for $\hom$ are nothing new.
+  However, now we have a new possibility: the derivation might end with a primitive structural rule (exchange or weakening --- our hypothesis on \fS rules out contraction).
+
+  Firstly, if the structural rule does not affect the type $A$, then we can simply commute it past the cut.
+  For instance, if we have $\Psi\types A$ and $\Gamma,A,\Delta_1,C,\Delta_2\types B$ arising by weakening from $\Gamma,A,\Delta_1,\Delta_2\types B$, we can inductively obtain $\Gamma,\Psi,\Delta_1,\Delta_2\types B$ and then apply weakening again to get $\Gamma,\Psi,\Delta_1,C,\Delta_2\types B$.
+
+  Secondly, essentially the same is true if it is an exchange that does affect $A$.
+  For instance, if we have $\Psi\types A$ and $\Gamma,A,C,\Delta\types B$ arising by exchange from $\Gamma,C,A,\Delta\types B$, we can inductively obtain $\Gamma,C,\Psi,\Delta\types B$, and then re-apply exchange once for each type in $\Psi$ to get $\Gamma,\Psi,C,\Delta\types B$.
+  (It does matter that we have formulated the admissible cut rule \emph{with} $A$ in the middle of the context rather than on one side; otherwise the induction would fail to go through here.)
+
+  Finally, suppose it is a weakening that affects $A$, so we have $\Psi\types A$ and $\Gamma,A,\Delta\types B$ arising by weakening from $\Gamma,\Delta\types B$.
+  In this case we can forget about the derivation of $\Psi\types A$ and just weaken $\Gamma,\Delta\types B$ once for each type in $\Psi$ to get $\Gamma,\Psi,\Delta\types B$.
+\end{proof}
+
+If we try to extend this to theories with contraction, however, we have a problem.
+Suppose the derivation of $\Gamma,A,\Delta\types B$ ends with a contraction that affects $A$, so that we have $\Psi\types A$ and $\Gamma,A,\Delta\types B$ arising by contraction from $\Gamma,A,A,\Delta\types B$.
+Then we would like to inductively cut the latter with $\Psi\types A$ twice to obtain $\Gamma,\Psi,\Psi,\Delta\types B$, transforming
+\begin{equation*}
+  \inferrule*[right=cut]{\Psi\types A \\
+  \inferrule*[Right=contraction]{\Gamma,A,A,\Delta\types B}{\Gamma,A,\Delta\types B}}{\Gamma,\Psi,\Delta\types B}
+\end{equation*}
+into
+\begin{equation*}
+  \inferrule*[Right=cut]{\Psi\types A\\
+    \inferrule*[Right=cut]{\Psi\types A\\\Gamma,A,A,\Delta\types B}{\Gamma,\Psi,A,\Delta,\types B}}
+  {\Gamma,\Psi,\Psi,\Delta\types B}
+\end{equation*}
+Then we could apply exchanges to pair up the two copies of each type in $\Psi$, and finally a contraction on each of them to eliminate the duplicates.
+However, we again have the sort of problem that we did in the proof of \cref{thm:monpos-cutadm}: the derivation of $\Gamma,\Psi,A,\Delta,\types B$ that we obtain from our first application of the inductive hypothesis may not be ``smaller'' than our given derivation, so we cannot apply the inductive hypothesis to it again.
+Moreover, the solution sketched there (inducting first on types and then on derivations) does not work either, since the types are not changing.
+
+The standard solution used in type theory is to generalize the cut rule to a rule called ``mix'' that enables the induction to go through.
+This works, but seems somewhat \textit{ad hoc}.
+A more categorically principled approach (which turns out to solve the problem in roughly the same way) is to use the multi-cut as in \cref{thm:monpos-multicutadm}.
+
+\begin{lem}\label{thm:natded-logic-multicutadm}
+  For any of our four \fS's, multi-cut is admissible in the natural deduction for closed \fS-monoidal lattices: if we have derivations of $\Psi_i\types A_i$ for $1\le i\le n$, and also $A_1,\dots,A_n \types B$, then we can construct a derivation of $\Psi_1,\dots,\Psi_n\types B$.
+\end{lem}
+\begin{proof}
+  The non-structural rules are easy, just as before.
+  (Recall that in general, cut is very straightforward for natural deductions because all the rules act only on the right.
+  With this in mind it is unsurprising that primitive structural rules are problematic, since they act on the left.)
+
+  Now, however, the structural rules are almost just as easy.
+  If our derivation of $A_1,\dots,A_n \types B$ ends with an exchange, we can simply switch two of the derivations $\Psi_i\types A_i$ and induct.
+  Similarly, if it ends with a weakening, we can just forget about one of the $\Psi_i\types A_i$ and induct.
+  Finally, if it ends with a contraction, we can again induct on the premise, using one of the derivations $\Psi_i\types A_i$ twice.
+\end{proof}
+
+Now we can prove the initiality theorem just as usual.
+
+\begin{thm}\label{thm:natded-logic-initial}
+  For any relational multigraph \cG and any of our four \fS's, the free closed \fS-monoidal lattice on \cG can be presented by this natural deduction, with $(A_1,\dots,A_n)\le B$ holding just when $A_1,\dots,A_n\types B$ is derivable.
+\end{thm}
+\begin{proof}
+  \cref{thm:natded-logic-multicutadm} (together with the identity rule) gives us a multiposet, the rules for the type operations make it representable, closed, and a lattice, and the structural rules make it an \fS-multiposet.
+  Thus it lives in the correct category; and its freeness follows by induction as usual.
+\end{proof}
+
+[TODO: Mention $\mathbf{2}$ as a particular poset, also Heyting algebras, etc.]
 
 [TODO: Also mention the traditional syntax for natural deduction.]
+
+\subsection{Sequent calculus}
+\label{sec:logic-seqcalc}
 
 
 \section{Cartesian monoidal categories}
