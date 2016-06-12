@@ -375,6 +375,7 @@ The fact that the $T$-operations then have universal properties is what enables 
 Making this correspondence explicit is helpful for many reasons.
 Pedagogically, it can help the category theorist, who believes in universal properties, to understand why type theories are formulated the way they are.
 It also makes the ``initiality theorems'' more modular: first we model the judgmental structure with a multicategory, and then we add more type formers corresponding to objects with various universal properties.
+It can even be helpful from a purely type-theoretic perspective, suggesting more systematic ways to formulate cut admissibility theorems (see e.g.\ \cref{thm:monpos-cutadm,thm:natded-logic-multicutadm} [TODO: Also the polycategorical case]).
 Finally, it provides a guide for new applications of categorical logic: when seeking a categorical structure to model a given type theory, we should look for a kind of multicategory corresponding to its judgments; while when seeking an internal logic for a categorical structure, we should represent it using universal properties in some kind of multicategory, from which we can extract an appropriate judgmental structure.
 
 These facts about cut-elimination and multicategories have surely been known in some form to experts for a long time, but I am not aware of a clear presentation of them for the beginner coming from a category-theoretic background.
@@ -2164,6 +2165,7 @@ Conversely, given the $\circ_i$ operations one may define
 \[ g\circ (f_1,\dots,f_m) = (\cdots((g \circ_m f_m) \circ_{m-1} f_{m-1}) \cdots \circ_2 f_2) \circ_1 f_1 \]
 to recover the original definition of multicategory.
 The details can be worked out by the interested reader (\cref{ex:multicat-defns}) or looked up in a reference such as~\cite{leinster:higher-opds}.
+[TODO: Probably good to include the detail here.]
 
 With multicategories in hand, we can give an abstract version of the characterization of the tensor product of vector spaces using multilinear maps.
 
@@ -3398,7 +3400,7 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
 \end{ex}
 
 
-\section{From linear logic to intuitionistic logic}
+\section{Intuitionistic logic}
 \label{sec:logic}
 
 We are now aiming at type theories for the generalized multicategories considered in \cref{sec:cartmulti}, along with the extra structures that they may have (tensor products, cartesian products, coproducts, and closedness).
@@ -3421,10 +3423,15 @@ The correspondence between kinds of multicategory and structural rules\footnote{
   {relevance multicategories} & exchange, contraction
 \end{tabular}
 \end{center}
+Note that these rules refer only to single transpositions, projections, and duplications, rather than arbitrary functions in \fS.
+This is similar to how cut is usually stated in type theory in $\circ_i$-style rather than as a multi-composition.
+As in that case, the smaller operations suffice to generate the more general ones (c.f.\ \cref{ex:club-generators}).
+In this section we will use the above standard versions.
 
 What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
 In this section we will ignore this question and take these rules (when we want them) as \emph{primitive}.
 This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
+[TODO: Later on, when making these rules admissible, we may want to use their general versions, just as the multi-cut sometimes simplifies cut-admissibility.]
 
 For the rest of this section, let \fS be one of the four possibilities above (so in particular, it will always contain the bijections).
 All our type theories will then include the appropriate primitive structural rules, according to the above table.
@@ -3432,9 +3439,6 @@ Our type operations will be the posetal versions of all the ones we saw in \cref
 (We postponed introducing the internal-hom until now only to avoid worrying about left- versus right-closedness in non-symmetric multicategories.)
 Thus, the categorical structure in question is \emph{closed \fS-monoidal lattices}.
 Of course, as in \cref{sec:multicat-prod-coprod} we can remove any of these operations without affecting the others, obtaining a type theory for weaker categorical structures.
-
-\subsection{Natural deduction}
-\label{sec:logic-natded}
 
 The primitive rules of the \textbf{natural deduction for closed \fS-monoidal lattices} are shown in \cref{fig:natded-logic}.
 Except for the structural rules (discussed above) and $\hom$, they are all obtained by removing the term annotations from the theory of \cref{sec:multicat-prod-coprod}.
@@ -3530,8 +3534,10 @@ However, we again have the sort of problem that we did in the proof of \cref{thm
 Moreover, the solution sketched there (inducting first on types and then on derivations) does not work either, since the types are not changing.
 
 The standard solution used in type theory is to generalize the cut rule to a rule called ``mix'' that enables the induction to go through.
-This works, but seems somewhat \textit{ad hoc}.
-A more categorically principled approach (which turns out to solve the problem in roughly the same way) is to use the multi-cut as in \cref{thm:monpos-multicutadm}.
+In our case, the mix rule says that if we have derivations of $\Psi\types A$ and $\Gamma\types B$, where $\Gamma$ contains one or more copies of $A$, then we can construct a derivation of $\Gamma^A,\Psi\types B$, where $\Gamma^A$ is $\Gamma$ with one or more copies of $A$ removed.
+In other words, we build a certain amount of contraction into the induction hypothesis.
+This works, but, a more categorically principled solution is to use the multi-cut as in \cref{thm:monpos-multicutadm}.
+This amounts to approximately the same thing, but feels less \textit{ad hoc} to a category theorist (at least, it does to the author).
 
 \begin{lem}\label{thm:natded-logic-multicutadm}
   For any of our four \fS's, multi-cut is admissible in the natural deduction for closed \fS-monoidal lattices: if we have derivations of $\Psi_i\types A_i$ for $1\le i\le n$, and also $A_1,\dots,A_n \types B$, then we can construct a derivation of $\Psi_1,\dots,\Psi_n\types B$.
@@ -3561,8 +3567,10 @@ Now we can prove the initiality theorem just as usual.
 
 [TODO: Also mention the traditional syntax for natural deduction.]
 
-\subsection{Sequent calculus}
+
+\section{Intuitionistic sequent calculus}
 \label{sec:logic-seqcalc}
+
 
 
 \section{Cartesian monoidal categories}
