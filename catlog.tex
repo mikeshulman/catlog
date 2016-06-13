@@ -7,7 +7,8 @@
 \author{Michael Shulman}
 \date{\today}
 \makeatletter
-\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting}
+\def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
 \let\sect\section
 \def\idfunc{\mathsf{id}}
@@ -98,6 +99,11 @@
 \def\homR{\mathord{\hom}R}
 \def\homI{\mathord{\hom}I}
 \def\homE{\mathord{\hom}E}
+\let\To\Rightarrow
+\def\ToL{\mathord{\To}L}
+\def\ToR{\mathord{\To}R}
+\def\ToI{\mathord{\To}I}
+\def\ToE{\mathord{\To}E}
 % 
 \makeatother
 \begin{document}
@@ -3399,6 +3405,10 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
   (See~\cite{dp:relevant-cats}.)
 \end{ex}
 
+\begin{ex}\label{ex:cocartesian-clubs}
+  Define a notion of \textbf{faithful cocartesian club} and a corresponding notion of generalized multicategory that includes \emph{cocartesian} monoidal categories as the maximal case.
+\end{ex}
+
 
 \section{Intuitionistic logic}
 \label{sec:logic}
@@ -3423,15 +3433,14 @@ The correspondence between kinds of multicategory and structural rules\footnote{
   {relevance multicategories} & exchange, contraction
 \end{tabular}
 \end{center}
-Note that these rules refer only to single transpositions, projections, and duplications, rather than arbitrary functions in \fS.
-This is similar to how cut is usually stated in type theory in $\circ_i$-style rather than as a multi-composition.
+Note that these structural rules refer only to single transpositions, projections, and duplications, rather than arbitrary functions in \fS.
+This is similar to how, as we have noted, cut is usually stated in type theory in $\circ_i$-style rather than as a multi-composition.
 As in that case, the smaller operations suffice to generate the more general ones (c.f.\ \cref{ex:club-generators}).
-In this section we will use the above standard versions.
 
 What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
 In this section we will ignore this question and take these rules (when we want them) as \emph{primitive}.
 This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
-[TODO: Later on, when making these rules admissible, we may want to use their general versions, just as the multi-cut sometimes simplifies cut-admissibility.]
+We will address the question of admissibility in \cref{sec:cartmoncat,sec:symmoncat}.
 
 For the rest of this section, let \fS be one of the four possibilities above (so in particular, it will always contain the bijections).
 All our type theories will then include the appropriate primitive structural rules, according to the above table.
@@ -3475,7 +3484,7 @@ As usual, we have also omitted the rules for the judgment $\types A\type$, which
     \\
     \inferrule{ }{\Gamma\types \unit}\;\unit I
     \and
-    \inferrule{\Psi\types \zero}{\Gamma,\Psi\types C}\;\zero E
+    \inferrule{\Psi\types \bot}{\Gamma,\Psi\types C}\;\bot E
     \\
     \inferrule{\Gamma\types A}{\Gamma\types A\join B}\;\joinI1
     \and
@@ -3494,8 +3503,8 @@ As usual, we have also omitted the rules for the judgment $\types A\type$, which
 The introduction rule for $\hom$ is simply one direction of its universal property from \cref{sec:multicats-catth}.
 The elimination rule is the inverse direction, but with a cut built in to make the context of the conclusion general (modulo a splitting).
 
-The cut-admissibility theorem now has a new wrinkle.
-Let us first consider the straightforward cases.
+The contraction rule gives the cut-admissibility theorem a new wrinkle.
+Let us first consider the cases without contraction, which are more straightforward.
 
 \begin{lem}\label{thm:natded-logic-cutadm}
   If \fS consists of the bijections or the injections, then cut is admissible in the natural deduction for closed \fS-monoidal lattices: if we have derivations of $\Psi\types A$ and $\Gamma,A,\Delta\types B$ then we also have $\Gamma,\Psi,\Delta\types B$.
@@ -3510,7 +3519,7 @@ Let us first consider the straightforward cases.
 
   Secondly, essentially the same is true if it is an exchange that does affect $A$.
   For instance, if we have $\Psi\types A$ and $\Gamma,A,C,\Delta\types B$ arising by exchange from $\Gamma,C,A,\Delta\types B$, we can inductively obtain $\Gamma,C,\Psi,\Delta\types B$, and then re-apply exchange once for each type in $\Psi$ to get $\Gamma,\Psi,C,\Delta\types B$.
-  (It does matter that we have formulated the admissible cut rule \emph{with} $A$ in the middle of the context rather than on one side; otherwise the induction would fail to go through here.)
+  (It does matter here that we have formulated the admissible cut rule {with} $A$ in the middle of the context rather than on one side, even though we have the exchange rule; otherwise the induction would fail to go through here.)
 
   Finally, suppose it is a weakening that affects $A$, so we have $\Psi\types A$ and $\Gamma,A,\Delta\types B$ arising by weakening from $\Gamma,\Delta\types B$.
   In this case we can forget about the derivation of $\Psi\types A$ and just weaken $\Gamma,\Delta\types B$ once for each type in $\Psi$ to get $\Gamma,\Psi,\Delta\types B$.
@@ -3529,14 +3538,14 @@ into
     \inferrule*[Right=cut]{\Psi\types A\\\Gamma,A,A,\Delta\types B}{\Gamma,\Psi,A,\Delta,\types B}}
   {\Gamma,\Psi,\Psi,\Delta\types B}
 \end{equation*}
-Then we could apply exchanges to pair up the two copies of each type in $\Psi$, and finally a contraction on each of them to eliminate the duplicates.
+After this we could apply exchanges to pair up the two copies of each type in $\Psi$, and finally a contraction on each of them to eliminate the duplicates.
 However, we again have the sort of problem that we did in the proof of \cref{thm:monpos-cutadm}: the derivation of $\Gamma,\Psi,A,\Delta,\types B$ that we obtain from our first application of the inductive hypothesis may not be ``smaller'' than our given derivation, so we cannot apply the inductive hypothesis to it again.
-Moreover, the solution sketched there (inducting first on types and then on derivations) does not work either, since the types are not changing.
+Moreover, the solution sketched there (inducting first on types and then on derivations) does not work here, since the types are not changing.
 
 The standard solution used in type theory is to generalize the cut rule to a rule called ``mix'' that enables the induction to go through.
-In our case, the mix rule says that if we have derivations of $\Psi\types A$ and $\Gamma\types B$, where $\Gamma$ contains one or more copies of $A$, then we can construct a derivation of $\Gamma^A,\Psi\types B$, where $\Gamma^A$ is $\Gamma$ with one or more copies of $A$ removed.
+In our case, the mix rule says that if we have derivations of $\Psi\types A$ and $\Gamma\types B$, where $\Gamma$ contains one or more copies of $A$, then we can construct a derivation of $\Psi,\Gamma^A\types B$, where $\Gamma^A$ is $\Gamma$ with one or more copies of $A$ removed.
 In other words, we build a certain amount of contraction into the induction hypothesis.
-This works, but, a more categorically principled solution is to use the multi-cut as in \cref{thm:monpos-multicutadm}.
+This works, but a more categorically principled solution is to use the multi-cut as in \cref{thm:monpos-multicutadm}.
 This amounts to approximately the same thing, but feels less \textit{ad hoc} to a category theorist (at least, it does to the author).
 
 \begin{lem}\label{thm:natded-logic-multicutadm}
@@ -3563,9 +3572,182 @@ Now we can prove the initiality theorem just as usual.
   Thus it lives in the correct category; and its freeness follows by induction as usual.
 \end{proof}
 
-[TODO: Mention $\mathbf{2}$ as a particular poset, also Heyting algebras, etc.]
+Let us now say a few words about what these type theories have to do with logic, starting with the cartesian case.
+Thus we are talking about cartesian closed lattices, which are also known as \textbf{Heyting algebras}.
+Here $\tensor$ and $\one$ coincide with $\meet$ and $\top$ (see \cref{ex:cart-typetheory}), and we write $A\hom B$ as $A\To B$.
 
-[TODO: Also mention the traditional syntax for natural deduction.]
+For a reader who thinks of logical connectives in terms of their action on truth values (e.g. ``if $A$ then $B$'' is true unless $A$ is true and $B$ is false), one way to make the connection to logic is to note that the poset $\tv$ of truth values (``false $<$ true'') is a Heyting algebra, where the operations $\meet,\top,\join,\bot,\To$ correspond to ``and'', ``true'', ``or'', ``false'', and ``implies''.
+Thus, given any relational multigraph \cG (whose objects we may call \textbf{propositional variables}), and any assignment of truth values to its objects such that all of its inequalities ``are true'', we have a map of relational multigraphs $\cG\to\tv$, and hence an induced map $\F\bHeyting\cG \to \tv$ of Heyting algebras; so any derivable judgment $A_1,\dots,A_n \types B$ is also true.
+
+As a special case, if \cG has no nontrivial relations, then any derivable judgment $()\types B$ exhibits $B$ as a \textbf{tautology}: a statement that becomes true whatever truth values are substituted for its propositional variables.
+For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))$ as a tautology:
+\begin{mathpar}
+  \tiny
+  \let\mymeet\meet
+  \def\meet{\mathord{\mymeet}}
+  \let\myjoin\join
+  \def\join{\mathord{\myjoin}}
+  \inferrule*{
+    \inferrule*{
+      \inferrule*{
+        \inferrule*{\inferrule*{ }{A\meet (B\join C) \types A\meet (B\join C)
+          }}{A\meet (B\join C) \types B\join C}\\
+        \inferrule*{\inferrule*{
+            \inferrule*{\inferrule*{\inferrule{ }{
+                  A\meet (B\join C)\types A\meet (B\join C)
+                }}{A\meet (B\join C) \types A
+              }}{A\meet (B\join C),B \types A} \\
+            \inferrule*{\inferrule*{ }{
+                B\types B
+              }}{A\meet (B\join C),B \types B}
+          }{A\meet (B\join C),B \types A\meet B
+        }}{A\meet (B\join C),B \types (A\meet B) \join (A\meet C)}\\
+        \text{(and dually)}
+        }{A\meet (B\join C),A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
+    }{A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
+  }{()\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
+\end{mathpar}
+Thus, the natural deduction for Heyting algebras can be used as a means to derive tautologies in propositional logic.
+It may seem that its expressivity is lacking because there is no operation corresponding to \emph{negation}, but in fact we can do pretty well by defining $\neg A$ to mean $A\To\bot$.
+For instance, here is a derivation of one of ``de Morgan's laws'' as a tautology:
+\begin{mathpar}
+  \tiny
+  \let\mymeet\meet
+  \def\meet{\mathord{\mymeet}}
+  \let\myjoin\join
+  \def\join{\mathord{\myjoin}}
+  \let\myTo\To
+  \def\To{\mathord{\myTo}}
+  \inferrule*{
+    \inferrule*{
+      \inferrule*{\inferrule*{
+          \inferrule*{ }{(A\join B)\To\bot \types (A\join B)\To\bot}\\
+          \inferrule*{\inferrule*{ }{A\types A}}{A\types A\join B
+          }}{(A\join B)\To\bot,A \types \bot
+        }}{(A\join B)\To\bot \types A\To\bot}\\
+      \inferrule*{\inferrule*{
+          \inferrule*{ }{(A\join B)\To\bot \types (A\join B)\To\bot}\\
+          \inferrule*{\inferrule*{ }{B\types B}}{B\types A\join B
+          }}{(A\join B)\To\bot,B \types \bot
+        }}{(A\join B)\To\bot \types B\To\bot}
+      }{(A\join B)\To\bot \types (A\To\bot)\meet (B\To\bot)}
+  }{()\types ((A\join B)\To\bot)\To((A\To\bot)\meet (B\To\bot))}
+\end{mathpar}
+However, not \emph{every} tautology can be derived this way.
+In particular, $\neg\neg A \To A$ (the ``law of double negation'') and $P\join \neg P$ (the ``law of excluded middle'') are not derivable, because although they hold in $\tv$, their analogues fail to hold in other Heyting algebras.
+(In fact, they hold in a Heyting algebra exactly when that Heyting algebra is a \emph{Boolean} algebra.)
+Thus, although we have something that ``looks like logic'' it is not exactly classical logic.
+
+As we will see in \cref{chap:polycats}, it is possible to enhance this type theory so that it \emph{can} prove all classical tautologies, by restoring the left/right and $\meet/\join$ symmetries.
+However, it is also valuable to observe that conversely, if we are willing to generalize our notion of ``logic'', we obtain something much more generally applicable.
+Indeed, this is really the whole point of categorical logic, as put forward in \cref{sec:intro}: we can apply ``set-like'' reasoning to objects of arbitrary categories as long as we are careful about what sort of reasoning we use.
+
+So far, we have applied this principle mainly to equational reasoning about different kinds of terms.
+However, we now have a type theory that is powerful enough to codify significant amounts of mathematical reasoning (though not yet anything involving quantifiers; that will come in \cref{chap:fol}).
+Thus, we can lift our notion of ``generalized logic'' back to informal mathematical reasoning.
+It takes a bit of practice to learn to write informal mathematical proofs that could (at least in principle) be codified in such a generalized logic, but it is eminently possible.
+The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra'' (whereas ordinary mathematical reasoning is only valid in Boolean algebras).
+(Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra.)
+
+The ``generalized logic'' corresponding to Heyting algebras is called \textbf{intuitionistic} or \textbf{constructive logic}, because of its similarity to the mathematics advocated by certain mathematicians calling themselves ``intuitionist'' or ``constructive'' in the early 20th century.
+While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them; the point is simply that we make our mathematics more general by generalizing our logic.
+
+Having made these observations in the case of \emph{cartesian} closed lattices, it is natural to entertain similar ideas for other values of \fS.
+Roughly speaking, the names of the corresponding ``generalized logics'' are:
+\begin{center}
+\begin{tabular}{c|c}
+  $\fS$ & generalized logic\\\hline
+  cartesian & intuitionistic logic\\
+  symmetric & linear logic\\
+  semicartesian & affine logic\\
+  relevance & relevance logic
+\end{tabular}
+\end{center}
+To be precise, all of these logics should additionally be qualified as ``intuitionistic'', since there are also ``classical'' versions of linear, affine, and relevance logics.
+Moreover, at least in the linear case one should also add a phrase like ``multiplicative-additive''\footnote{In the lingo of linear logic, $\tensor$ is a ``multiplicative'' connective, while $\meet$ and $\join$ are ``additive''.
+  Classical linear logic also includes another multiplicative connective called $\parr$ that is dual to $\tensor$ in the same way that $\join$ is dual to $\meet$.}, because the name ``linear logic'' usually refers to a system with some additional modalities (see [TODO]).
+
+The name ``linear logic'' comes from the same intuition as our use of ``linearity'' to describe \cref{thm:multicat-linear}.
+The name ``affine logic'' is similarly inspired by the fact that while a linear transformation $T(\vec v) = A\vec v$ must use its argument exactly once in each term, an affine transformation $T(\vec v) = A\vec v + \vec b$ also has terms that do not use its argument at all.
+Both of these logics are primarily studied by computer scientists; the distinction between $\tensor$ and $\meet$ can be interpreted in terms of ``resource usage''.
+
+Finally, ``relevance logic'' was invented by philosophers seeking to avoid certain facts about implication that they regarded as ``paradoxical'', such as $A\To (B\To A)$.
+The straightforward derivation of this tautology in our type theory requires weakening:
+\begin{mathpar}
+  \inferrule*{\inferrule*{\inferrule*[Right=weakening]{A\types A}{A,B\types A
+      }}{A\types (B\To A)
+    }}{()\types A\To (B\To A)}
+\end{mathpar}
+and in fact the type theory for closed relevance monoidal lattices cannot derive $()\types A\hom (B\hom A)$ (although this is not obvious).
+
+The most commonly used relevance logics satisfy other principles that our type theory does not, notably the distributive law $A\meet (B\join C) \cong (A\meet B)\join (A\meet C)$ (note that our derivation of this above also used weakening).
+Of course, any closed monoidal lattice satisfies the distributive law $A\tensor (B\join C) \cong (A\tensor B)\join (A\tensor C)$, but as we have observed, both weakening and contraction are necessary to force $\tensor$ to coincide with $\meet$.
+It is possible to formulate type theories that ensure the $\meet/\join$ distributive law as well, but this requires a fancier notion of generalized multicategory, so we postpone it to [TODO].
+
+Finally, let us end this section by explaining the terminology ``natural deduction''.
+We return to the cartesian case, and since $\tensor$ and $\one$ coincide here with $\meet$ and $\top$ we omit the former.
+Moreover, in the presence of contraction and weakening, the rules $\idfunc$, $\bot E$, $\joinE$, and $\homE$ have the following equivalent forms:
+\begin{mathpar}
+  \inferrule{A\in \Gamma}{\Gamma\types A}\;\idfunc\and
+  \inferrule{\Gamma\types \bot}{\Gamma\types C}\;\bot E\and
+  \inferrule{
+    \Gamma\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+  }{\Gamma \types C}\;\joinE\and
+  \inferrule{\Gamma\types A\hom B \\ \Gamma\types A}{\Gamma\types B}\;\homE
+\end{mathpar}
+Let us also suppose for simplicity that $\cG$ contains no nonidentity morphisms.
+Then all the rules have the property that the antecedent of the conclusion is arbitrary, while the antecedents of the premises are the same, perhaps with a new type added.
+In other words, as we proceed down a derivation tree, we only ever \emph{remove} types from the context.
+
+This leads to the following reformulation of the theory.
+We omit the contexts ``$\Gamma\types$'' from all judgments in a derivation tree, writing simply the consequent $A$.
+In place of the $\idfunc$ rule deriving $\Gamma\types A$, we write simply ``$A$'' without any justification, and call it a \emph{hypothesis}.
+Finally, when a type $A$ is removed from the context on our way down the tree, we cross off that hypothesis everywhere that it appears above, and say that the hypothesis has been \emph{discharged}.
+For instance, the above derivation of the distributive law would be written in this style as
+\begin{mathpar}
+  \inferrule*[Right=$\ToI$]{
+    \inferrule*[Right=$\joinE$]{
+      \inferrule*{\cancel{A\meet (B\join C)}}{B\join C}\\
+      \inferrule*{\inferrule*{
+        \inferrule*{\cancel{A\meet (B\join C)}}{A}\\
+        \cancel{B}
+        }{A\meet B}}{(A\meet B)\join (A\meet C)}\\
+      \inferrule*{\inferrule*{
+        \inferrule*{\cancel{A\meet (B\join C)}}{A}\\
+        \cancel{C}
+        }{A\meet C}}{(A\meet B)\join (A\meet C)}\\
+    }{(A\meet B)\join (A\meet C)}
+  }{(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))}
+\end{mathpar}
+Note that there is some ambiguity; it is not obvious from looking at the derivation which rule caused which hypothesis to be discharged.
+In the above example, the hypotheses $B$ and $C$ are discharged by the $\joinE$ rule, while the hypothesis ${A\meet (B\join C)}$ (everywhere it appears) is discharged by the $\ToI$ rule.
+Sometimes people annotate the discharges in some way to indicate this.
+
+However, the real point of a representation like this is that the \emph{process of writing it}, from the top down, is supposed to mirror the process of informal reasoning.
+First we assume $A\meet (B\join C)$, and deduce from it $B\join C$.
+Then we use $B\join C$ by assuming $B$ and $C$ in two separate cases (sub-derivations), and in each of those cases we separately deduce ${(A\meet B)\join (A\meet C)}$.
+Thus, completing those cases (and ending our assumptions of $B$ and $C$) we have $(A\meet B)\join (A\meet C)$.
+Finally, ending our assumption of $A\meet (B\join C)$, we have $(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))$.
+
+Whether or not this aim of mirroring informal reasoning is achieved, it is why this sort of representation is called \emph{natural deduction}.
+In fact this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
+
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:cart-typetheory}
+  Prove \cref{thm:semicart-multicat-repr,thm:cart-multicat-repr} in our posetal type theories.
+  Specifically:
+  \begin{enumerate}
+  \item If we have exchange and weakening, prove that $\one \cong \unit$.
+  \item If we have exchange, weakening, and contraction, prove that $A\tensor B \cong A\times B$.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:cocartesian-typetheory}
+  Is there a well-behaved type theory (having admissible cut and an initiality theorem) corresponding to the ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
+  \textit{(As of this writing, the answer is not known to the author.)}
+\end{ex}
 
 
 \section{Intuitionistic sequent calculus}
@@ -3622,7 +3804,7 @@ But don't belabor them, and perhaps just cite references like~\cite{cs:wkdistrib
 \section{Classical logic}
 \label{sec:classical}
 
-[Cartesian polycategories]
+[Cartesian polycategories.  I expect that the polycomposition coming from their definition as generalized polycategories includes the ``mix rule'', and is sufficient for a direct structural proof of cut admissibility.]
 
 
 \section{Posetal props and symmetric monoidal posets}
@@ -3630,6 +3812,7 @@ But don't belabor them, and perhaps just cite references like~\cite{cs:wkdistrib
 
 Now let us consider sequents $\Gamma\types\Delta$ where the commas on both sides are intended to represent the \emph{same} tensor product $\tensor$.
 For simplicity, we assume this tensor product is symmetric, so that we have an exchange rule on both sides.
+[TODO: Exactly how are we dealing with exchange in this theory?  Is it admissible?]
 This leads us to consider different identity and cut rules (in fact, two identity rules):
 \begin{mathpar}
   \inferrule*{ }{()\types()}\and
