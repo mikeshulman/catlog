@@ -336,15 +336,16 @@ However, this does not make the process trivial, and it can still yield valuable
 
 As a simple example of nontriviality, if an arrow is constructed by applying a universal property, then that property automatically determines some of the composites of that arrow.
 For instance, a pairing $\pair{f}{g}:X\to A\times B$ must compose with the projections $\pi_1:A\times B\to A$ and $\pi_2:A\times B\to B$ to give $f$ and $g$ respectively.
-Thus, composites of this sort do not need to be ``built in'' by hand; this provides an interesting point of view on the value of universal properties.
+Thus, these composites do not need to be ``built in'' by hand.
 
 Another interesting fact about cut-elimination is that the composition it produces is automatically associative (and unital), despite the fact that we do not apparently put associativity in anywhere (even implicitly).
 Do\v{s}en~\cite{dosen:cutelim-cats}\footnote{[TODO: Read Do\v{s}en and Petri\'{c}, \textit{Proof-Theoretical Coherence}, \url{http://www.mi.sanu.ac.rs/~kosta/publications.htm}]} uses this to ``explain'' or ``justify'' the definition of category (and other basic category-theoretic notions) in terms of cut-elimination.
 Of course, for our intended audience of category theorists it is cut-elimination, rather than associativity, that requires explanation and justification; but nevertheless the relationship is intriguing.
 
-Foremost among the concrete categorical applications of cut-elimination is that it simplifies the presentation of free structures by isolating a class of \emph{canonical forms}, reducing the need for equivalence relations.
-For instance, when composition is obtained by cut-elimination, we can present the free category on a directed graph without needing to impose any equivalence relation (because associativity comes for free).
-In more complicated situations we still need an equivalence relation, but we can make do with a much simplified one.
+Both of these facts are instances of an underlying general principle: by presenting a free categorical structure without explicit reference to composition, we are free to then \emph{define} its composition as an operation on its already-existing morphisms, and we can choose this definition so as to ensure that various desirable properties hold automatically.
+This eliminates or reduces the need for quotienting by equivalence relations in the presentation of a free structure.
+Put differently, a type theory isolates a class of \emph{canonical forms} for morphisms.
+In simple cases every morphism has exactly one canonical form, so that no equivalence relation on the canonical forms is needed; in more complicated situations we still need an equivalence relation, but we can make do with a much simplified one.
 
 Another characteristic advantage of categorical logic is that it enables us to use ``set-like'' reasoning to prove things about arbitrary categories, by means of ``term calculi'' associated to its presentations of free structures.
 From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
@@ -1534,15 +1535,21 @@ This is also true quite generally.
 A natural deduction includes both introduction and elimination rules, so we will always be able to introduce a type and then eliminate it, essentially ``doing nothing''.
 By contrast, in a sequent calculus we have ``only introduction rules'' (of both left and right sorts), so this cannot happen.
 
+\begin{rmk}
+  In \cref{sec:intro} we mentioned that by presenting free categorical structures without explicit reference to composition, type theory enables us to \emph{define} composition in such a way as to ensure that various desirable properties hold as exact equalities.
+  The point here is just that sequent calculus and natural deduction make \emph{different} choices of which properties to ensure by their definitions of composition.
+  Roughly speaking, sequent calculus chooses to make the \emph{defining equations} of universal properties hold exactly (e.g.\ the composites of a paired morphism $\pair f g : X \to A\times B$ with $\pi_1$ and $\pi_2$ are exactly $f$ and $g$ respectively); this is what the ``principal case'' of its cut-admissibility proof does.
+  On the other hand, natural deduction chooses to make the \emph{naturality}\footnote{This is not actually the origin of the term ``natural deduction'', but it serves as a useful mnemonic.} of universal properties hold exactly; the equality between the two distinct sequent calculus derivations above expresses the naturality of pairing $\pair f g : X \to A\times B$ with respect to precomposition by $\pi_1$.
+\end{rmk}
+
 In fact, in the simple case of categories with products, there are tricks enabling us to eliminate {both} kinds of redundancy, and thereby do without any ``$\equiv$'' for both the sequent calculus and the natural deduction.
 (For sequent calculus the trick is called ``focusing'', and for natural deduction the trick is called ``canonical/atomic terms''.)
 However, in even slightly more complicated theories the analogous tricks do not eliminate $\equiv$ completely (though they do reduce its complexity).
 Thus, we will not spend any time on these tricks, but instead bite the bullet and deal with $\equiv$.
-% ; we will return to the tricks in \cref{cha:canonical}.
 
 It is convenient to describe the rules for $\equiv$ using a term syntax for derivations, as introduced in \cref{sec:category-cutadm}.
 If we think of $A\times B$ as the ``type of pairs consisting of one element of $A$ and one element of $B$'', then it is natural to represent the $\timesI/\timesR$ rule as a pair of terms, one in $A$ and one in $B$.
-This idea leads us to write the natural deduction rules from \cref{sec:natded-mslat} as:
+In the case of natural deduction, this idea leads us to annotate the rules from \cref{sec:natded-mslat} as follows:
 \begin{mathpar}
   \inferrule{\types X\type}{x:X\types x:X}\;\idfunc\and
   \inferrule{f\in \cG(A,B) \\ x:X\types M:A}{x:X\types f(M):B}\;fI\and
@@ -1623,7 +1630,7 @@ This completes the definition of the \textbf{unary type theory for categories wi
 \begin{rmk}\label{rmk:beta-reduction}
   Note that unlike the equalities $h\circ (g\circ f) \equiv (h\circ g)\circ f$ from \cref{sec:category-cutful}, the $\beta$- and $\eta$-conversions are intutively ``directional'', with one side being ``simpler'' than the other.
   This suggests that we should be able to ``reduce'' an arbitrary term to a ``simplest possible form'' by successively applying $\beta$- and $\eta$-conversions.
-  Such is indeed the case (although for technical reasons the $\eta$-conversion is usually applied in the less intuitive right-to-left direction and called an ``expansion'' rather than a ``reduction''.).
+  Such is indeed the case (although for technical reasons the $\eta$-conversion is usually applied in the less intuitive right-to-left direction and called an ``expansion'' rather than a ``reduction'').
   This \emph{process of reduction} (and expansion) belongs to the ``computational'' side of type theory, which (though of course important in its own right) is somewhat tangential to our category-theoretic emphasis, so we will not discuss it in detail.
   % (However, in \cref{cha:canonical} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.)
 \end{rmk}
@@ -2007,6 +2014,9 @@ We formulate this as a general principle:
 \begin{equation}\label{princ:independence}
   \text{Each rule in a type theory should refer to only one operation}.\tag{$\ast$}
 \end{equation}
+(Like any general principle,~\eqref{princ:independence} is not always strictly adhered to.
+For instance, we haven't discussed the $\equiv$ relation that have to be imposed on sequent calculus derivations to present non-posetal free categories, but these turn out to involve ``commutativity'' relations between \emph{different} type operations.
+This is arguably another advantage of natural deduction.)
 
 Note that despite~\eqref{princ:independence}, we can often obtain nontrivial results about the interaction of operations.
 For instance, in \cref{ex:mslat-monoid} you showed that $A\meet \top\cong A$, even though $\meet$ and $\top$ are distinct operations with apparently unrelated rules.
@@ -3748,7 +3758,7 @@ So regardless of the \emph{notation}, this representation is close to informal r
 \end{ex}
 
 \begin{ex}\label{ex:cocartesian-typetheory}
-  Is there a well-behaved type theory (having admissible cut and an initiality theorem) corresponding to the ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
+  Is there a well-behaved type theory (i.e.\ having admissible cut and an initiality theorem) corresponding to the ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
   \textit{(As of this writing, the answer is not known to the author.)}
 \end{ex}
 
@@ -3756,12 +3766,6 @@ So regardless of the \emph{notation}, this representation is close to informal r
 \section{Intuitionistic sequent calculus}
 \label{sec:logic-seqcalc}
 
-[TODO: Relative to natural deduction, sequent calculus is more like direct category-theoretic construction by directly applying universal properties on both sides, rather than talking about ``elements'' on the right only.
-But sequent calculus still enjoys cut-elimination, so it's sort of a halfway point between diagrammatic category theory and ``fully internal'' natural deduction-style theories where objects ``contain terms''.
-We could make that more explicit by introducing sequent calculus terms that mirror universal properties, like pairing and copairing as well as post- and pre-composition.
-That would be interesting to do, perhaps much earlier on; should we?.]
-
-[There are also ``Hilbert systems'', about which the less said the better.]
 
 
 \section{Simply typed $\lambda$-calculus}
