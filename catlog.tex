@@ -3732,6 +3732,9 @@ Finally, ending our assumption of $A\meet (B\join C)$, we have $(A\meet (B\join 
 Whether or not this aim of mirroring informal reasoning is achieved, it is why this sort of representation is called \emph{natural deduction}.
 In fact this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
 
+[TODO: Something about how informal reasoning involves a context of assumptions, and also assuming and discharging those assumptions.
+So regardless of the \emph{notation}, this representation is close to informal reasoning.]
+
 
 \subsection*{Exercises}
 
@@ -3753,40 +3756,53 @@ In fact this representation with discharged hypotheses came first, and only late
 \section{Intuitionistic sequent calculus}
 \label{sec:logic-seqcalc}
 
+[TODO: Relative to natural deduction, sequent calculus is more like direct category-theoretic construction by directly applying universal properties on both sides, rather than talking about ``elements'' on the right only.
+But sequent calculus still enjoys cut-elimination, so it's sort of a halfway point between diagrammatic category theory and ``fully internal'' natural deduction-style theories where objects ``contain terms''.
+We could make that more explicit by introducing sequent calculus terms that mirror universal properties, like pairing and copairing as well as post- and pre-composition.
+That would be interesting to do, perhaps much earlier on; should we?.]
 
-
-\section{Cartesian monoidal categories}
-\label{sec:cartmoncat}
-
-We now move back up the ladder from posets to categories.
-In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible; otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
-
-In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case and also the easiest.
-
-[TODO: Use the same context all the way through to make all the structural rules admissible.]
+[There are also ``Hilbert systems'', about which the less said the better.]
 
 
 \section{Simply typed $\lambda$-calculus}
 \label{sec:stlc}
+\label{sec:cartmoncat}
 
-[TODO: Should this be a separate section, or part of the previous one?]
+We now move back up the ladder from posets to categories.
+In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible.
+Otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
+
+In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case and also the easiest.
+As remarked at the end of \cref{sec:logic}, in this case we can omit $\tensor,\one$ and reformulate the remaining rules so that on our way down the derivation tree we only ever remove types from the context.
+It turns out that when we annotate it by terms, this reformulation is also sufficient to make all the structural rules admissible, essentially because we can propagate them all the way up the derivation tree.
+
+[TODO.  Should we mention NNOs and primitive recursion here?]
 
 
 \section{Symmetric monoidal categories}
 \label{sec:symmoncat}
 
 [TODO: I think we can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
-I've never seen that done before, but I think it's more standard that we can make exchange, contraction, and weakening all admissible by allowing the variable rule to extract from anywhere in the context.]
+I've never seen that done before.]
 
 [Can we also make sense of ``multisets''?]
 
-[Also include closedness.]
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:semicart-relevance-strucadm}
+  Is it possible to formulate a theory for semicartesian or relevance monoidal categories in which the appropriate structural rules are admissible?
+  \textit{(As of this writing, the author suspects the answer is yes for one of them, but doesn't know about the other.)}
+\end{ex}
 
 
 \section{Algebraic theories and operads}
 \label{sec:algthy-opd}
 
-[A multigraph is also known as a signature of function symbols.  An arbitrary set of equations between terms can be added to $\equiv$, thereby describing a ``presented'' rather than a free categorical structure.  For cartesian monoidal categories, this is a (multi-sorted) algebraic theory.  For (symmetric) monoidal categories, it is a syntactic approach to (colored) operads.]
+[A multigraph is also known as a signature of function symbols.
+An arbitrary set of equations between terms can be added to $\equiv$, thereby describing a ``presented'' rather than a free categorical structure.
+(Should that be done earlier?)
+For cartesian monoidal categories, this is a (multi-sorted) algebraic theory.
+For (symmetric) monoidal categories, it is a syntactic approach to (colored) operads.]
 
 
 
