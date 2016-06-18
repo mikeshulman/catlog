@@ -739,7 +739,7 @@ We will call this property \textbf{terms are derivations} or \textbf{type-checki
       & g && h }} \]
 
   Of course, this ``internal'' tree representation of a term is nothing but the corresponding derivation flipped upside-down.
-  So in that sense \cref{thm:category-tad} is actually saying \emph{less} than one might think; the actual work is being done by the silent step of parsing.
+  So in that sense \cref{thm:category-tad} is actually saying \emph{less} than one might think: the derivation tree is actually being constructed by the silent step of parsing, while the type-checking algorithm consists only of \emph{labeling} the nodes of this tree by rules in a consistent manner.
   We will not say much more about parsing, however (though we discuss it a bit further in \cref{chap:dedsys}); we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
 \end{rmk}
 
@@ -880,7 +880,7 @@ A more category-theoretic way to say what is going on is that the morphisms in t
 We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
 
 We could prove the initiality theorem by appealing to this known fact about free categories, but as before, we prefer to give a more explicit proof to illustrate the patterns of type theory.
-For this purpose, we have to introduce terms, as we did in the previous section for the cut-ful theory.
+For this purpose, it is convenient to first introduce terms, as we did in the previous section for the cut-ful theory.
 We can do this with terms directly constructed so that their parse tree will mirror the derivation tree, for instance writing the rules as
 \begin{mathpar}
   \inferrule{ }{\idfunc_A:(A\types A)}\,\idfunc\and
@@ -958,21 +958,53 @@ Now we observe that terms are still derivations in this theory.
 Note that the terms in this theory are simpler than those in the cut-ful theory in that we don't need the type subscripts on the composition operation $\comp{A}$.
 This is because each rule composes with only one generator $f$, and each such generator ``knows'' its domain, so the premise of the rule is determined by the conclusion.
 
-However, the introduction of abstract variables appears to break the converse property (that derivations determine unique terms).
+However, the introduction of abstract variables appears to break the converse property (that derivations determine unique terms), because we have to choose a name for the variable.
 As written on the page, the judgments $x:A \types f(x):B$ and $y:A \types f(y):B$ are distinct; but they represent the same derivation (if we remove the term annotations) and the same morphism:
 \begin{mathpar}
   \inferrule*[right=$f$]{\inferrule*[Right=$\idfunc$]{ }{x:A\types x:A}}{x:A\types f(x):B}
   \and
   \inferrule*[right=$f$]{\inferrule*[Right=$\idfunc$]{ }{y:A\types y:A}}{y:A\types f(y):B}
 \end{mathpar}
-So there is still an equivalence relation hanging around in the background, but it is a fairly harmless one; it just says that we can rename all the variables as long as we do it consistently.
-(When we consider theories with bound variables later on, the meaning of ``consistently'' will become more complicated, but the principle is the same.)
+Of course, mathematicians are so used to renaming variables as needed that this may seem a triviality.
+However, when treating syntax (symbols written on a page) as a mathematical object (which we are doing --- we are using it to represent morphisms in a free category), the choice of variable names is a real ambiguity that has to be resolved.
+
+There are essentially two ways to do this.
+The first is to decide, once and for all, on a single variable name (say, $x$) to use for \emph{all} our derivations.
+Then we cannot write $y:A \types f(y):B$ at all, and so every derivation does determine a unique term.
+For reasons to be explained in \cref{chap:simple},
+we call this the \textbf{de Bruijn method}. %; it is certainly the simplest in our present case.
+
 \label{sec:alpha}%
-In type-theoretic lingo, the equivalence relation of renaming variables is called \textbf{$\alpha$-equivalence}, and unless explicitly stated otherwise we \emph{always} consider terms modulo $\alpha$-equivalence.\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
-With this modification, we can say that a derivation does determine a unique ($\alpha$-equivalence class of) term.
+The second method is to allow arbitrary choices of variable names (taken from some standard alphabet), but impose an equivalence relation that identifies $x:A \types f(x):B$ with $y:A \types f(y):B$ for any two variables $x$ and $y$, and
+% Formally, we may introduce this using a judgment $(x:A \types M:B) \equiv (y:A \types N:B)$ generated by the following rule
+% \begin{mathpar}
+%   \inferrule*{x,y \text{ any variables}}{(x:A\types x:A)\equiv (y:A\types y:A)}
+% \end{mathpar}
+% together with the usual equivalence relation and congruence rules:
+% \begin{mathpar}
+%   \inferrule{x:A\types M:B}{(x:A\types M:B)\equiv (x:A\types M:B)}\and
+%   \inferrule{(x:A \types M:B) \equiv (y:A \types N:B)}{(y:A \types N:B) \equiv (x:A \types M:B)}\and
+%   \inferrule{(x:A \types M:B) \equiv (y:A \types N:B) \\ (y:A \types N:B) \equiv (z:A \types P:B)}{(x:A \types M:B) \equiv (z:A \types P:B)}\and
+%   \inferrule{(x:A \types M:B) \equiv (y:A \types N:B) \\ f\in\cG(B,C)}{(x:A\types f(M):B)\equiv (y:A\types f(N):B)}
+% \end{mathpar}
+% Informally, this equivalence relation just means that
+more generally, says that we can rename all the variables as long as we do it consistently.
+In type-theoretic lingo this relation is called \textbf{$\alpha$-equivalence} (because it is the ``first'' kind of equivalence between terms; in \cref{sec:catprod} we will meet the ``second'' kind, $\beta$-conversion).
+Thus, we can say that a derivation determines a unique $\alpha$-equivalence class of terms.
+
+Both the de Bruijn method and the method of $\alpha$-equivalence are fairly harmless and trivial-seeming in our current simple theory.
+However, we will see in \cref{chap:simple} that both can become tricky when generalizing to more complicated theories.
+In general, the de Bruijn method is theoretically cleaner, and better for implementation in a computer; but, readability for human mathematicians is often improved by using different named variables in different places.
+Thus, we will generally do the latter, and unless explicitly stated otherwise we \emph{always} consider terms modulo $\alpha$-equivalence.
+However, we will continue to remark occasionally on the de Bruijn method.
+
+%\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
+
 
 Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:category-cutadm} is not just a statement about derivability.
-Rather, its proof constructs, recursively, an \emph{operation} on derivations, and hence on terms: given derivable term judgments $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivable judgment $x:A\types P:C$.
+Indeed, the proof that we gave is ``constructive'', in the strong sense that it actually determines an \emph{algorithm} for transforming a pair of derivations of $A\types B$ and $B\types C$ into a derivation of $A\types C$.
+The inductive nature of the proof means that this algorithm is recursive.
+And because terms uniquely represent derivations, it can equivalently be considered an operation on derivable term judgments.
 For instance, suppose we start with $x:A \types f(x):B$ and $y:B\types h(g(y)):C$; then the construction proceeds in the following steps.
 \begin{itemize}
 \item The second derivation ends with an application of $h$, so we apply the inductive hypothesis to $x:A \types f(x):B$ and $y:B\types g(y):D$.
@@ -993,11 +1025,17 @@ The proof of \cref{thm:category-cutadm} \emph{defines} the notion of substitutio
 When terms are regarded as syntax in their own right rather than as mere proxies for derivations, it is common to define substitution as an operation on terms first, and then to state (the analogue of) \cref{thm:category-cutadm} as ``if $x:A\types M:B$ and $y:B\types N:C$ are derivable, then so is $x:A\types M[N/y]:C$''.
 From this point of view, one says that \textbf{substitution is admissible} in the cut-free type theory for categories under \cG.
 
+\begin{rmk}
+  Substitution is already a place where the use of distinct named variables (and hence $\alpha$-equivalence) makes the exposition substantially clearer for a human reader.
+  We even teach our calculus students (or, at least, the author does) that when composing functions $f$ and $g$, it is clearer to use different variables for the two functions, writing $y=f(x)$ but $z=g(y)$ and then plugging $f(x)$ in place of $y$ in the second equation to get $z = g(f(x))$.
+  It is possible to get away with using the same variable for the inputs of all functions, but it is much easier to get confused that way.
+\end{rmk}
+
 Before proving the initiality theorem, let us first observe that substitution does, in fact, define a category:
 
 \begin{lem}\label{thm:category-subassoc}
   Substitution is associative: given $x:A\types M:B$ and $y:B\types N:C$ and $z:C\types P:D$, we have $P[N/z][M/y] = P[N[M/y]/z]$.
-  (This is a literal equality of terms or derivations.)
+  (This is a literal equality of derivations, or of terms (modulo $\alpha$-equivalence).)
 \end{lem}
 \begin{proof}
   By induction on the derivation of $P$.
@@ -1012,7 +1050,7 @@ Before proving the initiality theorem, let us first observe that substitution do
 \end{proof}
 
 \begin{thm}\label{thm:category-initial-2}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivable term judgments $x:A\types M:B$ in the cut-free type theory for categories under \cG.
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms are the derivable term judgments $x:A\types M:B$ in the cut-free type theory for categories under \cG (modulo $\alpha$-equivalence).
 \end{thm}
 \begin{proof}
   Let $\F\bCat\cG$ be defined as in the statement, with composition given by substitution constructed as in \cref{thm:category-cutadm}.
@@ -1027,7 +1065,7 @@ Before proving the initiality theorem, let us first observe that substitution do
   This follows by yet another induction on the derivation of $N$.
 \end{proof}
 
-Note that we did not have to impose any equivalence relation on the terms in this theory (apart from the fairly trivial $\alpha$-equivalence).
+Note that we did not have to impose any equivalence relation on the terms in this theory (apart from the fairly trivial $\alpha$-equivalence, which could also be avoided using the de Bruijn method).
 This suggests a second, more interesting, general statement about categorical logic: it is
 {a syntax for generating free categorical structures using derivations from rules}
 \emph{that yield elements in canonical form}, eliminating the need for quotients.
@@ -1605,6 +1643,7 @@ We can describe this more formally with an additional judgment ``$x:X\types M\eq
 Note that in addition to the $\beta$- and $\eta$-conversions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality.
 As remarked in \cref{sec:category-cutful}, all our equality judgments $\equiv$ will be equivalence relations with such a congruence property for all the primitive rules.
 In general we will not bother to state these ``standard'' rules for $\equiv$, but since this is our first encounter with such a relation involving ``abstract variable'' term syntax we have included them explicitly.
+Finally, although we have not mentioned it explicitly, we will also always include rules for $\alpha$-equivalence.
 
 \begin{figure}
   \centering
