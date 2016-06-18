@@ -1779,6 +1779,15 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   Deduce that $\F\bPrCat\cG$ satisfies a universal property relative to the 2-category of categories with products and functors that preserve them up to isomorphism.
 \end{ex}
 
+\begin{ex}\label{ex:catprod-induction}
+  Here is another way to prove the result of \cref{ex:catprod-flexible}.
+  \begin{enumerate}
+  \item Use the initiality of $\F\bPrCat\cG$ to show that if \cM has finite products and $Q:\cM\to \F\bPrCat\cG$ preserves finite products strictly, then any map of directed graphs $\cG \to \cM$ that lifts the inclusion $\cG \to \F\bPrCat\cG$ extends to a section $\F\bPrCat\cG \to \cM$ of $Q$ in \bPrCat.\label{item:catprod-induction}
+  \item The results of~\cite{bkp:2dmonads} imply that the 2-category of categories with products and functors that preserve products in the usual up-to-isomorphism sense has 2-categorical limits called products, inserters, and equifiers, and the projections of these limits preserve products strictly.
+    Use this, and~\ref{item:catprod-induction}, to prove that $\F\bPrCat\cG$ satisfies a universal property relative to this 2-category.
+  \end{enumerate}
+\end{ex}
+
 
 \section{Categories with coproducts}
 \label{sec:catcoprod}
