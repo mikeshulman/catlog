@@ -66,6 +66,8 @@
 % coproduct
 \def\plusE{\mathord{+}E}
 \def\plusI{\mathord{+}I}
+\def\plusL{\mathord{+}L}
+\def\plusR{\mathord{+}R}
 \def\inl{\mathsf{inl}}
 \def\inr{\mathsf{inr}}
 \def\acase#1#2{\mathsf{match}_{#1+#2}}
@@ -998,9 +1000,6 @@ In general, the de Bruijn method is theoretically cleaner, and better for implem
 Thus, we will generally do the latter, and unless explicitly stated otherwise we \emph{always} consider terms modulo $\alpha$-equivalence.
 However, we will continue to remark occasionally on the de Bruijn method.
 
-%\footnote{There is even a technical trick called ``de Bruijn indices'' that enables a computer to represent terms without having to choose variable names at all, avoiding the issue entirely.  But this notation is so difficult for humans to understand that (according to Conor McBride) Bob Atkey once described it as a reverse Turing test.}
-
-
 Now that we have a nice notation to distinguish between derivations, we should observe that \cref{thm:category-cutadm} is not just a statement about derivability.
 Indeed, the proof that we gave is ``constructive'', in the strong sense that it actually determines an \emph{algorithm} for transforming a pair of derivations of $A\types B$ and $B\types C$ into a derivation of $A\types C$.
 The inductive nature of the proof means that this algorithm is recursive.
@@ -1853,6 +1852,45 @@ We treat the bottom element similarly:
   \inferrule{X\types \bot \\\types C\type}{X\types C}
 \end{mathpar}
 
+Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts}, by annotating the judgments with terms.
+Most of the annotations are easy to guess, but the one for $\plusE$ merits some discussion.
+Categorically, $\plusE$ expresses the universal property of the coproduct; so the analogous rule $\plusL$ in a sequent calculus could be annotated by a notation for ``copariring of morphisms'':
+\begin{mathpar}
+  \inferrule{P:(A\types C) \\ Q:(B\types C)}{[P,Q]:(A+B\types C)}
+\end{mathpar}
+Since $\plusE$ is obtained from this by composing with an arbitrary $x:X\types M:A+B$, we might try to write it as $x:X\types [P,Q](M):C$.
+However, we also have to take into account that the morphisms $P$ and $Q$ are also described as terms using abstract variables.
+
+If we use the de Bruijn method for variables as described in \cref{sec:alpha}, with unique variable $x$, then we would have $x:A\types P:C$ and $x:B\types Q:C$, and so we \emph{could}, without technical ambiguity, just write $[P,Q]$ leaving the variables as-is.
+However, this would be rather confusing and contrary to mathematical intuition.
+For instance, if $P=f(x)$ and $Q=g(k(x))$ while $M=h(x)$, then $\plusE$ would give us $x:X\types [f(x),g(k(x))](h(x)):C$; but the expressions appearing in the copair $[-,-]$ do not actually ``depend on $x$'' in the same sense that the argument $h(x)$ does.
+If we apply $\alpha$-equivalence instead, we could use different variables for these, such as $x:X\types [f(u),g(k(v))](h(x)):C$, but this is still confusing because it appears to depend on the values of $u$ and $v$.
+(Moreover, when we generalize away from unary type theories in \cref{chap:simple} such a notation would become actually ambiguous.)
+
+The problem, of course, is that the expressions in $[-,-]$ should look like \emph{functions}, not \emph{the values of functions}.
+If $f$ is a function, then its value at $x$ is generally denoted $f(x)$; but if we have an expression containing the variable $x$, such as $x^2$, how do we denote the function of $x$ it represents?
+A not uncommon notation is $x\mapsto x^2$; a more common one in type theory is $\lambda x.x^2$.
+In both notations the variable $x$ is now ``bound'' or ``dummy'', like the integration variable in a definite integral, so that the expression as a whole doesn't depend on any value it might take: the notations $\lambda x.x^2$ and $\lambda y.y^2$ both simply denote ``the function that squares its argument''.
+(Note that this is also a sort of $\alpha$-equivalence.)
+
+The specific letter $\lambda$ is generally reserved for type theories containing function types (representing categorical internal-homs), so at present we use a similar notation but omit the $\lambda$.
+It is a common convention in type theory that a prefixed variable followed by a period, such as the ``$x.$'' in $\lambda x.x^2$, is bound; in the term for $\plusE$ we simply use this notation without any $\lambda$.
+Thus we might write $x:X\types [u.f(u),v.g(k(v))](h(x)):C$, with $u.f(u)$ and $v.g(k(v))$ denoting functions (or morphisms) by binding the variables $u$ and $v$, and in general the rule would be
+\[ \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types [u.P,v.Q](M):C} \]
+This is the right idea, but we will instead use a different syntax that carries the same information, but is more common in type theory:
+\[ \inferrule{u:A\types P:C \\ v:B\types Q:C \\ x:X\types M:A + B}{x:X\types \acase AB(M,u.P,v.Q):C} \]
+Note that this should be parsed as $\acase AB(M,(u.P),(v.Q))$, i.e.\ the periods bind more tightly than the commas.
+The annotatation by $A+B$ is to make type-checking possible (but often we will simplify it by writing just $\case$).
+
+If we were using de Bruijn variables, then all the variables $x,u,v$ here would actually be the same, giving for instance $\acase AB(M,x.f(x),x.g(x))$.
+Although technically fine, this can be confusing since the same unique variable $x$ also occurs in $M$ itself, but unrelatedly (and with a different type) than its occurrences in the case branches.
+This is essentially the same reason why we encourage calculus students to write $F(x) = \int_0^x f(t)\,\mathrm{d}t$ rather than $F(x) = \int_0^x f(x)\,\mathrm{d}x$, even though technically they mean the same thing.
+If we allow variables with different names instead, we have to extend our notion of $\alpha$-equivalence to include the renaming of bound variables as well (which can, of course, occur anywhere inside a term).
+
+% Now the idea is that $\acase AB(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
+% The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
+% And we annotate it with the type $A+B$ in order to make type-checking possible (but often we will simplify it by writing just $\case$).
+
 \begin{figure}
   \centering
   \begin{mathpar}
@@ -1867,31 +1905,46 @@ We treat the bottom element similarly:
   \label{fig:catcoprod}
 \end{figure}
 
-Rather than take the time to analyze a natural deduction for join-semilattices, we skip directly to the analogous \textbf{unary type theory for categories with coproducts} in which we annotate the judgments with terms, shown in \cref{fig:catcoprod}.
+The complete set of rules (except for $\equiv$, which we discuss below) is shown in \cref{fig:catcoprod}.
 The two injections $A\to A+B$ and $B\to A+B$ are named $\inl$ and $\inr$ (``in-left'' and ``in-right''), while the unique morphism $\zero \to C$ is called $\abort$.
-The term $\acase AB(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
+% The term $\acase AB(M,u.P,v.Q)$ appearing in the rule $\plusE$, however, probably requires some explanation.
+The idea behind the notation $\match$ is that to evaluate $\case(M,u.P,v.Q)$ the term $M:A+B$ should be compared to the ``patterns'' $\inl(u)$ and $\inr(v)$, and according to which one it ``matches'' (looks like), we branch into either $P$ or $Q$.
+The notation $\abort(M)$ is the nullary case of this: the term $M:\zero$ is matched against all possible ways that a term of type $\zero$ could be constructed --- of which there are none, and so there are no cases to consider.
 
-To start with, this term is parsed as $\acase AB(M,(u.P),(v.Q))$: that is, the periods bind more tightly than the commas.
-Now the idea is that $\acase AB(y,f,g)$ denotes the image of $y:A+B$ under the morphism $A+B\to C$ determined by $f:A\to C$ and $g:B\to C$ (the ``coparing'', sometimes denoted $[f,g]$).
-The rule mentions an arbitrary term $M:A+B$ rather than a variable $y$ simply because it has to build in a cut.
-And we annotate it with the type $A+B$ in order to make type-checking possible (but often we will simplify it by writing just $\case$).
+% \begin{rmk}
+%   In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
+%   However, starting in \cref{chap:simple} it will be important to keep track of which variable is being bound, so we establish good habits now.
+% \end{rmk}
 
-The morphisms $f$ and $g$, however, are specified (like all morphisms in unary type theory) using term syntax, $u:A\types P:C$ and $v:A\types Q:C$ --- and, as always, the specific variables $u$ and $v$ used are irrelevant (judgments only have meaning up to $\alpha$-equivalence).
-Thus we write $u.P$ and $v.Q$ in the $\case$ term, rather than simply $P$ and $Q$, to indicate what variable is being used.
-These variables $u$ and $v$ are ``bound'', like the integration variable in a definite integral: $\acase AB(M,u.f(u),v.g(v))$ has the same meaning as $\acase AB(M,w.f(w),z.g(z))$ (without needing to change any variables anywhere else).
+We now have to consider the appropriate $\beta$- and $\eta$-conversion rules.
+However, we pause first to prove admissibility of cut, i.e.\ to construct substitution on terms, as we will need substitution to state the $\beta$ and $\eta$ rules.
 
-\begin{rmk}
-  In unary type theory it is not strictly necessary to add the prefixes ``$u.$'' and ``$v.$'' --- as long as variables are a syntactic group disjoint from all other symbols, the variable $u$ is determined as the only variable occurring in $P$, and similarly for $v$ in $Q$ (and if no variables occur in $P$, it doesn't matter what variable $u$ we mean).
-  However, starting in \cref{chap:simple} it will be important to keep track of which variable is being bound, so we establish good habits now.
-\end{rmk}
+\begin{lem}\label{thm:catcoprod-subadm}
+  Substitution is admissible in the unary type theory for categories with coproducts under \cG.
+  That is, if we have derivations of $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivation of $x:A\types N[M/y]:C$.
+\end{lem}
+\begin{proof}
+  By induction over derivations.
+  As usual for natural deduction theories, there is not much happening: for each rule that might appear last in the derivation of $y:B\types N:C$, we apply the inductive hypothesis to its premises and then re-apply the final rule.
+  The defining equations of the substitution operation are:
+  \begin{align*}
+    y[M/y] &= M\\
+    f(N)[M/y] &= f(N[M/y])\\
+    \abort(N)[M/y] &= \abort(N[M/y])\\
+    \inl(N)[M/y] &= \inl(N[M/y])\\
+    \inr(N)[M/y] &= \inr(N[M/y])\\
+    \case(N,u.P,v.Q)[M/y] &= \case(N[M/y],u.P,v.Q)\qedhere
+  \end{align*}
+\end{proof}
 
-Now that we understand the $\case$ syntax, we can write down the $\beta$-conversion rules.
+Now we proceed to $\beta$- and $\eta$-conversion.
 Dualizing the $\beta$-conversion rules for products, the $\beta$-conversion rules for coproducts should say that the map $A+B\to C$ induced by $f:A\to C$ and $g:B\to C$ yields $f$ and $g$ when composed with the coproduct injections.
 Recalling that composition is given by substitution, this leads us to write down
 \begin{align*}
   \case(\inl(y),u.P,v.Q) &\equiv P[y/u]\\
   \case(\inr(z),u.P,v.Q) &\equiv Q[z/v]
 \end{align*}
+%The substitutions on the right are just $\alpha$-equivalences, replacing the variables $u,v$ by $y,z$; in a de Bruijn style nothing at all would be happening.
 Similarly, the $\eta$-conversion rule\footnote{In fact, for types such as coproducts with a left universal property, there is no consensus on exactly what equality ``$\eta$'' refers to.\label{fn:weak-eta}
   From a categorical point of view this equality is the most natural, since like the $\eta$-conversion rule for products it expresses the uniqueness aspect of the universal property.
   But sometimes $\eta$ is used to refer only to the special case $\case(y,u.\inl(u),v.\inr(v))\equiv y$, which is also analogous to the $\eta$ rule for products in that it says that elements \emph{of the type in question} have a canonical form (a pair in a product or a case-split in a coproduct).
@@ -1922,23 +1975,8 @@ Thus the actual generating $\equiv$ rules are those shown in \cref{fig:catcoprod
 As usual, we also require $\equiv$ to be an equivalence relation and a congruence for substitution.
 This completes the definition of our \textbf{unary type theory for categories with coproducts under \cG}.
 
-\begin{lem}\label{thm:catcoprod-subadm}
-  Substitution is admissible in the unary type theory for categories with coproducts under \cG.
-  That is, if we have derivations of $x:A\types M:B$ and $y:B\types N:C$, we can construct a derivation of $x:A\types N[M/y]:C$.
-\end{lem}
-\begin{proof}
-  By induction over derivations.
-  As usual for natural deduction theories, there is not much happening: for each rule that might appear last in the derivation of $y:B\types N:C$, we apply the inductive hypothesis to its premises and then re-apply the final rule.
-  The defining equations of the substitution operation are:
-  \begin{align*}
-    y[M/y] &= M\\
-    f(N)[M/y] &= f(N[M/y])\\
-    \abort(N)[M/y] &= \abort(N[M/y])\\
-    \inl(N)[M/y] &= \inl(N[M/y])\\
-    \inr(N)[M/y] &= \inr(N[M/y])\\
-    \case(N,u.P,v.Q)[M/y] &= \case(N[M/y],u.P,v.Q)
-  \end{align*}
-\end{proof}
+
+
 
 As in the dual case, by a \textbf{category with coproducts} we mean a category with specified binary coproducts and a specified initial object, and in the category of such the functors preserve the specified structure strictly.
 
@@ -2174,10 +2212,14 @@ what we need is a sort of ``relative representability'' such as $\mathrm{Trilin}
 
 Finally, when we come to prove that these associativity isomorphisms satisfy the pentagon axiom of a monoidal category, we need analogous facts about quadrilinear maps, at which point it is clear that we should be talking about $n$-linear maps for a general $n$.
 A multicategory is the categorical context in which to do this: in addition to ordinary morphisms like an ordinary category (e.g.\ linear maps) it also contains $n$-ary maps for all $n\in\dN$ (e.g.\ multilinear maps).
+
+\subsection{Multicategories and representability}
+\label{sec:multicat-repr}
+
 Formally, just as a category is a directed graph with composition and identities, a multicategory is a \emph{multigraph} with composition and identities.
 
 \begin{defn}\label{defn:multigraph}
-  A \textbf{multigraph} \cG consists of a set of \emph{objects}, together with for every object $B$ and every finite list of objects $(A_1,\dots,A_n)$ a set of \emph{arrows} $\cG(A_1,\dots,A_n;B)$.
+  A \textbf{multigraph} \cG consists of a set $\cG_0$ of \emph{objects}, together with for every object $B$ and every finite list of objects $(A_1,\dots,A_n)$ a set of \emph{arrows} $\cG(A_1,\dots,A_n;B)$.
 \end{defn}
 
 Note that $n$ can be $0$.
@@ -2212,7 +2254,7 @@ Vector spaces and multilinear maps, as discussed above, are a good example to bu
 While the above definition is the most natural one from a certain categorical perspective, there is another equivalent way to define multicategories.
 If in the ``multi-composition'' $g\circ (f_1,\dots,f_m)$ all the $f_j$'s for $j\neq i$ are identities, we write it as $g \circ_i f_i$.
 We may also write it as $g\circ_{B_i} f_i$ if there is no danger of ambiguity (e.g.\ if none of the other $B_j$'s are equal to $B_i$).
-Thus we have operations
+Thus we have \textbf{one-place composition} operations
 \begin{multline*}
   \circ_i : \cM(B_1,\dots,B_n;C) \times \cM(A_1,\dots,A_m;B_i) \\
   \too \cM(B_1,\dots,B_{i-1},A_1,\dots,A_m,B_{i+1},\dots,B_n;C)
@@ -2221,15 +2263,21 @@ that satisfy the following properties:
 \begin{itemize}
 \item $\idfunc_B \circ_1 f = f$ (since $\idfunc_B$ is unary, $\circ_1$ is the only possible composition here).
 \item $f\circ_i \idfunc_{B_i} = f$ for any $i$.
-\item $(h \circ_i g) \circ_{j} f$ is equal either to $h\circ_i (g\circ_k f)$ for some $k$ or to $(h\circ_k f)\circ_\ell g$ for some $k,\ell$, according to whether $j$ is such that $f$ is being plugged into one of the inputs of $g$ or into one of the remaining inputs of $h$.
+\item If $h$ is $n$-ary, $g$ is $m$-ary, and $f$ is $k$-ary, then
+  \[ (h \circ_i g) \circ_{j} f=
+  \begin{cases}
+    (h\circ_j f)\circ_{i+k-1} g &\quad \text{if } j < i\\
+    h\circ_i (g\circ_{j-i+1} f) &\quad \text{if } i \le j < i+m\\
+    (h\circ_{j-m+1} f)\circ_{i} g &\quad \text{if } j \ge i+m
+  \end{cases}
+  \]
   [TODO: Picture]
-  From this idea one may deduce formulas for $k,\ell$ in terms of $i,j$.
+  We refer to the second of these equations as \emph{associativity}, and to the first and third as \emph{interchange}.
 \end{itemize}
-Conversely, given the $\circ_i$ operations one may define
+Conversely, given one-place composition operations satisfying these axioms, one may define
 \[ g\circ (f_1,\dots,f_m) = (\cdots((g \circ_m f_m) \circ_{m-1} f_{m-1}) \cdots \circ_2 f_2) \circ_1 f_1 \]
 to recover the original definition of multicategory.
 The details can be worked out by the interested reader (\cref{ex:multicat-defns}) or looked up in a reference such as~\cite{leinster:higher-opds}.
-[TODO: Probably good to include the detail here.]
 
 With multicategories in hand, we can give an abstract version of the characterization of the tensor product of vector spaces using multilinear maps.
 
@@ -2242,7 +2290,7 @@ When $n=2$ we write a binary tensor product as $A_1\tensor A_2$.
 When $n=0$ we call a nullary tensor product a \textbf{unit object} and write it as $\one$.
 When $n=1$ a unary tensor product is just an object isomorphic to $A$.
 
-In keeping with the usual ``biased'' definition of monoidal category, we will say that a multicategory is \textbf{representable} if it is equipped with a chosen unit object and a chosen binary tensor product for every pair of objects.
+In keeping with the usual ``biased'' definition of monoidal category (which has a binary tensor product and a unit object, with all other tensors built out of those), we will say that a multicategory is \textbf{representable} if it is equipped with a chosen unit object and a chosen binary tensor product for every pair of objects.
 Let $\bRepMCat$ denote the category of representable multicategories and functors that preserve the chosen tensor products strictly.
 
 \begin{thm}\label{thm:multicat-repr}
@@ -2259,9 +2307,11 @@ Let $\bRepMCat$ denote the category of representable multicategories and functor
   Finally, the constructions are clearly inverse up to natural isomorphism.
 \end{proof}
 
-There are plenty of good references on multicategories, so we will not belabor them further here.
-See for instance~\cite{hermida:multicats,leinster:higher-opds}.
-However, we will need notions of limit and colimit in multicategories, and since these are less well-known we review them here.
+There are plenty of good references on multicategories, such as~\cite{hermida:multicats,leinster:higher-opds}.
+We end this section with two further aspects of multicategory theory that are less well-known.
+
+\subsection{Limits and colimits in multicategories}
+\label{sec:lim-colim-multicat}
 
 We say that an object $\unit$ of a multicategory is \textbf{terminal} if for any $A_1,\dots, A_n$ there is a unique morphism $(A_1,\dots, A_n)\to \unit$.
 Similarly, a \textbf{binary product} of $A$ and $B$ in a multicategory is an object $A\times B$ with projections $A\times B \to A$ and $A\times B\to B$, composing with which yields bijections
@@ -2321,11 +2371,66 @@ are isomorphisms.
   Finally, one can check that these constructions are inverse.
 \end{proof}
 
+\subsection{Index-free multicategories}
+\label{sec:indexfree-multicats}
+
+The numerical indices on the $\circ_i$ operations are somewhat unfortunate: they are tedious to keep track of, lead to funny-looking arithmetic in the associativity/interchange laws, and convey little intuition.
+There is an equivalent way to define multicategories that does away with all of these problems, and that also relates nicely to the handling of variables in type theory: rather than take the domains of morphisms to be finite lists of objects, we take them to be families of objects indexed by an arbitrary finite linear order.
+
+More precisely, let \fL denote the category of finite linear orders and isomorphisms; since two isomorphic linear orders are uniquely isomorphic, \fL is equivalent to the discrete category \dN.
+Given any set $\cX$, let $(\fL\dn \cX)$ denote the category whose objects are functions $L\to \cX$ for $L\in \fL$, and whose morphisms are morphisms in \fL forming a commutative triangle.
+We define an \textbf{index-free multigraph} to consist of a set $\cG_0$ of objects together with a hom-functor $(\fL\dn\cG_0)\times \cG_0 \to \bSet$.
+Since $(\fL\dn \cX)$ is equivalent to the discrete category on the set $\coprod_{n\in\dN} \cX^n$ of finite lists of elements of $\cX$ (i.e.\ the free monoid on $\cX$), index-free multigraphs are essentially equivalent to ordinary multigraphs; but they admit more naturally defined operations.
+
+For instance, given $L\in\fL$ and $K:L\to \fL$, the disjoint union $\coprod_{l\in L} K_l$ has a lexicographic ordering making it an object in \fL: if $k_1\in K_{l_1}$ and $k_2\in K_{l_2}$, then $k_1<k_2$ in $\coprod_{l\in L} K_l$ if either $l_1<l_2$ in $L$ or both $l_1=l_2$ in $L$ and $k_1<k_2$ in $K_{l_1}(=K_{l_2})$.
+This is the index-free version of concatenation of lists.
+
+Now we can define an \textbf{index-free multicategory} to be an index-free multigraph \cM together with
+\begin{enumerate}
+\item For each object $A$, an identity arrow $\idfunc_A \in \cM(\{A\},A)$ where $\{A\}$ denotes a family indexed by some canonically chosen one-element linear order.
+\item For any object $C\in\cM_0$, \fL-indexed family $B:L\to\cM_0$, and doubly indexed family $K:L\to \fL$ with $A_l : K_l \to \cM_0$, a composition operation
+  \begin{align*}
+    \cM(B,C) \times \prod_{l\in L} \cM(A_l,B_l) &\too \cM\left( \textstyle\bigcup_{l\in L} A_l, C\right)\\
+    (g,f) &\mapsto g\circ f
+  \end{align*}
+  where $\bigcup_{l\in L} A_l$ denotes the family $(\coprod_{l\in L} K_l) \to \cM_0$ induced by the $A_l$'s.
+\item Appropriate versions of the associativity and unitality axioms hold.
+% \item For any $f\in \cM(A,b)$, with $A:L\to \cM_0$, we have
+%   \begin{mathpar}
+%     \idfunc_b \circ \{f\} = f\and
+%     f\circ \idfunc_A = f
+%   \end{mathpar}
+%   where $\idfunc_A$ denotes the $L$-indexed family of morphisms picking out $\idfunc_{a_l}$ for each $l\in L$.
+% \item For any $h,G,F$ we have
+%   \begin{mathpar}
+%     (h\circ G) \circ \bigcup F
+%     h \circ (G\circ F)
+%   \end{mathpar}
+\end{enumerate}
+Writing down the axioms requires transferring across ``associativity and unitality'' isomorphisms in \fL.
+For instance, associativity uses the isomorphism
+\[\textstyle \coprod_{l\in L} \Big(\coprod_{k\in K_l} M_k\Big) \cong \coprod_{x\in \coprod_l K_l} M_x. \]
+
+We can describe the one-place operations similarly.
+Given $L,K\in\fL$ and an element $l\in L$, the set $(L\setminus \{l\}) \sqcup K$ has an induced linear ordering that restricts to the given orderings on $L$ and $K$, and such that a $y\in L$ is less than all elements of $K$ if $y<l$ in $L$, and greater than all elements of $K$ if $y>l$ in $L$.
+We denote this linear order as $L\circ_l K$.
+
+The one-place operations on an index-free multicategory now take the following form: given $g\in \cM(B,C)$, where $B:L\to \cG_0$ with $L\in\fL$ and $C\in\cG_0$, and also $f\in \cM(A,B_l)$ for some $l\in L$, where $A:K\to \cG_0$ and $K\in \fL$, we have $g\circ_l f \in \cM(B\cup_l A,C)$, where $B\cup_l A:L\circ_l K \to \cG_0$ is induced by $B$ and $A$.
+The associativity and interchange laws are now much easier to state:
+\begin{align*}
+  (h\circ_l g)\circ_k f &= h\circ_l (g\circ_k f) \\
+  (h\circ_{l_2} g) \circ_{l_1} f &= (h\circ_{l_1} f) \circ_{l_2} g
+\end{align*}
+where $k$ is any index in the domain of $g$, and $l,l_1,l_2$ are any indices in the domain of $h$.
+(Like the multi-composition axioms, however, these equations only make sense after transferring across corresponding isomorphisms in \fL, such as $(L\circ_l K)\circ_k M\cong L\circ_l (K\circ_k M)$ and $(L\circ_{l_2} K)\circ_{l_1} M \cong (L\circ_{l_1} M)\circ_{l_2} K$.)
+
+We will see later on that the difference between index-ful and index-free multicategories is roughly the same as the difference between the methods of de Bruijn and of $\alpha$-equivalence in type theory.
+
 
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:multicat-defns}
-  Write down the axioms for $\circ_i$ more explicitly, and prove that the two definitions of multicategory are equivalent.
+  Prove that all four definitions of multicategory given in this section (multi-composition or one-place compositions, index-ful and index-free) are equivalent.
 \end{ex}
 
 \begin{ex}\label{ex:multicat-repr}
@@ -2370,7 +2475,7 @@ Based on the lessons we learned from unary type theory, we represent the latter 
 \end{mathpar}
 We call this the \textbf{cut-free type theory for multiposets under \cG}.
 Note that we use the ``multi-composition'' in Yoneda-ifying the relations in \cG; this is absolutely necessary for the admissibility of cut.
-By contrast, it is traditional to formulate the cut rule itself in terms of the $\circ_i$ compositions:
+By contrast, it is traditional to formulate the cut rule itself in terms of the one-place compositions:
 
 \begin{thm}\label{thm:multiposet-cutadm}
   In the cut-free type theory for multiposets under \cG, the following cut rule is admissible: if we have derivations of $\Gamma\types A$ and of $\Delta,A,\Psi\types B$, then we can construct a derivation of $\Delta,\Gamma,\Psi\types B$.
@@ -2577,7 +2682,7 @@ into
     }{\Psi_1,\dots,\Gamma,\Delta,\dots,\Psi_n\types B}
 \end{equation*}
 Thus, the multicategorical perspective leads to a simpler inductive proof of cut admissibility.
-(Note, though, that to recover the $\circ_i$-style cut from the multi-cut requires composing with identities, hence invoking \cref{thm:monpos-identity} as well.)
+(Note, though, that to recover the one-place cut from the multi-cut requires composing with identities, hence invoking \cref{thm:monpos-identity} as well.)
 
 In any case, we are ready to prove the initiality theorem, relating to an adjunction between the categoris \bRelMGr of relational multigraphs and \bMonPos of monoidal posets.
 As always, the morphisms in our categories will be completely strict: so in particular the morphisms in \bMonPos are \emph{strict} monoidal functors.
@@ -2713,13 +2818,17 @@ Note that as always, the symbol $\types$ is the ``outermost''.
 Moreover, the comma between abstract variable assignments binds more loosely than the typing colons; the above judgment should be read as
 \[ ((x:A), (y:B), (z:C)) \types (f(x,g(y,z)):E). \]
 
-When considering calculi with terms of this sort, we also use capital Greek letters such as $\Gamma$ to denote lists of types \emph{with variables attached}; as usual we also call these \emph{contexts}.
-Thus, if $\Gamma = (x:A, y:B, z:C)$ then the above sequent would be $\Gamma\types f(x,g(y,z)):E$.
-As usual, we write $\Gamma,\Delta$ to indicate the concatenation of such lists.
-If it is necessary to indicate the name assigned to a particular variable but not to the other variables in the context, we can write $\Gamma, x:A, \Delta$.
-
 Since we now have multiple formal variables appearing in one sequent, it becomes important to keep track of which is which.
-We still consider the syntactic label of a formal variable to be insignificant (that is, we work modulo $\alpha$-equivalence), but now that label carries more information: namely, a correspondence between a type in the antecedent and a ``variable occurrence'' in the consequent term.
+As in unary type theory, there are two ways to name variables.
+In \textbf{de Bruijn style} we choose a fixed countably infinite set of variables, say $x_1,x_2,x_3,\dots$, and demand that any sequent with $n$ types in its context use the first $n$ of these variables in order.
+In fact there are two choices for this order; we might write
+\[ x_1:A_1, x_2:A_2, \dots,x_n:A_n \types M:B \quad\text{or}\quad
+x_n:A_n,\dots, x_2:A_2, x_1:A_1 \types M:B
+\]
+The first is called using \textbf{de Bruijn levels} and the second \textbf{de Bruijn indices}.
+
+The second way to name variables is to allow arbitrary variables (perhaps taken from some fixed infinite set of variables), but quotient by $\alpha$-equivalence, which now means that we can rename each variable independently as long as we rename all of its occurrences at the same time and we don't try to rename any two variables to the same thing.
+(There will be an extra subtlety to this when we start binding variables; see \cref{sec:moncat}.)
 For instance, if $f\in\cG(A,A;A)$ then we can write four sequents
 \[
 \begin{array}{c@{\qquad}c}
@@ -2729,12 +2838,70 @@ For instance, if $f\in\cG(A,A;A)$ then we can write four sequents
   y:A, x:A \types f(x,y):A
 \end{array}
 \]
-We regard the two in the left column as identical, by $\alpha$-equivalence; and similarly the two in the right column are identical.
-However, the columns are distinct from each other.
+The two in the left column are the same by $\alpha$-equivalence, and similarly the two in the right column are identical; but the columns are distinct from each other.
 (In fact, in the type theory of the present section, the sequents in the right-hand column are impossible; but in the theories to be considered in \cref{sec:cartmoncat,sec:symmoncat} they will be possible.)
-If you are ever in doubt about the meaning of variables or what sorts of renamings are possible, remember that terms (including terms with formal variables) are intended to simply be a more concise syntax for derivation trees.
 
-With terms assigned in this way, the rules for the \textbf{cut-free type theory for multicategories under \cG} are:
+\begin{rmk}
+The intent of $\alpha$-equivalence is that the names or labels of variables are themselves meaningless, but they carry the information of which variable occurrences in a term refer to which variables in the context (or, later, to which variable binding sites).
+Bourbaki attempted to do away with variable labels entirely, writing all variable occurrences as $\Box$ and drawing connecting links to denote these references; thus the two columns above would be written
+\[
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (a1) {$A$};,
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (a2) {$A$}; \types
+f(\tikz[remember picture] \node[rectangle, inner sep=0pt] (b1) {$\Box$};,
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (b2) {$\Box$};)
+\qquad
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (a1p) {$A$};,
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (a2p) {$A$}; \types
+f(\tikz[remember picture] \node[rectangle, inner sep=0pt] (b2p) {$\Box$};,
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (b1p) {$\Box$};)
+\]
+\begin{tikzpicture}[remember picture,overlay]
+  \draw (b2) -- +(0,-.6) -| (a2);
+  \draw[white,ultra thick] (b1) -- +(0,-.4) -| (a1);
+  \draw (b1) -- +(0,-.4) -| (a1);
+  \draw (b2p) -- +(0,-.4) -| (a2p);
+  \draw (b1p) -- +(0,-.6) -| (a1p);
+\end{tikzpicture}
+
+\noindent
+However, this notation seems unlikely to catch on.
+\end{rmk}
+
+In \cref{sec:multiposets-monpos} we used capital Greek letters such as $\Gamma$ to denote finite lists of types.
+As is also conventional, when we incorporate formal variables we use $\Gamma$ represent a finite list of types \emph{with variables attached} (with, of course, distinct variables attached to distinct occurrences of types), which is also called a \textbf{context}.
+In general, $\Gamma$ represents ``the sort of thing that can go on the left of $\types$''.
+%Thus, if $\Gamma = (x:A, y:B, z:C)$ then the above sequent would be $\Gamma\types f(x,g(y,z)):E$.
+
+Now, the rules for multiposets and monoidal posets from \cref{sec:multiposets-monpos} involve, among other things, concatenation of such lists, which we wrote as $\Gamma,\Delta$.
+But when $\Gamma$ and $\Delta$ contain variables, simple concatenation would not preserve the invariant that distinct occurrences of types are labeled by distinct variables, so something else must be going on.
+
+If we use de Bruijn style, then the variable numbers in $\Gamma$ or $\Delta$ have to be incremented appropriately.
+Let us write $A[+n]$, $M[+n]$, $\Gamma[+n]$, and so on for the operation of adding $n$ to all the variable indices\footnote{Technically, all the \emph{free} variable indices; we will return to this in \cref{sec:moncat}.} in any syntactic object; thus for instance $f(x_1,x_2)[+3] = f(x_4,x_5)$.
+Also, if $\Gamma$ is a context, let us write $|\Gamma|$ for its length.
+Now if we use ``de Bruijn levels'', the concatenation of $\Gamma$ and $\Delta$ must be $\Gamma,\Delta[+|\Gamma|]$, while if we use ``de Bruijn indices'' it must be $\Gamma[+|\Delta|],\Delta$.
+For instance, we concatenate $x_1:A_1, x_2:A_2$ with $x_1:B_1$ to get $x_1:A_1, x_2:A_2,x_3:B_1$.
+
+If we instead use arbitrary named variables, as we will generally do, then we need to apply $\alpha$-equivalences to $\Gamma$ and/or $\Delta$ to make their variable names disjoint.
+This can be formulated elegantly using the index-free setup of \cref{sec:indexfree-multicats}.
+Recall that \fL denotes the category of finite linear orders and isomorphisms; now define a \textbf{context} to be an $L$-indexed family of types (i.e.\ derivable judgments $\types A\type$) for some $L\in\fL$, which we might write $\Gamma:L\to \ftype$.
+Then if also $\Delta:K\to\ftype$, their concatenation is naturally defined to be the induced family $\Gamma\cup\Delta:L\sqcup K\to\ftype$ indexed by the disjoint union (with order inherited from $L$ and $K$, plus $l<k$ for all $l\in L$ and $k\in K$).
+
+Syntactically, this amounts to systematically renaming \emph{all} the variables in $\Gamma$ and $\Delta$ to ensure their distinctness.
+For instance, if $\Gamma=(x:A,y:B)$ and $\Delta=(y:C,z:D)$ then their concatenation would be $x_1:A,y_1:B,y_2:C,z_2:D$.
+This is the only systematic thing to do (and perhaps in some sense it is the only \emph{natural} thing to do, in the precise sense of category theory).
+But of course, in many cases it will not be necessary to rename \emph{all} the variables; only those that would otherwise conflict.
+
+From now on we will write simply $\Gamma,\Delta$ (and similarly $\Gamma, x:A, \Delta$, etc.)\ for the concatenation of two given contexts, modified to ensure variable distinctness in whatever way is appropriate.
+Of course, any variable incrementing or $\alpha$-equivalence that happens in $\Gamma$ or $\Delta$ must also be applied on the right-hand side of any sequents they appear in.
+On the other hand, if in some situation we \emph{assume} a sequent and write its context as $\Gamma,\Delta$, then no such operation is being applied; we are simply choosing a partition of that context into two parts.
+When applying rules ``downwards'', this applies to its premises, while when applying it ``upwards'', this applies to its conclusion (recall \cref{rmk:context-splitting-1}).
+
+All this futzing around with variables may seem quite tedious and uninteresting.
+It does matter in some situations; for instance, if mathematics is to be implemented in a computer, then all these technical issues must be dealt with carefully.
+However, from our point of view these are all just different tricks to ensure that the terms with formal variables remain (modulo $\alpha$-equivalence if necessary) exact representations of derivation trees (without terms).
+Remember this if you are ever in doubt about the meaning of variables or what sorts of renamings are possible.
+
+With all of that out of the way, we can anticlimactically state the rules for the \textbf{cut-free type theory for multicategories under \cG}:
 \begin{mathpar}
   \inferrule{A\in\cG}{x:A\types x:A}\and
   \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n}{\Gamma_1,\dots,\Gamma_n\types f(M_1,\dots,M_n):B}\and
@@ -2796,7 +2963,7 @@ Note that linearity is a property of a system that we \emph{prove}, not a requir
   If $\Gamma\types N:B$ is derivable, then it must be that this partition of $\Gamma$ is ordered, $\Gamma=\Gamma_1,\dots,\Gamma_n$, and this (together with the known domain $(A_1,\dots,A_n)$ of $f$) determines the premises $\Gamma_i \types M_i:A_i$ that must be recursively checked (c.f.\ \cref{rmk:context-splitting-1})
 \end{proof}
 
-For substitution, we may again choose between the $\circ_i$-style and the multi-cut.
+When stating the substitution lemma, we may again choose between the one-place cut and the multi-cut.
 We choose the former, because the notation is less heavy, and because it matches the more common path taken in type theory.
 (The advantage of multi-cut that we saw in \cref{sec:seqcalc-monpos} is not relevant for natural deduction where there are no left rules; though we will see something analogous in \cref{sec:logic}.)
 But we encourage the interested reader to write down a multi--substitution too (\cref{ex:moncat-multisubadm}).
@@ -2806,11 +2973,8 @@ But we encourage the interested reader to write down a multi--substitution too (
 \end{thm}
 \begin{proof}
   Essentially just like \cref{thm:multiposet-cutadm}, recalling that terms are just a notation for derivation trees.
-  There is one thing to be said: recall that in the givens $\Gamma\types M:A$ and $\Delta,x:A,\Psi \types N:B$, the contexts $\Gamma$, $\Delta$, and $\Psi$ \emph{include} abstract variables assigned to each type they contain.
-  Since the variables used in any context must be distinct, it must be that the variables in $\Delta$ and $\Psi$ are pairwise distinct, and all of them are distinct from $x$.
-
-  However, in order to even write down $\Delta,\Gamma,\Psi\types M[N/x]:B$, it must be that all the variables in $\Delta,\Psi$ are also pairwise distinct from those in $\Gamma$.
-  In other words, we may have to apply an $\alpha$-equivalence before we can literally substitute.
+  There is one thing to be said: since the variables used in any context must be distinct, including the given context $\Delta,x:A,\Psi$, it must be that the variables in $\Delta$ and $\Psi$ are pairwise distinct, and all of them are distinct from $x$.
+  But the variables in $\Delta,\Psi$ may not be pairwise distinct from those in $\Gamma$, so the context of the desired conclusion $\Delta,\Gamma,\Psi\types M[N/x]:B$ may involve an $\alpha$-equivalence (in de Bruijn style, it certainly involves a variable increment unless $|\Gamma|=1$).
   For instance, if we have $y:C\types f(y):A$ and $y:C,x:A,z:D\types g(y,x,z):B$, we cannot naively conclude $y:C,y:C,z:D\types g(y,f(y),z):B$; we have to rename one of the $y$'s first and get $y:C,w:C,z:D\types g(y,f(w),z):B$.
 
   When type theory is presented with an explicit description of the syntax of terms involving strings of symbols, this is an issue that has to be dealt with formally.
@@ -2824,8 +2988,11 @@ As before, note that we can regard this as defining substitution; its inductive 
 \end{align*}
 where $i$ is the unique index such that $x$ occurs in $N_i$ (which exists by \cref{thm:multicat-linear}).
 
+Now note that if we represent contexts as families of types indexed by finite linear orders, as suggested in the discussion of $\alpha$-equivalence for concatenation above, then the derivable sequents $\Gamma\types A$ form \emph{precisely} an index-free multigraph as described in \cref{sec:indexfree-multicats}, and substitution $N[M/x]$ has precisely the form of the index-free one-place composition operation ``$N\circ_x M$''.
+Similarly, we have:
+
 \begin{thm}\label{thm:multicat-subassoc}
-  Substitution in the cut-free type theory for multicategories satisfies the associativity/interchange rules of the $\circ_i$ operations:
+  Substitution in the cut-free type theory for multicategories satisfies the associativity/interchange rules:
   \begin{enumerate}
   \item If $\Gamma\types M:A$ and $\Delta,x:A,\Delta' \types N:B$ and $\Psi,y:B,\Psi'\types P:C$, then\label{item:multicat-subassoc-1}
     \[ P[N/y][M/x] = P[N[M/x]/y] \]
@@ -2848,14 +3015,13 @@ where $i$ is the unique index such that $x$ occurs in $N_i$ (which exists by \cr
   \end{equation*}
 \end{proof}
 
-If you did \cref{ex:multicat-defns}, feel free to verify that \cref{thm:multicat-subassoc} really does express the same property as the axioms for the $\circ_i$ operations.
-The ``matching up of occurrences'' indicated by the abstract variables conveys the same information as the arithmetic formulas for $k,\ell$ in terms of $i,j$; but for most purposes, abstract variables are much more comprehensible!
+If we used de Bruijn levels instead of arbitrary variables, then the statement of \cref{thm:multicat-subassoc} would involve the same arithmetic on variable numbers that appears in the $\circ_i$ operations.
 
 \begin{thm}\label{thm:multicat-initial}
-  For any multigraph \cG, the free multicategory generated by \cG can be described by the cut-free type theory for multicategories under \cG: its objects are those of \cG, and its morphisms $\Gamma\to B$ are the derivable judgments $\Gamma\types M:B$.
+  For any multigraph \cG, the free multicategory generated by \cG can be described by the cut-free type theory for multicategories under \cG: its objects are those of \cG, and its morphisms $\Gamma\to B$ are the derivable judgments $\Gamma\types M:B$ (modulo $\alpha$-equivalence, as usual).
 \end{thm}
 \begin{proof}
-  \cref{thm:multicat-subadm} tells us how to compose multimorphisms in the $\circ_i$ style, and \cref{thm:multicat-subassoc} verifies the associativity/interchange axiom for these.
+  \cref{thm:multicat-subadm} gives us the one-place composition operations, and \cref{thm:multicat-subassoc} verifies the associativity/interchange axiom for these.
   The two identity axioms are $x[M/x]=M$ (one of the defining clauses of substitution) and ``$M[y/x] = M$'', which looks false or nonsensical but is actually just an instance of $\alpha$-equivalence (renaming of variables).
 
   Thus, we have a multicategory $\F\bMCat\cG$.
@@ -2873,7 +3039,11 @@ We are using a ``pairing'' syntax for terms in $A\tensor B$ similar to the one w
 In particular, because the tensor product has a ``mapping out'' universal property like a coproduct (that is, it is a ``positive type''), its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$, rather than a pair of projections.
 Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\tpair{x}{y}$.''
 And just as the variables $u$ and $v$ are ``bound'' in the term syntax $\acase AB(M,u.P,v.Q)$ for coproducts, the variables $x$ and $y$ are bound in the term syntax $\match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N)$.
-The annotations $A\tensor B$ and $\Gamma|\Delta$ are to make type-checking possible (see \cref{thm:moncat-tad}); but generally we will omit them and write simply $\match_\tensor$.
+The annotations $A\tensor B$ and $\Gamma|\Delta$ are to make type-checking possible (see \cref{thm:moncat-tad}); but generally we will omit them and write simply $\match_\tensor(M,xy.N)$.
+
+The case of $\one$ is similar but simpler: to do something with an element of $\one$, it suffices to assume that it is $\ott$.
+This gives no extra information, so no new variables are bound.
+That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allows us to ignore $M$ (while keeping the free variables of $M$ in the context).
 
 \begin{figure}
   \centering
@@ -2910,24 +3080,34 @@ Thus, for instance, the following application of $\tensorI$:
 produces a term $\match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w))$ in which the variables $z,w$ in $h(z,x,y,w)$ are free, in addition to the free variables $u,v$ in $\tpair{f(u)}{g(v)}$.
 (This term is also a counterexample to a natural conjecture that the variables in a term must appear in the same order that they do in the context.)
 
-The case of $\one$ is similar to that of $\tensor$ but simpler: to do something with an element of $\one$, it suffices to assume that it is $\ott$.
-This gives no extra information, so no new variables are bound.
-That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allows us to ignore $M$ (while keeping the free variables of $M$ in the context).
+As always, we consider terms up to $\alpha$-equivalence, which allows us to rename both bound and free variables.
+Of course, a free variable must be renamed in the context as well as wherever it appears in the term, while a bound variable must be renamed at its binding site (such as the ``$uv.$'' in a $\match_\tensor$ term) as well as wherever it appears bound.
 
-Finally, we also have $\beta$- and $\eta$-conversion rules that implement the universal properties.
-\begin{mathpar}
-  \match_\tensor(\tpair M N,xy.P) \equiv P[M/x,N/y]\and
-  \match_\tensor(M,xy.N[\tpair xy/u]) \equiv N[M/u]\\
-  \match_\one(\ott,N) \equiv N\and
-  \match_\one(M,N[\ott/u]) \equiv N[M/u]
-\end{mathpar}
-As before, the $\beta$-conversion rule says that the map out of $A\tensor B$ defined by its universal property has the correct composite with the universal morphism $(A,B)\to A\tensor B$, while the $\eta$-conversion rule says that any map out of $A\tensor B$ is determined by the universal property from its composite with the universal morphism.
-The rules for $\one$ are similar.
+Technically, bound variables can have any name, including the same name as a variable occurring free elsewhere.
+For instance, we could have
+\[ x:A\tensor B, u:C \types f(\match_\tensor(x,uv.g(u,v)),u):D \]
+In this situation, the variable $u:C$ in the context is referred to by the $u$ appearing as the second argument to $f$, while the bound variable $u$ in the $\match$ is referred to by the $u$ appearing as the first argument to $g$.
+These two $u$'s should really be regarded as completely different variables, so that in particular we can apply $\alpha$-equivalence to rename one of them but not the other.
+Technically this is dealt with using the concept of the ``scope'' of the bound variable --- the scope of $u$ and $v$ in $\match_\tensor(M,uv.N)$ is the term $N$, and inside that term $u$ refers to the bound variable while elsewhere it does not.
+However, it is arguably bad style to use the same name for two variables in this way, so we will generally assume that it is not done (and we can always apply $\alpha$-equivalence to avoid it).
+
+\begin{rmk}
+  If we use de Bruijn style for variables, then this issue doesn't arise, but other confusing phenomena appear instead.
+  In general, when combining terms defined in different contexts using de Bruijn variables, we increment their variable numbers to match those in the new context.
+  For instance, given $x_1:A,x_2:B \types f(x_1,x_2):C$ and $x_1:D\types g(x_1):E$, we increment the latter when forming $x_1:A,x_2:B,x_3:D\types \tpair{f(x_1,x_2)}{g(x_3)}:C\tensor E$.
+  However, in a $\match_\tensor$ term, we can do this with the discriminee $M$ but not with the case branch $N$.
+  Inside $N$ in $\match_\tensor(M,x_i x_{i+1}.N)$, we need the variables $x_i$ and $x_{i+1}$ to refer to the ones being bound.
+  But if $\Psi$ contains fewer than two variables, then in the concatenated context $\Gamma,\Psi,\Delta$ some of the variables in $\Delta$ will also be named $x_i$ or $x_{i+1}$; so inside $N$ in $\match_\tensor(M,x_i x_{i+1}.N)$ we need to refer to variables in $\Delta$ by the numbers that they have in the original judgment $\Gamma,x_i:A,x_{i+1}:B,\Delta\types N:C$.
+  Thus, for instance, if $\Psi=()$ and $N$ is $x_1:A,x_2:B,x_3:D\types f(x_1,x_2,x_3):C$, then the result of $\tensorE$ must be $x_1:D \types \match(M,x_1 x_2.f(x_1,x_2,x_3)):C$, in which the variable denoted ``$x_3$'' in the term actually refers to the variable denoted ``$x_1$'' in the context.
+  (This example is for de Bruijn levels; de Bruijn indices, with the numbers going the other way, have a similar problem with $\Gamma$ in place of $\Delta$.)
+  There is no technical ambiguity and a computer can parse this term just fine, but it is fairly unreadable for a human.
+  (Indeed, according to Conor McBride, Bob Atkey once described the ability to read de Bruijn variables as a reverse Turing test.)
+\end{rmk}
 
 Like the theory of \cref{sec:multicats}, this theory is linear:
 
 \begin{lem}\label{thm:moncat-linear}
-  If $\Gamma\types M:B$ is derivable in the simple type theory for monoidal categories under \cG, then every variable in $\Gamma$ appears exactly once (free) in $M$.
+  If $\Gamma\types M:B$ is derivable in the simple type theory for monoidal categories under \cG, then every variable in $\Gamma$ appears exactly once free in $M$.
 \end{lem}
 \begin{proof}
   By induction on the derivation.
@@ -2936,11 +3116,6 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
   Similarly, for $\match_\tensor(M,xy.N)$ coming from $\tensorE$, each variable in $\Gamma,\Psi,\Delta$ must appear in exactly one of $\Gamma$, $\Psi$, or $\Delta$; by induction then in the first and third cases it must appear exactly once in $N$, and in the second case it must appear exactly once in $M$.
   The case of $\one E$ is similar, while there are no variables at all in $\ott$.
 \end{proof}
-
-The qualification ``(free)'' in \cref{thm:moncat-linear} is because bound variables can have any name, so it is technically possible for a bound variable to have the same name as a variable occurring free elsewhere (though not inside the ``scope'' of the bound variable).
-For instance, we could have
-\[ x:A\tensor B, u:C \types f(\match_\tensor(x,uv.g(u,v)),u):D \]
-However, this is arguably bad style, so we will generally assume that it is not done (we can always apply $\alpha$-equivalence to avoid it).
 
 \begin{lem}\label{thm:moncat-tad}
   If $\Gamma\types N:B$ is derivable in the simple type theory for monoidal categories under \cG, then it has a unique derivation.
@@ -2994,10 +3169,9 @@ However, this is arguably bad style, so we will generally assume that it is not 
 
 In the proof of \cref{thm:multiposet-cutadm} we remarked that sometimes we have to rename the variables appearing in one of the terms before doing a substitution, to ensure that the variables in the context of the substituted term are all distinct; but that this essentially happens automatically when we regard substitution as acting on derivations.
 Something else similar happens here in the rule $\match_\tensor(N,uv.P)[M/x] = \match_\tensor(N,uv.P[M/x])$: we must ensure (by $\alpha$-equivalence if necessary) that the bound variables $u$ and $v$ do not appear in $M$.
-(This didn't arise in \cref{sec:catcoprod} because there it was not possible to substitute into the subterms $u.P$ and $v.Q$ of a $\case$ term containing bound variables, since they could not contain any \emph{other} variables to be substituted for.)
-
-When talking about syntax of terms explicitly, one generally says that this is because otherwise, a $u$ or $v$ in $M$ would after substitution be ``in the scope'' of the binding of $u$ or $v$, whereas all the variables of $M$ ought to be free in the substituted term.
-But when we regard substitution as an operation on derivations, the point is just that to eliminate a cut after $\tensorE$ of the following sort:
+(This didn't arise in the unary type theory of \cref{sec:catcoprod} because there it was not possible to substitute into the subterms $u.P$ and $v.Q$ of a $\case$ term containing bound variables, since they could not contain any \emph{other} variables to be substituted for.)
+One generally says that this is because otherwise, a $u$ or $v$ in $M$ would after substitution be ``in the scope'' of the binding of $u$ or $v$, whereas all the variables of $M$ ought to be free in the substituted term.
+When we regard substitution as an operation on derivations, the point is just that to eliminate a cut after $\tensorE$ of the following sort:
 \begin{mathpar}
   \inferrule*[Right=cut]{
     \Gamma\types M:A \\
@@ -3015,7 +3189,21 @@ we have to inductively cut
   }{\Delta_1,\Gamma,\Delta_2,u:C,v:D,\Psi \types P[M/x]:B}
 \end{mathpar}
 and in order for \emph{this} cut to satisfy the variable condition explained in \cref{thm:multicat-subadm}, it must be that $u$ and $v$ do not occur in $\Gamma$.
-Once again, the ``variable management'' is fairly automatic if we consider derivations as basic, with term annotations applied afterwards modulo $\alpha$-equivalence.
+
+When one tries to be very precise about syntax with named variables, this sort of ``capture-avoiding substitution'' is both necessary and tedious.
+The de Bruijn methods avoid it, but at a fairly severe cost to readability as mentioned above.
+But from our perspective, this is all just an artifact of how we choose to represent derivations by terms involving abstract variables.
+When substitution is an operation on derivations, there are no variables to ``capture'' and nothing to worry about.
+
+With substitution in hand, we can state the $\beta$- and $\eta$-conversion rules that implement the universal properties.
+\begin{mathpar}
+  \match_\tensor(\tpair M N,xy.P) \equiv P[M/x,N/y]\and
+  \match_\tensor(M,xy.N[\tpair xy/u]) \equiv N[M/u]\\
+  \match_\one(\ott,N) \equiv N\and
+  \match_\one(M,N[\ott/u]) \equiv N[M/u]
+\end{mathpar}
+As before, the $\beta$-conversion rule says that the map out of $A\tensor B$ defined by its universal property has the correct composite with the universal morphism $(A,B)\to A\tensor B$, while the $\eta$-conversion rule says that any map out of $A\tensor B$ is determined by the universal property from its composite with the universal morphism.
+The rules for $\one$ are similar.
 
 \begin{thm}\label{thm:moncat-initial}
   The free monoidal category generated by a multigraph \cG (or, more precisely, its underlying multicategory) can be described by the simple type theory for monoidal categories under \cG: its objects are the $A$ such that $\types A\type$, and its morphisms are the term judgments $\Gamma\types M:A$ modulo the congruence $\equiv$.
@@ -3142,7 +3330,7 @@ Similarly, the difference between $\tensorI$ and $\timesI$ is that in $\tensorI$
 
 Finally, there are some curious annotations.
 As in \cref{sec:moncat}, the superscripts $\Gamma|\Delta$ on $\match_\tensor$ and $\match_+$ are to ensure type-checking, and can usually be omitted; and similarly for the superscript $AB$ on $\pi_i$ as in \cref{sec:catprod}.
-The superscript $\Gamma,\Delta$ on $\abort$, however, is there for a different purpose, which is the same purpose as the passing of all the variables in the context as arguments to $\ttt$.
+The superscript $\Gamma,\Delta$ on $\abort$, however, is there for a different purpose, which is the same purpose as the passing of all the variables in the context as arguments to $\ttt$; it has to do with linearity.
 
 Unlike the theory of \cref{sec:multicat-moncat}, this type theory is not globally ``linear'': for instance in $x:A \types \pair x x : A\times A$ the variable $x$ appears twice.
 But by including the unused variables in $\unit I$ and $\zero E$ we can ensure the following weaker property.
@@ -3292,7 +3480,7 @@ Here are some examples.
 All of these cases can be encompassed by the following definitions.
 
 \begin{defn}
-  Let \fF be the full subcategory of \bSet whose objects are the sets $\{1,\dots, n\}$ for all integers $n\ge 0$.
+  Let \fN be the full subcategory of \bSet whose objects are the sets $\{1,\dots, n\}$ for all integers $n\ge 0$.
   We regard it as a \emph{cocartesian} strict monoidal category, under the disjoint union operation $\{1,\dots,n\} + \{1,\dots,m\} = \{1,\dots,n+m\}$.
   Moreover, for any $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ and $k_1,\dots,k_n$, let $\sigma \wr (k_1,\dots,k_n)$ denote the composite function
   \begin{equation*}
@@ -3302,9 +3490,9 @@ All of these cases can be encompassed by the following definitions.
      \toiso \{1,\dots,\textstyle\sum_{j=1}^n k_j \}
   \end{equation*}
   where $\widehat{\sigma}$ acts as the identity from the $i^{\mathrm{th}}$ summand to the $(\sigma i)^{\mathrm{th}}$ summand.
-  A \textbf{faithful cartesian club} is a subcategory $\fS\subseteq \fF$ such that
+  A \textbf{faithful cartesian club} is a subcategory $\fS\subseteq \fN$ such that
   \begin{enumerate}
-  \item \fS contains all the objects of \fF.
+  \item \fS contains all the objects of \fN.
   \item \fS is closed under the cocartesian monoidal structure, i.e.\ if $\sigma$ and $\tau$ are morphisms of $\fS$ then so is $\sigma\sqcup \tau$.
   \item \fS is closed under $\wr$, i.e.\ whenever it contains $\sigma$ it also contains $\sigma \wr (k_1,\dots,k_n)$.
   \end{enumerate}
@@ -3341,6 +3529,10 @@ As special cases we have, by definition:
   only identities & (ordinary) multicategories
 \end{tabular}
 \end{center}
+
+We can also formulate index-free versions of such multicategories along the lines of \cref{sec:indexfree-multicats}, by replacing the category \fN by the category \fF of all finite linear orders and all functions (not necessarily order-preserving) between them, and requiring that \fS include at least the order-preserving bijections.
+(This somewhat-unnatural treatment of orders is only necessary if we want to include ordinary multicategories as examples; if we only care about multicategories that are at least symmetric, we can omit the linear orders entirely and take the objects of \fF to be just finite sets.)
+In \cref{sec:indexfree-multicats} we asked that the hom-sets depend functorially on isomorphisms between linear orders (which, with hindsight, we can see as a categorical analogue of $\alpha$-equivalence); now that functoriality is unified with the action of the ``interesting'' maps in \fS such as symmetries, diagonals, and projections.
 
 Now, recall the definition of tensor products in a multicategory from \cref{defn:multicat-tensor}, and the result of \cref{thm:multicat-repr} that having all tensor products (being ``representable'') is equivalent to being a monoidal category.
 For a general faithful cartesian club \fS, we might as well \emph{define} an \textbf{\fS-monoidal category} to be an \fS-multicategory that is representable.
@@ -3492,7 +3684,7 @@ The correspondence between kinds of multicategory and structural rules\footnote{
 \end{tabular}
 \end{center}
 Note that these structural rules refer only to single transpositions, projections, and duplications, rather than arbitrary functions in \fS.
-This is similar to how, as we have noted, cut is usually stated in type theory in $\circ_i$-style rather than as a multi-composition.
+This is similar to how, as we have noted, cut is usually stated in type theory using one-place composites rather than a multi-composition.
 As in that case, the smaller operations suffice to generate the more general ones (c.f.\ \cref{ex:club-generators}).
 
 What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
@@ -3705,10 +3897,11 @@ However, we now have a type theory that is powerful enough to codify significant
 Thus, we can lift our notion of ``generalized logic'' back to informal mathematical reasoning.
 It takes a bit of practice to learn to write informal mathematical proofs that could (at least in principle) be codified in such a generalized logic, but it is eminently possible.
 The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra'' (whereas ordinary mathematical reasoning is only valid in Boolean algebras).
-(Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra.)
+Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra.
 
 The ``generalized logic'' corresponding to Heyting algebras is called \textbf{intuitionistic} or \textbf{constructive logic}, because of its similarity to the mathematics advocated by certain mathematicians calling themselves ``intuitionist'' or ``constructive'' in the early 20th century.
-While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them; the point is simply that we make our mathematics more general by generalizing our logic.
+While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them.
+The point is simply that we make our mathematics more general by generalizing our logic, and this is the logic that corresponds naturally to cartesian closed lattices, which are certainly a categorically natural notion.
 
 Having made these observations in the case of \emph{cartesian} closed lattices, it is natural to entertain similar ideas for other values of \fS.
 Roughly speaking, the names of the corresponding ``generalized logics'' are:
@@ -3721,7 +3914,7 @@ Roughly speaking, the names of the corresponding ``generalized logics'' are:
   relevance & relevance logic
 \end{tabular}
 \end{center}
-To be precise, all of these logics should additionally be qualified as ``intuitionistic'', since there are also ``classical'' versions of linear, affine, and relevance logics.
+To be precise, all of these logics should additionally be qualified as ``intuitionistic'', since there are also ``classical'' versions of linear, affine, and relevance logics in which the laws of double negation and excluded middle hold.
 Moreover, at least in the linear case one should also add a phrase like ``multiplicative-additive''\footnote{In the lingo of linear logic, $\tensor$ is a ``multiplicative'' connective, while $\meet$ and $\join$ are ``additive''.
   Classical linear logic also includes another multiplicative connective called $\parr$ that is dual to $\tensor$ in the same way that $\join$ is dual to $\meet$.}, because the name ``linear logic'' usually refers to a system with some additional modalities (see [TODO]).
 
@@ -3742,8 +3935,10 @@ The most commonly used relevance logics satisfy other principles that our type t
 Of course, any closed monoidal lattice satisfies the distributive law $A\tensor (B\join C) \cong (A\tensor B)\join (A\tensor C)$, but as we have observed, both weakening and contraction are necessary to force $\tensor$ to coincide with $\meet$.
 It is possible to formulate type theories that ensure the $\meet/\join$ distributive law as well, but this requires a fancier notion of generalized multicategory, so we postpone it to [TODO].
 
+[TODO: These ``equivalent forms'' are the same ones we use to make cartesian structure admissible.  Should we postpone this discussion until then?  That would also explain why this formulation of natural deduction doesn't explicitly apply the structural rules.]
+
 Finally, let us end this section by explaining the terminology ``natural deduction''.
-We return to the cartesian case, and since $\tensor$ and $\one$ coincide here with $\meet$ and $\top$ we omit the former.
+We return to the cartesian case, and since $\tensor$ and $\one$ coincide here with $\meet$ and $\top$ we omit the former pair.
 Moreover, in the presence of contraction and weakening, the rules $\idfunc$, $\bot E$, $\joinE$, and $\homE$ have the following equivalent forms:
 \begin{mathpar}
   \inferrule{A\in \Gamma}{\Gamma\types A}\;\idfunc\and
@@ -3814,6 +4009,7 @@ So regardless of the \emph{notation}, this representation is close to informal r
 \section{Intuitionistic sequent calculus}
 \label{sec:logic-seqcalc}
 
+[Should we do this at all?  Should it be an exercise?]
 
 
 \section{Simply typed $\lambda$-calculus}
