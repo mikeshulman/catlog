@@ -49,6 +49,7 @@
 \def\meetI{\mathord{\meet}I}
 % join
 \let\join\vee
+\let\bigjoin\bigvee
 \def\joinL{\mathord{\join}L}
 \def\joinR{\mathord{\join}R}
 \def\joinE{\mathord{\join}E}
@@ -110,7 +111,7 @@
 \makeatother
 \begin{document}
 \maketitle
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 \tableofcontents
 
 \setcounter{chapter}{-1}
@@ -2371,24 +2372,28 @@ are isomorphisms.
   Finally, one can check that these constructions are inverse.
 \end{proof}
 
-\subsection{Index-free multicategories}
-\label{sec:indexfree-multicats}
+\subsection{Fat multicategories}
+\label{sec:fat-multicats}
 
 The numerical indices on the $\circ_i$ operations are somewhat unfortunate: they are tedious to keep track of, lead to funny-looking arithmetic in the associativity/interchange laws, and convey little intuition.
 There is an equivalent way to define multicategories that does away with all of these problems, and that also relates nicely to the handling of variables in type theory: rather than take the domains of morphisms to be finite lists of objects, we take them to be families of objects indexed by an arbitrary finite linear order.
 
-More precisely, let \fL denote the category of finite linear orders and isomorphisms; since two isomorphic linear orders are uniquely isomorphic, \fL is equivalent to the discrete category \dN.
-Given any set $\cX$, let $(\fL\dn \cX)$ denote the category whose objects are functions $L\to \cX$ for $L\in \fL$, and whose morphisms are morphisms in \fL forming a commutative triangle.
-We define an \textbf{index-free multigraph} to consist of a set $\cG_0$ of objects together with a hom-functor $(\fL\dn\cG_0)\times \cG_0 \to \bSet$.
-Since $(\fL\dn \cX)$ is equivalent to the discrete category on the set $\coprod_{n\in\dN} \cX^n$ of finite lists of elements of $\cX$ (i.e.\ the free monoid on $\cX$), index-free multigraphs are essentially equivalent to ordinary multigraphs; but they admit more naturally defined operations.
+More precisely, let \fL denote the category of finite linear orders and isomorphisms.
+Since two isomorphic linear orders are uniquely isomorphic, \fL is equivalent to the discrete category \dN.
+Given any set $\cX$, let $(\fL\dn \cX)$ denote the category whose objects are functions $L\to \cX$ for $L\in \fL$, and whose morphisms are morphisms in \fL forming a commutative triangle (the comma category of the forgetful functor $\fL\to \bSet$ over \cX).
+We define a \textbf{fat multigraph} to consist of a set $\cG_0$ of objects together with a hom-functor $(\fL\dn\cG_0)\times \cG_0 \to \bSet$.
+Since $(\fL\dn \cX)$ is equivalent to the discrete category on the set $\coprod_{n\in\dN} \cX^n$ of finite lists of elements of $\cX$ (i.e.\ the free monoid on $\cX$), fat multigraphs are essentially equivalent to ordinary multigraphs; but they admit more naturally defined operations.
 
-For instance, given $L\in\fL$ and $K:L\to \fL$, the disjoint union $\coprod_{l\in L} K_l$ has a lexicographic ordering making it an object in \fL: if $k_1\in K_{l_1}$ and $k_2\in K_{l_2}$, then $k_1<k_2$ in $\coprod_{l\in L} K_l$ if either $l_1<l_2$ in $L$ or both $l_1=l_2$ in $L$ and $k_1<k_2$ in $K_{l_1}(=K_{l_2})$.
-This is the index-free version of concatenation of lists.
+In general, if $L\in\fL$, by an \textbf{$L$-indexed family} we mean simply a family (of something) indexed by the underlying set of $L$.
+As a particular case, we might have an $L$-indexed family of objects of \fL itself, say $K:L\to \fL$.
+In this case, the disjoint union $\coprod_{l\in L} K_l$ has a lexicographic ordering making it an object in \fL: if $k_1\in K_{l_1}$ and $k_2\in K_{l_2}$, then $k_1<k_2$ in $\coprod_{l\in L} K_l$ if either $l_1<l_2$ in $L$ or \big[$l_1=l_2$ in $L$ and $k_1<k_2$ in $K_{l_1}(=K_{l_2})$\big].
+This is a fat version of concatenation of lists.
 
-Now we can define an \textbf{index-free multicategory} to be an index-free multigraph \cM together with
+We also fix a particular one-element set $\{0\}$, with its unique total ordering, and we write $\{X\}$ (where $X$ is anything) for the unique $\{0\}$-indexed family determined by $X$.
+Now we define a \textbf{fat multicategory} to be a fat multigraph \cM together with
 \begin{enumerate}
-\item For each object $A$, an identity arrow $\idfunc_A \in \cM(\{A\},A)$ where $\{A\}$ denotes a family indexed by some canonically chosen one-element linear order.
-\item For any object $C\in\cM_0$, \fL-indexed family $B:L\to\cM_0$, and doubly indexed family $K:L\to \fL$ with $A_l : K_l \to \cM_0$, a composition operation
+\item For each object $A$, an identity arrow $\idfunc_A \in \cM(\{A\},A)$.
+\item For any object $C\in\cM_0$, family of objects $B:L\to \cG_0$ with $L\in\fL$, and families of objects $A_l : K_l \to \cM_0$ with $K:L\to \fL$, a composition operation
   \begin{align*}
     \cM(B,C) \times \prod_{l\in L} \cM(A_l,B_l) &\too \cM\left( \textstyle\bigcup_{l\in L} A_l, C\right)\\
     (g,f) &\mapsto g\circ f
@@ -2415,7 +2420,7 @@ We can describe the one-place operations similarly.
 Given $L,K\in\fL$ and an element $l\in L$, the set $(L\setminus \{l\}) \sqcup K$ has an induced linear ordering that restricts to the given orderings on $L$ and $K$, and such that a $y\in L$ is less than all elements of $K$ if $y<l$ in $L$, and greater than all elements of $K$ if $y>l$ in $L$.
 We denote this linear order as $L\circ_l K$.
 
-The one-place operations on an index-free multicategory now take the following form: given $g\in \cM(B,C)$, where $B:L\to \cG_0$ with $L\in\fL$ and $C\in\cG_0$, and also $f\in \cM(A,B_l)$ for some $l\in L$, where $A:K\to \cG_0$ and $K\in \fL$, we have $g\circ_l f \in \cM(B\cup_l A,C)$, where $B\cup_l A:L\circ_l K \to \cG_0$ is induced by $B$ and $A$.
+The one-place operations on a fat multicategory now take the following form: given $g\in \cM(B,C)$, where $B:L\to \cG_0$ with $L\in\fL$ and $C\in\cG_0$, and also $f\in \cM(A,B_l)$ for some $l\in L$, where $A:K\to \cG_0$ and $K\in \fL$, we have $g\circ_l f \in \cM(B\cup_l A,C)$, where $B\cup_l A:L\circ_l K \to \cG_0$ is induced by $B$ and $A$.
 The associativity and interchange laws are now much easier to state:
 \begin{align*}
   (h\circ_l g)\circ_k f &= h\circ_l (g\circ_k f) \\
@@ -2424,13 +2429,18 @@ The associativity and interchange laws are now much easier to state:
 where $k$ is any index in the domain of $g$, and $l,l_1,l_2$ are any indices in the domain of $h$.
 (Like the multi-composition axioms, however, these equations only make sense after transferring across corresponding isomorphisms in \fL, such as $(L\circ_l K)\circ_k M\cong L\circ_l (K\circ_k M)$ and $(L\circ_{l_2} K)\circ_{l_1} M \cong (L\circ_{l_1} M)\circ_{l_2} K$.)
 
-We will see later on that the difference between index-ful and index-free multicategories is roughly the same as the difference between the methods of de Bruijn and of $\alpha$-equivalence in type theory.
+The idea of fat multicategories is from~\cite[Appendix A]{leinster:higher-opds}, although there only the symmetric case was done, and with a slight variation; see \cref{sec:cartmulti} for further discussion.
+We will see later on that the difference between ``thin'' and fat multicategories is roughly the same as the difference between the methods of de Bruijn and of $\alpha$-equivalence in type theory.
 
 
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:multicat-defns}
-  Prove that all four definitions of multicategory given in this section (multi-composition or one-place compositions, index-ful and index-free) are equivalent.
+  Prove that the definitions of multicategory in terms of multi-composition and one-place composition are equivalent, in the strong sense that they yield isomorphic categories of multicategories.
+\end{ex}
+
+\begin{ex}\label{ex:fat-multicats}
+  Fill in the details in the two definitions of fat multicategories (using multi-composition and one-place composition), and prove that both categories of fat multicategories are equivalent to the category of ``thin'' multicategories.
 \end{ex}
 
 \begin{ex}\label{ex:multicat-repr}
@@ -2882,7 +2892,7 @@ Now if we use ``de Bruijn levels'', the concatenation of $\Gamma$ and $\Delta$ m
 For instance, we concatenate $x_1:A_1, x_2:A_2$ with $x_1:B_1$ to get $x_1:A_1, x_2:A_2,x_3:B_1$.
 
 If we instead use arbitrary named variables, as we will generally do, then we need to apply $\alpha$-equivalences to $\Gamma$ and/or $\Delta$ to make their variable names disjoint.
-This can be formulated elegantly using the index-free setup of \cref{sec:indexfree-multicats}.
+This can be formulated elegantly with the setup that we used for fat multicategories in \cref{sec:fat-multicats}.
 Recall that \fL denotes the category of finite linear orders and isomorphisms; now define a \textbf{context} to be an $L$-indexed family of types (i.e.\ derivable judgments $\types A\type$) for some $L\in\fL$, which we might write $\Gamma:L\to \ftype$.
 Then if also $\Delta:K\to\ftype$, their concatenation is naturally defined to be the induced family $\Gamma\cup\Delta:L\sqcup K\to\ftype$ indexed by the disjoint union (with order inherited from $L$ and $K$, plus $l<k$ for all $l\in L$ and $k\in K$).
 
@@ -2988,7 +2998,7 @@ As before, note that we can regard this as defining substitution; its inductive 
 \end{align*}
 where $i$ is the unique index such that $x$ occurs in $N_i$ (which exists by \cref{thm:multicat-linear}).
 
-Now note that if we represent contexts as families of types indexed by finite linear orders, as suggested in the discussion of $\alpha$-equivalence for concatenation above, then the derivable sequents $\Gamma\types A$ form \emph{precisely} an index-free multigraph as described in \cref{sec:indexfree-multicats}, and substitution $N[M/x]$ has precisely the form of the index-free one-place composition operation ``$N\circ_x M$''.
+Now note that if we represent contexts as families of types indexed by finite linear orders, as suggested in the discussion of $\alpha$-equivalence for concatenation above, then the derivable sequents $\Gamma\types A$ form \emph{precisely} a fat multigraph as described in \cref{sec:fat-multicats}, and substitution $N[M/x]$ has precisely the form of the fat one-place composition operation ``$N\circ_x M$''.
 Similarly, we have:
 
 \begin{thm}\label{thm:multicat-subassoc}
@@ -3260,7 +3270,7 @@ The rules for $\one$ are similar.
 
 
 
-\section{Products and coproducts}
+\section{Adding products and coproducts}
 \label{sec:multicat-prod-coprod}
 
 Now that we understand the simple type theories of multicategories and monoidal categories, let's add products and coproducts as well.
@@ -3449,6 +3459,9 @@ The categorical side of this involves moving to \emph{generalized multicategorie
 \section{Some generalized multicategories}
 \label{sec:cartmulti}
 
+\subsection{Cartesian clubs}
+\label{sec:cart-clubs}
+
 We want to consider monoidal categories with ``something extra'', such as symmetric monoidal categories or cartesian monoidal categories.
 To describe a type theory for monoidal categories of this sort, principle~\eqref{princ:structural} from \cref{sec:why-multicats} suggests that we should ask what additional structure this ``something extra'' induces on their underlying multicategories.
 Because the morphisms $(A_1,\dots,A_n) \to B$ in the underlying multicategory of a monoidal category \cC are, by definition, the morphisms $A_1\tensor\cdots\tensor A_n \to B$ in \cC, the answer to this question depends on what morphisms between tensor products exist ``generically'' in monoidal categories of our desired sort.
@@ -3481,7 +3494,7 @@ All of these cases can be encompassed by the following definitions.
 
 \begin{defn}
   Let \fN be the full subcategory of \bSet whose objects are the sets $\{1,\dots, n\}$ for all integers $n\ge 0$.
-  We regard it as a \emph{cocartesian} strict monoidal category, under the disjoint union operation $\{1,\dots,n\} + \{1,\dots,m\} = \{1,\dots,n+m\}$.
+  We regard it as a \emph{cocartesian} strict monoidal category, under the disjoint union operation $\{1,\dots,n\} \sqcup \{1,\dots,m\} = \{1,\dots,n+m\}$.
   Moreover, for any $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ and $k_1,\dots,k_n$, let $\sigma \wr (k_1,\dots,k_n)$ denote the composite function
   \begin{equation*}
     \{1,\dots,\textstyle\sum_{i=1}^m k_{\sigma i} \}
@@ -3509,13 +3522,14 @@ There is also the trivial case when \fS contains only the identities.
     f &\mapsto f\sigma^*
   \end{align*}
   for all functions $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ in \fS, satisfying the following axioms:
-  \begin{itemize}
-  \item $f \sigma^* \tau^* = f(\tau\sigma)^*$
-  \item $f \idfunc_n^* = f$
+  \begin{enumerate}
+  \item $f \sigma^* \tau^* = f(\tau\sigma)^*$\label{item:cartmulti-1}
+  \item $f (\idfunc_n)^* = f$\label{item:cartmulti-2}
   \item $g\circ (f_1 \sigma_1^* ,\dots, f_n \sigma_n^*) = (g \circ (f_1,\dots,f_n))(\sigma_1\sqcup \cdots \sqcup \sigma_n)^*$
   \item $g\sigma^* \circ (f_1,\dots,f_n) = (g\circ (f_{\sigma 1},\dots, f_{\sigma m}))(\sigma \wr (k_1,\dots,k_n))^*$ where $k_i$ is the arity of $f_i$.
-  \end{itemize}
+  \end{enumerate}
   If each hom-set $\cM(A_1,\dots,A_n;B)$ has at most one element, we call \cM an \textbf{\fS-multiposet}.
+  An \textbf{\fS-multigraph} is a multigraph equipped with similar operations satisfying~\ref{item:cartmulti-1} and~\ref{item:cartmulti-2}.
 \end{defn}
 
 As special cases we have, by definition:
@@ -3530,9 +3544,8 @@ As special cases we have, by definition:
 \end{tabular}
 \end{center}
 
-We can also formulate index-free versions of such multicategories along the lines of \cref{sec:indexfree-multicats}, by replacing the category \fN by the category \fF of all finite linear orders and all functions (not necessarily order-preserving) between them, and requiring that \fS include at least the order-preserving bijections.
-(This somewhat-unnatural treatment of orders is only necessary if we want to include ordinary multicategories as examples; if we only care about multicategories that are at least symmetric, we can omit the linear orders entirely and take the objects of \fF to be just finite sets.)
-In \cref{sec:indexfree-multicats} we asked that the hom-sets depend functorially on isomorphisms between linear orders (which, with hindsight, we can see as a categorical analogue of $\alpha$-equivalence); now that functoriality is unified with the action of the ``interesting'' maps in \fS such as symmetries, diagonals, and projections.
+\subsection{Products in \fS-multicategories}
+\label{sec:cartmulti-prod}
 
 Now, recall the definition of tensor products in a multicategory from \cref{defn:multicat-tensor}, and the result of \cref{thm:multicat-repr} that having all tensor products (being ``representable'') is equivalent to being a monoidal category.
 For a general faithful cartesian club \fS, we might as well \emph{define} an \textbf{\fS-monoidal category} to be an \fS-multicategory that is representable.
@@ -3621,6 +3634,57 @@ The following is then straightforward.
 
 Of course, cartesian closed categories are just closed cartesian monoidal categories, so they are equivalent to closed cartesian multicategories.
 
+\subsection{Fat generalized multicategories}
+\label{sec:fat-cartmulti}
+
+We can also formulate ``fat'' \fS-multicategories along the lines of \cref{sec:fat-multicats}; in fact, in some ways they are even more natural than thin ones.
+
+\begin{defn}
+  Let \fF be the category whose objects are finite linear orders and whose morphisms are arbitrary functions (not necessarily respecting the order).
+  Like \fN, it is cocartesian monoidal with the disjoint union $K\sqcup L$ having $K<L$, and any $\sigma:L\to M$ and $K:M\to \fF$ induce a function
+  \[\sigma\wr K : \textstyle\bigsqcup_{l\in L} K_{\sigma l} \too \bigsqcup_{m\in M} K_m \]
+  mapping the $l$-summand $K_{\sigma l}$ identically to the $\sigma l$-summand.
+  A \textbf{fat faithful cartesian club} is a subcategory $\fS\subseteq \fF$ such that
+  \begin{enumerate}
+  \item \fS contains all the objects of \fF and all the order-preserving bijections;
+  \item \fS is closed under the cocartesian monoidal structure; and
+  \item \fS is closed under $\wr$, i.e.\ whenever it contains $\sigma$ it also contains $\sigma \wr K$.
+  \end{enumerate}
+\end{defn}
+
+It may seem somewhat unnatural to have linear orders around that are not respected by all the morphisms.
+Technically this is only necessary if we want to include ordinary multicategories as examples.
+If we only care about multicategories that are at least symmetric, we can omit the linear orders entirely and take the objects of \fF to be just finite sets; this is what was done in~\cite[Appendix A]{leinster:higher-opds} where only fat symmetric multicategories were defined.%
+\footnote{There is one further difference between Leinster's definition and ours: instead of coproducts of families of finite sets, he uses fibers of functions between finite sets.
+  This enables functoriality on symmetries to be deduced from the composition operation rather than imposed separately, but it doesn't seem to generalize well beyond the symmetric case.}
+However, we prefer to keep the linear orders around in all cases because they match type theory better; even for type theories with symmetry, we generally still write the the context in a particular order.
+
+For any such \fS and any set \cX, let $(\fS\dn \cX)$ be the comma category of the forgetful functor $\fS\to \bSet$ over \cX, so its objects are functions $L\to \cX$ with $L\in\fF$ and its morphisms are functions in \fS forming a commutative triangle.
+For the rest of this section, let \fS be a fat faithful cartesian club.
+
+\begin{defn}
+  A \textbf{fat \fS-multigraph} is a set $\cG_0$ together with a functor $\cG:(\fS\dn\cG_0) \times \cG_0 \to \bSet$.
+  If $\sigma:A\to B$ in $(\fS\dn\cG_0)$, we write its action on $f\in \cG(A,C)$ as $f\sigma^*$.
+\end{defn}
+
+The smallest fat faithful cartesian club is the category $\fL$ from \cref{sec:fat-multicats}, and a fat \fL-multigraph is precisely a fat multigraph as defined there.
+Since $\fL\subseteq \fS$ for any \fS, every fat \fS-multigraph has an underlying fat multigraph.
+In hindsight, the functorial action of a fat multigraph is a categorical analogue of $\alpha$-equivalence; now we are unifying that with the action of the ``interesting'' maps in \fS such as symmetries, diagonals, and projections.
+
+\begin{defn}
+  A \textbf{fat \fS-multicategory} is a fat \fS-multigraph whose underlying fat multigraph is equipped with the structure of a fat multicategory such that composition is \fS-equivariant in the following senses.
+  \begin{enumerate}
+  \item For any $g\in\cG(B,C)$, $B:L\to\cG_0$, $K,M:L\to \fS$, $A_l:K_l\to \cG_0$, $f_l \in \cG(A_l,B_l)$, and $\sigma_l : K_l \to M_l$, we have
+    \[g\circ f\sigma^* = (g\circ f)\left(\textstyle\bigcup_l \sigma_l\right)^*\]
+    where $(f\sigma^*)_l = (f_l \sigma_l^*)$.
+  \item For any $g\in\cG(B,C)$, $B:L\to\cG_0$, $D:M\to \cG_0$, $\sigma:B\to D$ in $(\fS\dn \cX)$, $K:M\to \fS$, $A_m:K_m\to \cG_0$, and $f_m \in \cG(A_{m},D_{m})$, we have
+    \[g\sigma^* \circ f = (g\circ f_\sigma)(\sigma \wr K)^*\]
+    where $(f_\sigma)_l = f_{\sigma l}$.
+  \end{enumerate}
+\end{defn}
+
+We leave it to the reader to prove the equivalence of the fat and thin definitions; see \cref{ex:fat-cartmulti}.
+
 
 \subsection*{Exercises}
 
@@ -3635,6 +3699,10 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
   \item Prove that if \fS contains the transposition $\{1,2\}\toiso \{1,2\}$ and also the injection $\emptyset \to \{1\}$, then it contains all injections.
   \item Prove that if \fS contains the transposition $\{1,2\}\toiso \{1,2\}$ and also the surjection $\{1,2\} \to \{1\}$, then it contains all surjections.
   \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:cartmulti-oneplace}
+  Define one-place versions of \fS-multicategories and show that they are equivalent to the multi-composition version defined in the text.
 \end{ex}
 
 \begin{ex}\label{ex:distrib}
@@ -3653,6 +3721,10 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
 \begin{ex}\label{ex:relevance-moncat}
   Define a notion of \textbf{relevance monoidal category}, by adding ``natural diagonals'' to a symmetric monoidal category, and show that such monoidal categories are equivalent to representable relevance multicategories.
   (See~\cite{dp:relevant-cats}.)
+\end{ex}
+
+\begin{ex}\label{ex:fat-cartmulti}
+  Prove that fat \fS-multicategories are equivalent to ``thin'' ones.
 \end{ex}
 
 \begin{ex}\label{ex:cocartesian-clubs}
@@ -3897,7 +3969,7 @@ However, we now have a type theory that is powerful enough to codify significant
 Thus, we can lift our notion of ``generalized logic'' back to informal mathematical reasoning.
 It takes a bit of practice to learn to write informal mathematical proofs that could (at least in principle) be codified in such a generalized logic, but it is eminently possible.
 The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra'' (whereas ordinary mathematical reasoning is only valid in Boolean algebras).
-Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra.
+Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra (\cref{ex:frames}).
 
 The ``generalized logic'' corresponding to Heyting algebras is called \textbf{intuitionistic} or \textbf{constructive logic}, because of its similarity to the mathematics advocated by certain mathematicians calling themselves ``intuitionist'' or ``constructive'' in the early 20th century.
 While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them.
@@ -3916,7 +3988,8 @@ Roughly speaking, the names of the corresponding ``generalized logics'' are:
 \end{center}
 To be precise, all of these logics should additionally be qualified as ``intuitionistic'', since there are also ``classical'' versions of linear, affine, and relevance logics in which the laws of double negation and excluded middle hold.
 Moreover, at least in the linear case one should also add a phrase like ``multiplicative-additive''\footnote{In the lingo of linear logic, $\tensor$ is a ``multiplicative'' connective, while $\meet$ and $\join$ are ``additive''.
-  Classical linear logic also includes another multiplicative connective called $\parr$ that is dual to $\tensor$ in the same way that $\join$ is dual to $\meet$.}, because the name ``linear logic'' usually refers to a system with some additional modalities (see [TODO]).
+  Classical linear logic also includes another multiplicative connective called $\parr$ that is dual to $\tensor$ in the same way that $\join$ is dual to $\meet$; see \cref{sec:cllin}.}, because the name ``linear logic'' usually refers to a system with some additional modalities (see [TODO]).
+Furthermore, at this point all of them should have the prefix ``propositional'', since we are not yet considering quantifiers of any sort (``there exists'' and ``for all'').
 
 The name ``linear logic'' comes from the same intuition as our use of ``linearity'' to describe \cref{thm:multicat-linear}.
 The name ``affine logic'' is similarly inspired by the fact that while a linear transformation $T(\vec v) = A\vec v$ must use its argument exactly once in each term, an affine transformation $T(\vec v) = A\vec v + \vec b$ also has terms that do not use its argument at all.
@@ -3929,13 +4002,93 @@ The straightforward derivation of this tautology in our type theory requires wea
       }}{A\types (B\To A)
     }}{()\types A\To (B\To A)}
 \end{mathpar}
-and in fact the type theory for closed relevance monoidal lattices cannot derive $()\types A\hom (B\hom A)$ (although this is not obvious).
+and in fact the type theory for closed relevance monoidal lattices cannot derive $()\types A\hom (B\hom A)$ (although this is not obvious; see \cref{ex:relevance-eg,ex:seqcalc-logic}).
 
 The most commonly used relevance logics satisfy other principles that our type theory does not, notably the distributive law $A\meet (B\join C) \cong (A\meet B)\join (A\meet C)$ (note that our derivation of this above also used weakening).
 Of course, any closed monoidal lattice satisfies the distributive law $A\tensor (B\join C) \cong (A\tensor B)\join (A\tensor C)$, but as we have observed, both weakening and contraction are necessary to force $\tensor$ to coincide with $\meet$.
 It is possible to formulate type theories that ensure the $\meet/\join$ distributive law as well, but this requires a fancier notion of generalized multicategory, so we postpone it to [TODO].
 
-[TODO: These ``equivalent forms'' are the same ones we use to make cartesian structure admissible.  Should we postpone this discussion until then?  That would also explain why this formulation of natural deduction doesn't explicitly apply the structural rules.]
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:cart-typetheory}
+  Prove \cref{thm:semicart-multicat-repr,thm:cart-multicat-repr} using our posetal type theories.
+  Specifically:
+  \begin{enumerate}
+  \item If we have exchange and weakening, prove that $\one \cong \unit$.
+  \item If we have exchange, weakening, and contraction, prove that $A\tensor B \cong A\times B$.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:nnlem}
+  Prove that $\neg\neg(P\join\neg P)$ is an intuitionistic tautology, i.e.\ construct a derivation of $()\types\neg\neg(P\join\neg P)$ in the natural deduction for Heyting algebras.
+\end{ex}
+
+\begin{ex}\label{ex:demorgan}
+  Of the four ``de Morgan's laws'', three are intuitionistic tautologies and one is not.
+  Construct derivations of three of the following sequents in the natural deduction for Heyting algebras:
+  \begin{align*}
+    \neg(P\join Q) &\types \neg P \meet \neg Q\\
+    \neg(P\meet Q) &\types \neg P \join \neg Q\\
+    \neg P \meet \neg Q &\types \neg(P\join Q)\\
+    \neg P \join \neg Q &\types \neg(P\meet Q)
+  \end{align*}
+\end{ex}
+
+\begin{ex}\label{ex:frames}
+  A \textbf{frame} is a lattice with infinitary joins satisfying the infinite distributive law $A \meet \left(\bigjoin_i B_i\right) \cong \bigjoin_i (A\meet B_i)$.
+  \begin{enumerate}
+  \item Prove that any (small) frame is a Heyting algebra.
+  \item Prove that the lattice of open sets of any topological space is a frame.
+  \item Describe a type theory for frames.  This is called (propositional) \textbf{geometric logic}.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:not-lem}
+  Give concrete examples of Heyting algebras satisfying the following:
+  \begin{enumerate}
+  \item There is an element $P$ for which $P\join \neg P$ is not the top element.
+  \item There are elements $P$ and $Q$ for which the fourth de Morgan's law (see \cref{ex:demorgan}) does not hold.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:relevance-eg}
+  Describe a concrete example of a closed relevance monoidal lattice containing two objects $A$ and $B$ such that there is no morphism from $\one$ (the unit object) to $A\hom (B\hom A)$.
+  Deduce that $()\types A\hom (B\hom A)$ is not derivable in the type theory for closed relevance monoidal lattices.
+\end{ex}
+
+\begin{ex}\label{ex:seqcalc-logic}
+  One of the advantages of sequent calculus over natural deduction is that because all of its rules \emph{introduce} operations on the left or the right, it is easier to conclude underivability theorems.
+  \begin{enumerate}
+  \item Define a sequent calculus for closed \fS-monoidal lattices, and prove the cut admissibility and initiality theorems.
+  \item Prove that $()\types A\hom (B\hom A)$ is not derivable in the sequent calculus for closed relevance monoidal lattices, by ruling out all possible ways that such a derivation could end.
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:cocartesian-typetheory}
+  Is there a well-behaved type theory (i.e.\ having admissible cut and an initiality theorem) corresponding to the (posetal version of the) ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
+  \textit{(As of this writing, the answer is not known to the author.)}
+\end{ex}
+
+
+
+\section{Simply typed $\lambda$-calculus}
+\label{sec:stlc}
+\label{sec:cartmoncat}
+
+We now move back up the ladder from posets to categories.
+In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible.
+Otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
+
+In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case, and also the easiest.
+The main reason it is easier is that 
+
+It turns out that when we annotate it by terms, this reformulation is also sufficient to make all the structural rules admissible, essentially because we can propagate them all the way up the derivation tree.
+
+[TODO.  Should we mention NNOs and primitive recursion here?]
+
+\subsection{Natural deduction, revisited}
+\label{sec:natded-again}
 
 Finally, let us end this section by explaining the terminology ``natural deduction''.
 We return to the cartesian case, and since $\tensor$ and $\one$ coincide here with $\meet$ and $\top$ we omit the former pair.
@@ -3989,42 +4142,6 @@ In fact this representation with discharged hypotheses came first, and only late
 So regardless of the \emph{notation}, this representation is close to informal reasoning.]
 
 
-\subsection*{Exercises}
-
-\begin{ex}\label{ex:cart-typetheory}
-  Prove \cref{thm:semicart-multicat-repr,thm:cart-multicat-repr} in our posetal type theories.
-  Specifically:
-  \begin{enumerate}
-  \item If we have exchange and weakening, prove that $\one \cong \unit$.
-  \item If we have exchange, weakening, and contraction, prove that $A\tensor B \cong A\times B$.
-  \end{enumerate}
-\end{ex}
-
-\begin{ex}\label{ex:cocartesian-typetheory}
-  Is there a well-behaved type theory (i.e.\ having admissible cut and an initiality theorem) corresponding to the ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
-  \textit{(As of this writing, the answer is not known to the author.)}
-\end{ex}
-
-
-\section{Intuitionistic sequent calculus}
-\label{sec:logic-seqcalc}
-
-[Should we do this at all?  Should it be an exercise?]
-
-
-\section{Simply typed $\lambda$-calculus}
-\label{sec:stlc}
-\label{sec:cartmoncat}
-
-We now move back up the ladder from posets to categories.
-In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible.
-Otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
-
-In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case and also the easiest.
-As remarked at the end of \cref{sec:logic}, in this case we can omit $\tensor,\one$ and reformulate the remaining rules so that on our way down the derivation tree we only ever remove types from the context.
-It turns out that when we annotate it by terms, this reformulation is also sufficient to make all the structural rules admissible, essentially because we can propagate them all the way up the derivation tree.
-
-[TODO.  Should we mention NNOs and primitive recursion here?]
 
 
 \section{Symmetric monoidal categories}
@@ -5140,6 +5257,7 @@ The most notable example is dependent type theories, which among other things ha
 \end{mathpar}
 Dependent type theories also break the clean ``stratification'' of a deductive system $\sig^{(1)},\sig^{(2)},\dots,\sig^{(n)}$, since in the judgment $\types A\type$ the type $A$ can now contain terms from the ``higher level'' judgment $\Gamma\types M:B$; thus the whole system must be defined by one big mutual induction (in type-theoretic lingo it is an ``inductive-inductive definition'').
 However, it is still helpful to understand the ``standard'' picture in order to better appreciate these variations.
+
 
 
 \bibliographystyle{alpha}
