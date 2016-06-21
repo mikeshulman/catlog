@@ -107,6 +107,10 @@
 \def\ToR{\mathord{\To}R}
 \def\ToI{\mathord{\To}I}
 \def\ToE{\mathord{\To}E}
+\def\toL{\mathord{\to}L}
+\def\toR{\mathord{\to}R}
+\def\toI{\mathord{\to}I}
+\def\toE{\mathord{\to}E}
 % 
 \makeatother
 \begin{document}
@@ -4081,35 +4085,139 @@ In this case it becomes more important to adhere to principle~\eqref{princ:adm} 
 Otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
 
 In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case, and also the easiest.
-The main reason it is easier is that 
+One reason it is easier is that $\tensor$ and $\one$ now coincide with $\meet$ and $\top$, so we can omit the former pair.
+A second reason it is easier is the following lemma.
 
-It turns out that when we annotate it by terms, this reformulation is also sufficient to make all the structural rules admissible, essentially because we can propagate them all the way up the derivation tree.
+\begin{lem}\label{thm:cart-constctx}
+  In the presence of exchange, contraction, and weakening, the following rules are inter-derivable with the rules $\bot E$, $\joinE$, $\homE$ from \cref{fig:natded-logic}.
+  \begin{mathpar}
+    \inferrule{\types A\type \\ A\in \Gamma}{\Gamma\types A}\;\idfunc'
+    \and
+    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types A_1 \\ \dots \\ \Gamma \types A_n}{\Gamma\types B}\;f'
+    \and
+    \inferrule{\Gamma\types \bot}{\Gamma\types C}\;\bot E'
+    \and
+    \inferrule{
+      \Gamma\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+    }{\Gamma \types C}\;\joinE'
+    \and
+    \inferrule{\Gamma\types A\hom B \\ \Gamma\types A}{\Gamma\types B}\;\homE'
+  \end{mathpar}
+\end{lem}
+\begin{proof}
+  Here are the referenced rules from \cref{fig:natded-logic}:
+  \begin{mathpar}
+    \inferrule{\types A\type}{A\types A}\;\idfunc
+    \and
+    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}\;f
+    \and
+    \inferrule{\Psi\types \bot}{\Gamma,\Psi\types C}\;\bot E
+    \and
+    \inferrule{
+      \Psi\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+    }{\Gamma,\Psi \types C}\;\joinE
+    \and
+    \inferrule{\Gamma\types A\hom B \\ \Psi\types A}{\Gamma,\Psi\types B}\;\homE
+  \end{mathpar}
+  Clearly $\idfunc$ is a special case of $\idfunc'$, while conversely $\idfunc'$ can be derived from $\idfunc$ followed by weakening.
+  And $\bot E'$ is a special case of $\bot E$, while $f'$ and $\joinE'$ and $\homE'$ can be derived from $f$ and $\joinE$ and $\homE$ followed by exchange and contraction to turn contexts like $\Gamma,\Gamma$ into $\Gamma$.
+  Conversely, given the premises of any of these ``unprimed'' rules, we can weaken each $\Gamma$ and $\Psi$ to $\Gamma,\Psi$ (or $\Gamma_i$ to $\Gamma_1,\dots,\Gamma_n$ in the case of $f$), then apply the primed version of that rule to deduce the conclusion of the unprimed rule.
+\end{proof}
 
-[TODO.  Should we mention NNOs and primitive recursion here?]
+If we replace the rules in question by their modified versions, then all the rules will have the property that the context of the conclusion is arbitrary, while the context of the premises differ from the context of the conclusion at most by addition of a new type.
+In other words, as we proceed \emph{down} a derivation tree, we only ever \emph{remove} types from the context; and dually as we proceed \emph{up} a tree we only ever \emph{add} to the context.
+This will enable us to ``push the structural rules up'' past all primitive rules until we get to $\idfunc$, thereby making them admissible.
+
+\subsection{Simply typed $\lambda$-calculus}
+\label{subsec:stlc}
+
+Of course, before embarking on the formal study of this theory, we introduce terms for the derivations, as shown in \cref{fig:stlc}.
+Since we are back in the realm of categories rather than posets, we return to the notations $\times,\unit,+,\zero$ instead of $\meet,\top,\join,\bot$, and in a cartesian situation we write $A\to B$ instead of $A\hom B$.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types A\type \\ (x:A)\in \Gamma}{\Gamma\types x:A}\;\idfunc
+    \and
+    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types M_1:A_1 \\ \dots \\ \Gamma \types M_n:A_n}{\Gamma\types f(M_1,\dots,M_n):B}\;f
+    \and
+    \inferrule{\Gamma\types M:A \\ \Gamma\types N:B}{\Gamma\types \pair{M}{N} :A\times B}\;\timesI
+    \and
+    \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr1AB(M):A}\;\timesE1
+    \and
+    \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr2AB(M):B}\;\timesE2
+    \\
+    \inferrule{ }{\Gamma\types \ttt:\unit}\;\unit I
+    \and
+    \inferrule{\Gamma\types M:\zero}{\Gamma\types \abort(M):C}\;\zero E
+    \\
+    \inferrule{\Gamma\types M:A}{\Gamma\types \inl(M):A+B}\;\plusI1
+    \and
+    \inferrule{\Gamma\types N:B}{\Gamma\types \inr(N):A+B}\;\plusI2
+    \and
+    \inferrule{
+      \Gamma\types M:A+B \\ \Gamma,u:A \types P:C \\ \Gamma,v:B\types Q:C
+    }{\Gamma \types\acase AB(M,u.P,v.Q):C}\;\plusE
+    \and
+    \inferrule{\Gamma,x:A\types M:B}{\Gamma\types \lambda x.M:A\to B}\;\toI\and
+    \inferrule{\Gamma\types M:A\to B \\ \Gamma\types N:A}{\Gamma\types M N:B}\;\toE
+  \end{mathpar}
+  \caption{The simply typed $\lambda$-calculus}
+  \label{fig:stlc}
+\end{figure}
+
+Most of the term annotations should be familiar from \cref{sec:multicat-prod-coprod}; indeed they are even simpler, since the (expected) presence of the structural rules allows us to omit some of the more verbose annotations.
+The rules for $\to$, however, introduce a new kind of term, a \textbf{$\lambda$-abstraction}.
+[TODO: Discuss]
+
+Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus}.
+
+[TODO: $\alpha$-equivalence and binding, fat cartesian multicategories]
+
+\begin{lem}\label{thm:stlc-uniqderiv}
+  If a term $\Gamma\types M:A$ is derivable in the simply typed $\lambda$-calculus, then it has a unique derivation.
+\end{lem}
+\begin{proof}
+  This is almost immediate.
+  Since the premises of all rules have the same context as the conclusion, perhaps with a type added, there is no ambiguity about how to split things up, and hence no need for the uglier annotations used in \cref{sec:multicat-prod-coprod}.
+\end{proof}
+
+\begin{lem}\label{thm:stlc-strucadm}
+  The structural rules of exchange, contraction, and weakening are admissible in the simply typed $\lambda$-calculus.
+  In fact, the derivable judgments $\Gamma\types M:A$ form a fat cartesian multigraph in the sense of \cref{sec:fat-cartmulti}.
+\end{lem}
+\begin{proof}
+  TODO.
+\end{proof}
+
+[TODO: Substitution, functoriality, $\beta$ and $\eta$, etc.]
+
+[Initiality relative to multigraphs, not cartesian multigraphs.]
+
+\begin{thm}\label{thm:stlc-initial}
+  The free cartesian closed category with coproducts generated by a multigraph \cG can be presented by the simply typed $\lambda$-calculus under \cG: its underlying fat cartesian multigraph is that constructed in \cref{thm:stlc-strucadm} modulo $\equiv$, and its composition is given by substitution.
+\end{thm}
+\begin{proof}
+  TODO.
+\end{proof}
+
+
+\subsection{Primitive recursion}
+\label{sec:primrec}
+
+[NNOs and primitive recursion]
+
 
 \subsection{Natural deduction, revisited}
 \label{sec:natded-again}
 
 Finally, let us end this section by explaining the terminology ``natural deduction''.
-We return to the cartesian case, and since $\tensor$ and $\one$ coincide here with $\meet$ and $\top$ we omit the former pair.
-Moreover, in the presence of contraction and weakening, the rules $\idfunc$, $\bot E$, $\joinE$, and $\homE$ have the following equivalent forms:
-\begin{mathpar}
-  \inferrule{A\in \Gamma}{\Gamma\types A}\;\idfunc\and
-  \inferrule{\Gamma\types \bot}{\Gamma\types C}\;\bot E\and
-  \inferrule{
-    \Gamma\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
-  }{\Gamma \types C}\;\joinE\and
-  \inferrule{\Gamma\types A\hom B \\ \Gamma\types A}{\Gamma\types B}\;\homE
-\end{mathpar}
-Let us also suppose for simplicity that $\cG$ contains no nonidentity morphisms.
-Then all the rules have the property that the antecedent of the conclusion is arbitrary, while the antecedents of the premises are the same, perhaps with a new type added.
-In other words, as we proceed down a derivation tree, we only ever \emph{remove} types from the context.
-
-This leads to the following reformulation of the theory.
-We omit the contexts ``$\Gamma\types$'' from all judgments in a derivation tree, writing simply the consequent $A$.
+Let us return to the posetal type theory of Heyting algebras, but with the rules formulated as in \cref{thm:cart-constctx}.
+Now we omit the contexts ``$\Gamma\types$'' from all judgments in a derivation tree, instead writing simply the consequent $A$.
 In place of the $\idfunc$ rule deriving $\Gamma\types A$, we write simply ``$A$'' without any justification, and call it a \emph{hypothesis}.
 Finally, when a type $A$ is removed from the context on our way down the tree, we cross off that hypothesis everywhere that it appears above, and say that the hypothesis has been \emph{discharged}.
-For instance, the above derivation of the distributive law would be written in this style as
+
+For instance, the derivation of the distributive law in \cref{sec:logic} would be written in this style as
 \begin{mathpar}
   \inferrule*[Right=$\ToI$]{
     \inferrule*[Right=$\joinE$]{
@@ -4142,8 +4250,6 @@ In fact this representation with discharged hypotheses came first, and only late
 So regardless of the \emph{notation}, this representation is close to informal reasoning.]
 
 
-
-
 \section{Symmetric monoidal categories}
 \label{sec:symmoncat}
 
@@ -4166,7 +4272,7 @@ I've never seen that done before.]
 [A multigraph is also known as a signature of function symbols.
 An arbitrary set of equations between terms can be added to $\equiv$, thereby describing a ``presented'' rather than a free categorical structure.
 (Should that be done earlier?)
-For cartesian monoidal categories, this is a (multi-sorted) algebraic theory.
+For cartesian monoidal categories, this is a (multi-sorted) algebraic theory, and the free category with products is its corresponding Lawvere theory.
 For (symmetric) monoidal categories, it is a syntactic approach to (colored) operads.]
 
 
