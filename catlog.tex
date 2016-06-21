@@ -4598,7 +4598,8 @@ Suppose we have $f:()\to (B,C)$, written in type theory as $()\types (f_1,f_2):(
 We would na\"ively write this as $() \types (f_1,f_1,f_2,f_2)$, but this is ambiguous since we can't tell which $f_1$ matches which $f_2$.
 We disambiguate the possibilities by writing $() \types (f_1,f'_1,f_2,f'_2)$ or $() \types (f_1,f'_1,f'_2,f_2)$.
 Although this issue seems to only arise for morphisms with empty domain and greater than unary codomain, for consistency we formulate the syntax with a label (like $'$) on \emph{every} term former, and simply omit them informally when there is no risk of ambiguity (which includes the vast majority of cases).
-We assume given an infinite alphabet of symbols \fA for this purpose (such as $','',''',\dots$, or $1,2,3,\dots$).
+We assume given an infinite alphabet of symbols \fA for this purpose (such as $','',''',\dots$, or $1,2,3,\dots$), and we annotate our judgments with a finite subset $\fB\subseteq \fA$ indicating which labels might have been used already in the terms.
+
 
 Now, how exactly do we prevent duplication of derivations?
 In addition to our desired term
@@ -4627,19 +4628,67 @@ is not allowed, since in the attempted application of $g$ the input type $C$ is 
 
 Of course, this restriction on its own would prevent generators with nullary domain from ever being applied.
 Since these can always be applied at the very beginning, we incorporate them into the identity rule.
-Finally, since we want to make the exchange rule admissible, we have to build part of a permutation into the rules as well.
-This leads us to the theory shown in \cref{fig:props}.
 
-[TODO: Ugh, want to use subscripts to list a bunch of generators, but also to label the multiple outputs of each generator.]
+Finally, since we want to make the exchange rule admissible, we have to build permutations into the rules as well.
+As in \cref{sec:symmoncat}, each rule adds only the part of a permutation that hasn't already been specified by the premises.
 
 \begin{figure}
   \centering
   \begin{mathpar}
-    \inferrule{}{\vec x:\vec A\types (\sigma(\vec x,{\vec f}_1^{\fa_1},\dots,{\vec f}_n^{\fa_n})\mid g_1^{\vec{\fb}}):\actv {\vec B}}
+    \inferrule{
+      f_1 \in \cG((),\vec{B_1})\\\cdots\\
+      f_n \in \cG((),\vec{B_n})\\\\
+      g_1 \in \cG((),())\\\cdots\\
+      g_m \in \cG((),())\\\\
+      \sigma : {\vec A},{\vec B}_1,\dots, {\vec B}_n \toiso \Delta\\
+      \sigma\text{ preserves the relative order of } B_{11}, B_{21},B_{31},\dots, B_{n1}\\
+      \text{All types in }\Delta\text{ are active}\\
+      \fa_i,\fb_j\in \fB\text{ and pairwise distinct}
+    }{\vec x:\vec A\types^\fB
+      \left(\sigma\left(\vec x,{\vec f}_1^{\fa_1},\dots,{\vec f}_n^{\fa_n}\right)
+      \mid g_1^{\fb_1},\dots,g_m^{\fb_m}\right)
+      :\Delta}
+    \and
+    \inferrule{
+      \Gamma \types^\fB (\vec M_1,\dots,\vec M_n,\vec P_1,\dots,\vec P_m,\vec N \mid \vec Z)
+      : (\vec A_1,\dots, \vec A_n,\vec B_1,\dots,\vec B_m,\vec C)\\
+      \text{At least one type in each } A_i, B_j\text{ is active}\\
+      f_1 \in \cG(\vec A_1,\vec D_1)\\\cdots\\
+      f_n \in \cG(\vec A_n,\vec D_n)\\\\
+      g_1 \in \cG(\vec B_1,())\\\cdots\\
+      g_m \in \cG(\vec B_m,())\\\\
+      \sigma : \vec D_1,\dots,\vec D_n, \vec C \toiso \Delta\\
+      \sigma \text{ preserves the relative order of types in } \vec C\\
+      \sigma \text{ preserves the relative order of } D_{11}, D_{21}, D_{31},\dots, D_{n1}\\
+      \text{In }\Delta\text{ all types from } \vec D_i \text{ are active, all types from } \vec C\text{ are inactive}\\
+      \tau \in \mathrm{Shuf}(m,|\vec Z|)\\
+      \fa_i,\fb_j\notin \fB\text{ and pairwise distinct}
+    }{\Gamma \types^{\fB\cup\{\fa_i,\fb_j\}} %\fa_1,\dots,\fa_n,\fb_1,\dots,\fb_m\}}
+      \left(\sigma\left({\vec f}_1^{\fa_1}(\vec M_1),\dots,{\vec f}_n^{\fa_n}(\vec M_n),\vec N\right)
+      \mid \tau\left({ g}_1^{\fb_1}(\vec P_1),\dots,{ g}_m^{\fb_m}(\vec P_m),\vec Z\right)\right)
+      :\Delta
+    }
   \end{mathpar}
   \caption{Type theory for props}
   \label{fig:props}
 \end{figure}
+
+The resulting \textbf{type theory for props under \cG} is shown in \cref{fig:props}.
+Note that nearly all the subscripts shown are for indexing distinct morphisms or contexts, not for distinguishing between the different outputs of the some morphism as above.
+The latter is all hidden in the notation $\vec f$, and indicated in a couple of places by double subscripts $D_{11}, D_{21},\dots$
+
+The notation is quite heavy, but the idea is not so bad.
+For the identity rule, we suppose given a context of variables belonging to types, and a list of generating morphisms with nullary domain.
+Then we collect together all the variables in the context together with all the outputs of those of our generators with non-nullary codomain and permute them arbitrarily, except that we maintain the relative order of the first outputs of each generator (this prevents introduction of an extra permutation in the choice of how to order the list of generators).
+Combined with our generators with nullary codomain, this gives a list of terms belonging to the appropriately permuted list of types (from the context and the generator outputs), in which all types are active.
+
+For the generator rule, we suppose given a list of generating morphisms with non-nullary domain --- or more precisely two lists, one of morphisms with non-nullary codomain and one of those with nullary codomain.
+We also suppose given a term judgment producing the domains of these morphisms concatenated in order, each containing at least one active type, and followed by some other number of types.
+Then we collect all the outputs of our generators applied to these inputs, together with the types that were not input into any of them, and permute them arbitrarily, except that we mantain the relative order of the first outputs and of the un-inputted types (again, this prevents introduction of spurious permutations).
+We activate all the outputs of our current generators, and deactivate all other types.
+Finally, we similarly shuffle together the generators and the given terms of nullary codomain.
+
+[TODO: Examples, unique derivations of terms, admissibility and functoriality of exchange, admissibility of cut, initiality.  Wait until after writing \cref{sec:symmoncat}.]
 
 
 \newpage
