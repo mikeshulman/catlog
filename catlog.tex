@@ -1,5 +1,5 @@
 \documentclass{book}
-\usepackage{mathpartir,cancel,cmll,textcomp,version}
+\usepackage{mathpartir,cancel,cmll,textcomp}
 %\usepackage{appendix}  % for chapter appendices, use \begin{subappendices}
 \newif\ifcref\creftrue
 \input{decls}
@@ -117,7 +117,6 @@
 \def\toI{\mathord{\to}I}
 \def\toE{\mathord{\to}E}
 % 
-\excludeversion{fat}            % fat multicategories
 \makeatother
 \begin{document}
 \maketitle
@@ -2430,81 +2429,12 @@ are isomorphisms.
   Finally, one can check that these constructions are inverse.
 \end{proof}
 
-\begin{fat}
-% \subsection{Fat multicategories}
-% \label{sec:fat-multicats}
-
-The numerical indices on the $\circ_i$ operations are somewhat unfortunate: they are tedious to keep track of, lead to funny-looking arithmetic in the associativity/interchange laws, and convey little intuition.
-There is an equivalent way to define multicategories that does away with all of these problems, and that also relates nicely to the handling of variables in type theory: rather than take the domains of morphisms to be finite lists of objects, we take them to be families of objects indexed by an arbitrary finite linear order.
-
-More precisely, let \fL denote the category of finite linear orders and isomorphisms.
-Since two isomorphic linear orders are uniquely isomorphic, \fL is equivalent to the discrete category \dN.
-Given any set $\cX$, let $(\fL\dn \cX)$ denote the category whose objects are functions $L\to \cX$ for $L\in \fL$, and whose morphisms are morphisms in \fL forming a commutative triangle (the comma category of the forgetful functor $\fL\to \bSet$ over \cX).
-We define a \textbf{fat multigraph} to consist of a set $\cG_0$ of objects together with a hom-functor $(\fL\dn\cG_0)\times \cG_0 \to \bSet$.
-Since $(\fL\dn \cX)$ is equivalent to the discrete category on the set $\coprod_{n\in\dN} \cX^n$ of finite lists of elements of $\cX$ (i.e.\ the free monoid on $\cX$), fat multigraphs are essentially equivalent to ordinary multigraphs; but they admit more naturally defined operations.
-
-In general, if $L\in\fL$, by an \textbf{$L$-indexed family} we mean simply a family (of something) indexed by the underlying set of $L$.
-As a particular case, we might have an $L$-indexed family of objects of \fL itself, say $K:L\to \fL$.
-In this case, the disjoint union $\coprod_{l\in L} K_l$ has a lexicographic ordering making it an object in \fL: if $k_1\in K_{l_1}$ and $k_2\in K_{l_2}$, then $k_1<k_2$ in $\coprod_{l\in L} K_l$ if either $l_1<l_2$ in $L$ or \big[$l_1=l_2$ in $L$ and $k_1<k_2$ in $K_{l_1}(=K_{l_2})$\big].
-This is a fat version of concatenation of lists.
-
-We also fix a particular one-element set $\{0\}$, with its unique total ordering, and we write $\{X\}$ (where $X$ is anything) for the unique $\{0\}$-indexed family determined by $X$.
-Now we define a \textbf{fat multicategory} to be a fat multigraph \cM together with
-\begin{enumerate}
-\item For each object $A$, an identity arrow $\idfunc_A \in \cM(\{A\},A)$.
-\item For any object $C\in\cM_0$, family of objects $B:L\to \cG_0$ with $L\in\fL$, and families of objects $A_l : K_l \to \cM_0$ with $K:L\to \fL$, a composition operation
-  \begin{align*}
-    \cM(B,C) \times \prod_{l\in L} \cM(A_l,B_l) &\too \cM\left( \textstyle\bigcup_{l\in L} A_l, C\right)\\
-    (g,f) &\mapsto g\circ f
-  \end{align*}
-  where $\bigcup_{l\in L} A_l$ denotes the family $(\coprod_{l\in L} K_l) \to \cM_0$ induced by the $A_l$'s.
-\item Appropriate versions of the associativity and unitality axioms hold.
-% \item For any $f\in \cM(A,b)$, with $A:L\to \cM_0$, we have
-%   \begin{mathpar}
-%     \idfunc_b \circ \{f\} = f\and
-%     f\circ \idfunc_A = f
-%   \end{mathpar}
-%   where $\idfunc_A$ denotes the $L$-indexed family of morphisms picking out $\idfunc_{a_l}$ for each $l\in L$.
-% \item For any $h,G,F$ we have
-%   \begin{mathpar}
-%     (h\circ G) \circ \bigcup F
-%     h \circ (G\circ F)
-%   \end{mathpar}
-\end{enumerate}
-Writing down the axioms requires transferring across ``associativity and unitality'' isomorphisms in \fL.
-For instance, associativity uses the isomorphism
-\[\textstyle \coprod_{l\in L} \Big(\coprod_{k\in K_l} M_k\Big) \cong \coprod_{x\in \coprod_l K_l} M_x. \]
-
-We can describe the one-place operations similarly.
-Given $L,K\in\fL$ and an element $l\in L$, the set $(L\setminus \{l\}) \sqcup K$ has an induced linear ordering that restricts to the given orderings on $L$ and $K$, and such that a $y\in L$ is less than all elements of $K$ if $y<l$ in $L$, and greater than all elements of $K$ if $y>l$ in $L$.
-We denote this linear order as $L\circ_l K$.
-
-The one-place operations on a fat multicategory now take the following form: given $g\in \cM(B,C)$, where $B:L\to \cG_0$ with $L\in\fL$ and $C\in\cG_0$, and also $f\in \cM(A,B_l)$ for some $l\in L$, where $A:K\to \cG_0$ and $K\in \fL$, we have $g\circ_l f \in \cM(B\cup_l A,C)$, where $B\cup_l A:L\circ_l K \to \cG_0$ is induced by $B$ and $A$.
-The associativity and interchange laws are now much easier to state:
-\begin{align*}
-  (h\circ_l g)\circ_k f &= h\circ_l (g\circ_k f) \\
-  (h\circ_{l_2} g) \circ_{l_1} f &= (h\circ_{l_1} f) \circ_{l_2} g
-\end{align*}
-where $k$ is any index in the domain of $g$, and $l,l_1,l_2$ are any indices in the domain of $h$.
-(Like the multi-composition axioms, however, these equations only make sense after transferring across corresponding isomorphisms in \fL, such as $(L\circ_l K)\circ_k M\cong L\circ_l (K\circ_k M)$ and $(L\circ_{l_2} K)\circ_{l_1} M \cong (L\circ_{l_1} M)\circ_{l_2} K$.)
-
-The idea of fat multicategories is from~\cite[Appendix A]{leinster:higher-opds}, although there only the symmetric case was done, and with a slight variation; see \cref{sec:cartmulti} for further discussion.
-We will see later on that the difference between ``thin'' and fat multicategories is roughly the same as the difference between the methods of de Bruijn and of $\alpha$-equivalence in type theory.
-
-\end{fat}
-
 
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:multicat-defns}
   Prove that the definitions of multicategory in terms of multi-composition and one-place composition are equivalent, in the strong sense that they yield isomorphic categories of multicategories.
 \end{ex}
-
-\begin{fat}
-\begin{ex}\label{ex:fat-multicats}
-  Fill in the details in the two definitions of ``fat multicategories'' from \cref{sec:fat-multicats} (using multi-composition and one-place composition), and prove that both categories of fat multicategories are equivalent to the category of ``thin'' multicategories.
-\end{ex}
-\end{fat}
 
 \begin{ex}\label{ex:multicat-repr}
   Fill in the details in the proof of \cref{thm:multicat-repr}.
@@ -2954,20 +2884,6 @@ If we instead use arbitrary named variables, as we will generally do, then we si
 (This is an instance of \cref{princ:term-der-alpha} that term notations for rules can require applying $\alpha$-equivalences to some premises for compatibility.
 In \cref{sec:catprod} ``compatibility'' meant using the \emph{same} variable, while here it means using \emph{different} variables.)
 
-\begin{fat}
-\begin{rmk}
-  Renaming variables for context concatenation can be formulated elegantly with the setup that we used for fat multicategories in \cref{sec:fat-multicats}.
-  Recall that \fL denotes the category of finite linear orders and isomorphisms; now define formally a \textbf{context} to be an $L$-indexed family of types (i.e.\ derivable judgments $\types A\type$) for some $L\in\fL$, which we might write $\Gamma:L\to \ftype$.
-  The elements of $L$ are the \textbf{variables}.
-  Then if also $\Delta:K\to\ftype$, their concatenation is naturally defined to be the induced family $\Gamma\cup\Delta:L\sqcup K\to\ftype$ indexed by the disjoint union (with order inherited from $L$ and $K$, plus $l<k$ for all $l\in L$ and $k\in K$).
-
-  Syntactically, this amounts to systematically renaming \emph{all} the variables in $\Gamma$ and $\Delta$ to ensure their distinctness.
-  For instance, if $\Gamma=(x:A,y:B)$ and $\Delta=(y:C,z:D)$ then their concatenation would be $x_1:A,y_1:B,y_2:C,z_2:D$.
-  This is the only systematic thing to do (and perhaps in some sense it is the only \emph{natural} thing to do, in the precise sense of category theory).
-  But of course, in many cases it is not be necessary to rename \emph{all} the variables, only those that would otherwise conflict; just as when constructing a coproduct of sets we don't need to ``tag'' all the elements of both sets, only those belonging to their intersection.
-\end{rmk}
-\end{fat}
-
 From now on we will write simply $\Gamma,\Delta$ (and similarly $\Gamma, x:A, \Delta$, and so on) for the concatenation of two given contexts, modified to ensure variable distinctness in whatever way is appropriate.
 Of course, any variable incrementing or $\alpha$-equivalence that happens in $\Gamma$ or $\Delta$ must also be applied to the consequents of any sequents they appear in.
 On the other hand, if in some situation we \emph{assume} a sequent and write its context as $\Gamma,\Delta$, then no such operation is being applied; we are simply choosing a partition of that context into two parts.
@@ -3069,11 +2985,6 @@ where $i$ is the unique index such that $x$ occurs in $N_i$ (which exists by \cr
 The one-place substitution operation defined in \cref{thm:multicat-subadm} will, of course, give the $\circ_i$ operations in our free multicategory.
 The index $i$ is specified implicitly by the position of the variable $x$ in the context of $N$.
 A similar thing happens with the associativity and interchange axioms.
-
-\begin{fat}
-Now note that if we represent contexts as families of types indexed by finite linear orders, as suggested in the discussion of $\alpha$-equivalence for concatenation above, then the derivable sequents $\Gamma\types A$ form \emph{precisely} a fat multigraph as described in \cref{sec:fat-multicats}, and substitution $N[M/x]$ has precisely the form of the fat one-place composition operation ``$N\circ_x M$''.
-Similarly, we have:
-\end{fat}
 
 \begin{thm}\label{thm:multicat-subassoc}
   Substitution in the cut-free type theory for multicategories satisfies the associativity/interchange rules:
@@ -3715,60 +3626,6 @@ The following is then straightforward.
 
 Of course, cartesian closed categories are just closed cartesian monoidal categories, so they are equivalent to closed cartesian multicategories.
 
-\begin{fat}
-% \subsection{Fat generalized multicategories}
-% \label{sec:fat-cartmulti}
-
-We can also formulate ``fat'' \fS-multicategories along the lines of \cref{sec:fat-multicats}; in fact, in some ways they are even more natural than thin ones.
-
-\begin{defn}
-  Let \fF be the category whose objects are finite linear orders and whose morphisms are arbitrary functions (not necessarily respecting the order).
-  Like \fN, it is cocartesian monoidal with the disjoint union $K\sqcup L$ having $K<L$, and any $\sigma:L\to M$ and $K:M\to \fF$ induce a function
-  \[\sigma\wr K : \textstyle\bigsqcup_{l\in L} K_{\sigma l} \too \bigsqcup_{m\in M} K_m \]
-  mapping the $l$-summand $K_{\sigma l}$ identically to the $\sigma l$-summand.
-  A \textbf{fat faithful cartesian club} is a subcategory $\fS\subseteq \fF$ such that
-  \begin{enumerate}
-  \item \fS contains all the objects of \fF and all the order-preserving bijections;
-  \item \fS is closed under the cocartesian monoidal structure; and
-  \item \fS is closed under $\wr$, i.e.\ whenever it contains $\sigma$ it also contains $\sigma \wr K$.
-  \end{enumerate}
-\end{defn}
-
-It may seem somewhat unnatural to have linear orders around that are not respected by all the morphisms.
-Technically this is only necessary if we want to include ordinary multicategories as examples.
-If we only care about multicategories that are at least symmetric, we can omit the linear orders entirely and take the objects of \fF to be just finite sets; this is what was done in~\cite[Appendix A]{leinster:higher-opds} where only fat symmetric multicategories were defined.%
-\footnote{There is one further difference between Leinster's definition and ours: instead of coproducts of families of finite sets, he uses fibers of functions between finite sets.
-  This enables functoriality on symmetries to be deduced from the composition operation rather than imposed separately, but it doesn't seem to generalize well beyond the symmetric case.}
-However, we prefer to keep the linear orders around in all cases because they match type theory better; even for type theories with symmetry, we generally still write the the context in a particular order.
-
-For any such \fS and any set \cX, let $(\fS\dn \cX)$ be the comma category of the forgetful functor $\fS\to \bSet$ over \cX, so its objects are functions $L\to \cX$ with $L\in\fF$ and its morphisms are functions in \fS forming a commutative triangle.
-For the rest of this section, let \fS be a fat faithful cartesian club.
-
-\begin{defn}
-  A \textbf{fat \fS-multigraph} is a set $\cG_0$ together with a functor $\cG:(\fS\dn\cG_0) \times \cG_0 \to \bSet$.
-  If $\sigma:A\to B$ in $(\fS\dn\cG_0)$, we write its action on $f\in \cG(A,C)$ as $f\sigma^*$.
-\end{defn}
-
-The smallest fat faithful cartesian club is the category $\fL$ from \cref{sec:fat-multicats}, and a fat \fL-multigraph is precisely a fat multigraph as defined there.
-Since $\fL\subseteq \fS$ for any \fS, every fat \fS-multigraph has an underlying fat multigraph.
-In hindsight, the functorial action of a fat multigraph is a categorical analogue of $\alpha$-equivalence; now we are unifying that with the action of the ``interesting'' maps in \fS such as symmetries, diagonals, and projections.
-
-\begin{defn}
-  A \textbf{fat \fS-multicategory} is a fat \fS-multigraph whose underlying fat multigraph is equipped with the structure of a fat multicategory such that composition is \fS-equivariant in the following senses.
-  \begin{enumerate}
-  \item For any $g\in\cG(B,C)$, $B:L\to\cG_0$, $K,M:L\to \fS$, $A_l:K_l\to \cG_0$, $f_l \in \cG(A_l,B_l)$, and $\sigma_l : K_l \to M_l$, we have
-    \[g\circ f\sigma^* = (g\circ f)\left(\textstyle\bigcup_l \sigma_l\right)^*\]
-    where $(f\sigma^*)_l = (f_l \sigma_l^*)$.
-  \item For any $g\in\cG(B,C)$, $B:L\to\cG_0$, $D:M\to \cG_0$, $\sigma:B\to D$ in $(\fS\dn \cX)$, $K:M\to \fS$, $A_m:K_m\to \cG_0$, and $f_m \in \cG(A_{m},D_{m})$, we have
-    \[g\sigma^* \circ f = (g\circ f_\sigma)(\sigma \wr K)^*\]
-    where $(f_\sigma)_l = f_{\sigma l}$.
-  \end{enumerate}
-\end{defn}
-
-We leave it to the reader to prove the equivalence of the fat and thin definitions; see \cref{ex:fat-cartmulti}.
-
-\end{fat}
-
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:gen-multicat-repr}
@@ -3805,12 +3662,6 @@ We leave it to the reader to prove the equivalence of the fat and thin definitio
   Define a notion of \textbf{relevance monoidal category}, by adding ``natural diagonals'' to a symmetric monoidal category, and show that such monoidal categories are equivalent to representable relevance multicategories.
   (See~\cite{dp:relevant-cats}.)
 \end{ex}
-
-\begin{fat}
-\begin{ex}\label{ex:fat-cartmulti}
-  Prove that fat \fS-multicategories are equivalent to ``thin'' ones.
-\end{ex}
-\end{fat}
 
 \begin{ex}\label{ex:cocartesian-clubs}
   Define a notion of \textbf{faithful cocartesian club} and a corresponding notion of generalized multicategory that includes \emph{cocartesian} monoidal categories as the maximal case.
