@@ -8,6 +8,7 @@
 \date{\today}
 \makeatletter
 \autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting}
+\autodefs{\nAut}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
 \let\sect\section
@@ -726,6 +727,7 @@ In particular, we want to emphasize the role played by the following lemma:
 
 In other words, the terms (before we impose the relation $\equiv$ on them) really are simply one-dimensional representations of derivations, as we intended.
 Not everything that ``looks like a term'' represents a derivation, but if it does, it represents a unique one.
+(We have not precisely defined exactly what ``looks like a term'', but it should make intuitive sense; a formal definition is given in \cref{chap:dedsys}.)
 It is easy to see that conversely every derivation is represented by a unique term, since the above rules for annotating derivations by terms are deterministic.
 
 The above simple inductive proof of \cref{thm:category-tad} depends in particular on the presence of the subscript on the symbol $\circ$.
@@ -733,7 +735,7 @@ Similar annotations will reappear in many subsequent theories.
 In the present case we could omit these annotations and still reconstruct a unique derivation, because we know the domain and codomain of all the generating morphisms in \cG.
 However, this would require a more ``global'' analysis of the term; whereas a clean inductive proof such as the above has the advantage that it can be regarded as a recursively defined \emph{algorithm for type-checking}.
 This can be programmed into a computer, and arguably represents reasonably faithfully what human mathematicians do when reading syntax.
-With that said, when writing for a human reader (and even an electronic reader whose programmer has been clever enough) it is often possible to leave off annotations of this sort without fear of ambiguity, and we will often do so.
+With that said, when writing for a human reader (and even an electronic reader whose programmer has been clever enough) it is often possible to leave off annotations of this sort without fear of ambiguity, and we will frequently do so.
 
 Not all type theories have the property that terms uniquely determine their derivations by a direct inductive algorithm; but those that don't tend to be much more complicated to analyze and prove the initiality theorem for.
 We will call this property \textbf{terms are derivations} or \textbf{type-checking is possible}, and we will always attempt to construct our type theories so that it holds.
@@ -752,13 +754,15 @@ We will call this property \textbf{terms are derivations} or \textbf{type-checki
 
   Of course, this ``internal'' tree representation of a term is nothing but the corresponding derivation flipped upside-down.
   So in that sense \cref{thm:category-tad} is actually saying \emph{less} than one might think: the derivation tree is actually being constructed by the silent step of parsing, while the type-checking algorithm consists only of \emph{labeling} the nodes of this tree by rules in a consistent manner.
-  We will not say much more about parsing, however (though we discuss it a bit further in \cref{chap:dedsys}); we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
+  We will not say much more about parsing, however;
+  % (though we discuss it a bit further in \cref{chap:dedsys});
+  we trust the human reader to do it on their own, and we trust programmers to have good algorithms for it.
 \end{rmk}
 
 Now we can prove the initiality theorem.
 
 \begin{thm}\label{thm:category-initial-1}
-  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms $A\to B$ are the terms $\phi$ such that $\phi :(A\types B)$ is derivable in the cut-ful type theory for categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.
+  The free category on a directed graph $\cG$ has the same objects as \cG, and its morphisms $A\to B$ are the derivations of $A\types B$ (or equivalently, the terms $\phi$ such that $\phi :(A\types B)$ is derivable) in the cut-ful type theory for categories under \cG, modulo the equivalence relation $\phi\equiv \psi:(A\types B)$.
 \end{thm}
 \begin{proof}
   Let $\F\bCat\cG$ be defined as described in the theorem; the identity and composition rules give it the structure necessary to be a category, and the transitivity and unitality relations make it a category.
@@ -931,7 +935,7 @@ The identity and generator rules can now be written as
   \inferrule{ }{x:A\types x:A}\,\idfunc \and
   \inferrule{x:X\types M:A \\ f\in\cG(A,B)}{x:X\types f(M):B} \,f
 \end{mathpar}
-Here $M$ denotes an arbitrary term, which will generally involve the variable $x$.
+Here $M$ denotes an arbitrary term, which will of course involve the variable $x$.
 Thus, for instance, the composite of $h$, $g$, and $f$ would be written like so:
 \begin{mathpar}
   \inferrule*[Right=$h$]{
@@ -972,7 +976,7 @@ This is because each rule composes with only one generator $f$, and each such ge
 
 Another difference between the two theories that instead of attaching a term to the entire derivation such as $(f\circ g): (A\types C)$, we now attach a variable to the antecedent and a more complex term to the consequent.
 Really it is the pair of both of these that plays the role played by the terms in \cref{sec:category-cutful}; that is, we may regard $x:A \types M:B$ as a notational variation of something like\footnote{The period used for the pairing here is a ``variable binder''; we will return to it later on.} $x.M:(A\types B)$, and regard $x.M$ as the real ``term''.
-However, it is universally the non-variable part $M$ that is called the \emph{term}, and the separation into variable (or, later, variables) and term is responssible for much of the characteristic behavior of terms in type theory.
+However, everyone always refers to the non-variable part $M$ as the \emph{term}, and the separation into variable (or, later, variables) and term is responsible for much of the characteristic behavior of terms in type theory.
 
 In particular, unlike in the cut-ful theory, it is no longer true that each derivation determines a \emph{unique} term (or more precisely, variable-term pair), because we have to choose a name for the variable.
 As written on the page, the judgments $x:A \types f(x):B$ and $y:A \types f(y):B$ are distinct; but they represent the same derivation (if we remove the term annotations) and the same morphism:
@@ -997,29 +1001,14 @@ Most of these reasons will not arise until \cref{chap:simple}, so we will not sa
 
 The first method is to decide, once and for all, on a single variable name (say, $x$) to use for \emph{all} our derivations.
 Then we cannot write $y:A \types f(y):B$ at all, and so every derivation does determine a unique term.
-We call this the \textbf{de Bruijn method} (in \cref{chap:simple} we will generalize it to the methods usually indicated by that name).
+We call this the \textbf{de Bruijn method}.
+(In theories with multiple variables this method becomes more complicated; we will return to this in \cref{chap:simple}.)
 
-The second method is to allow arbitrary choices of variable names (perhaps taken from some standard alphabet), but be aware of the operation of variable renaming.
-In our simple case, the important properties of this operation are summarized in the following lemma.
+The second method is to allow arbitrary choices of variable names (from some standard alphabet), but be aware of the operation of variable renaming.
+We say that two terms are \textbf{$\alpha$-equivalent} if they differ by renaming the variable; thus we can say that a derivation determines a unique $\alpha$-equivalence class of terms.
+(In theories with ``variable binding'', the definition of $\alpha$-equivalence is likewise more complicated; we will return to this in \cref{sec:catcoprod} and discuss it formally in \cref{chap:dedsys}.)
 
-[TODO: Get rid of all explicit discussion of $\alpha$-equivalence; just trust the reader and refer to \cref{sec:alpha}.]
-
-\begin{lem}\label{thm:category-alpha}
-  If $x:X\types M:A$ is a term notation for a particular derivation in the cut-free type theory for categories under \cG, then so is $y:X\types M\alsub{y/x}:A$ for any other variable $y$, where $M\alsub{y/x}$ denotes the result of replacing $x$ by $y$ wherever it appears in $M$.
-  Moreover, if $x:X\types M:A$ and $y:X\types N:A$ are two term notations for the same derivation, then $N=M\alsub{y/x}$.
-\end{lem}
-\begin{proof}
-  The first sentence is proved by induction on the derivation.
-  If it consists of $\idfunc$, so that $A=X$ and $M=x$, then the same rule gives $y:X\types y:X$.
-  And if it ends with a generator rule, we simply induct.
-
-  The second sentence likewise follows by induction: the generator rule cannot introduce any new redundancy in terms, whereas the redundancy in the $\idfunc$ rule is exactly the choice of variable name.
-\end{proof}
-
-If $N=M\alsub{y/x}$ (or equivalently $M=N\alsub{x/y}$), we say that $M$ and $N$ are \textbf{$\alpha$-equivalent}; \cref{thm:category-alpha} shows that this is an equivalence relation on terms whose quotient is isomorphic to the set of derivations.
-Thus, we can say that a derivation determines a unique $\alpha$-equivalence class of terms.
-
-Of these two methods, the de Bruijn method is theoretically cleaner, and better for implementation in a computer, but tends to detract from readability for human mathematicians (see below).
+Of these two methods, the de Bruijn method is theoretically cleaner, and better for implementation in a computer, but tends to detract from readability for human mathematicians.
 We will return to discuss these two methods when we have more complicated theories where there is more interesting to say about them.
 For now, we continue to use arbitrary variables, remembering that the particular choice of variable name is irrelevant, that derivations are primary, and that terms are just a convenient notation for derivations.
 
@@ -1040,8 +1029,7 @@ Intuitively, the result $h(g(f(x)))$ has been obtained by \emph{substituting} th
 Thus, we refer to the operation defined by \cref{thm:category-cutadm} as \textbf{substitution}, and sometimes state \cref{thm:category-cutadm} and its analogues as \textbf{substitution is admissible}.
 In general, given $x:A\types M:B$ and $y:B\types N:C$ we denote the substitution of $M$ for $y$ in $N$ by $N[M/y]$ (although unfortunately one also finds other notations in the literature; including, quite confusingly, $[M/y]N$ and $N[y/M]$).
 
-Note that, like $M\alsub{y/x}$, the operation $N[M/y]$ this is ``meta-notation'': the square brackets are not part of the syntax of terms, instead they denote an operation \emph{on} terms.
-(However, while $M\alsub{y/x}$ is an operation only on terms, leaving the underlying derivation unchanged, $N[M/y]$ represents an underlying operation on derivations.)
+The operation $N[M/y]$ this is ``meta-notation'': the square brackets are not part of the syntax of terms, instead they denote an operation \emph{on} terms.
 The proof of \cref{thm:category-cutadm} \emph{defines} the notion of substitution recursively in the following way:
 \begin{align}
   y[M/y] &= M\label{eq:category-sub-1}\\
@@ -1050,8 +1038,8 @@ The proof of \cref{thm:category-cutadm} \emph{defines} the notion of substitutio
 When terms are regarded as objects of study in their own right, rather than just as notations for derivations, it is common to define substitution as an operation on terms first, and then to state \cref{thm:category-cutadm} as ``if $x:A\types M:B$ and $y:B\types N:C$ are derivable, then so is $x:A\types N[M/y]:C$''.
 We instead consider \cref{thm:category-cutadm} as fundamentally an operation on derivations, which we call ``substitution'' especially when representing it using term notation.
 
-Note, though, that because a derivation is represented by a term together with a variable for the antecedent, technically the operation on derivations has to track the variables too, whereas the notation $N[M/y]$ represents only the term part.
-Thus, the definitions~\eqref{eq:category-sub-1} and~\eqref{eq:category-sub-2} are only complete when combined with the statement that the antecedent variable of $N[M/y]$ is the antecedent variable of $M$.
+Note, though, that because a derivation is represented by a term together with a variable for the antecedent (that is, $x:X\types M:B$ is a notational variant of $x.M:(X\types B)$), technically this operation on derivations has to specify the variables too.
+The notation $N[M/y]$ represents only the term part; so the definitions~\eqref{eq:category-sub-1} and~\eqref{eq:category-sub-2} are only complete when combined with the statement that the variable of $N[M/y]$ is the same as that of $M$.
 
 \begin{rmk}
   Substitution is already a place where the use of distinct named variables (and hence $\alpha$-equivalence) makes the exposition substantially clearer for a human reader.
@@ -1638,7 +1626,7 @@ This is no different from any other mathematical notation for any other operatio
 For instance, in \cref{sec:category-cutful} the composition rule was represented by a (subscripted) binary operation $\circ_B$ combining a pair of terms for the premises.
 
 However, the use of abstract variables complicates matters a bit, because we are only free to describe a notation for the term part (attached to the consequent), whereas the term part only describes a derivation when combined with a variable (attached to the antecedent).
-For instance, the two premises $x:X\types M:A$ and $x:X\types N:B$ of the rule $\timesI$ are really $x:M:(X\types A)$ and $x.N\types (X\types B)$, and so the term for the induced derivation $X\types A\times B$ ought to ``pair up'' $x.M$ and $x.N$ somehow; but how would it then be associated to a variable in its own antecedent?
+For instance, the two premises $x:X\types M:A$ and $x:X\types N:B$ of the rule $\timesI$ are really $x.M:(X\types A)$ and $x.N\types (X\types B)$, and so the term for the induced derivation $X\types A\times B$ ought to ``pair up'' $x.M$ and $x.N$ somehow; but how would it then be associated to a variable in its own antecedent?
 
 In our present case, we can solve this by using the fact that both premises have the same antecedent \emph{and the same variable}, so we can ``pull that variable out'' of the pair and write $x.\pair M N : (X\types A\times B)$, or $x:X\types \pair M N :A\times B$.
 (In other cases, such as \cref{sec:catcoprod}, a more complicated solution is needed.)
@@ -1648,13 +1636,13 @@ But otherwise, they might in principle have different variables, and so we might
 This is an important general principle.
 
 \begin{princ}\label{princ:term-der-alpha}
-  A rule applies equally to any derivations of its premises, but the abstract-variable term notation for that rule may require certain compatibilities between the abstract-variable terms of the premises, which can always be ensured by $\alpha$-equivalence.
+  A rule applies equally to any derivations of its premises, but the abstract-variable term notation for that rule may require certain compatibilities between the variables occurring in the premises, which can always be ensured by $\alpha$-equivalence.
 \end{princ}
 
 The terms for the other rules $\timesE1,\timesE2,\unit I$ are relatively straightforward.
 The superscript type annotations on the projections $\pr1BC$ and $\pr2BC$ are necessary to make type-checking possible, since otherwise it would not be clear from a term such as $x:A \types \pi_1(M):B$ what the type of $M$ should be in the premise.
 However, in practice we often omit them.
-It is also straightforward to prove analogues of \cref{thm:category-tad,thm:category-alpha}.
+It is then straightforward to prove the analogue of \cref{thm:category-tad}.
 
 Note how well the natural-deduction choice of ``all rules acting on the right'' matches the use of abstract variables: in all cases we can think of ``applying functions to arguments'' in a familiar way.
 It is possible to describe sequent calculus derivations using terms as well, but they are less pretty.
@@ -1702,7 +1690,6 @@ We can describe this more formally with an additional judgment ``$x:X\types M\eq
 Note that in addition to the $\beta$- and $\eta$-conversions, we assert reflexivity, symmetry, and transitivity, and also that all the previous rules preserve equality.
 As remarked in \cref{sec:category-cutful}, all our equality judgments $\equiv$ will be equivalence relations with such a congruence property for all the primitive rules.
 In general we will not bother to state these ``standard'' rules for $\equiv$, but since this is our first encounter with such a relation involving ``abstract variable'' term syntax we have included them explicitly.
-Finally, although we have not mentioned it explicitly, we will also always include rules for $\alpha$-equivalence.
 
 \begin{figure}
   \centering
@@ -1933,7 +1920,7 @@ Most of the term operations are easy to guess.
 The two injections $A\to A+B$ and $B\to A+B$ are named $\inl$ and $\inr$ (``in-left'' and ``in-right''), while the unique morphism $\zero \to C$ is called $\abort$.
 However, the term notation for $\plusE$ merits some discussion.
 
-Recall from \cref{sec:catprod} the general principle (\cref{princ:term-der-alpha}) that a term notation should indicate derivations of the premises of the rule by including terms for them, and that in general this can be tricky when using abstract variables because a derivation is only determined by a term together with its variable.
+Recall from \cref{sec:catprod} that a term notation should indicate derivations of the premises of the rule by including terms for them, and that in general this can be tricky when using abstract variables because a derivation is only determined by a term together with its variable.
 The premises of $\plusE$ are, when paired explicitly with their variables, $x.M:(X\types A+B)$ and $u.P:(A\types C)$ and $v.Q:(B\types C)$, so the term notation should operate on all three of these.
 But unlike the case of $\timesI$, now all three premises have different antecendents (and to emphasize this, we have used three different variables as well), so we cannot pull the same variable out of all of them.
 
@@ -1942,7 +1929,7 @@ This leads us to $x.\acase AB(M,u.P,v.Q)$.
 Note that the periods in $u.P$ and $v.Q$ bind more tightly than the commas, so this should be parsed as $x.\acase AB(M,(u.P),(v.Q))$.
 The annotation by $A+B$ is to make type-checking possible (but often we will simplify it by writing just $\case$).
 
-The idea behind the name ``$\match$'' is that to evaluate $\case(M,u.P,v.Q)$ the term $M:A+B$ should be compared to the ``patterns'' $\inl(u)$ and $\inr(v)$, and according to which one it ``matches'' (looks like), we branch into either $P$ or $Q$.
+The idea behind the name ``$\match$'' is that to ``evaluate'' $\case(M,u.P,v.Q)$ the term $M:A+B$ should be compared to the ``patterns'' $\inl(u)$ and $\inr(v)$, and according to which one it ``matches'' (looks like), we branch into either $P$ or $Q$.
 The notation $\abort(M)$ is the nullary case of this: the term $M:\zero$ is matched against all possible ways that a term of type $\zero$ could be constructed --- of which there are none, and so there are no cases to consider.
 
 Categorically, $\plusE$ expresses the universal property of the coproduct as follows.
@@ -1961,64 +1948,30 @@ This is exactly the data included in $y:A+B\types \case(y,u.P,v.Q):C$; the gener
 %   However, starting in \cref{chap:simple} it will be important to keep track of which variable is being bound, so we establish good habits now.
 % \end{rmk}
 
-Note that the variables $u$ and $v$, though they ``appear in the term'', are not the variable associated to the antecedent.
-We say they are \textbf{bound} variables, like the integration variable in a definite integral.
+Note that the variables $u$ and $v$, though they ``appear in the term'', are not the variable associated to the antecedent;
+we say they are \textbf{bound} variables.
 By contrast, the antecedent variable $x$ is \textbf{free}.
-Textually each bound variable is associated to a subterm called its ``scope'', delimiting the places where it can be referred to;
+Textually each bound variable is associated to a subterm called its \textit{scope}, delimiting the places where it can be referred to;
 in $\plusE$ the scope of $u$ is $P$ and the scope of $v$ is $Q$.
 In terms of rules, this just means that the variable (or more precisely, its type) may appear as the antecedent of some, but not all, of the premises.
 
-Bound variables should be familiar from function definitions in ordinary mathematics.
-If we have an expression such as $x^2$ depending on an unspecified variable $x$, we may write something like $(x\mapsto x^2)$ for ``the function that squares its argument'',\footnote{A more common notation for $(x\mapsto x^2)$ in type theory is $\lambda x.x^2$; see \cref{sec:stlc}.} which is a fully defined object containing $x$ as a bound variable.
+Bound variables are familiar in ordinary mathematics as well.
+For instance, the integration variable $x$ in a definite integral $\int_0^2 x^2\,\mathrm{d}x$ is bound, because the value of the expression ``doesn't depend on $x$''; its scope is the expression being integrated (but not the bounds of integration).
+Bound variables also occur in function definitions: given an expression such as $x^2$ depending on an unspecified variable $x$, we may write something like $(x\mapsto x^2)$ for ``the function that squares its argument'',\footnote{A more common notation for $(x\mapsto x^2)$ in type theory is $\lambda x.x^2$; see \cref{sec:stlc}.} which is a fully defined object containing $x$ as a bound variable.
+
 It is a common convention in type theory that a prefixed variable followed by a period is bound.
+Our writing $x:X\types M:B$ as $x.M:(X\types B)$ follows this convention; the variable $x$ is free in $M$, but bound in $x.M$, since when the term $M$ is paired with its variable $x$ it represents a derivation of $X\types B$ that does not depend on $x$.
 
 If we were using de Bruijn variables, then all the variables $x,u,v$ here would actually be the same, giving for instance $\acase AB(M,x.f(x),x.g(x))$.
 Although technically fine, this can be confusing since the same unique variable $x$ also occurs in $M$ itself, but unrelatedly (and with a different type) than its occurrences in the case branches.
 In general, a bound variable ``shadows'' any free variable (or ``outer'' bound variable) of the same name, so that in $\acase AB(M,x.f(x),x.g(x))$ the $x$ in $f(x)$ refers to the prefix variable (called $x$) in $x.f(x)$, not to the outer free variable occurring in $M$ (also called $x$).
+This makes a precise and general definition of $\alpha$-equivalence in the presence of bound variables rather technically involved; one such definition is given in \cref{sec:alpha}.
 
-However, because of the potential confusion, it is arguably bad mathematical style to use the same name for distinct variables, even if there is technically no ambiguity.
-This is essentially the same reason why we encourage calculus students to write $F(x) = \int_0^x f(t)\,\mathrm{d}t$ rather than $F(x) = \int_0^x f(x)\,\mathrm{d}x$, even though technically they mean the same thing.
-Thus, from now on we will adhere to the \emph{opposite} of the de Bruijn method.
+However, it is arguably bad mathematical style to use the same name for distinct variables, even if there is technically no ambiguity.
+For instance, we encourage calculus students to write $F(x) = \int_0^x f(t)\,\mathrm{d}t$ rather than $F(x) = \int_0^x f(x)\,\mathrm{d}x$, even though technically they mean the same thing.
+If we adhere to this informal convention, then we rarely need to worry about technical definitions of $\alpha$-equivalence (unless we are trying to implement mathematics in a computer).
 
-\begin{conv}[Variable convention]
-  All variables occurring in any term, including bound ones, will be assumed to be distinct.
-\end{conv}
-
-Technically, it requires proof that it is always possible to represent a derivation by a term satisfying this convention.
-For this purpose we have to extend our notion of $\alpha$-equivalence to include the renaming of bound variables; this is easy as long as all our terms already adhere to the convention.
-
-\begin{lem}\label{thm:catcoprod-alpha}
-  Suppose $x:X\types M:A$ represents a particular derivation in the unary type theory for categories with coproducts that adheres to the variable convention.
-  Let $y$ be a variable distinct from $x$ (which might appear bound in $M$), and let $z$ be a variable not occurring in $M$ at all.
-  Then $z:X\types M\alsub{z/x}:A$ and $x:X\types M\alsub{z/y}:A$ both also represent the same derivation (and adhere to the variable convention).
-  Moreover, two terms represent the same derivation precisely when they are related by a sequence of such operations.
-\end{lem}
-\begin{proof}
-  By induction on derivations, as before; in all cases the only interesting rules are $\idfunc$ and $\plusE$.
-  In the case of $z/x$, the $\idfunc$ rule $x:X\types x:X$ can be replaced by $z:X\types z:X$.
-  And for $\plusE$ with a term $x:X\types \case(M,u.P,v.Q)$, our variable convention ensures that $u$ and $v$ are distinct from $x$, and $x$ cannot occur in $P$ or $Q$ (since it is not the free variable, and is not a bound variable anywhere by the variable convention).
-  Thus, we can inductively consider only $x:X\types M:A+B$.
-
-  In the case of $z/y$, there is nothing to do for $\idfunc$ since $y$ is distinct from (hence does not occur in) $x$.
-  For $\plusE$ with a term $x:X\types \case(M,u.P,v.Q)$, we have to compare $y$ with $u$ and $v$.
-  If $y=u$, then we inductively apply the first sort of renaming (of a free variable rather than a bound one) in $u:A\types P:C$, and similarly if $y=v$; in neither case can $y$ also appear in the other one or in $M$, by our variable convention.
-  And if $y\neq u$ and $y\neq v$, then we inductively rename the bound variable $z/y$ in $M$, $P$, and $Q$ (though by the variable convention, $y$ can occur in at most one of them).
-
-  For the last statement, if the derivation is $\idfunc$, then for any two terms $x:X\types M:A$ and $z:X\types M':A$ representing it we must have $M=x$ and $M'=z$, whence a renaming $z/x$ relates them.
-  And if the derivation ends with $\plusE$ and we have terms $x:X \types \case (M,u.P,v.Q)$ and $z:X\types \case(M',a.P',b.Q')$, then inductively $x:X\types M:A+B$ and $z:X\types M':A+B$ are related by a sequence of renamings, and likewise so are $u:A\types P:C$ and $a:A\types P':C$ and also $v:B\types Q:C$ and $b:B\types Q':C$.
-  [TODO: Intermediate?  Variables might be ``switched''.]
-  Our variable conventions ensure that the renamings leading from $M$ to $M'$, from $P$ to $P'$, and from $Q$ to $Q'$ can all be applied to the overall $\case$ terms without modifying the other subterms, so putting them together we obtain the desired result.
-\end{proof}
-
-\begin{lem}\label{thm:catcoprod-varconv}
-  Every derivation can be represented by a term that adheres to the variable convention.
-\end{lem}
-\begin{proof}
-  By induction;
-  whenever we have to combine multiple terms into one, we first apply \cref{thm:catcoprod-alpha} to make all their variables distinct.
-\end{proof}
-
-We now have to consider the appropriate $\beta$- and $\eta$-conversion rules.
+With all of this out of the way, we can now consider the appropriate $\beta$- and $\eta$-conversion rules.
 However, we pause first to prove admissibility of cut, i.e.\ to construct substitution, as we will need substitution to state the $\beta$ and $\eta$ rules.
 
 \begin{lem}\label{thm:catcoprod-subadm}
@@ -2035,10 +1988,8 @@ However, we pause first to prove admissibility of cut, i.e.\ to construct substi
     \abort(N)[M/y] &= \abort(N[M/y])\\
     \inl(N)[M/y] &= \inl(N[M/y])\\
     \inr(N)[M/y] &= \inr(N[M/y])\\
-    \case(N,u.P,v.Q)[M/y] &= \case(N[M/y],u.P,v.Q)
+    \case(N,u.P,v.Q)[M/y] &= \case(N[M/y],u.P,v.Q)\qedhere
   \end{align*}
-  There is one thing to be mentioned: even if the terms $M$ and $N$ both adhere to our variable convention, it might be that some of the bound variables in $N$ also appear in $M$ (either as bound variables or as the free variable $x$).
-  Therefore, to ensure that the result of substitution $N[M/y]$ also adheres to the variable convention, we may have to modify $M$ or $N$ by an $\alpha$-equivalence, which \cref{thm:catcoprod-alpha} ensures is possible.
 \end{proof}
 
 Now we proceed to $\beta$- and $\eta$-conversion.
@@ -2083,7 +2034,7 @@ This completes the definition of our \textbf{unary type theory for categories wi
 As in the dual case, by a \textbf{category with coproducts} we mean a category with specified binary coproducts and a specified initial object, and in the category of such the functors preserve the specified structure strictly.
 
 \begin{thm}\label{thm:catcoprod-initial}
-  For any directed graph \cG, the free category with coproducts generated by \cG can be described by the unary type theory for categories with coproducts under \cG: its objects are the derivations of $\types A\type$, and its morphisms $A\to B$ are the derivations of $A\types B$ (or the derivable term judgments $x:A \types M:B$ modulo $\alpha$-equivalence), modulo the equivalence relation $\equiv$.
+  For any directed graph \cG, the free category with coproducts generated by \cG can be described by the unary type theory for categories with coproducts under \cG: its objects are the derivations of $\types A\type$, and its morphisms $A\to B$ are the derivations of $A\types B$ (or equivalently the derivable term judgments $x:A \types M:B$ modulo $\alpha$-equivalence), modulo the equivalence relation $\equiv$.
 \end{thm}
 \begin{proof}
   \cref{thm:catcoprod-subadm} defines substitution, and the same sort of induction proves it associative and unital; thus we have a category $\F\bCoprCat\cG$.
@@ -2187,8 +2138,8 @@ At this point we have done about all we can with \emph{unary} type theories, whe
 (In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.)
 The most common type theories allow finite \emph{lists} of types as the antecedent.
 These are the object of study in this chapter; we call them \emph{simple type theories}.
-This term is more common in the literature than ``unary'', but perhaps not with the exact meaning we are giving it.
-(Sometimes one allows lists in the consequent as well; we will consider this possibility in \cref{chap:polycats}.)
+This term is more common in the literature than ``unary'', but perhaps not with the exact meaning we are giving it; the word ``simple'' is primarily used to contrast with ``dependent'' type theories.
+
 
 \section{Towards multicategories}
 \label{sec:why-multicats}
@@ -2321,8 +2272,8 @@ what we need is a sort of ``relative representability'' such as $\mathrm{Trilin}
 Finally, when we come to prove that these associativity isomorphisms satisfy the pentagon axiom of a monoidal category, we need analogous facts about quadrilinear maps, at which point it is clear that we should be talking about $n$-linear maps for a general $n$.
 A multicategory is the categorical context in which to do this: in addition to ordinary morphisms like an ordinary category (e.g.\ linear maps) it also contains $n$-ary maps for all $n\in\dN$ (e.g.\ multilinear maps).
 
-\subsection{Multicategories and representability}
-\label{sec:multicat-repr}
+% \subsection{Multicategories and representability}
+% \label{sec:multicat-repr}
 
 Formally, just as a category is a directed graph with composition and identities, a multicategory is a \emph{multigraph} with composition and identities.
 
@@ -2418,8 +2369,8 @@ Let $\bRepMCat$ denote the category of representable multicategories and functor
 There are plenty of good references on multicategories, such as~\cite{hermida:multicats,leinster:higher-opds}.
 We end this section by discussing limits and colimits in multicategories, which are a bit less well-known.
 
-\subsection{Limits and colimits in multicategories}
-\label{sec:lim-colim-multicat}
+% \subsection{Limits and colimits in multicategories}
+% \label{sec:lim-colim-multicat}
 
 We say that an object $\unit$ of a multicategory is \textbf{terminal} if for any $A_1,\dots, A_n$ there is a unique morphism $(A_1,\dots, A_n)\to \unit$.
 Similarly, a \textbf{binary product} of $A$ and $B$ in a multicategory is an object $A\times B$ with projections $A\times B \to A$ and $A\times B\to B$, composing with which yields bijections
@@ -2480,8 +2431,8 @@ are isomorphisms.
 \end{proof}
 
 \begin{fat}
-\subsection{Fat multicategories}
-\label{sec:fat-multicats}
+% \subsection{Fat multicategories}
+% \label{sec:fat-multicats}
 
 The numerical indices on the $\circ_i$ operations are somewhat unfortunate: they are tedious to keep track of, lead to funny-looking arithmetic in the associativity/interchange laws, and convey little intuition.
 There is an equivalent way to define multicategories that does away with all of these problems, and that also relates nicely to the handling of variables in type theory: rather than take the domains of morphisms to be finite lists of objects, we take them to be families of objects indexed by an arbitrary finite linear order.
@@ -2920,7 +2871,7 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is 
 Now we are ready to move back up from posets to categories; but here we encounter a bit of an expositional conundrum.
 We have started with ordinary (non-symmetric, non-cartesian) multicategories since they are simpler from a category-theoretic perspective; in \cref{sec:cartmulti} we will introduce symmetric and cartesian multicategories by adding extra structure.
 However, in type theory there are some ways in which the \emph{cartesian} case is the simplest.
-This is essentially because intuitively ``variables can be used anywhere'', whereas in a non-cartesian type theory we have to control how many times a variable is used (and, in the non-symmetric case, what order they are used in).
+This is essentially because our intuition tells us that ``variables can be used anywhere'', whereas in a non-cartesian type theory we have to control how many times a variable is used (and, in the non-symmetric case, what order they are used in).
 Nevertheless we begin in this section (and the next) with a type theory for ordinary multicategories, as it introduces several important ideas that are clearer without the symmetric and cartesian structure to worry about; but we encourage the reader not to get too bogged down in details.
 
 
@@ -2944,7 +2895,7 @@ As before, the derivation is actually determined by the term associated to the c
 
 Since we now have multiple formal variables appearing in one sequent, it becomes important to keep track of which is which.
 As in unary type theory, there are two ways to name variables.
-In \textbf{de Bruijn style} we choose a fixed countably infinite set of variables, say $x_1,x_2,x_3,\dots$, and demand that any sequent with $n$ types in its context use the first $n$ of these variables in order.
+In \textbf{de Bruijn style} we choose a fixed countably infinite set of variables, say $x_1,x_2,x_3,\dots$, and demand that any sequent with $n$ types in its context use the first $n$ of these variables \emph{in order}.
 In fact there are two choices for this order; we might write
 \[ x_1:A_1, x_2:A_2, \dots,x_n:A_n \types M:B \quad\text{or}\quad
 x_n:A_n,\dots, x_2:A_2, x_1:A_1 \types M:B
@@ -3000,7 +2951,7 @@ Now, the rules for multiposets and monoidal posets from \cref{sec:multiposets-mo
 But when $\Gamma$ and $\Delta$ contain variables, simple concatenation would not preserve the invariant that distinct occurrences of types are labeled by distinct variables, so something else must be going on.
 If we use de Bruijn style, then the variable numbers in $\Gamma$ or $\Delta$ have to be incremented; we leave the details of this to the interested reader (\cref{ex:debruijn-context-concat}).
 If we instead use arbitrary named variables, as we will generally do, then we simply need to apply $\alpha$-equivalences to $\Gamma$ and/or $\Delta$ to make their variable names disjoint.
-(This is an instance of \cref{princ:term-der-alpha} that while rules apply to all derivations equally, the term notation for them can require applying $\alpha$-equivalences to some premises for compatibility.
+(This is an instance of \cref{princ:term-der-alpha} that term notations for rules can require applying $\alpha$-equivalences to some premises for compatibility.
 In \cref{sec:catprod} ``compatibility'' meant using the \emph{same} variable, while here it means using \emph{different} variables.)
 
 \begin{fat}
@@ -3020,12 +2971,12 @@ In \cref{sec:catprod} ``compatibility'' meant using the \emph{same} variable, wh
 From now on we will write simply $\Gamma,\Delta$ (and similarly $\Gamma, x:A, \Delta$, and so on) for the concatenation of two given contexts, modified to ensure variable distinctness in whatever way is appropriate.
 Of course, any variable incrementing or $\alpha$-equivalence that happens in $\Gamma$ or $\Delta$ must also be applied to the consequents of any sequents they appear in.
 On the other hand, if in some situation we \emph{assume} a sequent and write its context as $\Gamma,\Delta$, then no such operation is being applied; we are simply choosing a partition of that context into two parts.
-When applying a rule ``downwards'', this applies to its premises, while when applying it ``upwards'', this applies to its conclusion (recall \cref{rmk:context-splitting-1}).
+When applying a rule ``top-down'', this applies to its premises, while when applying it ``bottom-up'', this applies to its conclusion (recall \cref{rmk:context-splitting-1}).
 
 All this futzing around with variables may seem quite tedious and uninteresting.
 It does matter in some situations; for instance, if mathematics is to be implemented in a computer, then all these technical issues must be dealt with carefully.
 However, from our point of view these are all just different tricks to ensure that the terms with formal variables (modulo $\alpha$-equivalence) remain exact representations of derivation trees.
-The terms where we have to rename variables and so on are only a \emph{notation} for the real mathematical objects, namely derivations.
+The terms where we have to rename variables and so on are only a \emph{notation} for the mathematical objects of real interest, namely derivations.
 Remember this if you are ever in doubt about the meaning of variables or what sorts of renamings are possible.
 
 With all of that out of the way, we can anticlimactically state the rules for the \textbf{cut-free type theory for multicategories under \cG}:
@@ -3046,7 +2997,7 @@ We note that this theory has the following property.
 
 In type-theoretic lingo, \cref{thm:multicat-linear} says that our current type theory is \textbf{linear} (just like a linear polynomial uses each variable exactly once, a ``linear type theory'' uses each variable exactly once).
 Note that linearity is a property of a system that we \emph{prove}, not a requirement that we impose from outside.
-It is useful when proving the basic properties of terms, as follows:
+It is useful when proving that terms are derivations.
 
 \begin{lem}\label{thm:multicat-tad}
   If $\Gamma\types N:B$ is derivable in the cut-free type theory for multicategories under \cG, then it has a unique derivation.
@@ -3055,18 +3006,6 @@ It is useful when proving the basic properties of terms, as follows:
   If $N=x$, then the derivation can only be $\idfunc$.
   And if $N=f(M_1,\dots,M_n)$, then by linearity each variable in $\Gamma$ must occur in exactly one of the subterms $M_1,\dots,M_n$.
   If $\Gamma\types N:B$ is derivable, then it must be that this partition of $\Gamma$ is ordered, $\Gamma=\Gamma_1,\dots,\Gamma_n$, and this (together with the known domain $(A_1,\dots,A_n)$ of $f$) determines the premises $\Gamma_i \types M_i:A_i$ that must be recursively checked (c.f.\ \cref{rmk:context-splitting-1})
-\end{proof}
-
-\begin{lem}\label{thm:multicat-alpha}
-  If $\Gamma,x:A,\Delta\types M:B$ is a term notation for a particular derivation in the cut-free type theory for multicategories under \cG, and $y$ is a variable not occurring in $\Gamma,\Delta$, then $\Gamma,y:X,\Delta\types M\alsub{y/x}:A$ is also a notation for the same derivation.
-  Moreover, if $\Gamma\types M:B$ and $\Gamma'\types M':B$ are two term notations for the same derivation, then they are related by a sequence of such renamings.
-\end{lem}
-\begin{proof}
-  If the derivation ends with $\idfunc$, then we must have $M=x$ and $\Gamma=\Delta=()$, whence $y:A\types y:A$ is also derivable.
-  And if $M=f(N_1,\dots,N_n)$, then by linearity $x$ must occur in exactly one of $N_1,\dots,N_n$, say $N_k$, so that $\Gamma_k \types N_k:A_k$ is $\Psi,x:A,\Delta\types N_k:A_k$.
-  Then we can inductively represent that derivation by $\Psi,y:A,\Delta\types N_k\alsub{y/x}:A_k$ and then apply $f$ again.
-
-  For the last statement, the only redundancy in terms comes from the $\idfunc$ rule, so if we rename all the variables in $\Gamma'$ to the corresponding variables in $\Gamma$ then the resulting terms must also coincide.
 \end{proof}
 
 Linearity also has content as a statement about derivations rather than just their terms: it says that each occurrence of a type in the antecedent of a derivable sequent can be ``traced back up'' exactly one branch of the derivation tree.
@@ -3182,12 +3121,22 @@ It is pleasing how the use of abstract variables eliminates this tedious bookkee
 
 We now extend the term notation of \cref{sec:multicats} to the natural deduction for monoidal posets from \cref{sec:natded-monpos}, obtaining a \textbf{simple type theory for monoidal categories under \cG} shown in \cref{fig:moncat}.
 
-The rule $\tensorI$, like the rule $\timesI$ from \cref{sec:catprod}, ``pairs up'' two derivations of $\Gamma\types A$ and $\Delta\types B$, thus must include terms notating both.
+The rule $\tensorI$, like the rule $\timesI$ from \cref{sec:catprod}, ``pairs up'' two derivations of $\Gamma\types A$ and $\Delta\types B$, and thus must include terms notating both.
 In this case, however, rather than pulling out the same variable from each, we require that the variables used are disjoint, so that we can concatenate the contexts in the conclusion.
 Thus once again we are pairing up only the term parts (associated to the consequents), but the variables in the two contexts remain distinct; to emphasize this difference we use a different notation $\tpair M N$ instead of $\pair M N$.
 
 The rule $\tensorE$, on the other hand, is more like the rule $\plusE$ from \cref{sec:catcoprod}: it has to include terms for both premises, one of which involves variables not appearing in the conclusion.
-But \emph{some} of the variables in $N$ do remain in the context of the conclusion (and must be disjoint from those in $M$, by $\alpha$-equivalence if necessary), so we only need to ``bind'' the other two variables $x$ and $y$.
+But unlike in \cref{sec:catcoprod}, the term $N$ can contain other variables that remain in the context of the conclusion (and must be disjoint from those in $M$, by $\alpha$-equivalence if necessary).
+We only need to ``bind'' the other two variables $x$ and $y$.
+Thus, for instance, the following application of $\tensorI$:
+\begin{mathpar}
+  \inferrule*{u:C, v:D \types \tpair{f(u)}{g(v)}:A\tensor B\\
+  z:G,x:A,y:B,w:H \types h(z,x,y,w):K
+  }{z:G,u:C,v:D,w:H\types \match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w)):K}
+\end{mathpar}
+produces a term % $\match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w))$
+in which the variables $z,w$ in $h(z,x,y,w)$ are free, in addition to the free variables $u,v$ in $\tpair{f(u)}{g(v)}$.
+% (This term is also a counterexample to a natural conjecture that the variables in a term must appear in the same order that they do in the context.)
 
 Intuitively, because the tensor product has a ``mapping out'' universal property like a coproduct (that is, it is a ``positive type''), its elimination rule is a sort of ``case analysis'' that decomposes an element of $A\tensor B$ into an element of $A$ and an element of $B$, rather than a pair of projections.
 Just as the rule $\plusE$ says that ``to do something with an element of $A+B$, it suffices to assume that it is either $\inl(u)$ or $\inr(v)$'', the rule $\tensorE$ says that ``to do something with an element of $A\tensor B$, it suffices to assume that it is $\tpair{x}{y}$.''
@@ -3221,38 +3170,6 @@ That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allo
   \caption{Simple type theory for monoidal categories}
   \label{fig:moncat}
 \end{figure}
-
-There is one new thing going on relative to \cref{sec:catcoprod}: because the context can now contain multiple variables, the term $N$ can contain \emph{free} variables as well (those appearing in the contexts $\Gamma$ and $\Delta$), in addition to the free variables appearing in the term $M$ (those appearing in the context $\Psi$).
-Thus, for instance, the following application of $\tensorI$:
-\begin{mathpar}
-  \inferrule*{u:C, v:D \types \tpair{f(u)}{g(v)}:A\tensor B\\
-  z:G,x:A,y:B,w:H \types h(z,x,y,w):K
-  }{z:G,u:C,v:D,w:H\types \match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w)):K}
-\end{mathpar}
-produces a term % $\match_\tensor(\tpair{f(u)}{g(v)}, xy.h(z,x,y,w))$
-in which the variables $z,w$ in $h(z,x,y,w)$ are free, in addition to the free variables $u,v$ in $\tpair{f(u)}{g(v)}$.
-(This term is also a counterexample to a natural conjecture that the variables in a term must appear in the same order that they do in the context.)
-
-We maintain the variable convention introduced in \cref{sec:catcoprod} that no two variables (free or bound) in any term are the same.
-As there, this sometimes requires additional renaming variables when applying rules to terms: for instance, even if $\Gamma$ and $\Delta$ in $\tensorI$ involve disjoint variables, there could be bound variables in $M$ that also appear free in $\Delta$ or vice versa unless we apply a renaming.
-
-\begin{lem}\label{thm:moncat-alpha}
-  Suppose $\Gamma,x:A,\Delta\types M:B$ is a term notation for a particular derivation in the simple type theory for monoidal categories under \cG, adhering to the variable convention.
-  Let $y$ be a variable not occurring in $\Gamma,\Delta$, and let $z$ be a variable not occurring in $M$ at all.
-  Then $\Gamma,z:X,\Delta\types M\alsub{z/x}:A$ and $\Gamma,x:X,\Delta\types M\alsub{z/y}:A$ are also notations for the same derivation.
-  Moreover, if $\Gamma\types M:B$ and $\Gamma'\types M':B$ are two term notations for the same derivation, then they are related by a sequence of such renamings.
-\end{lem}
-\begin{proof}
-  By induction, as usual.
-\end{proof}
-
-% Technically, bound variables can have any name, including the same name as a variable occurring free elsewhere.
-% For instance, we could have
-% \[ x:A\tensor B, u:C \types f(\match_\tensor(x,uv.g(u,v)),u):D \]
-% In this situation, the variable $u:C$ in the context is referred to by the $u$ appearing as the second argument to $f$, while the bound variable $u$ in the $\match$ is referred to by the $u$ appearing as the first argument to $g$.
-% These two $u$'s should really be regarded as completely different variables, so that in particular we can apply $\alpha$-equivalence to rename one of them but not the other.
-% Technically this is dealt with using the concept of the ``scope'' of the bound variable --- the scope of $u$ and $v$ in $\match_\tensor(M,uv.N)$ is the term $N$, and inside that term $u$ refers to the bound variable while elsewhere it does not.
-% However, it is arguably bad style to use the same name for two variables in this way, so we will generally assume that it is not done (and we can always apply $\alpha$-equivalence to avoid it).
 
 Like the theory of \cref{sec:multicats}, this theory is linear:
 
@@ -3317,11 +3234,10 @@ Like the theory of \cref{sec:multicats}, this theory is linear:
   \label{fig:moncat-sub}
 \end{figure}
 
-In the proof of \cref{thm:multiposet-cutadm} we remarked that sometimes we have to rename the variables appearing in one of the terms before doing a substitution, to ensure that the variables in the context of the substituted term are all distinct; but that this essentially happens automatically when we regard substitution as acting on derivations.
-Something else similar happens here in the rule $\match_\tensor(N,uv.P)[M/x] = \match_\tensor(N,uv.P[M/x])$: we must ensure (by $\alpha$-equivalence if necessary) that the bound variables $u$ and $v$ do not appear in $M$.
-(This didn't arise in the unary type theory of \cref{sec:catcoprod} because there it was not possible to substitute into the subterms $u.P$ and $v.Q$ of a $\case$ term containing bound variables, since they could not contain any \emph{other} variables to be substituted for.)
-One generally says that this is because otherwise, a $u$ or $v$ in $M$ would after substitution be ``in the scope'' of the binding of $u$ or $v$, whereas all the variables of $M$ ought to be free in the substituted term.
-When we regard substitution as an operation on derivations, the point is just that to eliminate a cut after $\tensorE$ of the following sort:
+There is one final point to be made here about $\alpha$-equivalence: in the rule $\match_\tensor(N,uv.P)[M/x] = \match_\tensor(N,uv.P[M/x])$, we must rename variables to ensure that $u$ and $v$ do not appear free in $M$.
+Otherwise, such a $u$ or $v$ in $M$ would after substitution be ``in the scope'' of the binding of $u$ or $v$, whereas all the free variables of $M$ ought to remain free in the substituted term.
+(This issue didn't arise in \cref{sec:catcoprod} because there it was not possible to substitute into the subterms $u.P$ and $v.Q$ of a $\case$ term containing bound variables, since they could not contain any \emph{other} variables to be substituted for.)
+When we regard substitution as an operation on derivations, the point is that to eliminate a cut after $\tensorE$ of the following sort:
 \begin{mathpar}
   \inferrule*[Right=cut]{
     \Gamma\types M:A \\
@@ -3340,10 +3256,9 @@ we have to inductively cut
 \end{mathpar}
 and in order for \emph{this} cut to satisfy the variable condition explained in \cref{thm:multicat-subadm}, it must be that $u$ and $v$ do not occur in $\Gamma$.
 
-When one tries to be very precise about syntax with named variables, this sort of ``capture-avoiding substitution'' is both necessary and tedious.
-The de Bruijn methods avoid it, but at a fairly severe cost to readability as mentioned above.
-But from our perspective, this is all just an artifact of how we choose to represent derivations by terms involving abstract variables.
-When substitution is an operation on derivations, there are no variables to ``capture'' and nothing to worry about.
+When one takes terms with named variables as primary, this sort of ``capture-avoiding substitution'' is both necessary and tedious.
+The de Bruijn methods avoid it, though at a fairly severe cost to readability.
+But with substitution treated as an operation on derivations, there are no variables to ``capture'' and nothing to worry about.
 
 With substitution in hand, we can state the $\beta$- and $\eta$-conversion rules that implement the universal properties.
 \begin{mathpar}
@@ -3356,7 +3271,7 @@ As before, the $\beta$-conversion rule says that the map out of $A\tensor B$ def
 The rules for $\one$ are similar.
 
 \begin{thm}\label{thm:moncat-initial}
-  The free monoidal category generated by a multigraph \cG (or, more precisely, its underlying multicategory) can be described by the simple type theory for monoidal categories under \cG: its objects are the $A$ such that $\types A\type$, and its morphisms are the term judgments $\Gamma\types M:A$ modulo the congruence $\equiv$.
+  The free monoidal category generated by a multigraph \cG (or, more precisely, its underlying multicategory) can be described by the simple type theory for monoidal categories under \cG: its objects are the $A$ such that $\types A\type$, and its morphisms are the derivations of $\Gamma\types A$ (or the derivable judgments $\Gamma\types M:A$) modulo the congruence $\equiv$.
 \end{thm}
 \begin{proof}
   \cref{thm:moncat-subadm} shows that we obtain a multicategory $\F\bMonCat\cG$ this way, just as in \cref{thm:multicat-initial}.
@@ -3438,7 +3353,7 @@ This is where we start to see the value of principle~\eqref{princ:independence} 
 
 In \cref{ex:monpos-mslat,ex:monpos-jslat} you studied sequent calculi for monoidal posets with meets and distributive monoidal posets.
 Now we formulate similar rules in natural deduction style, annotated with terms; the entire \textbf{simple type theory for distributive monoidal categories with products} (except for the obvious rules governing the judgment $\types A\type$) is shown in \cref{fig:moncat-prod-coprod}.
-(To obtain theories for monoidal categories with products only, or distributive monoidal categories, or multicategories with products and coproducts, and so on, we can simply omit some of these rules and the corresponding clauses, along with the following proofs.)
+(To obtain theories for monoidal categories with products only, or distributive monoidal categories, or multicategories with products and coproducts, and so on, we can simply omit some of these rules and their corresponding clauses in the following proofs.)
 
 \begin{figure}
   \centering
@@ -3471,7 +3386,7 @@ Now we formulate similar rules in natural deduction style, annotated with terms;
     \and
     \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr2AB(M):B}\;\timesE2
     \\
-    \inferrule{ }{\Gamma\types \ttt(\Gamma):\unit}\;\unit I
+    \inferrule{ }{x_1:A_1,\dots,x_n:A_n\types \ttt(x_1,\dots,x_n):\unit}\;\unit I
     \and
     \inferrule{\Psi\types M:\zero}{\Gamma,\Psi,\Delta\types \abort^{\Gamma,\Delta}(M):C}\;\zero E
     \\
@@ -3524,16 +3439,16 @@ This ``superlinearity'' property guarantees that terms are derivations.
 \end{proof}
 
 A concrete example where we need the extra arguments to $\ttt$ is:
-\begin{mathpar}
+\begin{equation}\label{eq:ttt-arg}
   \inferrule*{\inferrule*{ }{x:A \types \ttt(x):\unit} \\
     \inferrule*{ }{\cdot \types \ttt():\unit}}
   {x:A \types \tpair{\ttt(x)}{\ttt()} : \unit\tensor\unit}
-  \and
+  \qquad
   \inferrule*{\inferrule*{ }{()\types \ttt():\unit} \\
     \inferrule*{ }{x:A \types \ttt(x):\unit}}
   {x:A \types \tpair{\ttt()}{\ttt(x)} : \unit\tensor\unit}
-\end{mathpar}
-Unlike with the annotations $\Gamma|\Delta$ on $\match$es (see \cref{ex:moncat-context-splitting}), these terms really can represent distinct morphisms. % in a distributive monoidal category with products.
+\end{equation}
+Unlike with the annotations $\Gamma|\Delta$ on $\match$es (see \cref{ex:moncat-context-splitting}), these terms really can represent distinct morphisms (see \cref{ex:moncat-prod-coprod-context}).
 
 \begin{thm}\label{thm:moncat-prod-coprod-subadm}
   Substitution is admissible in the {simple type theory for distributive monoidal categories with products}: given derivations of
@@ -3544,7 +3459,7 @@ Unlike with the annotations $\Gamma|\Delta$ on $\match$es (see \cref{ex:moncat-c
   The defining equations are shown in \cref{fig:moncat-prod-coprod-sub}.
   They basically augment the rules from \cref{fig:moncat-sub} with versions of the rules from \cref{thm:catprod-subadm,thm:catcoprod-subadm}.
   Note the difference between the cases for $\tpair P Q$ and $\pair P Q$: in the first we recurse into only one of the subterms, while in the second we recurse into both.
-  Also there are a couple of new rules for $\abort$ and $\case$ to deal with the fact that a free variable might not occur in the discriminee.
+  Also there are a couple of new rules for $\abort$ and $\case$ to deal with the fact that a free variable might occur in one of the case branches rather than the discriminee.
 \end{proof}
 
 \begin{figure}
@@ -3562,7 +3477,7 @@ Unlike with the annotations $\Gamma|\Delta$ on $\match$es (see \cref{ex:moncat-c
     \ott[M/x] &&&\quad\text{cannot happen}\\
     \match_\one(N,P)[M/x] &= \match_\one(N[M/x],P) &&\quad\text{if $x$ occurs in $N$}\\
     \match_\one(N,P)[M/x] &= \match_\one(N,P[M/x]) &&\quad\text{if $x$ occurs in $P$}\\
-    \ttt(\Gamma,x,\Delta)[M/x] &= \ttt(\Gamma,\Psi,\Delta) &&\quad\text{$\Psi$ the context of $M$}\\
+    \ttt(\vec y,x,\vec z)[M/x] &= \ttt(\vec y,\vec w, \vec z) &&\quad\text{$\vec w$ the free variables of $M$}\\
     (\pi_1(N))[M/x] &= \pi_1(N[M/x])\\
     (\pi_2(N))[M/x] &= \pi_2(N[M/x])\\
     \pair{P}{Q}[M/x] &= \pair{P[M/x]}{Q[M/x]}\\
@@ -3587,9 +3502,9 @@ The $\beta$- and $\eta$-conversion rules are likewise obtained by combining thos
     \match_\one(\ott,N) \equiv N\and
     \match_\one(M,N[\ott/u]) \equiv N[M/u]\\
     \pi_1(\pair M N) \equiv M\and
-    \pi_2(\pair M N) \equiv N\and
+    \pi_2(\pair M N) \equiv N\\
     \pair{\pi_1(M)}{\pi_2(M)} \equiv M\and
-    \ttt(\Gamma) \equiv M \and
+    \ttt(x_1,\dots,x_n) \equiv M \\
     \case(\inl(M),u.P,v.Q) \equiv P[M/u]\and
     \case(\inr(M),u.P,v.Q) \equiv P[M/v]\and
     \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y]\and
@@ -3600,7 +3515,7 @@ The $\beta$- and $\eta$-conversion rules are likewise obtained by combining thos
 \end{figure}
 
 \begin{thm}\label{thm:moncat-prod-coprod-initial}
-  The free distributive monoidal category with products generated by a multigraph \cG is presented by this theory in the usual way: its morphisms are the derivable terms $\Gamma\types M:A$ modulo $\equiv$.
+  The free distributive monoidal category with products generated by a multigraph \cG is presented by this theory in the usual way: its morphisms are the derivations of $\Gamma\types M$ (or the derivable terms $\Gamma\types M:A$) modulo $\equiv$.
 \end{thm}
 \begin{proof}
   As usual, \cref{thm:moncat-prod-coprod-subadm} gives us a multicategory, and the rules for the operations $\tensor,\one,\times,\ttt,+,\zero$ make it representable and give it products and coproducts.
@@ -3615,12 +3530,18 @@ Secondly, even though the rules for $\tensor$ and $+$ are completely independent
 This suggests that we could obtain further properties and relationships between type operations by modifying the judgmental/context structure.
 The categorical side of this involves moving to \emph{generalized multicategories}.
 
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:moncat-prod-coprod-context}
+  Find an example of a distributive monoidal category with products in which the two terms in~\eqref{eq:ttt-arg} represent distinct morphisms.
+\end{ex}
+
 
 \section{Some generalized multicategories}
 \label{sec:cartmulti}
 
-\subsection{Cartesian clubs}
-\label{sec:cart-clubs}
+% \subsection{Cartesian clubs}
+% \label{sec:cart-clubs}
 
 We want to consider monoidal categories with ``something extra'', such as symmetric monoidal categories or cartesian monoidal categories.
 To describe a type theory for monoidal categories of this sort, principle~\eqref{princ:structural} from \cref{sec:why-multicats} suggests that we should ask what additional structure this ``something extra'' induces on their underlying multicategories.
@@ -3704,8 +3625,8 @@ As special cases we have, by definition:
 \end{tabular}
 \end{center}
 
-\subsection{Products in \fS-multicategories}
-\label{sec:cartmulti-prod}
+% \subsection{Products in \fS-multicategories}
+% \label{sec:cartmulti-prod}
 
 Now, recall the definition of tensor products in a multicategory from \cref{defn:multicat-tensor}, and the result of \cref{thm:multicat-repr} that having all tensor products (being ``representable'') is equivalent to being a monoidal category.
 For a general faithful cartesian club \fS, we might as well \emph{define} an \textbf{\fS-monoidal category} to be an \fS-multicategory that is representable.
@@ -3795,8 +3716,8 @@ The following is then straightforward.
 Of course, cartesian closed categories are just closed cartesian monoidal categories, so they are equivalent to closed cartesian multicategories.
 
 \begin{fat}
-\subsection{Fat generalized multicategories}
-\label{sec:fat-cartmulti}
+% \subsection{Fat generalized multicategories}
+% \label{sec:fat-cartmulti}
 
 We can also formulate ``fat'' \fS-multicategories along the lines of \cref{sec:fat-multicats}; in fact, in some ways they are even more natural than thin ones.
 
@@ -3924,7 +3845,7 @@ This is similar to how, as we have noted, cut is usually stated in type theory u
 As in that case, the smaller operations suffice to generate the more general ones (c.f.\ \cref{ex:club-generators}).
 
 What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
-In this section we will ignore this question and take these rules (when we want them) as \emph{primitive}.
+In this section we will ignore this question and take these rules (when we want them) as \emph{primitive} (recall \cref{rmk:admissible-derivable-1}).
 This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
 We will address the question of admissibility in \cref{sec:cartmoncat,sec:symmoncat}.
 
@@ -3980,7 +3901,7 @@ As usual, we have also omitted the rules for the judgment $\types A\type$, which
       \Psi\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
     }{\Gamma,\Psi \types C}\;\joinE\\
     \inferrule{\Gamma,A\types B}{\Gamma\types A\hom B}\;\homI\and
-    \inferrule{\Gamma\types A\hom B \\ \Psi\types A}{\Gamma,\Psi\types B}\;\homE
+    \inferrule{\Psi\types A\\\Gamma\types A\hom B}{\Gamma,\Psi\types B}\;\homE
   \end{mathpar}
   \caption{Natural deduction for closed \fS-monoidal lattices}
   \label{fig:natded-logic}
@@ -3988,6 +3909,10 @@ As usual, we have also omitted the rules for the judgment $\types A\type$, which
 
 The introduction rule for $\hom$ is simply one direction of its universal property from \cref{sec:multicats-catth}.
 The elimination rule is the inverse direction, but with a cut built in to make the context of the conclusion general (modulo a splitting).
+That is, $\homE$ can be derived from the opposite of $\homI$ and cut:
+\begin{mathpar}
+  \inferrule*{\Psi\types A\\ \inferrule*{\Gamma\types A\hom B}{\Gamma,A\types B}}{\Gamma,\Psi\types B}
+\end{mathpar}
 
 The contraction rule gives the cut-admissibility theorem a new wrinkle.
 Let us first consider the cases without contraction, which are more straightforward.
@@ -4025,7 +3950,7 @@ into
   {\Gamma,\Psi,\Psi,\Delta\types B}
 \end{equation*}
 After this we could apply exchanges to pair up the two copies of each type in $\Psi$, and finally a contraction on each of them to eliminate the duplicates.
-However, we again have the sort of problem that we did in the proof of \cref{thm:monpos-cutadm}: the derivation of $\Gamma,\Psi,A,\Delta,\types B$ that we obtain from our first application of the inductive hypothesis may not be ``smaller'' than our given derivation, so we cannot apply the inductive hypothesis to it again.
+However, now we have the sort of problem that we did in the proof of \cref{thm:monpos-cutadm}: the derivation of $\Gamma,\Psi,A,\Delta,\types B$ that we obtain from our first application of the inductive hypothesis may not be ``smaller'' than our given derivation, so we cannot apply the inductive hypothesis to it again.
 Moreover, the solution sketched there (inducting first on types and then on derivations) does not work here, since the types are not changing.
 
 The standard solution used in type theory is to generalize the cut rule to a rule called ``mix'' that enables the induction to go through.
@@ -4122,7 +4047,7 @@ For instance, here is a derivation of one of ``de Morgan's laws'' as a tautology
 However, not \emph{every} tautology can be derived this way.
 In particular, $\neg\neg A \To A$ (the ``law of double negation'') and $P\join \neg P$ (the ``law of excluded middle'') are not derivable, because although they hold in $\tv$, their analogues fail to hold in other Heyting algebras.
 (In fact, they hold in a Heyting algebra exactly when that Heyting algebra is a \emph{Boolean} algebra.)
-Thus, although we have something that ``looks like logic'' it is not exactly classical logic.
+Thus, although we have something that ``looks like logic'', it is not exactly classical logic.
 
 As we will see in \cref{chap:polycats}, it is possible to enhance this type theory so that it \emph{can} prove all classical tautologies, by restoring the left/right and $\meet/\join$ symmetries.
 However, it is also valuable to observe that conversely, if we are willing to generalize our notion of ``logic'', we obtain something much more generally applicable.
@@ -4139,7 +4064,13 @@ The ``generalized logic'' corresponding to Heyting algebras is called \textbf{in
 While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them.
 The point is simply that we make our mathematics more general by generalizing our logic, and this is the logic that corresponds naturally to cartesian closed lattices, which are certainly a categorically natural notion.
 
-Having made these observations in the case of \emph{cartesian} closed lattices, it is natural to entertain similar ideas for other values of \fS.
+The observation that the logical operations of ``and'', ``or'', ``if-then'', and so on in the poset $\tv$ have the same universal properties (and hence can be represented by the same type operations) as the operations $A\times B$, $A+B$, $B^A$ in the category \bSet has a distinguished pedigree and many names: \emph{propositions as types}, \emph{proofs as terms}, or the \emph{Curry--Howard correspondence}.
+As we will see, this correspondence is also central to the use of dependent type theory as a foundation for mathematics.
+Some ``constructivist'' mathematicians have argued that this correspondence should determine the \emph{meanings} of the logical operations in terms of proofs --- that is, a proof of ``$P$ and $Q$'' should be a pair $(p,q)$ where $p$ is a proof of $P$ and $q$ is a proof of $Q$; a proof of ``if $P$ then $Q$'' should be a function transforming any proof of $P$ into a proof of $Q$; and so on.
+This is sometimes called the \emph{Brouwer--Heyting--Kolmogorov (BHK) interpretation}.
+However, we will have little to say about the philosophical side of constructive logic.
+
+In any case, having made these observations in the case of \emph{cartesian} closed lattices, it is natural to entertain similar ideas for other values of \fS.
 Roughly speaking, the names of the corresponding ``generalized logics'' are:
 \begin{center}
 \begin{tabular}{c|c}
@@ -4150,14 +4081,14 @@ Roughly speaking, the names of the corresponding ``generalized logics'' are:
   relevance & relevance logic
 \end{tabular}
 \end{center}
-To be precise, all of these logics should additionally be qualified as ``intuitionistic'', since there are also ``classical'' versions of linear, affine, and relevance logics in which the laws of double negation and excluded middle hold.
+To be precise, we are currently talking about variants of all these logics that should be qualified as ``intuitionistic''; there are also ``classical'' versions of linear, affine, and relevance logics in which the laws of double negation and excluded middle hold.
 Moreover, at least in the linear case one should also add a phrase like ``multiplicative-additive''\footnote{In the lingo of linear logic, $\tensor$ is a ``multiplicative'' connective, while $\meet$ and $\join$ are ``additive''.
-  Classical linear logic also includes another multiplicative connective called $\parr$ that is dual to $\tensor$ in the same way that $\join$ is dual to $\meet$; see \cref{sec:cllin}.}, because the name ``linear logic'' usually refers to a system with some additional modalities (see [TODO]).
+  Classical linear logic also includes another multiplicative connective called $\parr$ that is dual to $\tensor$ in the same way that $\join$ is dual to $\meet$; see \cref{sec:cllin}.} to describe our current theory, because the name ``linear logic'' usually refers to a system with some additional modalities (see [TODO]).
 Furthermore, at this point all of them should have the prefix ``propositional'', since we are not yet considering quantifiers of any sort (``there exists'' and ``for all'').
 
 The name ``linear logic'' comes from the same intuition as our use of ``linearity'' to describe \cref{thm:multicat-linear}.
 The name ``affine logic'' is similarly inspired by the fact that while a linear transformation $T(\vec v) = A\vec v$ must use its argument exactly once in each term, an affine transformation $T(\vec v) = A\vec v + \vec b$ also has terms that do not use its argument at all.
-Both of these logics are primarily studied by computer scientists; the distinction between $\tensor$ and $\meet$ can be interpreted in terms of ``resource usage''.
+Both of these logics are primarily studied by computer scientists; the distinction between $\tensor$ and $\meet$ can be interpreted in terms of ``resource usage'' (but that is far beyond our scope here).
 
 Finally, ``relevance logic'' was invented by philosophers seeking to avoid certain facts about implication that they regarded as ``paradoxical'', such as $A\To (B\To A)$.
 The straightforward derivation of this tautology in our type theory requires weakening:
@@ -5278,17 +5209,17 @@ Axiom~\ref{item:terms-uniq} above ensures that a derivation is determined by its
 However, the converse of \cref{thm:term-system} does not hold.
 Indeed, its conclusion does not even imply axiom~\ref{item:terms-uniq} (which is all that was used in its proof): the former is only about ``globally'' well-typed terms, while the latter is a ``local'' condition that says something even about ill-typed terms.
 
-The reason for the extra strength of~\ref{item:terms-uniq}, and for condition~\ref{item:term-wf}, is to make type-checking a ``deterministic recursive algorithm'', as follows.
+The reason for the extra strength of~\ref{item:terms-uniq}, and for condition~\ref{item:term-wf}, is to make type-checking a ``deterministic terminating recursive algorithm'', as follows.
 Given a term $t$, we check whether it is of the form $\act m(s_1,\dots,s_n)$.
 If so, then by~\ref{item:terms-uniq} $m$ and the $s_j$'s are uniquely determined, and we can recursively consider each $s_j$.
 If the answer is ever no, then the term $t$ is ill-typed.
-Otherwise, axiom~\ref{item:term-wf} ensures that the algorithm must terminate (by bottoming out at nullary rules), and we have now constructed a derivation represented by the term $t$.
+Otherwise, axiom~\ref{item:term-wf} ensures that the algorithm must terminate (by bottoming out at nullary rules), and we have now constructed a derivation (the tree of rules $m$) represented by the term $t$.
 
 Of course, for this to actually be an algorithm in the computer science sense, the test for whether $t=\act m(s_1,\dots,s_n)$ would have to be ``computable''.
 Making that precise is far beyond our current scope, but it may be worth mentioning that it generally holds because \dT is constructed using an initial algebra for some other signature, and initial algebras are very computable (they are ``abstract datatypes'').
 Such a construction of \dT generally also ensures axiom~\ref{item:term-wf} immediately.
 
-Notationally, we can specify a signature along with a term syntax for it by annotating its rules by terms.
+Notationally, we regard the common ``annotation of rules'' as specifying a signature along with a term syntax for it.
 For instance, when we annotate the composition rule in the cut-ful type theory of categories
 \[ \inferrule{A\types B \\ B\types C}{A\types C} \]
 by terms to get
@@ -5313,32 +5244,39 @@ There are many ways to do this; our approach follows~\cite{gp:asib,gp:aswvb,pg:f
 
 Let \dA be a fixed infinite set (usually countable), whose elements we call \textbf{variables}.
 Let $\sig$ be a signature, one-sorted for simplicity, together with injective functions $v,b:\dA \to \sig_1$ such that $\ay(v(x))=0$ and $\ay(b(x))=1$ for all $x\in\dA$.
-What we have in mind is that the initial $\sig$-algebra will supply the set of terms in a term syntax for some other signature, with the operations of $\sig$ corresponding to the term notations for the rules in that otherh signature.
-The inclusion $v$ simply says that variables can occur in terms, while the operation $b(x)$ is intended to ``bind'' the variable $x$ in its argument; usually $b(x)(M)$ is written $x.M$.
+What we have in mind is that the initial $\sig$-algebra will supply the set of terms in a term syntax for some other signature, with the operations of $\sig$ corresponding to the term notations for the rules in that other signature.
 
-Now we have the initial $\sig$-algebra $W\sig$.
-We define, by recursion, an action of $\mathrm{Aut}(\dA)$ on $W\sig$: for a permutation $\sigma$ we set
+The inclusion $v$ simply says that variables can occur in terms, while the operation $b(x)$ is intended to ``bind'' the variable $x$ in its argument; usually $b(x)(M)$ is written $x.M$.
+When term notations bind variables, their corresponding operations will put a specially named $\sig$-operation together with one or more uses of $b$.
+For instance, when describing the terms in the unary type theory for categories with coproducts, there will be operations $\acase AB$ of arity 3, which we combine with two uses of $b$ to represent the terms annotating $\plusE$:
+\[\acase AB(M,u.P,v.Q) = \acase AB(M,b(u)(P),b(v)(Q)).\]
+
+As usual, let $W\sig$ be the initial $\sig$-algebra; and let $\nAut(\dA)$ be the group of automorphisms (permutations) of the set \dA.
+We write the action of $\sigma\in\nAut(\dA)$ on $x\in \dA$ by $x^\sigma$.
+Now we define, by recursion, an action of $\nAut(\dA)$ on $W\sig$ as follows:
 \begin{align*}
-  \sigma \cdot \act{v(x)} &= \act{v(\sigma(x))}\\
-  \sigma \cdot \act{b(x)}(M) &= \act{b(\sigma(x))}(\sigma\cdot M)
+  \sigma \cdot \act{v(x)} &= \act{v(x^\sigma)}\\
+  \sigma \cdot \act{b(x)}(M) &= \act{b(x^\sigma)}(\sigma\cdot M)
 \end{align*}
 with $\sigma\cdot M$ defined recursively in the latter.
 In all other cases, $\sigma \cdot (-)$ simply recurses into all subtrees.
 It is easy to show that this is a group action.
 
-Because all operations in $\sig$ have finite arity\footnote{If $\sig$ were allowed to contain infinitary operations, then to make this work, the cardinality of \dA would have to be of cofinality greater than any of their arities.} and all trees in $W\sig$ are well-founded, only finitely many variables can occur in any tree (either through $v$ or $b$).
-Since \dA is infinite, for any $t\in W\sig$ there is always some variable $z\in \dA$ that does not occur in $t$.
-We write $z\notin t$ to mean that $z$ does not occur in $t$.
+Because all operations in $\sig$ have finite arity\footnote{If $\sig$ were allowed to contain infinitary operations, then to make this work, the cardinality of \dA would have to be of cofinality greater than any of their arities.} and all trees in $W\sig$ are well-founded, only finitely many variables can occur in any such tree (either through $v$ or $b$).
+So, since \dA is infinite, for any $M\in W\sig$ there is some variable $z\in \dA$ that does not occur in $M$.
+We call such a $z$ \textbf{fresh} (relative to $M$) and write $z\notin M$.
 
 We now define $\alpha$-equivalence $\equiv$ on $W\sig$, by defining a new signature $\sig^\equiv$ similar to how we did it in \cref{sec:axioms}.
-We include a ``reflexivity at variables'' $v(x)\equiv v(x)$, the operations making $\equiv$ a congruence for all operations of $\sig$, and also one further operation that in rule form looks like this:
+We include operations making $\equiv$ a congruence for all operations of $\sig$ except $b$.
+In the case of $v$, this means we have ``reflexivity at variables'' $v(x)\equiv v(x)$.
+We also include one further operation that in rule form looks like this:
 \begin{equation}
-  \inferrule{z\notin t \\ z\notin s \\ z\neq x \\ z \neq y \\ (zx)\cdot t \equiv (zy)\cdot s}
-  {b(x)(t) \equiv b(y)(s)}\label{eq:alpha-gen}
+  \inferrule{z\notin M \\ z\notin N \\ z\neq x \\ z \neq y \\ (zx)\cdot M \equiv (zy)\cdot N}
+  {b(x)(M) \equiv b(y)(N)}\label{eq:alpha-gen}
 \end{equation}
 Here $(zx)$ and $(zy)$ denote the transposition permutations that swap $z$ with $x$ and $z$ with $y$, respectively.
-Since $z$ does not occur in $t$ and $s$, the permutation actions $(zx)\cdot t$ and $(zy)\cdot s$ amount to replacing all occurences of $x$ in $t$ and $y$ in $s$ (even bound ones) by $z$.
-The rule then says that if these two results are $\alpha$-equivalent, then so are the terms $x.t$ and $y.s$ with new bound variables.
+Since $z$ does not occur in $M$ and $N$, the permutation actions $(zx)\cdot M$ and $(zy)\cdot N$ amount to replacing all occurences of $x$ in $M$ and $y$ in $N$ (even bound ones) by $z$.
+The rule then says that if these two results are $\alpha$-equivalent, then so are the terms $x.M$ and $y.N$ with new bound variables.
 
 For instance, $x.x$ and $y.y$ are $\alpha$-equivalent because $(zx)\cdot x = z$ and $(zy)\cdot y = z$.
 We also have $x.(x.x) \equiv x.(y.y)$ because $(zx)\cdot (x.x) = (z.z)$ and $(zy)\cdot (y.y) = (z.z)$ as well, so the inner bound $x$ really does ``shadow'' the outer one, making the latter invisible even though it has the same name.
@@ -5348,38 +5286,83 @@ Note also that if $M\in W\sig$, then $x.M$ is $\alpha$-equivalent to $y.((yx)\cd
 \[(zy)\cdot (yx)\cdot M = (yx)\cdot (zx)\cdot M = (zx)\cdot M.\]
 Thus, we can always replace a bound variable by any another fresh variable.
 
-Unlike in \cref{sec:axioms}, we do not explicitly include operations making $\equiv$ symmetric and transitive.
-However, we can prove that it is using an induction (this is itself a sort of cut-admissibility).
-Thus, it is an equivalence relation.
-Omitting symmetry and transitivity has the good consequence that~\eqref{eq:alpha-gen} is invertible: if $x.M\equiv y.N$, then since~\eqref{eq:alpha-gen} is the only rule that can produce such an output, it must be that $(zx)\cdot M \equiv (zy)\cdot N$ for a fresh $z$.
+Unlike in \cref{sec:axioms}, we do not explicitly include operations making $\equiv$ an equivalence relation.
+However, we can nevertheless prove that it is; this is itself a sort of cut-admissibility.
 
-The quotient $W\sig/\equiv$ is, of course, our set of ``terms modulo $\alpha$-equivalence of bound variables''.
-Since $\equiv$ is a congruence for all the operations of $\sig$, these all descend to the quotient.
-In particular, we have induced variable binding operations on the quotient, which we also denote by $x.M$.
+\begin{lem}\label{thm:alpha-adm}
+  $\alpha$-equivalence $\equiv$, as defined above, has the following properties:
+  \begin{enumerate}
+  \item Equivariance: if $M\equiv N$, then $\sigma\cdot M \equiv \sigma \cdot N$ for any $\sigma\in \nAut(\dA)$.\label{item:alpha-eqvadm}
+  \item Congruence for binding: if $M\equiv N$, then $x.M\equiv x.N$.\label{item:alpha-bindadm}
+  \item Rule~\eqref{eq:alpha-gen} is invertible: if $x.M\equiv y.N$, then $(zx)\cdot M \equiv (zy)\cdot N$ for some fresh $z$.\label{item:alpha-gen-inv}
+  \item Reflexivity: $M\equiv M$ for any $M\in W\sig$.\label{item:alpha-refl}
+  \item Symmetry: if $M\equiv N$ then $N\equiv M$.\label{item:alpha-symm}
+  \item Transitivity: if $M\equiv N$ and $N\equiv P$, then $M\equiv P$.\label{item:alpha-trans}
+  \item Bound variables can be altered freely: if $z\notin M$ then $x.M \equiv z.((zx)\cdot M)$.\label{item:alpha-rename}
+  \end{enumerate}
+\end{lem}
+\begin{proof}
+  Perhaps surprisingly, the tricky and important one is~\ref{item:alpha-eqvadm}.
+  Of course, the proof is by induction on the derivation of $M\equiv N$, and all the congruence rules are immediate, so it remains to deal with~\eqref{eq:alpha-gen}.
+  That is, suppose $x.M\equiv y.N$ is obtained from $(zx)\cdot M \equiv (zy)\cdot N$, and let $\sigma\in\nAut(\dA)$.
+  Now $\sigma\cdot(x.M) = x^\sigma.(\sigma\cdot M)$ and similarly for $N$, so to conclude $\sigma\cdot(x.M) \equiv \sigma\cdot(y.N)$ it will suffice to show $(wx^\sigma)\cdot \sigma\cdot M \equiv (wy^\sigma)\cdot\sigma\cdot N$ for some fresh $w$.
+  The obvious choice for $w$ is $z^\sigma$.
+  Then if we let $\tau = (z^\sigma y^\sigma)\sigma(zx)\in\nAut(\dS)$, we have
+  \begin{align*}
+    (z^\sigma x^\sigma)\cdot \sigma\cdot M
+    &= \tau \cdot (zx)\cdot M\\
+    &\equiv \tau \cdot (zy)\cdot N\\
+    &= (z^\sigma y^\sigma)\cdot\sigma\cdot N
+  \end{align*}
+  using the inductive hypothesis of equivariance for $(zx)\cdot M \equiv (zy)\cdot N$.
+
+  Now~\ref{item:alpha-bindadm} is immediate, since $M\equiv N$ implies $(zx)\cdot M \equiv (zx)\cdot N$, whence~\eqref{eq:alpha-gen} gives $x.M\equiv x.N$.
+  And~\ref{item:alpha-gen-inv} is clear since~\eqref{eq:alpha-gen} is the only rule that can produce an $\alpha$-equivalence between terms of the form $x.M$ and $y.N$ (since we did not include~\ref{item:alpha-bindadm} or~\ref{item:alpha-refl}--\ref{item:alpha-trans} as primitive).
+  Combining the primitive congruence rules with~\ref{item:alpha-bindadm} yields straightforward inductive proofs of~\ref{item:alpha-refl} and~\ref{item:alpha-symm}.
+
+  For~\ref{item:alpha-trans} we induct on both $M\equiv N$ and $N\equiv P$.
+  By inspection of the form of $N$, they must both be derived from the same rule.
+  If it is a primitive congruence rule, we just apply the inductive hypothesis to all the inputs and then congruence again.
+  The interesting case is~\eqref{eq:alpha-gen}, where we have $(ux)\cdot M \equiv (uy)\cdot N$ and also $(vy)\cdot N\equiv (vz)\cdot P$ for potentially different variables $u$ and $v$, with $u$ fresh for $M,N,x,y$ and $v$ fresh for $N,P,y,z$.
+  Since \dA is infinite there exists a variable $w$ that is fresh for all of $M,N,P,x,y,z$, and so we have
+  \[ (wx)\cdot M = (wu)\cdot (ux)\cdot M \equiv (wu)\cdot (uy)\cdot N = (wy)\cdot N\]
+  using~\ref{item:alpha-eqvadm}.
+  Similarly, $(wy)\cdot N \equiv (wz)\cdot P$, so we ought to be able to conclude by the inductive hypothesis that $(wx)\cdot M\equiv (wz)\cdot P$ and so $x.M\equiv z.P$ by~\eqref{eq:alpha-gen}.
+  However, this is not the usual structural inductive hypothesis, since the derivations of and $(wx)\cdot M \equiv (wy)\cdot N $ and $(wy)\cdot N \equiv (wz)\cdot P$ are produced by~\ref{item:alpha-eqvadm} and are not subtrees of our given derivations of $x.M\equiv y.N$ and $y.N\cdot z.P$.
+  Instead we have to do something like assign a natural number ``height'' to all derivations, observe that~\ref{item:alpha-eqvadm} preserves the height of derivations, and then induct on height.
+
+  Finally, for~\ref{item:alpha-rename} we choose a fresh $w$ and observe that $(wx)\cdot M = (wz)\cdot (zx)\cdot M$.
+  Thus, by reflexivity~\ref{item:alpha-refl} we have $(wx)\cdot M \equiv (wz)\cdot (zx)\cdot M$ and hence by~\eqref{eq:alpha-gen} $x.M \equiv z.((zx)\cdot M)$.
+\end{proof}
+
+The quotient $W\sig/\equiv$ of this equivalence relation is, of course, our set of ``terms modulo $\alpha$-equivalence of bound variables''.
+Since $\equiv$ is a congruence for all the operations of $\sig$, these all descend to the quotient, including (by \cref{thm:alpha-adm}\ref{item:alpha-bindadm}) variable binding; we also denote this operation by $x.M$ where now $M\in W\sig/\equiv$.
 
 Our goal is to use this quotient as the term syntax for another signature.
 In practice we will write terms as elements of $W\sig$ itself, but we regard them formally as representing their equivalence class.
 We also usually want to restrict to some subsets of terms that have the right number of variables bound to represent the context.
-For instance, in unary type theories we have said that a term judgment such as $x:A\types M:B$ can be read as $x:M: (A\types B)$.
-(We really do want this $x$ to be a \emph{bound} variable in the formal sense of this section, since derivations to determine unique terms we have to quotient by renaming the variables in the context as well.)
+
+For instance, in unary type theories (\cref{chap:unary}) we have said that a term judgment such as $x:A\types M:B$ can be read as $x:M: (A\types B)$.
+We really do want this $x$ to be a \emph{bound} variable in the formal sense of this section, since derivations to determine unique terms we have to quotient by renaming the variables in the context as well.
+That is, we represent ``free'' variables as variables that are bound ``on the outside''.
 Thus, we should take our set \dT of terms to be the subset of $W\sig/\equiv$ consisting of terms having a variable binding outermost.
-Similarly, in a simple type theory the terms for $\Gamma\types B$ should have $n$ variable bindings outermost, where $n$ is the length of $\Gamma$ (this is why in \cref{sec:terms} we allowed different judgments to have different sets of potential terms).
+Similarly, in a simple type theory (\cref{chap:simple}) the terms for $\Gamma\types B$ should have $n$ variable bindings outermost, where $n$ is the length of $\Gamma$ (this is why in \cref{sec:terms} we allowed different judgments to have different sets of potential terms).
 
 We then need to define operations on these sets \dT that represent the rules of our desired signature.
 These will generally be constructed from basic operations in $\sig$ combined with one or more variable bindings.
 
-Let us consider $\case$ as a paradigmatic example.
-Since the rule $\plusE$ has three premises, what we have to give is an operation $\dT\times \dT\times \dT \to \dT$.
+Let us consider $\case$ from \cref{sec:catcoprod} as a paradigmatic example.
+Since the rule $\plusE$ has three premises, what we have to give is an operation $\dT\times \dT\times \dT \to \dT$, where $\dT$ is the set of $\alpha$-equivalence classes of terms of the form $x.M$.
 We have presumably included ``$\case$'' as a 3-ary operation in our term signature $\sig$, but this does not take account yet of the binding structure.
 The inputs to our desired operation will be (given the above restriction defining $\dT$) of the form $x.M$, $u.P$, and $v.Q$.
 The basic 3-ary operation in $\sig$ could give $\case(x.M,u.P,v.Q)$, but of course we want ``$x.\case(M,u.P,v.Q)$'' instead.
 
 To define this, we first choose representatives for the equivalence classes of $x.M$, $u.P$, and $v.Q$.
-By the above remarks, we can do this so that $x$ does not appear in $u.P$ or $v.Q$ (which have only finitely many variables each).
-Now we can write $x.\case(M,u.P,v.Q)$; but for this to make sense we have to check that it is independent of the chosen representatives.
+By \cref{thm:alpha-adm}\ref{item:alpha-rename} we can do this so that $x$ does not appear in $u.P$ or $v.Q$ (which have only finitely many variables each).
+Now we can write $x.\case(M,u.P,v.Q)$; but for this to define an operation $\dT\times \dT\times \dT \to \dT$ we have to check that it is independent of the chosen representatives.
 For $u.P$ and $v.Q$ this is easy since $\equiv$ is a congruence for all operations of $\sig$, including $\case$.
-And if $x.M\equiv y.N$, then as remarked above we have $(zx)\cdot M \equiv (zy)\cdot N$ for some $z$, which we may also take to not appear in $u.P$ or $v.Q$.
-Thus we have
+And if $x.M\equiv y.N$, then by \cref{thm:alpha-adm}\ref{item:alpha-gen-inv} we have $(zx)\cdot M \equiv (zy)\cdot N$ for some $z$, which we may also take to not appear in $u.P$ or $v.Q$.
+Thus, using the congruence rules and transitivity, we have
 \begin{align*}
   x. \case(M,u.P,v.Q)
   &\equiv z.\case((zx)\cdot M,u.P,v.Q)\\
@@ -5388,13 +5371,14 @@ Thus we have
 \end{align*}
 
 The same principle applies to all other term systems using variable binding.
-In more complicated cases, we also need to poke down into all the terms to ensure that certain variables in their context are disjoint or equal.
-For instance, the term operation representing $\timesI$ takes as given $x.M$ and $y.N$, but its output has only one shared variable; thus we have to first note $x.M \equiv z.((zx)\cdot M)$ and $y.N \equiv z.((zy)\cdot N)$ for some $z$ appearing in neither, and then write $z.\pair{(zx)\cdot M}{(zy)\cdot N}$ for the pairing term.
-Based on these examples, we trust that the reader could formulate a precise definition of all the terms used in this book as operations on $\alpha$-equivalence classes.
+Sometimes we also need to poke down into all the terms to ensure that certain variables in their context are disjoint or equal.
+For instance, the term operation representing $\timesI$ takes as given $x.M$ and $y.N$, but its output has only one shared variable.
+Thus we have to first note $x.M \equiv z.((zx)\cdot M)$ and $y.N \equiv z.((zy)\cdot N)$ for some $z$ that is fresh for both, and then write $z.\pair{(zx)\cdot M}{(zy)\cdot N}$ for the pairing term.
+Based on these examples, we trust that the reader could formulate precise definitions of all the terms used in this book as operations on $\alpha$-equivalence classes.
 
 Of course, in any particular case it is still (technically) necessary to prove that what we get \emph{is} a term system in the sense of \cref{defn:terms}.
-Since \dT is a subset of an initial algebra, and our operations are built using at least one operation of that algebra, \cref{defn:terms}\ref{item:term-wf} is straightforward.
-Finally, the proof of \cref{defn:terms}\ref{item:terms-uniq} essentially means checking that we chose the operations of the term signature to contain enough information to reconstruct a derivation step-by-step.
+Since \dT is a subset of an initial algebra, and our operations are built using at least one operation of that algebra, \ref{defn:terms}\ref{item:term-wf} is straightforward.
+Finally, the proof of \ref{defn:terms}\ref{item:terms-uniq} essentially means checking that we chose the operations of the term signature to contain enough information to reconstruct a derivation step-by-step.
 This is a formal version of what in the main text we called \emph{type-checking is possible} or \emph{terms are derivations}.
 Note that since all our ``terms'' are actually $\alpha$-equivalence classes, we never have to prove anything about $\alpha$-equivalence.
 
