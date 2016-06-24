@@ -7,7 +7,7 @@
 \author{Michael Shulman}
 \date{\today}
 \makeatletter
-\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp}
 \autodefs{\nAut}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
@@ -3506,7 +3506,7 @@ All of these cases can be encompassed by the following definitions.
 The above examples are the cases when \fS consists of the bijections, all the functions, the injections, or the surjections respectively.
 There is also the trivial case when \fS contains only the identities.
 
-\begin{defn}
+\begin{defn}\label{defn:fS-multicategory}
   Let \fS be a faithful cartesian club.
   An \textbf{\fS-multicategory} is a multicategory \cM together with operations
   \begin{align*}
@@ -4026,7 +4026,8 @@ We now move back up the ladder from posets to categories.
 In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible.
 Otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
 
-In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction); this is probably the most commonly used case, and also the easiest.
+In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction).
+This is probably the most commonly used case, and also the easiest.
 One reason it is easier is that $\tensor$ and $\one$ now coincide with $\meet$ and $\top$, so we can omit the former pair.
 A second reason it is easier is the following lemma.
 
@@ -4074,7 +4075,8 @@ This will enable us to ``push the structural rules up'' past all primitive rules
 \label{subsec:stlc}
 
 Of course, before embarking on the formal study of this theory, we introduce terms for the derivations, as shown in \cref{fig:stlc}.
-Since we are back in the realm of categories rather than posets, we return to the notations $\times,\unit,+,\zero$ instead of $\meet,\top,\join,\bot$, and in a cartesian situation we write $A\to B$ instead of $A\hom B$.
+Since we are back in the realm of categories rather than posets, we return to the notations $\times,\unit,+,\zero$ instead of $\meet,\top,\join,\bot$.
+In a cartesian situation we also write $A\to B$ instead of $A\hom B$; this has the pleasing consequence that the term syntax $M:A\to B$ looks the same as the common mathematical notation for functions.
 
 \begin{figure}
   \centering
@@ -4109,12 +4111,17 @@ Since we are back in the realm of categories rather than posets, we return to th
 \end{figure}
 
 Most of the term annotations should be familiar from \cref{sec:multicat-prod-coprod}; indeed they are even simpler, since the (expected) presence of the structural rules allows us to omit some of the more verbose annotations.
-The rules for $\to$, however, introduce a new kind of term, a \textbf{$\lambda$-abstraction}.
-[TODO: Discuss.]
+The rule $\toI$ introduces a new kind of term, a \textbf{$\lambda$-abstraction}.
+Since the variable $x$ appears in the premise but not the conclusion, it must be bound in the resulting term; there is nothing else to say, so we simply prefix the letter $\lambda$ to indicate the rule.
+Intuitively, we think of $\lambda x.M$ as meaning ``the function that takes one argument, called $x$, and returns the value of $M$ (which includes $x$)''.
+For instance, $\lambda x.x^2$ denotes the function that squares its argument, $\lambda x.x+3$ denotes the function that adds three to its argument, and so on.
+Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus (STLC)} (though there is variation in the literature as to whether STLC also includes $\times,\unit,+,\zero$ as well as $\to$).
 
-Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus}.
-
-[TODO: $\alpha$-equivalence and binding]
+The rule $\toE$ simply pairs up two terms, one of which has type $A\to B$ and one of which has type $A$.
+Intuitively, we are ``applying'' a function $M:A\to B$ to an argument $N:A$.
+Technically there ought also to be a label indicating the rule being applied to pair these terms up, such as $\fapp(M,N)$.
+However, any system of notation has room for \emph{one} operation denoted by simple juxtaposition (e.g.\ in high-school algebra it is multiplication, while in group theory it is the group operation), and the importance of the type operation $\to$ leads us to choose $\toE$ for this honor in type theory.
+Most mathematicians write $f(a)$ for the application of a function $f$ to an argument $a$; since parentheses are used as usual for grouping, this notation is also valid here, just as $(x)(y)=xy$ in high-school algebra.
 
 \begin{lem}\label{thm:stlc-uniqderiv}
   If a term $\Gamma\types M:A$ is derivable in the simply typed $\lambda$-calculus, then it has a unique derivation.
@@ -4124,13 +4131,35 @@ Because of the importance of this operation, the type theory of \cref{fig:stlc},
   Since the premises of all rules have the same context as the conclusion, perhaps with a type added, there is no ambiguity about how to split things up, and hence no need for the uglier annotations used in \cref{sec:multicat-prod-coprod}.
 \end{proof}
 
+Now we are ready to prove the promised admissibility.
+
 \begin{lem}\label{thm:stlc-strucadm}
   The structural rules of exchange, contraction, and weakening are admissible in the simply typed $\lambda$-calculus.
-  Moreover, they make the derivations into a cartesian multigraph.
+  Moreover, they make the derivations into a cartesian multigraph (i.e.\ they are functorial as in \cref{defn:fS-multicategory}).
 \end{lem}
 \begin{proof}
-  TODO.
+  It will suffice to prove admissibility of the following rule, for any function $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$:
+  \begin{mathpar}
+    \inferrule*{y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m} \types \sigma^*M:B}{x_1:A_1,\dots,x_n:A_n \types M:B}
+  \end{mathpar}
+  This is once again almost immediate from the fact that the premises of all rules have the same context as the conclusion, perhaps with a type added: regardless of how a derivation of ${y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m} \types \sigma^*M:B}$ ends, we can apply the inductive hypothesis to its premises (perhaps passing to $\sigma\sqcup\idfunc : \{1,\dots,m+1\} \to \{1,\dots,n+1\}$) and then re-apply the final rule.
+
+  The only exception is the rule $\idfunc$, for which we observe that if $x:A$ appears in ${y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m}}$, then $x=y_j$ for some uniquely determined $1\le j\le m$.
+  Hence also $A=A_j$, and so $A=A_i$ for some $1\le i\le n$ (namely, $i=\sigma j$).
+  Thus, we can also apply the same rule to obtain ${x_1:A_1,\dots,x_n:A_n \types x_i:A_i}$.
+
+  Regarded as an operation on terms, $\sigma^*$ is defined by the clause
+  \begin{align*}
+    \sigma^*y_j &= x_{\sigma j}\\
+    \intertext{along with trivial ``descending into subterms'' clauses for all other terms, such as}
+    \sigma^*\pair M N &= \pair{\sigma^*M}{\sigma^*N}\\
+    \sigma^*\case(M,u.P,v.Q) &= \case(\sigma^*M, u.(\sigma\sqcup\idfunc)^*P,v.(\sigma\sqcup\idfunc)^*Q)
+  \end{align*}
+  and so on.
+  Intuitively, we simply substitute the variable $x_{\sigma j}$ for $y_j$ wherever it appears, for all $1\le j\le m$.
+  A similar induction proves that this operation is functorial, yielding a cartesian multigraph.
 \end{proof}
+
 
 [TODO: Substitution, functoriality, $\beta$ and $\eta$, etc.]
 
@@ -4144,17 +4173,13 @@ Because of the importance of this operation, the type theory of \cref{fig:stlc},
 \end{proof}
 
 
-\subsection{Primitive recursion}
-\label{sec:primrec}
-
-[NNOs and primitive recursion]
-
-
 \subsection{Natural deduction, revisited}
 \label{sec:natded-again}
 
+[TODO: Where to put this?]
+
 Finally, let us end this section by explaining the terminology ``natural deduction''.
-Let us return to the posetal type theory of Heyting algebras, but with the rules formulated as in \cref{thm:cart-constctx}.
+We return to the posetal type theory of Heyting algebras, but with the rules formulated as in \cref{thm:cart-constctx}, so that all the structural rules can be admissible rather than primitive.
 Now we omit the contexts ``$\Gamma\types$'' from all judgments in a derivation tree, instead writing simply the consequent $A$.
 In place of the $\idfunc$ rule deriving $\Gamma\types A$, we write simply ``$A$'' without any justification, and call it a \emph{hypothesis}.
 Finally, when a type $A$ is removed from the context on our way down the tree, we cross off that hypothesis everywhere that it appears above, and say that the hypothesis has been \emph{discharged}.
@@ -4185,11 +4210,16 @@ Then we use $B\join C$ by assuming $B$ and $C$ in two separate cases (sub-deriva
 Thus, completing those cases (and ending our assumptions of $B$ and $C$) we have $(A\meet B)\join (A\meet C)$.
 Finally, ending our assumption of $A\meet (B\join C)$, we have $(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))$.
 
-Whether or not this aim of mirroring informal reasoning is achieved, it is why this sort of representation is called \emph{natural deduction}.
-In fact this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
+At least one important aspect of informal reasoning is certainly present in this setup: the ability to reason under a temporary assumption and then ``discharge'' that assumption in reaching some other conclusion.
+This sort of \emph{hypothetical reasoning} is central to everyday mathematics, so the fact that it also appears in natural deduction logic is a strong argument in favor of the ``naturalness'' of the latter.
+This is the real origin of the name ``natural deduction''; historically, this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
+Other systems of formal logic, such as ``Hilbert-style calculi'', though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
 
-[TODO: Something about how informal reasoning involves a context of assumptions, and also assuming and discharging those assumptions.
-So regardless of the \emph{notation}, this representation is close to informal reasoning.]
+
+\section{Programming with $\lambda$-calculus}
+\label{sec:primrec}
+
+[NNOs, primitive recursion, functional programming, perhaps more general GADTs]
 
 
 \section{Symmetric monoidal categories}
