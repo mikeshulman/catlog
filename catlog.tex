@@ -1080,8 +1080,6 @@ Before proving the initiality theorem, let us first observe that substitution do
   This follows by yet another induction on the derivation of $N$.
 \end{proof}
 
-[TODO: State other initiality theorems using ``derivations'' rather than ``derivable terms''.]
-
 Note that we did not have to impose any equivalence relation on the derivations in this theory.
 This suggests a second, more interesting, general statement about categorical logic: it is
 {a syntax for generating free categorical structures using derivations from rules}
@@ -3517,8 +3515,8 @@ There is also the trivial case when \fS contains only the identities.
   \begin{enumerate}
   \item $f \sigma^* \tau^* = f(\tau\sigma)^*$\label{item:cartmulti-1}
   \item $f (\idfunc_n)^* = f$\label{item:cartmulti-2}
-  \item $g\circ (f_1 \sigma_1^* ,\dots, f_n \sigma_n^*) = (g \circ (f_1,\dots,f_n))(\sigma_1\sqcup \cdots \sqcup \sigma_n)^*$
-  \item $g\sigma^* \circ (f_1,\dots,f_n) = (g\circ (f_{\sigma 1},\dots, f_{\sigma m}))(\sigma \wr (k_1,\dots,k_n))^*$ where $k_i$ is the arity of $f_i$.
+  \item $g\circ (f_1 \sigma_1^* ,\dots, f_n \sigma_n^*) = (g \circ (f_1,\dots,f_n))(\sigma_1\sqcup \cdots \sqcup \sigma_n)^*$\label{item:cartmulti-3}
+  \item $g\sigma^* \circ (f_1,\dots,f_n) = (g\circ (f_{\sigma 1},\dots, f_{\sigma m}))(\sigma \wr (k_1,\dots,k_n))^*$ where $k_i$ is the arity of $f_i$.\label{item:cartmulti-4}
   \end{enumerate}
   If each hom-set $\cM(A_1,\dots,A_n;B)$ has at most one element, we call \cM an \textbf{\fS-multiposet}.
   An \textbf{\fS-multigraph} is a multigraph equipped with similar operations satisfying~\ref{item:cartmulti-1} and~\ref{item:cartmulti-2}.
@@ -4160,23 +4158,124 @@ Now we are ready to prove the promised admissibility.
   A similar induction proves that this operation is functorial, yielding a cartesian multigraph.
 \end{proof}
 
+In fact, it is easy to prove that if $\sigma$ is injective --- that is, it is composed of exchange and weakening only --- and if we choose variables $y_j = x_{\sigma j}$ (which is only possible if $\sigma$ is injective), then in fact $\sigma^*M = M$.
+For instance, we have
+\[ x:A, y:B \types \pair x y : A\times B\]
+and by exchange and weakening we can obtain also
+\[ y:B, z:C, x:A \types \pair x y : A\times B.\]
+with the same term $\pair x y$.
+This does not contradict ``terms are derivations'', because we only require a term to determine a unique derivation \emph{when paired with its context and consequent}.
 
-[TODO: Substitution, functoriality, $\beta$ and $\eta$, etc.]
+Now we need substitution.
+Since all our other rules maintain the same context, it is natural to do the same here.
 
-[Initiality relative to multigraphs, not cartesian multigraphs.]
+\begin{lem}\label{thm:stlc-subadm}
+  Substitution is admissible in the simply typed $\lambda$-calculus: given derivations of $\Gamma\types M:A$ and $\Gamma,x:A\types N:B$, we can construct a derivation of $\Gamma\types M[N/x]:B$.
+\end{lem}
+\begin{proof}
+  By induction on the derivation of $\Gamma,x:A\types N:B$, as usual.
+  There are two mildly new features.
+  Firstly, since the contexts are maintained rather than split, we have to recurse into \emph{all} premises of each rule.
+  Secondly, when we get down to $\idfunc$ we might find a variable other than $x$, in which case there is no substitution to do.
+  Thus the clauses defining substitution are as shown in \cref{fig:stlc-sub}.
+  As in \cref{sec:multicat-moncat,sec:multicat-prod-coprod}, to write substitution using terms, we need to ensure by $\alpha$-equivalence that the bound variables $u,v$ in $\case$ and $y$ in $\lambda$ do not appear free in $M$.
+\end{proof}
+
+\begin{figure}
+  \centering
+  \begin{align*}
+    x[M/x] &= M \\
+    y[M/x] &= y \qquad (y\text{ a variable } \neq x)\\
+    f(N_1,\dots,N_n)[M/x] &= f(N_1[M/x],\dots,N_n[M/x])\\
+    \pair{P,Q}[M/x] &= \pair{P[M/x]}{Q[M/x]}\\
+    \pi_1(N)[M/x] &= \pi_1(N[M/x])\\
+    \pi_2(N)[M/x] &= \pi_2(N[M/x])\\
+    \ttt[M/x] &= \ttt\\
+    \abort(N)[M/x] &= \abort(N[M/x])\\
+    \inl(N)[M/x] &= \inl(N[M/x])\\
+    \inr(N)[M/x] &= \inr(N[M/x])\\
+    \case(N,u.P,v.Q)[M/x] &= \case(N[M/x],u.P[M/x],v.Q[M/x])\\
+    (\lambda y.N)[M/x] &= \lambda y.N[M/x]\\
+    (PQ)[M/x] &= (P[M/x])(Q[M/x])
+  \end{align*}
+  \caption{Substitution in simply typed $\lambda$-calculus}
+  \label{fig:stlc-sub}
+\end{figure}
+
+Note that the contraction rule is actually a special case of substitution, namely the substitution of one variable for another.
+That is, given $\Gamma,x:A,y:A \types M:B$, we have $\Gamma,x:A \types M[x/y]:B$ which is (by induction, if you wish) equal to the contraction of $M$ obtained from \cref{thm:stlc-strucadm}.
+
+The natural sort of ``associativity'' for this kind of substitution is also different: it combines the ``associativity and interchange'' properties in one, since if a variable $y$ is free in $N[M/x]$ then it might appear in \emph{both} $M$ and $N$.
+
+\begin{lem}\label{thm:stlc-subassoc}
+  Given derivations of $\Gamma\types M:A$ and $\Gamma,x:A\types N:B$ and $\Gamma,x:A,y:B\types P:C$, we have
+  \[ P[N/y][M/x] = P[M/x][N[M/x]/y]. \]
+\end{lem}
+On the left-hand side, $P[N/y][M/x]$ means $(P[N/y])[M/x]$.
+On the right-hand side, when writing $P[M/x]$ we have technically to apply weakening to $M$ (by \cref{thm:stlc-strucadm}) so that it has context $\Gamma,y:B$ first.
+\begin{proof}
+  A straightforward induction on derivations.
+  For the ``base cases'' of variables, we have
+  \begin{align*}
+    x[N/y][M/x] &= x[M/x]\\
+                &= M \\
+                &= M[N[M/x]/y]\tag{*}\\
+                &= x[M/x][N[M/x]/y]\displaybreak[0]\\
+    y[N/y][M/x] &= N[M/x]\\
+                &= y[N[M/x]/y]\\
+                &= y[M/x][N[M/x]/y]\displaybreak[0]\\
+    z[N/y][M/x] &= z[M/x]\\
+                &= z\\
+                &= z[M/x]\\
+                &= z[M/x][N[M/x]/y]
+  \end{align*}
+  where $z\neq x,y$.
+  The equality (*) is because $y$ does not appear in $M$, i.e.\ $M$ has been obtained by weakening from a context not including $y$ as remarked above.
+  (Formally, we ought to prove by a further induction that substituting for a variable obtained by weakening never changes the term.)
+\end{proof}
+
+We also need to know that substitution commutes with the other structural rules.
+For weakening and exchange this is immediate from the observation that these rules do not change the term.
+For contraction, it follows from \cref{thm:stlc-subassoc} and the observation that contraction is a special case of substitution:
+\begin{gather}
+  N[x/y][M/x] = N[M/x][x[M/x]/y] = N[M/x][M/y].\label{eq:sub-contr-1}\\
+  N[M/x][y/z] = N[y/z][M[y/z]/x]\label{eq:sub-contr-2}
+\end{gather}
+
+Now we can state the $\beta$- and $\eta$-conversion rules.
+Those for products and coproducts are the familiar ones from \cref{fig:moncat-prod-coprod-equiv}.
+The $\beta$-conversion rule for $\to$:
+\[ (\lambda x.M)N \equiv M[N/x]\]
+says that if we apply a function defined by $\lambda$-abstraction to an argument, the result is what we get by ``plugging in'' the argument to the expression defining the function.
+That is, if $f(x)=x^2$ then $f(3) = 3^2$.
+The $\eta$-conversion rule says that any function is a $\lambda$-abstraction:
+\[  M \equiv \lambda x.Mx \qquad \text{if } M:A\to B\]
+A straightforward induction shows that $\equiv$ is a congruence not only for substitution, but also for the new admissible structural rules from \cref{thm:stlc-strucadm}.
+
+Now we are ready to prove the initiality theorem.
+Note that we generate our free structure from a mere multigraph, not (as one might guess) a cartesian multigraph.
+A cartesian multigraph contains operations and equations, so to use it as base data we would need to incorporate those operations into $\equiv$.
 
 \begin{thm}\label{thm:stlc-initial}
   The free cartesian closed category with coproducts generated by a multigraph \cG can be presented by the simply typed $\lambda$-calculus under \cG: its underlying cartesian multigraph is that constructed in \cref{thm:stlc-strucadm} modulo $\equiv$, and its composition is given by substitution.
 \end{thm}
 \begin{proof}
-  TODO.
+  Although \cref{thm:stlc-subadm,thm:stlc-subassoc} are not stated in the usual form of multicategory composition operations, we can easily derive those operations from them.
+  Given $\Gamma\types M:A$ and $\Delta,x:A,\Psi\types N:B$, we can apply weakening and exchange to obtain $\Delta,\Gamma,\Psi\types M:A$ and $\Delta,\Gamma,\Psi,x:A\types N:B$; then \cref{thm:stlc-subadm} yields $\Delta,\Gamma,\Psi\types N[M/x]:B$.
+  Associativity and interchange are the special cases of \cref{thm:stlc-subassoc} where $x$ does not occur in $P$ and where $x$ does not occur in $N$, respectively, and the identity laws follow as usual.
+  Thus to have a cartesian multicategory it remains to check \cref{defn:fS-multicategory}\ref{item:cartmulti-3} and \ref{item:cartmulti-4}, using in particular~\eqref{eq:sub-contr-1} and~\eqref{eq:sub-contr-2}.
+  We leave this to the reader in \cref{ex:stlc-cartmulti}; it can be done directly or by way of \cref{ex:cartmulti-oneplace}.
+
+  The rules for all the type operations give this cartesian multicategory products, coproducts, and closed structure; thus it underlies a cartesian closed category with coproducts.
+  Initiality follows as usual: given a map of multigraphs $P:\cG\to \cM$, where \cM is a cartesian closed category with coproducts, we extend $P$ to all types by induction, then define it on all derivations by induction, then check that $\equiv$ is preserved by induction.
+  As always, this works because the rules for type operations (including the new one $\to$) are defined to mirror those of categorical universal properties.
 \end{proof}
 
 
 \subsection{Natural deduction, revisited}
 \label{sec:natded-again}
 
-[TODO: Where to put this?]
+% [TODO: Where to put this?]
 
 Finally, let us end this section by explaining the terminology ``natural deduction''.
 We return to the posetal type theory of Heyting algebras, but with the rules formulated as in \cref{thm:cart-constctx}, so that all the structural rules can be admissible rather than primitive.
@@ -4214,6 +4313,12 @@ At least one important aspect of informal reasoning is certainly present in this
 This sort of \emph{hypothetical reasoning} is central to everyday mathematics, so the fact that it also appears in natural deduction logic is a strong argument in favor of the ``naturalness'' of the latter.
 This is the real origin of the name ``natural deduction''; historically, this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
 Other systems of formal logic, such as ``Hilbert-style calculi'', though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:stlc-cartmulti}
+  Complete the proof in \cref{thm:stlc-initial} that type theory yields a cartesian multicategory by checking \cref{defn:fS-multicategory}\ref{item:cartmulti-3} and \ref{item:cartmulti-4}, or perhaps the corresponding one-place axioms you found in \cref{ex:cartmulti-oneplace}.
+\end{ex}
 
 
 \section{Programming with $\lambda$-calculus}
