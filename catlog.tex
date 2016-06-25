@@ -4650,10 +4650,12 @@ If we write down a term calculus whose terms correspond exactly to derivations i
 \begin{equation}
   x:A, y:C \types (f,\idfunc)((\idfunc,g)(x,y)) \equiv (\idfunc,g)((f,\idfunc)(x,y)) : (B,D)\label{eq:prop-bad-terms}
 \end{equation}
-One way to deal with this is to break the bijection between terms and deductions, in a way that enables us to represent both of the above two derivations by the same term.
+Note that unlike the $\beta$- and $\eta$-conversions, the equality~\eqref{eq:prop-bad-terms} is not directional: it makes no sense to regard one or the other side as ``simpler'' or ``more canonical'' than the other.
+We would like to avoid having to assume such equalities in $\equiv$, and furthermore the terms appearing in~\eqref{eq:prop-bad-terms} are rather ugly.
+One approach to deal with this would be to break the bijection between terms and deductions, in a way that enables us to represent both of the above two derivations by the same term.
 However, a better approach is to design a different theory in which there is only \emph{one} derivation of $f\circ_{()} g$, allowing us to maintain the principle that terms correspond uniquely to derivations.
 
-Note that unlike the $\beta$- and $\eta$-conversions, the equality~\eqref{eq:prop-bad-terms} is not directional: it makes no sense to regard one or the other side as ``simpler'' or ``more canonical'' than the other, and it is likewise unclear how to design a type theory in which one would be permitted but not the other.
+The non-directionality of~\eqref{eq:prop-bad-terms} also makes it unclear how to design a type theory in which one would be permitted but not the other.
 Instead we will forbid \emph{both} of them, replacing the generator rule by a ``multi-generator'' rule allowing only a one-step derivation
 \[ \inferrule{x:A,y:C \types (x,y):(A,C)}{x:A,y:C \types (f(x),g(y)):(B,D)}\;f,g \]
 The intuition in this term notation is of course that $f(x):B$ and $g(y):D$.
@@ -4722,13 +4724,13 @@ As in \cref{sec:symmoncat}, each rule adds only the part of a permutation that h
       \fa_i,\fb_j\in \fB\text{ and pairwise distinct}
     }{\vec x:\vec A\types^\fB
       \left(\sigma\left(\vec x,{\vec f}_1^{\fa_1},\dots,{\vec f}_n^{\fa_n}\right)
-      \mid g_1^{\fb_1},\dots,g_m^{\fb_m}\right)
+      \,\middle|\, g_1^{\fb_1},\dots,g_m^{\fb_m}\right)
       :\Delta}
     \and
     \inferrule{
       \Gamma \types^\fB (\vec M_1,\dots,\vec M_n,\vec P_1,\dots,\vec P_m,\vec N \mid \vec Z)
       : (\vec A_1,\dots, \vec A_n,\vec B_1,\dots,\vec B_m,\vec C)\\
-      \text{At least one type in each } A_i, B_j\text{ is active}\\
+      \text{At least one type in each } \vec A_i, \vec B_j\text{ is active}\\
       f_1 \in \cG(\vec A_1,\vec D_1)\\\cdots\\
       f_n \in \cG(\vec A_n,\vec D_n)\\\\
       g_1 \in \cG(\vec B_1,())\\\cdots\\
@@ -4741,7 +4743,7 @@ As in \cref{sec:symmoncat}, each rule adds only the part of a permutation that h
       \fa_i,\fb_j\notin \fB\text{ and pairwise distinct}
     }{\Gamma \types^{\fB\cup\{\fa_i,\fb_j\}} %\fa_1,\dots,\fa_n,\fb_1,\dots,\fb_m\}}
       \left(\sigma\left({\vec f}_1^{\fa_1}(\vec M_1),\dots,{\vec f}_n^{\fa_n}(\vec M_n),\vec N\right)
-      \mid \tau\left({ g}_1^{\fb_1}(\vec P_1),\dots,{ g}_m^{\fb_m}(\vec P_m),\vec Z\right)\right)
+      \,\middle|\, \tau\left({ g}_1^{\fb_1}(\vec P_1),\dots,{ g}_m^{\fb_m}(\vec P_m),\vec Z\right)\right)
       :\Delta
     }
   \end{mathpar}
@@ -4751,7 +4753,7 @@ As in \cref{sec:symmoncat}, each rule adds only the part of a permutation that h
 
 The resulting \textbf{type theory for props under \cG} is shown in \cref{fig:props}.
 Note that nearly all the subscripts shown are for indexing distinct morphisms or contexts, not for distinguishing between the different outputs of the some morphism as above.
-The latter is all hidden in the notation $\vec f$, and indicated in a couple of places by double subscripts $D_{11}, D_{21},\dots$
+The latter is mostly hidden in the notation $\vec f$, though indicated in a couple of places by double subscripts $D_{11}, D_{21},\dots$
 
 The notation is quite heavy, but the idea is not so bad.
 For the identity rule, we suppose given a context of variables belonging to types, and a list of generating morphisms with nullary domain.
