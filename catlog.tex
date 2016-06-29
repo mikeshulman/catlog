@@ -331,6 +331,7 @@ Our perspective is very much that of the category theorist: our primary goal is 
 The way that it does this is by giving concrete presentations of \emph{free} categorical structures, so that by working in those presentations we can deduce conclusions about \emph{any} such structure.
 There are other such syntaxes for category theory, notably string diagram calculi, that function in a similar way (giving a concrete presentation of free structures) to the extent that they are made precise.
 Indeed, the \emph{usual} way of reasoning in category theory, in which we speak explicitly about objects, arrows, commutative diagrams, and so on, can also be interpreted, from this point of view, to be simply making use of the \emph{obvious} presentation of a free structure rather than some fancier one.
+(It can be tempting for the category theorist to want to generalize away from free structures to arbitrary ones, but this temptation should be resisted; see \cref{rmk:free}.)
 
 In particular, this means that we are not interested in aspects of type theory such as computability, canonicity, proof search, cut-elimination, focusing, and so on \emph{for their own sake}.
 However, at the same time we recognize their importance for type theory as a subject in its own right, which suggests that they should not be ignored by the category theorist.
@@ -363,14 +364,17 @@ Another characteristic advantage of categorical logic is that it enables us to u
 From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
 This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
 
-Despite the usefulness of terms, we will emphasize throughout that terms are usually just a convenient notation for derivation trees.
+Despite the usefulness of terms, we will maintain and emphasize throughout the principle that terms should be just a convenient notation for derivation trees.
 This perspective has many advantages.
 For instance, it means that a (constructive) proof of cut-elimination \emph{is already} a definition of substitution into terms; it is not necessary to separately define a notion of ``substitution into terms'' and then prove that this \emph{separately defined} notion of substitution is admissible.
 It also deals quite nicely with the problems of $\alpha$-equivalence and bound variable renaming: as an operation on derivations, substitution doesn't need to care about ``whether a free variable is going to get captured''; the point is just that when we choose a term to represent the substituted derivation we have to accord with the general rules for how terms are assigned to derivations.
 
+Most importantly, however, it greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present the initial category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
+If the terms-as-derivations principle is broken, then one generally ends up wanting to induct on derivations anyway, and then having to prove laboriously that the resulting ``operation'' on terms is independent of their derivations.
+
 For similar reasons, we present our type theories so as to ensure that as many structural rules as possible are admissible rather than primitive: not only cut/substitution, but also exchange, contraction, and weakening.
 Many introductions to type theory are somewhat vague about exactly how these rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
-However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which requires being explicit about exactly how exchange works.
+However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which technically requires being explicit about exactly how exchange works.
 If we make exchange admissible, then it is automatically functorial, just as making substitution admissible gives associativity for free; this considerably simplifies the theory.
 Having structural rules as primitive would also make the notation quite tedious if we continued to adhere to the principle that terms are just a notation for derivations.
 
@@ -1133,10 +1137,15 @@ The primitive rules of a type theory can be regarded as the ``operations'' of a 
 (See \cref{chap:dedsys} for a precise statement along these lines.)
 The initiality theorems we care about, however, show that these initial objects are \emph{also} initial in some other, quite different, category that is of more intrinsic categorical interest.
 
-\begin{rmk}\label{rmk:admissible-derivable-2}
+\begin{rmk}\label{rmk:admissible-derivable-2}\label{rmk:free}
   This point of view sheds further light on the distinction between derivable and admissible rules mentioned in \cref{rmk:admissible-derivable-1}.
   A derivable rule automatically holds in any model of the ``algebraic theory'' version of a type theory, whereas an admissible rules holds \emph{only in the initial algebra} for this algebraic theory.
   In particular, an arbitrary model of the algebraic rules of the cut-free type theory for categories is not even a category, e.g.\ it may not satisfy the cut rule.
+
+  It is tempting for a category theorist, upon learning that type theory is a presentation of a certain free structure, to conclude that the emphasis on \emph{free} structures is myopic or of only historical interest, and attempt to generalize the theory to not-necessarily-free algebras over the same theory.
+  This temptation should be resisted.
+  At best, it leads to neglect of some of the most important and interesting features of type theory, such as cut-elimination, which holds only in free structures.
+  At worst, it leads to nonsense, for central type-theoretic notions such as ``bound variable'' (see \cref{sec:catcoprod}) \emph{only make sense} in free structures.
 \end{rmk}
 
 
