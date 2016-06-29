@@ -8,7 +8,7 @@
 \date{\today}
 \makeatletter
 \autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp}
-\autodefs{\nAut}
+\autodefs{\nAut\nShuf}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
 \let\sect\section
@@ -23,6 +23,8 @@
 % derivations
 \def\derivof#1{\inferrule*{\vdots}{#1}}
 \def\labderivof#1#2{\inferrule*{#1\\\\\vdots}{#2}}
+% contexts
+\let\merge\boxplus
 % judgments
 \let\types\vdash
 \def\type{\;\ftype}
@@ -128,6 +130,8 @@
 \label{chap:intro}
 
 % [TODO: Introduce the word "connective" somewhere; maybe only for posets?]
+
+% [TODO: Mention how the syntactic/free object gives "completeness" of a theory.]
 
 \section{Appetizer: inverses in group objects}
 \label{sec:intro}
@@ -4370,16 +4374,197 @@ Other systems of formal logic, such as ``Hilbert-style calculi'', though they ca
 \section{Symmetric monoidal categories}
 \label{sec:symmoncat}
 
-[TODO: I think we can make exchange admissible by incorporating a shuffle into the generator rule (and presumably doing similarly with the other rules that manipulate contexts).
-I've never seen that done before.]
+Now we consider a type theory for symmetric monoidal categories.
+That is, we add the exchange rule (and the $\hom$ rules) to \cref{sec:multicat-prod-coprod}, or remove weakening and contraction from \cref{sec:stlc}.
+As always we want exchange to be admissible, but we cannot use the same trick for this that we did in \cref{sec:stlc}, because in the absence of weakening the identity rule must be $x:A\types x:A$ rather than containing a whole context on the left.
 
-[Can we also make sense of ``multisets''?]
+Thus, we cannot expect to push all structural rules up to the top.
+Instead we need to build them into the other rules.
+For instance, in the theory of \cref{sec:logic} we can derive $B,A\types A\tensor B$ by using primitive exchange:
+\[ \inferrule*{\inferrule*{A\types A \\ B\types B}{A,B\types A\tensor B}}{B,A\types A\tensor B} \]
+To obtain this without primitive exchange, we must incorporate some exchange into the $\tensorI$ rule.
+That is, it must say something like
+\[ \inferrule{\Gamma\types A \\ \Delta\types B \\ \Gamma,\Delta \cong \Phi}{\Phi\types A\tensor B} \]
+allowing us to permute the concatenated context $\Gamma,\Delta$ of the premises to obtain the context of the conclusion.
+
+However, this is not quite right yet: it introduces too much redundancy.
+For instance, with this rule we would have the following derivation of $A,B,C\types A\tensor (B\tensor C)$:
+\begin{mathpar}
+  \inferrule*{A\types B \\ \inferrule*{B\types B \\ C\types C \\ B,C\cong C,B}{C,B\types B\tensor C} \\ A,C,B\cong A,B,C}{A,B,C\types A\tensor (B\tensor C)}
+\end{mathpar}
+which would be distinct from the obvious one:
+\begin{mathpar}
+  \inferrule*{A\types B \\ \inferrule*{B\types B \\ C\types C \\ B,C\cong B,C}{B,C\types B\tensor C} \\ A,B,C\cong A,B,C}{A,B,C\types A\tensor (B\tensor C)}
+\end{mathpar}
+This is not what we want; both clearly represent the same morphism in a symmetric multicategory, and moreover both are naturally represented by the same term $x:A,y:B,z:C \types \tpair{x}{\tpair{y}{z}}:A\tensor (B\tensor C)$.
+What we need to do is incorporate ``just enough'' exchange to obtain any desired ordering of the context of the conclusion, but without introducing redundancy.
+
+The redundancy comes from the fact that the contexts of the premises must already be free to occur in any order.
+Thus, we don't want to re-build-in permutations of those, only permutations that alter the relative order between the contexts of different premises.
+Formally, what we need is a \emph{shuffle}.
+
+\begin{defn}
+  For $p_1,\dots,p_n \in \dN$, a \textbf{$(p_1,\dots,p_n)$-shuffle} is a permutation of $\bigsqcup_{i=1}^n\{1,\dots,p_i\}$ with the property that it leaves invariant the internal ordering of each summand.
+\end{defn}
+
+For instance, if we write $\{1,2\}\sqcup \{1,2,3\}$ as $\{1,2,1',2',3'\}$, then here are some $(2,3)$-shuffles:
+\begin{mathpar}
+  121'2'3'\and
+  11'2'23'\and
+  1'2'13'2\and
+  1'12'3'2
+\end{mathpar}
+In all cases $1$ comes before $2$, and also $1'$ comes before $2'$ which comes before $3'$.
+The name ``shuffle'', of course, comes from the fact that when $n=2$ this is exactly the sort of permutation that can be obtained by cutting a deck of $p+q$ cards into a $p$-stack and a $q$-stack and riffle-shuffling them together.
+
+Now let $S_p$ denote the symmetric group on $p$ elements; thus the $(p_1,\dots,p_n)$-shuffles are elements of $S_{p_1+\cdots+p_n}$.
+Note that they are not a subgroup.
+However, we do have a (non-normal) inclusion $S_{p_1}\times \cdots\times S_{p_n} \into S_{p_1+\cdots+p_n}$ given by the \textbf{block sum of permutations}, acting on $\bigsqcup_{i=1}^n\{1,\dots,p_i\}$ by permuting each summand individually.
+The following is straightforward to verify.
+
+\begin{lem}
+  Every coset of $S_{p_1}\times \cdots \times S_{p_n}$ in $S_{p_1+\cdots+p_n}$ contains exactly one $(p_1,\dots,p_n)$-shuffle.
+  Thus, every permutation of $p_1+\cdots+p_n$ can be written uniquely as the product of a block sum from $S_{p_1}\times \cdots \times S_{p_n}$ and a $(p_1,\dots,p_n)$-shuffle.\qed
+\end{lem}
+
+If $\Gamma_i$ is a context of length $p_i$ for $i=1,\dots,n$, then we write $\nShuf(\Gamma_1,\dots,\Gamma_n;\Psi)$ for the set of $(p_1,\dots,p_n)$-shuffles that act on the concatenated context $\Gamma_1,\dots,\Gamma_n$ to produce the context $\Psi$.
+When using named variables, we assume that the variable names are preserved by this action (which means that the contexts $\Gamma_1,\dots,\Gamma_n$ and $\Psi$ uniquely determine such a shuffle if it exists).
+Now we can state a better version of $\tensorI$:
+\[ \inferrule{\Gamma\types A \\ \Delta\types B \\ \sigma\in\nShuf(\Gamma,\Delta;\Phi)}{\Phi\types A\tensor B} \]
+This allows deriving $B,A\types A\tensor B$, but rules out the undesired redundant derivation above, since the permutation $A,C,B\cong A,B,C$ is not a $(1,2)$-shuffle.
+We can treat all the other rules from \cref{sec:multicat-prod-coprod} (and also the $\hom$ rules) similarly, moving the active types in the context to the far right as we did in \cref{sec:stlc}; the result is shown in \cref{fig:smc}.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types A\type}{x:A\types x:A}\;\idfunc
+    \and
+    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types M_1:A_1 \\ \dots \\ \Gamma_n \types M_n:A_n \\ \nShuf(\Gamma_1,\dots\Gamma_n;\Phi)}{\Phi\types f(M_1,\dots,M_n):B}\;fI
+    \and
+    \inferrule{\Gamma\types M:A \\ \Delta\types N:B \\ \nShuf(\Gamma,\Delta;\Phi)}{\Phi\types \tpair{M}{N}:A\tensor B}\;\tensorI
+    \and
+    \inferrule{
+      \Psi \types M:A\tensor B \\
+      \Gamma,x:A,y:B\types N:C\\
+      \nShuf(\Gamma,\Psi;\Phi)
+    }{
+      \Phi \types \match_{A\tensor B}(M,xy.N):C
+    }\;\tensorE
+    \\
+    \inferrule{ }{()\types \ott:\one}\;\one I
+    \and
+    \inferrule{
+      \Psi\types M:\one \\
+      \Gamma\types N:C \\
+      \nShuf(\Gamma,\Psi;\Phi)
+    }{
+      \Phi\types \match_\one(M,N):C
+    }\;\one E
+    \\
+    \inferrule{\Gamma\types M:A \\ \Gamma\types N:B}{\Gamma\types \pair{M}{N} :A\times B}\;\timesI
+    \and
+    \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr1AB(M):A}\;\timesE1
+    \and
+    \inferrule{\Gamma\types M:A\times B}{\Gamma\types \pr2AB(M):B}\;\timesE2
+    \\
+    \inferrule{ }{x_1:A_1,\dots,x_n:A_n\types \ttt(x_1,\dots,x_n):\unit}\;\unit I
+    \and
+    \inferrule{\Psi\types M:\zero \\ \nShuf(\Gamma,\Psi;\Phi)}{\Phi\types \abort^\Gamma(M):C}\;\zero E
+    \\
+    \inferrule{\Gamma\types M:A}{\Gamma\types \inl(M):A+B}\;\plusI1
+    \and
+    \inferrule{\Gamma\types N:B}{\Gamma\types \inr(N):A+B}\;\plusI2
+    \and
+    \inferrule{
+      \Psi\types M:A+B \\ \Gamma,u:A \types P:C \\ \Gamma,v:B\types Q:C \\ \nShuf(\Gamma,\Psi;\Phi)
+    }{\Phi \types\acase AB(M,u.P,v.Q):C}\;\plusE\and
+    \inferrule{\Gamma,x:A\types M:B}{\Gamma\types \lambda x.M:A\hom B}\;\homI\and
+    \inferrule{\Gamma\types M:A\to B \\ \Delta\types N:A \\ \nShuf(\Gamma,\Delta;\Phi)}{\Phi\types M N:B}\;\homE
+  \end{mathpar}
+  \caption{Type theory for symmetric monoidal categories}
+  \label{fig:smc}
+\end{figure}
+
+\begin{lem}\label{thm:smc-exchadm}
+  Exchange is admissible in this type theory: if we have a derivation of $\Gamma\types A$, and a permutation $\Gamma\cong \Delta$ rearranging $\Gamma$ to $\Delta$, then we can construct a derivation of $\Delta\types A$.
+  Moreover, this operation is a group action.
+\end{lem}
+\begin{proof}
+  We induct on the given derivation of $\Gamma\types A$, and most of the cases are essentially the same.
+  Consider $\tensorI$: given its premises and a permutation $\Phi\cong\Phi'$, we decompose the composite permutation $\Gamma,\Delta\cong \Phi\cong\Phi'$ uniquely as the block sum of two permutations $\Gamma\cong \Gamma'$ and $\Delta\cong\Delta'$ with a shuffle $\Gamma',\Delta' \cong \Phi'$.
+  Now by the inductive hypothesis we can derive $\Gamma'\types A$ and $\Delta'\types B$, whence applying $\tensorI$ again with the shuffle $(\Gamma',\Delta') \cong \Phi'$ we get $\Phi' \types A\tensor B$.
+  All the other cases can be treated similarly.
+
+  We likewise show that it is a group action by induction.
+  In the case of $\tensorI$, if we have $\Phi\cong \Phi'\cong\Phi''$, we decompose $(\Gamma,\Delta)\cong \Phi\cong \Phi'$ as $(\Gamma,\Delta)\cong (\Gamma',\Delta')\cong\Phi'$; then we decompose $(\Gamma',\Delta')\cong\Phi' \cong \Phi''$ as $(\Gamma',\Delta')\cong (\Gamma'',\Delta'')\cong\Phi''$.
+  But since composition of permutations is associative, this is the same as decomposing $(\Gamma,\Delta)\cong \Phi\cong \Phi''$ as $(\Gamma,\Delta)\cong (\Gamma'',\Delta'')\cong \Phi''$ directly.
+  We conclude by applying the inductive hypothesis to the actions of $\Gamma\cong \Gamma'\cong \Gamma''$ and $\Delta\cong \Delta'\cong\Delta''$ on the premises.
+\end{proof}
+
+Note that the shuffles appearing in the premises are \emph{not} notated explicitly in the terms!
+Nevertheless, terms still uniquely determine derivations, because we can inspect the order that the variables appear in a term.
+As in \cref{sec:multicat-prod-coprod} we need ``superlinearity'' first.
+
+\begin{lem}\label{thm:smc-superlin}
+  If $\Gamma\types M:A$ is derivable, then every variable in $\Gamma$ appears at least once (free) in $M$.
+\end{lem}
+\begin{proof}
+  An easy induction just like \cref{thm:moncat-prod-coprod-superlin}.
+  Note that we again had to include the unused variables in $\unit I$ and $\zero E$ for this purpose.
+\end{proof}
+
+\begin{lem}\label{thm:smc-tad}
+  If $\Gamma\types M:A$ is derivable, then it has a unique derivation.
+\end{lem}
+\begin{proof}
+  By induction on derivations.
+  Clearly the structure of a term determines the \emph{rule} that must have been applied to produce it, so the question is whether it determines the premises uniquely as well.
+  The interesting cases are the rules that involve shuffles: $fI,\tensorI,\tensorE,\one E,\zero E,\plusE$.
+
+  Consider $\tensorI$: looking at the conclusion $\Phi \types \tpair M N : A \tensor B$, the rule ensures that each variable in $\Phi$ can only occur in one of $M$ or $N$, and by \cref{thm:smc-superlin} it must appear in exactly one of them.
+  Thus, it must be that $\Gamma$ consists of those variables occurring in $M$ while $\Delta$ consists of those variables occurring in $N$.
+  Moreover, since the shuffle $\nShuf(\Gamma,\Delta;\Psi)$ cannot alter the relative order of variables in $\Gamma$ and $\Delta$, it must be that the variables in $\Gamma$ and $\Delta$ occur in the same order as they do in $\Psi$.
+  Thus the premises $\Gamma\types M:A$ and $\Delta\types N:B$ are uniquly determined, and once $\Gamma$ and $\Delta$ are fixed the shuffle is also uniquely determined.
+  All the other rules involving shuffles behave similarly.
+\end{proof}
+
+From this point onwards the theory looks almost exactly like that of \cref{sec:multicat-prod-coprod}: substitution is admissible, we define $\beta$- and $\eta$-conversion rules, and construct a free closed symmetric monoidal category with products and coproducts (or less, by omitting some of our type operations).
+We leave the details to the reader (\cref{ex:smc}).
+
+In particular, because we have ensured that terms uniquely represent derivations, we can prove the initiality theorem as usual by a simple induction over derivations.
+(To the author's knowledge the use of shuffles for this purpose is an improvement over the existing literature.
+Most references on ``linear $\lambda$-calculus, such as~\cite{bbdph:linear-lambdacalc}, either break the ``terms are derivations'' principle (thereby incurring, and usually omitting to satisfy, an obligation to prove that definitions by induction over derivations depend only on the term), or fail to include any permutations in the rules (thereby not producing a symmetric multicategory), or take exchange as primitive (thereby introducing extra redundancy that must be, but is not usually, removed by additional clauses in the equivalence relation).
+
+One sometimes also finds remarks that the context in a linear type theory can be treated as a ``finite multiset'' (a ``set that can contain some elements more than once'').
+Whether this is true depends on what exactly one means by a multiset.
+On one hand, if a multiset just means a set with a (finite) positive ``count'' labeling each element, then this is true for posetal linear logic as in \cref{sec:logic}, but not when we want to present non-posetal symmetric monoidal categories, since it doesn't allow us to distinguish between $x:A,y:A \types \tpair x y:A\tensor A$ and $x:A,y:A \types \tpair y x:A\tensor A$.
+On the other hand, if a multiset means a set with a (finite) nonempty \emph{set} of ``occurrences'' labeling each element, then the occurrences play essentially the same role as named variables.
+This suggests a type theory corresponding somehow to the ``fat symmetric multicategories'' of~\cite[Appendix A]{leinster:higher-opds}; but we will not pursue this further.
+
 
 \subsection*{Exercises}
 
+\begin{ex}\label{ex:smc}
+  Finish the theory of this section: prove the admissibility of substitution, state the $\beta$- and $\eta$-conversion rules, and prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:smc-usage}
+  Another approach to linear type theory is to annotate some types in the context with an ``unused'' marker such as $(-)^0$, and allow weakening of ``unused'' types.
+  Thus we could have for instance $x:A^0,y:B,z:C^0 \types y:B$, since $x$ and $z$ are marked as unused.
+  Two of these contexts $\Gamma$ and $\Delta$ can be \emph{merged} if they contain the same types in the same order, and each type is used (the opposite of unused) in at most one of them; in that case they merge to a context $\Gamma\merge\Delta$ containing the same types again, with those used that are used in either $\Gamma$ or $\Delta$.
+  For instance, $(A^0,B,C^0)\merge(A,B^0,C^0) = (A,B,C^0)$.
+  \begin{enumerate}
+  \item Formulate a type theory containing $\otimes,\times,+,\hom$ using contexts with usage markers and merging rather than concatenation.
+    For instance, the rule $\tensorI$ should be
+    \[ \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma\merge\Delta \types \tpair M N : A\tensor B.}\]
+    Prove that exchange, and weakening for unused types, are admissible and functorial, by pushing them up the entire derivation as we did in the cartesian case in \cref{sec:stlc}.
+  \item Define a corresponding multicategory-like structure whose domains are lists with usage markers, and establish a correspondence of some sort with symmetric monoidal categories.
+  \item Prove an initiality theorem.
+  \end{enumerate}
+\end{ex}
+
 \begin{ex}\label{ex:semicart-relevance-strucadm}
   Is it possible to formulate a theory for semicartesian or relevance monoidal categories in which the appropriate structural rules are admissible?
-  \textit{(As of this writing, the author suspects the answer is yes for one of them, but doesn't know about the other.)}
 \end{ex}
 
 
@@ -5242,6 +5427,9 @@ Given a term $t$, we check whether it is of the form $\act m(s_1,\dots,s_n)$.
 If so, then by~\ref{item:terms-uniq} $m$ and the $s_j$'s are uniquely determined, and we can recursively consider each $s_j$.
 If the answer is ever no, then the term $t$ is ill-typed.
 Otherwise, axiom~\ref{item:term-wf} ensures that the algorithm must terminate (by bottoming out at nullary rules), and we have now constructed a derivation (the tree of rules $m$) represented by the term $t$.
+
+In the main text, we generally stated our ``terms are derivations'' lemmas in the simple form of ``if a term judgment is derivable, then it has a unique derivation.''
+As stated this is only the conclusion of \cref{thm:term-system}, but in all cases our proofs had the simple inductive form that actually establishes all of \cref{defn:terms}.
 
 Of course, for this to actually be an algorithm in the computer science sense, the test for whether $t=\act m(s_1,\dots,s_n)$ would have to be ``computable''.
 Making that precise is far beyond our current scope, but it may be worth mentioning that it generally holds because \dT is constructed using an initial algebra for some other signature, and initial algebras are very computable (they are ``abstract datatypes'').
