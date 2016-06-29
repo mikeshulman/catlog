@@ -369,14 +369,18 @@ This perspective has many advantages.
 For instance, it means that a (constructive) proof of cut-elimination \emph{is already} a definition of substitution into terms; it is not necessary to separately define a notion of ``substitution into terms'' and then prove that this \emph{separately defined} notion of substitution is admissible.
 It also deals quite nicely with the problems of $\alpha$-equivalence and bound variable renaming: as an operation on derivations, substitution doesn't need to care about ``whether a free variable is going to get captured''; the point is just that when we choose a term to represent the substituted derivation we have to accord with the general rules for how terms are assigned to derivations.
 
-Most importantly, however, it greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present the initial category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
-If the terms-as-derivations principle is broken, then one generally ends up wanting to induct on derivations anyway, and then having to prove laboriously that the resulting ``operation'' on terms is independent of their derivations.
+Most importantly, however, adhering to the ``terms are derivations'' principle greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present the initial category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
+If the ``terms are derivations'' principle is broken, then one generally ends up wanting to induct on derivations anyway, and then having to prove laboriously that the resulting ``operation'' on terms is independent of their derivations.
 
 For similar reasons, we present our type theories so as to ensure that as many structural rules as possible are admissible rather than primitive: not only cut/substitution, but also exchange, contraction, and weakening.
 Many introductions to type theory are somewhat vague about exactly how these rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
 However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which technically requires being explicit about exactly how exchange works.
 If we make exchange admissible, then it is automatically functorial, just as making substitution admissible gives associativity for free; this considerably simplifies the theory.
 Having structural rules as primitive would also make the notation quite tedious if we continued to adhere to the principle that terms are just a notation for derivations.
+
+In fact, much of the literature on categorical logic and type theory contains gaps or even errors relating to these points.
+It is very tempting to prove the initiality theorem by induction on derivations without realizing that by breaking the ``terms are derivations'' principle one thereby incurs an obligation to prove that the interpretation of a term is independent of its derivation.
+It is also very tempting to include too many primitive rules, perhaps based on the thought that if a rule is true anyway, it's simpler to assume it than to have to prove it; of course, thinking of rules as \emph{operations} in an algebraic theory makes clear that if there are too many of them, then the initial algebra will be too big.
 
 Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts, including also the still more general ``polycategories'' and their generalizations).
 Although multicategories have been present in categorical logic from close to the beginnings of both (Lambek's original definition of multicategory~\cite{lambek:dedsys-ii} was motivated by logical considerations), they are rarely mentioned in introductions to the subject.
@@ -1139,13 +1143,14 @@ The initiality theorems we care about, however, show that these initial objects 
 
 \begin{rmk}\label{rmk:admissible-derivable-2}\label{rmk:free}
   This point of view sheds further light on the distinction between derivable and admissible rules mentioned in \cref{rmk:admissible-derivable-1}.
-  A derivable rule automatically holds in any model of the ``algebraic theory'' version of a type theory, whereas an admissible rules holds \emph{only in the initial algebra} for this algebraic theory.
+  A derivable rule automatically holds in any model of the ``algebraic theory'' version of a type theory, whereas an admissible rules holds \emph{only in the initial algebra} (or, more generally, free algebras) for this algebraic theory.
   In particular, an arbitrary model of the algebraic rules of the cut-free type theory for categories is not even a category, e.g.\ it may not satisfy the cut rule.
 
-  It is tempting for a category theorist, upon learning that type theory is a presentation of a certain free structure, to conclude that the emphasis on \emph{free} structures is myopic or of only historical interest, and attempt to generalize the theory to not-necessarily-free algebras over the same theory.
+  It can be tempting for a category theorist, upon learning that type theory is a presentation of a certain free structure, to conclude that the emphasis on \emph{free} structures is myopic or of only historical interest, and attempt to generalize to not-necessarily-free algebras over the same theory.
   This temptation should be resisted.
   At best, it leads to neglect of some of the most important and interesting features of type theory, such as cut-elimination, which holds only in free structures.
   At worst, it leads to nonsense, for central type-theoretic notions such as ``bound variable'' (see \cref{sec:catcoprod}) \emph{only make sense} in free structures.
+  We will see in \cref{sec:presentations} that we can still use type theory to ``present'' categorical objects that are not themselves free; but the syntax of types and terms/derivations must still itself be freely generated.
 \end{rmk}
 
 
@@ -1166,6 +1171,11 @@ The initiality theorems we care about, however, show that these initial objects 
   \item Prove that $\bGr(\cG,-)$ is a 2-functor $\bCat\to\bCat$.
   \item Using the cut-free presentation of $\F\bCat\cG$, prove that it is a representing object for this 2-functor.
   \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:nonfree-noadm}
+  Regarding the cut-free type theory for categories as describing a multi-sorted algebraic theory, define a particular algebra for this theory that does not satisfy the cut rule.
+  Then define another algebra that does admit a ``cut rule'', but in which the resulting ``composition'' is not associative.
 \end{ex}
 
 
@@ -2135,6 +2145,11 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
 % \begin{ex}\label{ex:2free-catcoprod}
 %   As in \cref{ex:cat-2free,ex:catprod-2free} show that $\F\bCoprCat\cG$ is a representing object for a suitable 2-functor $\bGr(\cG,-):\bCoprCat\to\bCat$.
 % \end{ex}
+
+\section{Presentations}
+\label{sec:presentations}
+
+
 
 
 \chapter{Simple type theories}
@@ -4113,7 +4128,7 @@ In a cartesian situation we also write $A\to B$ instead of $A\hom B$; this has t
     \inferrule{\Gamma,x:A\types M:B}{\Gamma\types \lambda x.M:A\to B}\;\toI\and
     \inferrule{\Gamma\types M:A\to B \\ \Gamma\types N:A}{\Gamma\types M N:B}\;\toE
   \end{mathpar}
-  \caption{The simply typed $\lambda$-calculus}
+  \caption{The simply typed $\lambda$-calculus with products and coproducts}
   \label{fig:stlc}
 \end{figure}
 
@@ -4122,7 +4137,8 @@ The rule $\toI$ introduces a new kind of term, a \textbf{$\lambda$-abstraction}.
 Since the variable $x$ appears in the premise but not the conclusion, it must be bound in the resulting term; there is nothing else to say, so we simply prefix the letter $\lambda$ to indicate the rule.
 Intuitively, we think of $\lambda x.M$ as meaning ``the function that takes one argument, called $x$, and returns the value of $M$ (which includes $x$)''.
 For instance, $\lambda x.x^2$ denotes the function that squares its argument, $\lambda x.x+3$ denotes the function that adds three to its argument, and so on.
-Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus (STLC)} (though there is variation in the literature as to whether STLC also includes $\times,\unit,+,\zero$ as well as $\to$).
+Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus (STLC) with products and coproducts}.
+(The unqualified ``STLC'' would omit the rules for $\times,\unit,+,\zero$.)
 
 The rule $\toE$ simply pairs up two terms, one of which has type $A\to B$ and one of which has type $A$.
 Intuitively, we are ``applying'' a function $M:A\to B$ to an argument $N:A$.
@@ -4174,6 +4190,21 @@ and by exchange and weakening we can obtain also
 \[ y:B, z:C, x:A \types \pair x y : A\times B.\]
 with the same term $\pair x y$.
 This does not contradict ``terms are derivations'', because we only require a term to determine a unique derivation \emph{when paired with its context and consequent}.
+
+\begin{rmk}
+  As remarked briefly at the beginning of the section, the admissibility of the structural rules is central to having a clean theory of terms and a clean proof of the initiality theorem.
+  If we took the structural rules as primitive, then to maintain ``terms as derivations'' we would have to include information about the structural rules in terms, for instance annotating the derivation
+  \[ \inferrule*{\inferrule*{A\types A \\ B\types B}{A,B\types A\tensor B}}{B,A\types A\tensor B}\]
+  with a term like $y:B,x:A\types \sigma^*\tpair{x}{y}:A\tensor B$, distinguishing it from the \emph{different} derivation
+  \[ \inferrule*{B\types B \\ A\types A}{B,A\types A\tensor B}\]
+  that we could write as $y:B,x:A\types \tpair{x}{y}:A\tensor B$.
+  But clearly these two derivations ought to have the same term.
+
+  A more common approach is to give them the same term, essentially making the structural rules invisible in terms.
+  This makes for cleaner terms, but it means that to prove the initiality theorem using terms, after inducting over derivations we have to prove that the interpretation of a term is independent of its derivation.
+  This is difficult and tedious, with the result that most authors leave it to the reader or neglect to mention it altogether.
+  Making the structural rules admissible avoids both horns of the dilemma.
+\end{rmk}
 
 Now we need substitution.
 Since all our other rules maintain the same context, it is natural to do the same here.
@@ -4240,7 +4271,7 @@ On the right-hand side, when writing $P[M/x]$ we have technically to apply weake
   \end{align*}
   where $z\neq x,y$.
   The equality (*) is because $y$ does not appear in $M$, i.e.\ $M$ has been obtained by weakening from a context not including $y$ as remarked above.
-  (Formally, we ought to prove by a further induction that substituting for a variable obtained by weakening never changes the term.)
+  (Formally, we ought to prove by a further induction that substituting for a variable obtained by weakening never changes the term/derivation.)
 \end{proof}
 
 We also need to know that substitution commutes with the other structural rules.
