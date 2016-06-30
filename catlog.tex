@@ -61,7 +61,7 @@
 \def\joinE{\mathord{\join}E}
 \def\joinI{\mathord{\join}I}
 % unit
-\def\unit{\top}%{\mathbf{1}}
+\def\unit{\mathbbb{1}}%{\top}%{\mathbf{1}}
 \def\ttt{\mathord{\ast}}%{\mathsf{tt}}
 % product
 \def\timesE{\ensuremath{\mathord{\times}E}}
@@ -3700,6 +3700,9 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
 We are now aiming at type theories for the generalized multicategories considered in \cref{sec:cartmulti}, along with the extra structures that they may have (tensor products, cartesian products, coproducts, and closedness).
 In this section we start with the posetal case, which is also where our type theory at last begins to look rather like \emph{logic}.
 
+\subsection{\fS-monoidal lattices}
+\label{sec:monoidal-lattices}
+
 According to principle~\eqref{princ:structural} from \cref{sec:why-multicats}, the additional action by $\sigma$'s in an \fS-multicategory should be represented by \emph{structural rules} in a type theory.
 These rules are generally formulated and named as follows.
 \begin{mathpar}
@@ -3707,7 +3710,8 @@ These rules are generally formulated and named as follows.
   \inferrule*[right=weakening]{\Gamma,\Delta\types C}{\Gamma,A,\Delta\types C}\and
   \inferrule*[right=contraction]{\Gamma,A,A,\Delta\types C}{\Gamma,A,\Delta\types C}\and
 \end{mathpar}
-The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or contraction without exchange, just as one might consider non-symmetric semicartesian or relevance multicategories, but this takes us rather far afield from categorical structures of general interest, so we leave it to the reader.} should not be surprising:
+The correspondence between kinds of multicategory and structural rules\footnote{One can consider weakening and/or contraction without exchange, just as one might consider non-symmetric semicartesian or relevance multicategories.
+  But this takes us rather far afield from categorical structures of general interest, so we leave it to the reader.} should not be surprising:
 \begin{center}
 \begin{tabular}{c|c}
   $\fS$-multicategories & structural rules\\\hline
@@ -3722,11 +3726,11 @@ This is similar to how, as we have noted, cut is usually stated in type theory u
 As in that case, the smaller operations suffice to generate the more general ones (c.f.\ \cref{ex:club-generators}).
 
 What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
-In this section we will ignore this question and take these rules (when we want them) as \emph{primitive} (recall \cref{rmk:admissible-derivable-1}).
+For now let us ignore this question and take these rules (when we want them) as \emph{primitive} (recall \cref{rmk:admissible-derivable-1}).
 This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
-We will address the question of admissibility in \cref{sec:cartmoncat,sec:symmoncat}.
+We will address the question of admissibility in \cref{sec:heyting-algebras,sec:cartmoncat,sec:symmoncat}.
 
-For the rest of this section, let \fS be one of the four possibilities above (so in particular, it will always contain the bijections).
+For the rest of this subsection, let \fS be one of the four possibilities above (so in particular, it will always contain the bijections).
 All our type theories will then include the appropriate primitive structural rules, according to the above table.
 Our type operations will be the posetal versions of all the ones we saw in \cref{sec:multicat-prod-coprod} --- $\tensor,\one,\meet,\top,\join,\bot$ --- and also an internal-hom for $\tensor$, which we denote by $A\hom B$.
 (We postponed introducing the internal-hom until now only to avoid worrying about left- versus right-closedness in non-symmetric multicategories.)
@@ -3766,7 +3770,7 @@ As usual, we have also omitted the rules for the judgment $\types A\type$, which
     \and
     \inferrule{\Gamma\types A\meet B}{\Gamma\types B}\;\meetE2
     \\
-    \inferrule{ }{\Gamma\types \unit}\;\unit I
+    \inferrule{ }{\Gamma\types \top}\;\top I
     \and
     \inferrule{\Psi\types \bot}{\Gamma,\Psi\types C}\;\bot E
     \\
@@ -3790,6 +3794,7 @@ That is, $\homE$ can be derived from the opposite of $\homI$ and cut:
 \begin{mathpar}
   \inferrule*{\Psi\types A\\ \inferrule*{\Gamma\types A\hom B}{\Gamma,A\types B}}{\Gamma,\Psi\types B}
 \end{mathpar}
+Note that, as promised in \cref{sec:why-multicats}, by using sequents with multiple types in the context, we can formulate the rules for $\hom$ without reference to $\meet/\times$.
 
 The contraction rule gives the cut-admissibility theorem a new wrinkle.
 Let us first consider the cases without contraction, which are more straightforward.
@@ -3860,14 +3865,130 @@ Now we can prove the initiality theorem just as usual.
   Thus it lives in the correct category; and its freeness follows by induction as usual.
 \end{proof}
 
-Let us now say a few words about what these type theories have to do with logic, starting with the cartesian case.
-Thus we are talking about cartesian closed lattices, which are also known as \textbf{Heyting algebras}.
-Here $\tensor$ and $\one$ coincide with $\meet$ and $\top$ (see \cref{ex:cart-typetheory}), and we write $A\hom B$ as $A\To B$.
 
-For a reader who thinks of logical connectives in terms of their action on truth values (e.g. ``if $A$ then $B$'' is true unless $A$ is true and $B$ is false), one way to make the connection to logic is to note that the poset $\tv$ of truth values (``false $<$ true'') is a Heyting algebra, where the operations $\meet,\top,\join,\bot,\To$ correspond to ``and'', ``true'', ``or'', ``false'', and ``implies''.
-Thus, given any relational multigraph \cG (whose objects we may call \textbf{propositional variables}), and any assignment of truth values to its objects such that all of its inequalities ``are true'', we have a map of relational multigraphs $\cG\to\tv$, and hence an induced map $\F\bHeyting\cG \to \tv$ of Heyting algebras; so any derivable judgment $A_1,\dots,A_n \types B$ is also true.
+\subsection{Heyting algebras}
+\label{sec:heyting-algebras}
 
-As a special case, if \cG has no nontrivial relations, then any derivable judgment $()\types B$ exhibits $B$ as a \textbf{tautology}: a statement that becomes true whatever truth values are substituted for its propositional variables.
+Let us now specialize to the cartesian case, where we have all three structural rules.
+Thus the categorical structure in question is \emph{cartesian closed lattices}, which are also known as \textbf{Heyting algebras}.
+This theory is simpler because $\tensor$ and $\one$ coincide with $\meet$ and $\top$ (see \cref{ex:cart-typetheory}), so we can omit the former ones.
+A second reason it is simpler is because it is easy to make the structural rules admissible.
+The key observation is the following.
+
+\begin{lem}\label{thm:cart-constctx}
+  In the presence of exchange, contraction, and weakening, the following rules are inter-derivable with the rules $\bot E$, $\joinE$, $\homE$ from \cref{fig:natded-logic}.
+  \begin{mathpar}
+    \inferrule{\types A\type \\ A\in \Gamma}{\Gamma\types A}\;\idfunc'
+    \and
+    \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma\types A_1 \\ \dots \\ \Gamma \types A_n}{\Gamma\types B}\;f'
+    \and
+    \inferrule{\Gamma\types \bot}{\Gamma\types C}\;\bot E'
+    \and
+    \inferrule{
+      \Gamma\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+    }{\Gamma \types C}\;\joinE'
+    \and
+    \inferrule{\Gamma\types A\hom B \\ \Gamma\types A}{\Gamma\types B}\;\homE'
+  \end{mathpar}
+\end{lem}
+\begin{proof}
+  Here are the referenced rules from \cref{fig:natded-logic}:
+  \begin{mathpar}
+    \inferrule{\types A\type}{A\types A}\;\idfunc
+    \and
+    \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}\;f
+    \and
+    \inferrule{\Psi\types \bot}{\Gamma,\Psi\types C}\;\bot E
+    \and
+    \inferrule{
+      \Psi\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+    }{\Gamma,\Psi \types C}\;\joinE
+    \and
+    \inferrule{\Gamma\types A\hom B \\ \Psi\types A}{\Gamma,\Psi\types B}\;\homE
+  \end{mathpar}
+  Clearly $\idfunc$ is a special case of $\idfunc'$, while conversely $\idfunc'$ can be derived from $\idfunc$ followed by weakening.
+  And $\bot E'$ is a special case of $\bot E$, while $f'$ and $\joinE'$ and $\homE'$ can be derived from $f$ and $\joinE$ and $\homE$ followed by exchange and contraction to turn contexts like $\Gamma,\Gamma$ into $\Gamma$.
+  Conversely, given the premises of any of these ``unprimed'' rules, we can weaken each $\Gamma$ and $\Psi$ to $\Gamma,\Psi$ (or $\Gamma_i$ to $\Gamma_1,\dots,\Gamma_n$ in the case of $f$), then apply the primed version of that rule to deduce the conclusion of the unprimed rule.
+\end{proof}
+
+If we replace the rules in question by their modified versions, then all the rules will have the property that the context of the conclusion is arbitrary, while the context of the premises differ from the context of the conclusion at most by addition of a new type.
+In other words, as we proceed \emph{down} a derivation tree, we only ever \emph{remove} types from the context; and dually as we proceed \emph{up} a tree we only ever \emph{add} to the context.
+This will enable us to ``push the structural rules up'' past all primitive rules until we get to $\idfunc$, thereby making them admissible.
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\types A\type \\ A\in \Gamma}{\Gamma\types A}\;\idfunc
+    \and
+    \inferrule{(A_1,\dots,A_n \le B)\in\cG \\ \Gamma\types A_1 \\ \dots \\ \Gamma \types A_n}{\Gamma\types B}\;f
+    \and
+    \inferrule{\Gamma\types A \\ \Gamma\types B}{\Gamma\types A\meet B}\;\meetI
+    \and
+    \inferrule{\Gamma\types A\meet B}{\Gamma\types A}\;\meetE1
+    \and
+    \inferrule{\Gamma\types A\meet B}{\Gamma\types B}\;\meetE2
+    \\
+    \inferrule{ }{\Gamma\types \top}\;\top I
+    \and
+    \inferrule{\Gamma\types \bot}{\Gamma\types C}\;\bot E
+    \\
+    \inferrule{\Gamma\types A}{\Gamma\types A\join B}\;\joinI1
+    \and
+    \inferrule{\Gamma\types B}{\Gamma\types A\join B}\;\joinI2
+    \and
+    \inferrule{
+      \Gamma\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
+    }{\Gamma \types C}\;\joinE\\
+    \inferrule{\Gamma,A\types B}{\Gamma\types A\To B}\;\ToI\and
+    \inferrule{\Gamma\types A\To B \\ \Gamma\types A}{\Gamma\types B}\;\ToE
+  \end{mathpar}
+  \caption{Natural deduction for Heyting algebras}
+  \label{fig:natded-heyting}
+\end{figure}
+
+For convenience, we collect all the rules of this modified \textbf{natural deduction for Heyting algebras} in \cref{fig:natded-heyting}.
+Note that we change our notation and write $A\hom B$ as $A\To B$.
+
+\begin{lem}\label{thm:heyting-strucadm}
+  All the structural rules of exchange, weakening, and contraction are admissible in the natural deduction for Heyting algebras.
+\end{lem}
+\begin{proof}
+  It will suffice to prove admissibility of the following rule, for any function $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$:
+  \begin{mathpar}
+    \inferrule*{A_{\sigma 1},\dots,A_{\sigma m} \types B}{A_1,\dots,A_n \types B}
+  \end{mathpar}
+  This is almost immediate from the fact that the premises of all rules have the same context as the conclusion, perhaps with a type added: regardless of how a derivation of ${A_{\sigma 1},\dots,A_{\sigma m} \types B}$ ends, we can apply the inductive hypothesis to its premises (perhaps passing to $\sigma\sqcup\idfunc : \{1,\dots,m+1\} \to \{1,\dots,n+1\}$) and then re-apply the final rule.
+
+  The only exception is the rule $\idfunc$, for which we observe that if $A$ appears in the context $A_{\sigma 1},\dots,A_{\sigma m}$, then $A=A_{\sigma j}$ for some $1\le j\le m$, and hence $A=A_i$ for some $1\le i\le n$ (namely, $i=\sigma j$).
+  Thus, we can also apply the same rule to obtain ${A_1,\dots,A_n \types A_i}$.
+\end{proof}
+
+\begin{lem}\label{thm:heyting-initial}
+  The free Heyting algebra on a relational multigraph \cG can be described by the natural deduction for Heyting algebras.
+\end{lem}
+\begin{proof}
+  Left to the reader.
+  This will also follow as a special case of \cref{thm:stlc-initial}.
+\end{proof}
+
+
+\subsection{Natural deduction}
+\label{sec:natded-logic}
+
+Let us now say a few words about what the natural deduction for Heyting algebras has to do with logic.
+For a reader who thinks of logical connectives in terms of their action on truth values (e.g. ``if $A$ then $B$'' is true unless $A$ is true and $B$ is false), one way to make the connection to logic is to note that the poset of truth values
+\[ \tv = \{ \mathrm{false} < \mathrm{true} \}\]
+is a Heyting algebra, where the operations $\meet,\top,\join,\bot,\To$ correspond to ``and'', ``true'', ``or'', ``false'', and ``implies''.
+
+Now suppose \cG is a relational multigraph, whose objects we call \textbf{propositional variables}, and suppose furthermore that we have a map of relational multigraphs $\nu:\cG\to\tv$.
+In other words, we assign a truth value to each propositional variable, in such a way that if $(A_1,A_2,\dots,A_n)\le B$ in \cG, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true.
+Then by \cref{thm:natded-logic-initial} we have an induced map $\F\bHeyting\cG \to \tv$ of Heyting algebras.
+
+The objects of $\F\bHeyting\cG$ are \emph{propositional formulas}, built out of the propositional variables by the operations $\meet,\top,\join,\bot,\To$ which we now regard as denoting the logical connectives ``and'', ``true'', ``or'', ``false'', and ``implies''.
+Since $\F\bHeyting\cG \to \tv$ is a map of Heyting algebras, it extends the truth assignment $\nu$ to all such formulas by using the ``truth tables'' for all the connectives, e.g.\ $\nu(A\meet B)$ is true just when $\nu(A)$ and $\nu(B)$ are both true, etc.
+Finally, the fact that $\F\bHeyting\cG \to \tv$ preserves inequalities means that if $A_1,\dots,A_n \types B$ is derivable in the natural deduction for Heyting algebras, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true (where now the $A_i$ and $B$ are arbitrary formulas, not just propositional variables).
+
+As a special case, if \cG has no nontrivial relations, then any derivable judgment $()\types B$ exhibits the propositional formula $B$ as a \textbf{tautology}: a statement that becomes true \emph{whatever} truth values are substituted for its propositional variables.
 For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))$ as a tautology:
 \begin{mathpar}
   \tiny
@@ -3876,62 +3997,161 @@ For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet 
   \let\myjoin\join
   \def\join{\mathord{\myjoin}}
   \inferrule*{
-    \inferrule*{
       \inferrule*{
         \inferrule*{\inferrule*{ }{A\meet (B\join C) \types A\meet (B\join C)
           }}{A\meet (B\join C) \types B\join C}\\
         \inferrule*{\inferrule*{
-            \inferrule*{\inferrule*{\inferrule{ }{
-                  A\meet (B\join C)\types A\meet (B\join C)
-                }}{A\meet (B\join C) \types A
+            \inferrule*{\inferrule{ }{
+                  A\meet (B\join C),B\types A\meet (B\join C)
               }}{A\meet (B\join C),B \types A} \\
-            \inferrule*{\inferrule*{ }{
-                B\types B
-              }}{A\meet (B\join C),B \types B}
+            \inferrule*{ }{
+              A\meet (B\join C),B \types B}
           }{A\meet (B\join C),B \types A\meet B
         }}{A\meet (B\join C),B \types (A\meet B) \join (A\meet C)}\\
         \text{(and dually)}
-        }{A\meet (B\join C),A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
-    }{A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
+        }{A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
   }{()\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
 \end{mathpar}
+% VERSION WITH PRIMITIVE STRUCTURAL RULES:
+% \begin{mathpar}
+%   \tiny
+%   \let\mymeet\meet
+%   \def\meet{\mathord{\mymeet}}
+%   \let\myjoin\join
+%   \def\join{\mathord{\myjoin}}
+%   \inferrule*{
+%     \inferrule*{
+%       \inferrule*{
+%         \inferrule*{\inferrule*{ }{A\meet (B\join C) \types A\meet (B\join C)
+%           }}{A\meet (B\join C) \types B\join C}\\
+%         \inferrule*{\inferrule*{
+%             \inferrule*{\inferrule*{\inferrule{ }{
+%                   A\meet (B\join C)\types A\meet (B\join C)
+%                 }}{A\meet (B\join C) \types A
+%               }}{A\meet (B\join C),B \types A} \\
+%             \inferrule*{\inferrule*{ }{
+%                 B\types B
+%               }}{A\meet (B\join C),B \types B}
+%           }{A\meet (B\join C),B \types A\meet B
+%         }}{A\meet (B\join C),B \types (A\meet B) \join (A\meet C)}\\
+%         \text{(and dually)}
+%         }{A\meet (B\join C),A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
+%     }{A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
+%   }{()\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
+% \end{mathpar}
 Thus, the natural deduction for Heyting algebras can be used as a means to derive tautologies in propositional logic.
-It may seem that its expressivity is lacking because there is no operation corresponding to \emph{negation}, but in fact we can do pretty well by defining $\neg A$ to mean $A\To\bot$.
-For instance, here is a derivation of one of ``de Morgan's laws'' as a tautology:
+
+However, there is more to the relationship between type theory and logic than this.
+There are many ways to derive tautologies, including methods such as simply plugging in all possible truth assignments for the propositional variables and checking that the formula is always true.
+But the natural deduction for Heyting algebras has the important property that it (at least roughly) \emph{mirrors the process of ordinary informal mathematical reasoning}.
+
+It is easiest to see this if we reformulate the theory a little.
+Let us omit the contexts ``$\Gamma\types$'' from all judgments in a derivation tree, instead writing simply the consequent $A$.
+In place of the $\idfunc$ rule deriving $\Gamma\types A$, we write simply ``$A$'' without any justification, and call it a \emph{hypothesis}.
+Finally, when a type $A$ is removed from the context on our way down the tree, we cross off that hypothesis everywhere that it appears above, and say that the hypothesis has been \emph{discharged}.
+At the end, the set of remaining hypothesis is the antecedent of the conclusion; if no hypotheses remain undischarged, we have derived a tautology.
+
+For instance, the above derivation of the distributive law would be written in this style as
 \begin{mathpar}
-  \tiny
-  \let\mymeet\meet
-  \def\meet{\mathord{\mymeet}}
-  \let\myjoin\join
-  \def\join{\mathord{\myjoin}}
-  \let\myTo\To
-  \def\To{\mathord{\myTo}}
+  \inferrule*[Right=$\ToI$]{
+    \inferrule*[Right=$\joinE$]{
+      \inferrule*{\cancel{A\meet (B\join C)}}{B\join C}\\
+      \inferrule*{\inferrule*{
+        \inferrule*{\cancel{A\meet (B\join C)}}{A}\\
+        \cancel{B}
+        }{A\meet B}}{(A\meet B)\join (A\meet C)}\\
+      \inferrule*{\inferrule*{
+        \inferrule*{\cancel{A\meet (B\join C)}}{A}\\
+        \cancel{C}
+        }{A\meet C}}{(A\meet B)\join (A\meet C)}\\
+    }{(A\meet B)\join (A\meet C)}
+  }{(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))}
+\end{mathpar}
+Note that there is some ambiguity; it is not obvious from looking at the derivation which rule caused which hypothesis to be discharged.
+In the above example, the hypotheses $B$ and $C$ are discharged by the $\joinE$ rule, while the hypothesis ${A\meet (B\join C)}$ (everywhere it appears) is discharged by the $\ToI$ rule.
+Sometimes people annotate the discharges in some way to indicate this.
+
+However, the real point of a representation like this is that the \emph{process of writing it}, from the top down, is supposed to mirror the process of informal reasoning.
+First we assume $A\meet (B\join C)$, and deduce from it $B\join C$.
+Then we use $B\join C$ by additionally assuming $B$ and $C$ in two separate cases (sub-derivations), and in each of those cases we separately deduce ${(A\meet B)\join (A\meet C)}$ (by way of $A\meet B$ and $A\meet C$ respectively).
+Thus, completing those cases (and ending our assumptions of $B$ and $C$) we have $(A\meet B)\join (A\meet C)$.
+Finally, ending our assumption of $A\meet (B\join C)$, we have $(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))$.
+
+From this perspective, the rules in \cref{fig:natded-heyting} can also be glossed in the language of ``proof strategies''.
+For instance, $\meetI$ says that ``to prove $A\meet B$, it suffices to prove $A$ and $B$ separately'', while $\ToE$ says that ``if we know $A\To B$, and we also know $A$, then we can conclude $B$'' (the rule of \textit{modus ponens}).
+We encourage the reader to similarly gloss the other rules.
+
+While it is arguable whether this \emph{exactly} mirrors the process of informal reasoning, it certainly has a close kinship with it --- much closer than the production of tautologies by checking all possible truth assignments.
+In particular, it includes one essential aspect of informal reasoning: the ability to \emph{reason under a temporary assumption} and then ``discharge'' that assumption in reaching some other conclusion.
+This sort of \emph{hypothetical reasoning} is central to everyday mathematics, so the fact that it also appears in natural deduction logic is a strong argument in favor of the ``naturalness'' of the latter.
+
+This is the real origin of the name ``natural deduction''.
+In fact, historically, this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
+Other systems of formal logic, such as ``Hilbert-style calculi'' (see \cref{ex:hilbert-calculus}), though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
+
+Now, it may seem that the logical expressivity of the natural deduction for Heyting algebras is lacking because there is no operation corresponding to \emph{negation}.
+However, we can do pretty well by defining $\neg A$ to mean $A\To\bot$, so that its rules are
+\begin{mathpar}
+  \inferrule{\Gamma,A\types\bot}{\Gamma\types \neg A}\and
+  \inferrule{\Gamma\types \neg A \\ \Gamma\types A}{\Gamma\types \bot}
+\end{mathpar}
+In other words, to prove $\neg A$, it suffices to show that assuming $A$ leads to a contradiction, while if we have both $\neg A$ and $A$ we obtain a contradiction.
+Using these rules, here is a derivation of one of ``de Morgan's laws'' as a tautology:
+\begin{mathpar}
+  \small
   \inferrule*{
     \inferrule*{
       \inferrule*{\inferrule*{
-          \inferrule*{ }{(A\join B)\To\bot \types (A\join B)\To\bot}\\
-          \inferrule*{\inferrule*{ }{A\types A}}{A\types A\join B
-          }}{(A\join B)\To\bot,A \types \bot
-        }}{(A\join B)\To\bot \types A\To\bot}\\
-      \inferrule*{\inferrule*{
-          \inferrule*{ }{(A\join B)\To\bot \types (A\join B)\To\bot}\\
-          \inferrule*{\inferrule*{ }{B\types B}}{B\types A\join B
-          }}{(A\join B)\To\bot,B \types \bot
-        }}{(A\join B)\To\bot \types B\To\bot}
-      }{(A\join B)\To\bot \types (A\To\bot)\meet (B\To\bot)}
-  }{()\types ((A\join B)\To\bot)\To((A\To\bot)\meet (B\To\bot))}
+        \inferrule*{ }{\neg(A\join B),A \types \neg(A\join B)}\\
+        \inferrule*{\inferrule*{ }{\neg(A\join B),A \types A}}{\neg(A\join B),A \types A\join B}
+        }{\neg(A\join B),A \types \bot
+        }}{\neg(A\join B) \types \neg A}\\
+      \text{(and dually)}
+      }{\neg(A\join B) \types \neg A\meet \neg B}
+  }{()\types \neg(A\join B)\To(\neg A\meet \neg B)}
 \end{mathpar}
+% VERSION WITH PRIMITIVE STRUCTURAL RULES
+% \begin{mathpar}
+%   \tiny
+%   \let\mymeet\meet
+%   \def\meet{\mathord{\mymeet}}
+%   \let\myjoin\join
+%   \def\join{\mathord{\myjoin}}
+%   \let\myTo\To
+%   \def\To{\mathord{\myTo}}
+%   \inferrule*{
+%     \inferrule*{
+%       \inferrule*{\inferrule*{
+%           \inferrule*{ }{(A\join B)\To\bot \types (A\join B)\To\bot}\\
+%           \inferrule*{\inferrule*{ }{A\types A}}{A\types A\join B
+%           }}{(A\join B)\To\bot,A \types \bot
+%         }}{(A\join B)\To\bot \types A\To\bot}\\
+%       \inferrule*{\inferrule*{
+%           \inferrule*{ }{(A\join B)\To\bot \types (A\join B)\To\bot}\\
+%           \inferrule*{\inferrule*{ }{B\types B}}{B\types A\join B
+%           }}{(A\join B)\To\bot,B \types \bot
+%         }}{(A\join B)\To\bot \types B\To\bot}
+%       }{(A\join B)\To\bot \types (A\To\bot)\meet (B\To\bot)}
+%   }{()\types ((A\join B)\To\bot)\To((A\To\bot)\meet (B\To\bot))}
+% \end{mathpar}
 However, not \emph{every} tautology can be derived this way.
-In particular, $\neg\neg A \To A$ (the ``law of double negation'') and $P\join \neg P$ (the ``law of excluded middle'') are not derivable, because although they hold in $\tv$, their analogues fail to hold in other Heyting algebras.
+In particular, $\neg\neg A \To A$ (the ``law of double negation'') and $A\join \neg A$ (the ``law of excluded middle'') are not derivable, because although they hold in $\tv$, their analogues fail to hold in other Heyting algebras.
 (In fact, they hold in a Heyting algebra exactly when that Heyting algebra is a \emph{Boolean} algebra.)
 Thus, although we have something that ``looks like logic'', it is not exactly classical logic.
 
-As we will see in \cref{chap:polycats}, it is possible to enhance this type theory so that it \emph{can} prove all classical tautologies, by restoring the left/right and $\meet/\join$ symmetries.
+One way to resolve this is to simply add another rule, such as the following for ``proof by contradiction'':
+\begin{mathpar}
+  \inferrule*{\Gamma,\neg A\types \bot}{\Gamma\types A}
+\end{mathpar}
+(The rule for $\neg A$ derived from $\To$ is the form of ``proof by contradiction'' where we prove a statement is \emph{false} by assuming it is true and deriving a contradiction; here we are considering the opposite form where we prove a statement to be \emph{true} by assuming it to be false and deriving a contradiction.)
+This mirrors the process of informal reasoning in classical mathematics fairly closely, though it is a bit problematic from a type-theoretic perspective (e.g.\ it fails the principles enunciated in \cref{sec:why-multicats}).
+As we will see in \cref{chap:polycats}, one can also forumlate a well-behaved type theory that it \emph{can} prove all classical tautologies, by restoring the left/right and $\meet/\join$ symmetries.
+
 However, it is also valuable to observe that conversely, if we are willing to generalize our notion of ``logic'', we obtain something much more generally applicable.
 Indeed, this is really the whole point of categorical logic, as put forward in \cref{sec:intro}: we can apply ``set-like'' reasoning to objects of arbitrary categories as long as we are careful about what sort of reasoning we use.
 
 So far, we have applied this principle mainly to equational reasoning about different kinds of terms.
-However, we now have a type theory that is powerful enough to codify significant amounts of mathematical reasoning (though not yet anything involving quantifiers; that will come in \cref{chap:fol}).
+However, we now have a type theory that is powerful enough to codify significant amounts of mathematical reasoning (though not yet anything involving quantifiers such as ``for all'' and ``there exists''; that will come in \cref{chap:fol}).
 Thus, we can lift our notion of ``generalized logic'' back to informal mathematical reasoning.
 It takes a bit of practice to learn to write informal mathematical proofs that could (at least in principle) be codified in such a generalized logic, but it is eminently possible.
 The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra'' (whereas ordinary mathematical reasoning is only valid in Boolean algebras).
@@ -3941,7 +4161,7 @@ The ``generalized logic'' corresponding to Heyting algebras is called \textbf{in
 While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them.
 The point is simply that we make our mathematics more general by generalizing our logic, and this is the logic that corresponds naturally to cartesian closed lattices, which are certainly a categorically natural notion.
 
-The observation that the logical operations of ``and'', ``or'', ``if-then'', and so on in the poset $\tv$ have the same universal properties (and hence can be represented by the same type operations) as the operations $A\times B$, $A+B$, $B^A$ in the category \bSet has a distinguished pedigree and many names: \emph{propositions as types}, \emph{proofs as terms}, or the \emph{Curry--Howard correspondence}.
+The observation that the logical operations of ``and'', ``or'', ``if-then'', and so on in the poset $\tv$ have the same universal properties (and hence can be represented by the same type operations) as the operations $A\times B$, $A+B$, $B^A$ in the category \bSet has a distinguished pedigree and many names: \emph{propositions as types}, \emph{proofs as terms}, or the \emph{Curry--Howard correspondence} (see~\cite{wadler:pat} for some history).
 As we will see, this correspondence is also central to the use of dependent type theory as a foundation for mathematics.
 Some ``constructivist'' mathematicians have argued that this correspondence should determine the \emph{meanings} of the logical operations in terms of proofs --- that is, a proof of ``$P$ and $Q$'' should be a pair $(p,q)$ where $p$ is a proof of $P$ and $q$ is a proof of $Q$; a proof of ``if $P$ then $Q$'' should be a function transforming any proof of $P$ into a proof of $Q$; and so on.
 This is sometimes called the \emph{Brouwer--Heyting--Kolmogorov (BHK) interpretation}.
@@ -3987,7 +4207,7 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   Prove \cref{thm:semicart-multicat-repr,thm:cart-multicat-repr} using our posetal type theories.
   Specifically:
   \begin{enumerate}
-  \item If we have exchange and weakening, prove that $\one \cong \unit$.
+  \item If we have exchange and weakening, prove that $\one \cong \top$.
   \item If we have exchange, weakening, and contraction, prove that $A\tensor B \cong A\times B$.
   \end{enumerate}
 \end{ex}
@@ -4037,6 +4257,37 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{enumerate}
 \end{ex}
 
+\begin{ex}\label{ex:hilbert}
+  Another way of deriving tautologies is called a \textbf{Hilbert system}.
+  A Hilbert system can be formulated as a sort of type theory where the judgments all have empty context, i.e.\ are of the form $\types A$ where $A$ is a propositional formula.
+  Instead of the ``modular'' left/right rules of sequent calculus or the introduction/elimination rules of natural deduction, where the rules for each connective do not refer to any other connective, a Hilbert system gives a special place to implication $\To$.
+  The \emph{only} rule with premises\footnote{Hilbert systems for more complicated logics have one or two more rules with premises, but in general there are very few.} is the empty-context form of $\ToE$, \emph{modus ponens}:
+  \[ \inferrule{\types A\To B \\ \types A}{\types B} \]
+  The behavior of all other connectives is specified by \emph{axioms} (rules with no premises, other than the well-formedness of the formulas appearing in them).
+  For instance, we complete the description of $\To$ with the following axioms:
+  \begin{mathpar}
+    \inferrule{\types A\type}{\types A\To A}\and
+    \inferrule{\types A\type \\ \types B\type}{\types A\To (B\to A)}\and
+    \inferrule{\types A\type \\ \types B\type \\ \types C\type}{\types (A\To (B\To C)) \To ((A\To B)\To (A\To C))}
+  \end{mathpar}
+  The axioms for the remaining connectives are (omitting the obvious premises and the $\types$):
+  \begin{mathpar}
+    A\To (B\To (A\meet B))\and
+    (A\meet B)\To A\and
+    (A\meet B)\To B\\
+    A\To (A\join B)\and
+    B\To (A\join B)\and
+    (A\To C)\To ((B\To C) \To ((A\join B)\To C))\\
+    A\To \top\and
+    \bot \To A
+  \end{mathpar}
+  Prove that this Hilbert system derives exactly the same tautologies as the natural deduction for Heyting algebras.
+
+  (The main reason for using a Hilbert system seems to be that it \emph{never} changes the context.
+  This makes certain metatheoretic arguments easier, but at the cost of greater distance from informal mathematics, since as we have remarked the latter gives a central place to hypothetical reasoning.
+  It should also be noted that the symbol $\types$ is often used differently in the context of Hilbert systems; rather than $\types$ being part of each judgment, the notation ``$\Gamma\types A$'' means that we can derive $A$ (that is, $\types A$ in our notation) in the Hilbert system augmented by all the formulas in $\Gamma$ as additional axioms.)
+\end{ex}
+
 \begin{ex}\label{ex:cocartesian-typetheory}
   Is there a well-behaved type theory (i.e.\ having admissible cut and an initiality theorem) corresponding to the (posetal version of the) ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
   \textit{(As of this writing, the answer is not known to the author.)}
@@ -4051,58 +4302,13 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
 We now move back up the ladder from posets to categories.
 In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible.
 Otherwise our derivations would become polluted with applications of these rules, and our terms (which, as ever, we want to be simply syntax for derivations) would be likewise quite messy-looking.
+We have already seen in \cref{thm:heyting-strucadm} that the structural rules can be made admissible in the cartesian case where we want all of them, so we consider that case first.
+In addition to being the easiest, this is probably also the most commonly used case.
 
-In this section we focus on the case of cartesian multicategories when \fS contains all functions, so that we want all three structural rules (exchange, weakening, and contraction).
-This is probably the most commonly used case, and also the easiest.
-One reason it is easier is that $\tensor$ and $\one$ now coincide with $\meet$ and $\top$, so we can omit the former pair.
-A second reason it is easier is the following lemma.
-
-\begin{lem}\label{thm:cart-constctx}
-  In the presence of exchange, contraction, and weakening, the following rules are inter-derivable with the rules $\bot E$, $\joinE$, $\homE$ from \cref{fig:natded-logic}.
-  \begin{mathpar}
-    \inferrule{\types A\type \\ A\in \Gamma}{\Gamma\types A}\;\idfunc'
-    \and
-    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types A_1 \\ \dots \\ \Gamma \types A_n}{\Gamma\types B}\;f'
-    \and
-    \inferrule{\Gamma\types \bot}{\Gamma\types C}\;\bot E'
-    \and
-    \inferrule{
-      \Gamma\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
-    }{\Gamma \types C}\;\joinE'
-    \and
-    \inferrule{\Gamma\types A\hom B \\ \Gamma\types A}{\Gamma\types B}\;\homE'
-  \end{mathpar}
-\end{lem}
-\begin{proof}
-  Here are the referenced rules from \cref{fig:natded-logic}:
-  \begin{mathpar}
-    \inferrule{\types A\type}{A\types A}\;\idfunc
-    \and
-    \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma_1\types A_1 \\ \dots \\ \Gamma_n \types A_n}{\Gamma_1,\dots,\Gamma_n\types B}\;f
-    \and
-    \inferrule{\Psi\types \bot}{\Gamma,\Psi\types C}\;\bot E
-    \and
-    \inferrule{
-      \Psi\types A\join B \\ \Gamma,A \types C \\ \Gamma,B\types C
-    }{\Gamma,\Psi \types C}\;\joinE
-    \and
-    \inferrule{\Gamma\types A\hom B \\ \Psi\types A}{\Gamma,\Psi\types B}\;\homE
-  \end{mathpar}
-  Clearly $\idfunc$ is a special case of $\idfunc'$, while conversely $\idfunc'$ can be derived from $\idfunc$ followed by weakening.
-  And $\bot E'$ is a special case of $\bot E$, while $f'$ and $\joinE'$ and $\homE'$ can be derived from $f$ and $\joinE$ and $\homE$ followed by exchange and contraction to turn contexts like $\Gamma,\Gamma$ into $\Gamma$.
-  Conversely, given the premises of any of these ``unprimed'' rules, we can weaken each $\Gamma$ and $\Psi$ to $\Gamma,\Psi$ (or $\Gamma_i$ to $\Gamma_1,\dots,\Gamma_n$ in the case of $f$), then apply the primed version of that rule to deduce the conclusion of the unprimed rule.
-\end{proof}
-
-If we replace the rules in question by their modified versions, then all the rules will have the property that the context of the conclusion is arbitrary, while the context of the premises differ from the context of the conclusion at most by addition of a new type.
-In other words, as we proceed \emph{down} a derivation tree, we only ever \emph{remove} types from the context; and dually as we proceed \emph{up} a tree we only ever \emph{add} to the context.
-This will enable us to ``push the structural rules up'' past all primitive rules until we get to $\idfunc$, thereby making them admissible.
-
-\subsection{Simply typed $\lambda$-calculus}
-\label{subsec:stlc}
-
-Of course, before embarking on the formal study of this theory, we introduce terms for the derivations, as shown in \cref{fig:stlc}.
-Since we are back in the realm of categories rather than posets, we return to the notations $\times,\unit,+,\zero$ instead of $\meet,\top,\join,\bot$.
-In a cartesian situation we also write $A\to B$ instead of $A\hom B$; this has the pleasing consequence that the term syntax $M:A\to B$ looks the same as the common mathematical notation for functions.
+We begin by introducing terms for the rules from \cref{sec:heyting-algebras}, as shown in \cref{fig:stlc}.
+As in \cref{sec:heyting-algebras}, we omit $\tensor$ and $\unit$ since they coincide with $\meet$ and $\top$.
+We also switch back to categorical notations $\times,\unit,+,\zero$ instead of $\meet,\top,\join,\bot$.
+We also write $A\to B$ instead of $A\hom B$; this has the pleasing consequence that the term syntax $M:A\to B$ looks the same as the common mathematical notation for functions.
 
 \begin{figure}
   \centering
@@ -4140,11 +4346,11 @@ Most of the term annotations should be familiar from \cref{sec:multicat-prod-cop
 The rule $\toI$ introduces a new kind of term, a \textbf{$\lambda$-abstraction}.
 Since the variable $x$ appears in the premise but not the conclusion, it must be bound in the resulting term; there is nothing else to say, so we simply prefix the letter $\lambda$ to indicate the rule.
 Intuitively, we think of $\lambda x.M$ as meaning ``the function that takes one argument, called $x$, and returns the value of $M$ (which includes $x$)''.
-For instance, $\lambda x.x^2$ denotes the function that squares its argument, $\lambda x.x+3$ denotes the function that adds three to its argument, and so on.
+For instance, $\lambda x.x^2$ denotes the function that squares its argument, $\lambda x.(x+3)$ denotes the function that adds three to its argument, and so on.
 Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus (STLC) with products and coproducts}.
 (The unqualified ``STLC'' would omit the rules for $\times,\unit,+,\zero$.)
 
-The rule $\toE$ simply pairs up two terms, one of which has type $A\to B$ and one of which has type $A$.
+The rule $\toE$ simply ``pairs up'' two terms, one of which has type $A\to B$ and one of which has type $A$.
 Intuitively, we are ``applying'' a function $M:A\to B$ to an argument $N:A$.
 Technically there ought also to be a label indicating the rule being applied to pair these terms up, such as $\fapp(M,N)$.
 However, any system of notation has room for \emph{one} operation denoted by simple juxtaposition (e.g.\ in high-school algebra it is multiplication, while in group theory it is the group operation), and the importance of the type operation $\to$ leads us to choose $\toE$ for this honor in type theory.
@@ -4158,23 +4364,16 @@ Most mathematicians write $f(a)$ for the application of a function $f$ to an arg
   Since the premises of all rules have the same context as the conclusion, perhaps with a type added, there is no ambiguity about how to split things up, and hence no need for the uglier annotations used in \cref{sec:multicat-prod-coprod}.
 \end{proof}
 
-Now we are ready to prove the promised admissibility.
-
 \begin{lem}\label{thm:stlc-strucadm}
   The structural rules of exchange, contraction, and weakening are admissible in the simply typed $\lambda$-calculus.
   Moreover, they make the derivations into a cartesian multigraph (i.e.\ they are functorial as in \cref{defn:fS-multicategory}).
 \end{lem}
 \begin{proof}
-  It will suffice to prove admissibility of the following rule, for any function $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$:
+  The proof is essentially the same as \cref{thm:heyting-strucadm}, carrying along terms and variables; we prove the following rule, for any function $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$:
   \begin{mathpar}
-    \inferrule*{y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m} \types \sigma^*M:B}{x_1:A_1,\dots,x_n:A_n \types M:B}
+    \inferrule*{y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m} \types M:B}{x_1:A_1,\dots,x_n:A_n \types \sigma^*M:B}
   \end{mathpar}
-  This is once again almost immediate from the fact that the premises of all rules have the same context as the conclusion, perhaps with a type added: regardless of how a derivation of ${y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m} \types \sigma^*M:B}$ ends, we can apply the inductive hypothesis to its premises (perhaps passing to $\sigma\sqcup\idfunc : \{1,\dots,m+1\} \to \{1,\dots,n+1\}$) and then re-apply the final rule.
-
-  The only exception is the rule $\idfunc$, for which we observe that if $x:A$ appears in ${y_1:A_{\sigma 1},\dots,y_m:A_{\sigma m}}$, then $x=y_j$ for some uniquely determined $1\le j\le m$.
-  Hence also $A=A_j$, and so $A=A_i$ for some $1\le i\le n$ (namely, $i=\sigma j$).
-  Thus, we can also apply the same rule to obtain ${x_1:A_1,\dots,x_n:A_n \types x_i:A_i}$.
-
+  by pushing up through all rules until we get to $\idfunc$.
   Regarded as an operation on terms, $\sigma^*$ is defined by the clause
   \begin{align*}
     \sigma^*y_j &= x_{\sigma j}\\
@@ -4187,7 +4386,7 @@ Now we are ready to prove the promised admissibility.
   A similar induction proves that this operation is functorial, yielding a cartesian multigraph.
 \end{proof}
 
-In fact, it is easy to prove that if $\sigma$ is injective --- that is, it is composed of exchange and weakening only --- and if we choose variables $y_j = x_{\sigma j}$ (which is only possible if $\sigma$ is injective), then in fact $\sigma^*M = M$.
+In fact, if $\sigma$ is injective --- that is, it is composed of exchange and weakening only --- and if we choose variables $y_j = x_{\sigma j}$ (which is only possible if $\sigma$ is injective), then in fact $\sigma^*M = M$.
 For instance, we have
 \[ x:A, y:B \types \pair x y : A\times B\]
 and by exchange and weakening we can obtain also
@@ -4198,15 +4397,15 @@ This does not contradict ``terms are derivations'', because we only require a te
 \begin{rmk}
   As remarked briefly at the beginning of the section, the admissibility of the structural rules is central to having a clean theory of terms and a clean proof of the initiality theorem.
   If we took the structural rules as primitive, then to maintain ``terms as derivations'' we would have to include information about the structural rules in terms, for instance annotating the derivation
-  \[ \inferrule*{\inferrule*{A\types A \\ B\types B}{A,B\types A\tensor B}}{B,A\types A\tensor B}\]
-  with a term like $y:B,x:A\types \sigma^*\tpair{x}{y}:A\tensor B$, distinguishing it from the \emph{different} derivation
-  \[ \inferrule*{B\types B \\ A\types A}{B,A\types A\tensor B}\]
-  that we could write as $y:B,x:A\types \tpair{x}{y}:A\tensor B$.
+  \[ \inferrule*{\inferrule*{A,B\types A \\ A,B\types B}{A,B\types A\times B}}{B,A\types A\times B}\]
+  with a term like $y:B,x:A\types \sigma^*\pair{x}{y}:A\times B$, distinguishing it from the \emph{different} derivation
+  \[ \inferrule*{B,A\types B \\ B,A\types A}{B,A\types A\times B}\]
+  that we could write as $y:B,x:A\types \pair{x}{y}:A\times B$.
   But clearly these two derivations ought to have the same term.
 
-  A more common approach is to give them the same term, essentially making the structural rules invisible in terms.
+  Most authors who attempt to take structural rules as primitive actually do use the same term for both of these, essentially making the structural rules invisible in terms.
   This makes for cleaner terms, but it means that to prove the initiality theorem using terms, after inducting over derivations we have to prove that the interpretation of a term is independent of its derivation.
-  This is difficult and tedious, with the result that most authors leave it to the reader or neglect to mention it altogether.
+  This is difficult and tedious, and hence often left to the reader or left unmentioned altogether.
   Making the structural rules admissible avoids both horns of the dilemma.
 \end{rmk}
 
@@ -4315,48 +4514,6 @@ A cartesian multigraph contains operations and equations, so to use it as base d
   As always, this works because the rules for type operations (including the new one $\to$) are defined to mirror those of categorical universal properties.
 \end{proof}
 
-
-\subsection{Natural deduction, revisited}
-\label{sec:natded-again}
-
-% [TODO: Where to put this?]
-
-Finally, let us end this section by explaining the terminology ``natural deduction''.
-We return to the posetal type theory of Heyting algebras, but with the rules formulated as in \cref{thm:cart-constctx}, so that all the structural rules can be admissible rather than primitive.
-Now we omit the contexts ``$\Gamma\types$'' from all judgments in a derivation tree, instead writing simply the consequent $A$.
-In place of the $\idfunc$ rule deriving $\Gamma\types A$, we write simply ``$A$'' without any justification, and call it a \emph{hypothesis}.
-Finally, when a type $A$ is removed from the context on our way down the tree, we cross off that hypothesis everywhere that it appears above, and say that the hypothesis has been \emph{discharged}.
-
-For instance, the derivation of the distributive law in \cref{sec:logic} would be written in this style as
-\begin{mathpar}
-  \inferrule*[Right=$\ToI$]{
-    \inferrule*[Right=$\joinE$]{
-      \inferrule*{\cancel{A\meet (B\join C)}}{B\join C}\\
-      \inferrule*{\inferrule*{
-        \inferrule*{\cancel{A\meet (B\join C)}}{A}\\
-        \cancel{B}
-        }{A\meet B}}{(A\meet B)\join (A\meet C)}\\
-      \inferrule*{\inferrule*{
-        \inferrule*{\cancel{A\meet (B\join C)}}{A}\\
-        \cancel{C}
-        }{A\meet C}}{(A\meet B)\join (A\meet C)}\\
-    }{(A\meet B)\join (A\meet C)}
-  }{(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))}
-\end{mathpar}
-Note that there is some ambiguity; it is not obvious from looking at the derivation which rule caused which hypothesis to be discharged.
-In the above example, the hypotheses $B$ and $C$ are discharged by the $\joinE$ rule, while the hypothesis ${A\meet (B\join C)}$ (everywhere it appears) is discharged by the $\ToI$ rule.
-Sometimes people annotate the discharges in some way to indicate this.
-
-However, the real point of a representation like this is that the \emph{process of writing it}, from the top down, is supposed to mirror the process of informal reasoning.
-First we assume $A\meet (B\join C)$, and deduce from it $B\join C$.
-Then we use $B\join C$ by assuming $B$ and $C$ in two separate cases (sub-derivations), and in each of those cases we separately deduce ${(A\meet B)\join (A\meet C)}$.
-Thus, completing those cases (and ending our assumptions of $B$ and $C$) we have $(A\meet B)\join (A\meet C)$.
-Finally, ending our assumption of $A\meet (B\join C)$, we have $(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))$.
-
-At least one important aspect of informal reasoning is certainly present in this setup: the ability to reason under a temporary assumption and then ``discharge'' that assumption in reaching some other conclusion.
-This sort of \emph{hypothetical reasoning} is central to everyday mathematics, so the fact that it also appears in natural deduction logic is a strong argument in favor of the ``naturalness'' of the latter.
-This is the real origin of the name ``natural deduction''; historically, this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
-Other systems of formal logic, such as ``Hilbert-style calculi'', though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
 
 \subsection*{Exercises}
 
@@ -4532,7 +4689,7 @@ From this point onwards the theory looks almost exactly like that of \cref{sec:m
 We leave the details to the reader (\cref{ex:smc}).
 
 In particular, because we have ensured that terms uniquely represent derivations, we can prove the initiality theorem as usual by a simple induction over derivations.
-(To the author's knowledge the use of shuffles for this purpose is an improvement over the existing literature.
+To the author's knowledge the use of shuffles for this purpose is an improvement over the existing literature.
 Most references on ``linear $\lambda$-calculus, such as~\cite{bbdph:linear-lambdacalc}, either break the ``terms are derivations'' principle (thereby incurring, and usually omitting to satisfy, an obligation to prove that definitions by induction over derivations depend only on the term), or fail to include any permutations in the rules (thereby not producing a symmetric multicategory), or take exchange as primitive (thereby introducing extra redundancy that must be, but is not usually, removed by additional clauses in the equivalence relation).
 
 One sometimes also finds remarks that the context in a linear type theory can be treated as a ``finite multiset'' (a ``set that can contain some elements more than once'').
