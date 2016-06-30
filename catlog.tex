@@ -1154,7 +1154,7 @@ The initiality theorems we care about, however, show that these initial objects 
   This temptation should be resisted.
   At best, it leads to neglect of some of the most important and interesting features of type theory, such as cut-elimination, which holds only in free structures.
   At worst, it leads to nonsense, for central type-theoretic notions such as ``bound variable'' (see \cref{sec:catcoprod}) \emph{only make sense} in free structures.
-  We will see in \cref{sec:presentations} that we can still use type theory to ``present'' categorical objects that are not themselves free; but the syntax of types and terms/derivations must still itself be freely generated.
+  We will see in \cref{sec:presentations} that we can still use type theory to ``present'' categorical objects that are not themselves free (at least, not in the usual sense); but the syntax of types and terms/derivations must still itself be freely generated.
 \end{rmk}
 
 
@@ -1449,7 +1449,7 @@ The proof is noticeably simpler than that of \cref{thm:seqcalc-mslat-cutadm}; we
 This is essentially due to the fact that all the rules of this theory involve an \emph{arbitrary} type $X$ on the left (rather than one built using operations such as $\meet$).
 Thus, instead of the rules of sequent calculus that introduce operations like $\meet$ and $\top$ on the left and right, we have rules like $\top I$ and $\meetI$ that introduce them on the right, and also rules that \emph{eliminate} them on the right like $\meetE1$ and $\meetE2$.
 These properties are characteristic of \emph{natural deduction} theories.
-(Later on, in \cref{sec:natded-again}, we will be able to give a more convincing explanation of the origin of the phrase ``natural deduction''.)
+(Later on, in \cref{sec:natded-logic}, we will be able to give a more convincing explanation of the origin of the phrase ``natural deduction''.)
 
 \begin{rmk}
   Because the proof of cut admissibility for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
@@ -1616,7 +1616,7 @@ By contrast, in a sequent calculus we have ``only introduction rules'' (of both 
   In \cref{sec:intro} we mentioned that by presenting free categorical structures without explicit reference to composition, type theory enables us to \emph{define} composition in such a way as to ensure that various desirable properties hold as exact equalities.
   The point here is just that sequent calculus and natural deduction make \emph{different} choices of which properties to ensure by their definitions of composition.
   Roughly speaking, sequent calculus chooses to make the \emph{defining equations} of universal properties hold exactly (e.g.\ the composites of a paired morphism $\pair f g : X \to A\times B$ with $\pi_1$ and $\pi_2$ are exactly $f$ and $g$ respectively); this is what the ``principal case'' of its cut-admissibility proof does.
-  On the other hand, natural deduction chooses to make the \emph{naturality}\footnote{This is not actually the origin of the term ``natural deduction'' --- see \cref{sec:natded-again} for that --- but it serves as a useful mnemonic.} of universal properties hold exactly; the equality between the two distinct sequent calculus derivations above expresses the naturality of pairing $\pair f g : X \to A\times B$ with respect to precomposition by $\pi_1$.
+  On the other hand, natural deduction chooses to make the \emph{naturality}\footnote{This is not actually the origin of the term ``natural deduction'' --- see \cref{sec:natded-logic} for that --- but it serves as a useful mnemonic.} of universal properties hold exactly; the equality between the two distinct sequent calculus derivations above expresses the naturality of pairing $\pair f g : X \to A\times B$ with respect to precomposition by $\pi_1$.
 \end{rmk}
 
 In fact, in the simple case of categories with products, there are tricks enabling us to eliminate {both} kinds of redundancy, and thereby do without any ``$\equiv$'' for both the sequent calculus and the natural deduction.
@@ -4087,7 +4087,7 @@ This sort of \emph{hypothetical reasoning} is central to everyday mathematics, s
 
 This is the real origin of the name ``natural deduction''.
 In fact, historically, this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
-Other systems of formal logic, such as ``Hilbert-style calculi'' (see \cref{ex:hilbert-calculus}), though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
+Other systems of formal logic, such as ``Hilbert-style calculi'' (see \cref{ex:hilbert}), though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
 
 Now, it may seem that the logical expressivity of the natural deduction for Heyting algebras is lacking because there is no operation corresponding to \emph{negation}.
 However, we can do pretty well by defining $\neg A$ to mean $A\To\bot$, so that its rules are
@@ -4154,6 +4154,8 @@ So far, we have applied this principle mainly to equational reasoning about diff
 However, we now have a type theory that is powerful enough to codify significant amounts of mathematical reasoning (though not yet anything involving quantifiers such as ``for all'' and ``there exists''; that will come in \cref{chap:fol}).
 Thus, we can lift our notion of ``generalized logic'' back to informal mathematical reasoning.
 It takes a bit of practice to learn to write informal mathematical proofs that could (at least in principle) be codified in such a generalized logic, but it is eminently possible.
+(It is much \emph{more} possible because, as discussed above, our ``generalized logic'' is expressed in a style that already closely mirrors ordinary mathematical reasoning; we simply have to learn which familiar styles of argument are valid in what situations.)
+
 The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra'' (whereas ordinary mathematical reasoning is only valid in Boolean algebras).
 Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra (\cref{ex:frames}).
 
@@ -4187,7 +4189,7 @@ The name ``linear logic'' comes from the same intuition as our use of ``linearit
 The name ``affine logic'' is similarly inspired by the fact that while a linear transformation $T(\vec v) = A\vec v$ must use its argument exactly once in each term, an affine transformation $T(\vec v) = A\vec v + \vec b$ also has terms that do not use its argument at all.
 Both of these logics are primarily studied by computer scientists; the distinction between $\tensor$ and $\meet$ can be interpreted in terms of ``resource usage'' (but that is far beyond our scope here).
 
-Finally, ``relevance logic'' was invented by philosophers seeking to avoid certain facts about implication that they regarded as ``paradoxical'', such as $A\To (B\To A)$.
+Finally, ``relevance logic'' was invented by some philosophers seeking to avoid certain facts about implication that they regarded as ``paradoxical'' because their ``if'' parts are not ``relevant'' to their ``then'' parts, such as $A\To (B\To A)$.
 The straightforward derivation of this tautology in our type theory requires weakening:
 \begin{mathpar}
   \inferrule*{\inferrule*{\inferrule*[Right=weakening]{A\types A}{A,B\types A
@@ -4283,8 +4285,8 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{mathpar}
   Prove that this Hilbert system derives exactly the same tautologies as the natural deduction for Heyting algebras.
 
-  (The main reason for using a Hilbert system seems to be that it \emph{never} changes the context.
-  This makes certain metatheoretic arguments easier, but at the cost of greater distance from informal mathematics, since as we have remarked the latter gives a central place to hypothetical reasoning.
+  (The main reasons for using a Hilbert system seem to be that it \emph{never} changes the context and has very few rules.
+  This sometimes makes metatheoretic arguments easier, but at the cost of greater distance from informal mathematics, since as we have remarked the latter gives a central place to hypothetical reasoning.
   It should also be noted that the symbol $\types$ is often used differently in the context of Hilbert systems; rather than $\types$ being part of each judgment, the notation ``$\Gamma\types A$'' means that we can derive $A$ (that is, $\types A$ in our notation) in the Hilbert system augmented by all the formulas in $\Gamma$ as additional axioms.)
 \end{ex}
 
@@ -4350,7 +4352,7 @@ For instance, $\lambda x.x^2$ denotes the function that squares its argument, $\
 Because of the importance of this operation, the type theory of \cref{fig:stlc}, which we expect to correspond to cartesian closed categories with coproducts, is called the \textbf{simply typed $\lambda$-calculus (STLC) with products and coproducts}.
 (The unqualified ``STLC'' would omit the rules for $\times,\unit,+,\zero$.)
 
-The rule $\toE$ simply ``pairs up'' two terms, one of which has type $A\to B$ and one of which has type $A$.
+The term annotation for the rule $\toE$ simply ``pairs up'' two terms, one of which has type $A\to B$ and one of which has type $A$.
 Intuitively, we are ``applying'' a function $M:A\to B$ to an argument $N:A$.
 Technically there ought also to be a label indicating the rule being applied to pair these terms up, such as $\fapp(M,N)$.
 However, any system of notation has room for \emph{one} operation denoted by simple juxtaposition (e.g.\ in high-school algebra it is multiplication, while in group theory it is the group operation), and the importance of the type operation $\to$ leads us to choose $\toE$ for this honor in type theory.
@@ -4401,11 +4403,10 @@ This does not contradict ``terms are derivations'', because we only require a te
   with a term like $y:B,x:A\types \sigma^*\pair{x}{y}:A\times B$, distinguishing it from the \emph{different} derivation
   \[ \inferrule*{B,A\types B \\ B,A\types A}{B,A\types A\times B}\]
   that we could write as $y:B,x:A\types \pair{x}{y}:A\times B$.
-  But clearly these two derivations ought to have the same term.
-
-  Most authors who attempt to take structural rules as primitive actually do use the same term for both of these, essentially making the structural rules invisible in terms.
-  This makes for cleaner terms, but it means that to prove the initiality theorem using terms, after inducting over derivations we have to prove that the interpretation of a term is independent of its derivation.
-  This is difficult and tedious, and hence often left to the reader or left unmentioned altogether.
+  Clearly these two derivations ought to have the same term.
+  However, if structural rules are primitive, then using the same term for both of them would break the ``terms as derivations'' principle.
+  If we did this, then to prove the initiality theorem using terms, after inducting over derivations we would have to prove that the interpretation of a term is independent of its derivation.
+  This sort of thing is difficult and tedious, and hence often left to the reader or left unmentioned altogether.
   Making the structural rules admissible avoids both horns of the dilemma.
 \end{rmk}
 
@@ -4526,6 +4527,12 @@ A cartesian multigraph contains operations and equations, so to use it as base d
 \label{sec:primrec}
 
 [NNOs, primitive recursion, functional programming, perhaps more general GADTs]
+
+
+\section{$\lambda$-calculus and de Bruijn variables}
+\label{sec:de-bruijn}
+
+[Arise automatically from judgmental contexts]
 
 
 \section{Symmetric monoidal categories}
@@ -4689,8 +4696,7 @@ From this point onwards the theory looks almost exactly like that of \cref{sec:m
 We leave the details to the reader (\cref{ex:smc}).
 
 In particular, because we have ensured that terms uniquely represent derivations, we can prove the initiality theorem as usual by a simple induction over derivations.
-To the author's knowledge the use of shuffles for this purpose is an improvement over the existing literature.
-Most references on ``linear $\lambda$-calculus, such as~\cite{bbdph:linear-lambdacalc}, either break the ``terms are derivations'' principle (thereby incurring, and usually omitting to satisfy, an obligation to prove that definitions by induction over derivations depend only on the term), or fail to include any permutations in the rules (thereby not producing a symmetric multicategory), or take exchange as primitive (thereby introducing extra redundancy that must be, but is not usually, removed by additional clauses in the equivalence relation).
+To the author's knowledge the use of shuffles for this purpose is an improvement over the existing literature: it produces a free symmetric multicategory using nice-looking terms while still maintaining the ``terms are derivations'' principle, so that we can prove the initiality theorem without incurring the (rarely-satisfied) obligation to prove that definitions by induction over derivations depend only on the term.
 
 One sometimes also finds remarks that the context in a linear type theory can be treated as a ``finite multiset'' (a ``set that can contain some elements more than once'').
 Whether this is true depends on what exactly one means by a multiset.
