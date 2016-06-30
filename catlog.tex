@@ -119,24 +119,37 @@
 \def\toI{\mathord{\to}I}
 \def\toE{\mathord{\to}E}
 % 
-\newtheorem*{rep@theorem}{\rep@title}\newcommand{\newreptheorem}[2]{%
-  \newenvironment{rep#1}[1]{%
-    \def\rep@title{\bf #2 \ref{##1}}%
-    \begin{rep@theorem} }%
-    {\end{rep@theorem} } }
-\newreptheorem{ex}{Exercise}
+% Collect exercises at the end of each chapter.  The upshot of this
+% hackery is that we can write \begin{ex}\label{ex:name}...\end{ex} as
+% usual in the text, and then at the end of each chapter
+% write \ChapterExercises to get a re-stated list of all exercises
+% from that chapter (or, more precisely, since the last
+% time \ChapterExercises was run) with the same numbers.
+%
+% NB: Every \begin{ex} MUST be followed immediately by a \label!
+\newtheorem*{rep@theorem}{\rep@title}
+\def\repex#1\endrepexname{%
+  \def\rep@title{\bf Exercise \ref{#1}}
+  \begin{rep@theorem} }
+\def\endrepex{\end{rep@theorem}}
 \def\exaccum{}
-\NewEnviron{ex}[1]{\begin{@ex}\label{#1}\BODY\end{@ex}%
-  \def\name{#1}%
-  %\edef\next{\noexpand\g@addto@macro\noexpand\exaccum{\noexpand\begin{repex}{\name}\BODY\noexpand\end{repex}}}%
-  %\next
-  \g@addto@macro\exaccum{\begin{repex}{#1}}
+\def\exname{}
+\def\get@lab#1\label{\get@@lab}
+\def\get@@lab#1{\gdef\exname{#1}\eat@body}
+\long\def\eat@body#1\end@eat{}
+\NewEnviron{ex}{%
+  \begin{@ex}\BODY\end{@ex}%
+  \ea\get@lab\BODY\end@eat
+  \g@addto@macro\exaccum{\repex}
+  \ea\g@addto@macro\ea\exaccum\ea{\exname}
+  \g@addto@macro\exaccum{\endrepexname}
   \ea\g@addto@macro\ea\exaccum\ea{\BODY}
-  \g@addto@macro\exaccum{\end{repex}}
+  \g@addto@macro\exaccum{\endrepex}
 }{}
 \def\ChapterExercises{\section*{Collected Exercises}
   For convenient reference, we collect the exercises from all sections in this chapter.
-  \exaccum\def\exaccum{}}
+  \bgroup\def\label##1{}\exaccum\egroup%
+  \def\exaccum{}}
 %
 \makeatother
 \begin{document}
@@ -327,19 +340,19 @@ In the next section we will rewind back to the beginning and start with very sim
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:fp-inv-uniq}
+\begin{ex}\label{ex:fp-inv-uniq}
   Prove, using arrows and commutative diagrams, that any two inverse operators for a monoid object in a category with finite products are equal.
 \end{ex}
 
-\begin{ex}{ex:cartmon-bimon-uniq}
+\begin{ex}\label{ex:cartmon-bimon-uniq}
   Prove that in a cartesian monoidal category, every object is a bimonoid in a unique way.
 \end{ex}
 
-\begin{ex}{ex:ccmon-cart}
+\begin{ex}\label{ex:ccmon-cart}
   Show that the category of cocommutative comonoids in a symmetric monoidal category inherits a monoidal structure, and that this monoidal structure is cartesian.
 \end{ex}
 
-\begin{ex}{ex:antipode}
+\begin{ex}\label{ex:antipode}
   Prove, using arrows and commutative diagrams, that any two antipodes for a bimonoid (not necessarily commutative or cocommutative) are equal.
 \end{ex}
 
@@ -1179,14 +1192,14 @@ The initiality theorems we care about, however, show that these initial objects 
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:categories-over}
+\begin{ex}\label{ex:categories-over}
   Let \sM be a fixed category; then we have an induced adjunction between $\bCat/\sM$ and $\bGr/\sM$.
   Describe a cut-free type theory for presenting the free category-over-\sM on a directed-graph-over-\sM, and prove the initiality theorem (the analogue of \cref{thm:category-initial-2}).
   Note that you will have to prove that cut is admissible first.
   \textit{(Hint: index the judgments by arrows in \sM, so that for instance $A\types_\alpha B$ represents an arrow lying over a given arrow $\alpha$ in $\sM$.)}
 \end{ex}
 
-\begin{ex}{ex:cat-2free}
+\begin{ex}\label{ex:cat-2free}
   Category theorists are accustomed to consider \bCat as a 2-category, but our free category $\F\bCat\cG$ only has a 1-categorical universal property, expressed by the 1-categorical adjunction between $\bCat$ and $\bGr$.
   It is not immediately obvious how it could be otherwise, since unlike \bCat, \bGr is only a 1-category; but there is something along these lines that we can say.
   \begin{enumerate}
@@ -1196,7 +1209,7 @@ The initiality theorems we care about, however, show that these initial objects 
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:nonfree-noadm}
+\begin{ex}\label{ex:nonfree-noadm}
   Regarding the cut-free type theory for categories as describing a multi-sorted algebraic theory, define a particular algebra for this theory that does not satisfy the cut rule.
   Then define another algebra that does admit a ``cut rule'', but in which the resulting ``composition'' is not associative.
 \end{ex}
@@ -1489,13 +1502,13 @@ Of course, we should also prove the initiality theorem:
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:mslat-idem}
+\begin{ex}\label{ex:mslat-idem}
   Using the unary sequent calculus for meet-semilattices, prove that $A\meet A \cong A$ for any object $A$ of any meet-semilattice.
   (Recall that meet-semilattices are categories with at most one morphism in each hom-set, so for two objects to be isomorphic it suffices to have a morphism in each direction.)
   Then prove the same thing using the natural deduction.
 \end{ex}
 
-\begin{ex}{ex:mslat-monoid}
+\begin{ex}\label{ex:mslat-monoid}
   Using either the sequent calculus or the natural deduction for meet-semilattices (your choice), prove that in any meet-semilattice we have
   \begin{mathpar}
     A\meet \top \cong A\and
@@ -1505,24 +1518,24 @@ Of course, we should also prove the initiality theorem:
   \end{mathpar}
 \end{ex}
 
-\begin{ex}{ex:mslat-invertible}
+\begin{ex}\label{ex:mslat-invertible}
   Prove that the rules $\top R$ and $\meetR$ in the unary sequent calculus for meet-semilattices are \emph{invertible}, in the sense that whenever we have a derivation of their conclusions, we also have a derivation of all their premises.
 \end{ex}
 
-\begin{ex}{ex:jslat}
+\begin{ex}\label{ex:jslat}
   Describe a sequent calculus for \emph{join-semilattices} (posets with a bottom element and binary joins), and prove the admissibility and initiality theorems for it.
   The rules for $\bot$ and $\join$ should be exactly dual to the rules for $\top$ and $\meet$.
 \end{ex}
 
-\begin{ex}{ex:lattices}
+\begin{ex}\label{ex:lattices}
   By putting together the rules for meet- and join-semilattices, describe a sequent calculus for \emph{lattices} (posets with a top and bottom element and binary meets and joins), and prove the admissibility and initiality theorems for it.
 \end{ex}
 
-\begin{ex}{ex:lattices-invertible}
+\begin{ex}\label{ex:lattices-invertible}
   Prove that in your sequent calculus for lattices from \cref{ex:lattices}, the rules $\top R$, $\meet R$, $\bot L$, and $\join L$ are all invertible in the sense of \cref{ex:mslat-invertible}.
 \end{ex}
 
-\begin{ex}{ex:seqcalc-poset-fib}
+\begin{ex}\label{ex:seqcalc-poset-fib}
   A map of posets $P:\sA\to\sM$ is called a \emph{(cloven) fibration} if whenever $b\in\sA$ and $x\le P(b)$, there is a chosen $a\in \sA$ such that $P(a)=x$ and $a\le b$ and moreover for any $c\in\sA$, $c\le b$ and $P(c)\le x$ together imply $c\le a$.
   The object $a$ can be written as $x^*(b)$.
   \begin{enumerate}
@@ -1532,11 +1545,11 @@ Of course, we should also prove the initiality theorem:
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:natded-poset-fib}
+\begin{ex}\label{ex:natded-poset-fib}
   Now describe instead a natural deduction for fibrations over \sM, prove the initiality theorem, and re-prove that $x^*(y^*(b))\cong x^*(b)$ using this theory.
 \end{ex}
 
-\begin{ex}{ex:mslat-fib}
+\begin{ex}\label{ex:mslat-fib}
   Suppose we augment your sequent calculus for fibrations over \sM from \cref{ex:seqcalc-poset-fib} with the following additional rules for ``fiberwise meets''.
   Here $\types A\type_x$ is a judgment indicating that $A$ will be an object of our fibration in the fiber over $x\in\sM$.
   \begin{mathpar}
@@ -1561,18 +1574,18 @@ Of course, we should also prove the initiality theorem:
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:poset-bifib}
+\begin{ex}\label{ex:poset-bifib}
   A map of posets $P:\sA\to\sM$ is called an \emph{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration.
   The analogous operation takes $a\in \sA$ and $P(a)\le y$ to a $b\in \sA$ with $P(b)=y$ and $a\le b$ and a universal property; we write this $b$ as $y_!(a)$.
   We say $P$ is a \emph{bifibration} if it is both a fibration and an opfibration.
   Describe a sequent calculus for bifibrations over a fixed \sM, and prove the initiality theorem.
 \end{ex}
 
-\begin{ex}{ex:poset-bifib-adj}
+\begin{ex}\label{ex:poset-bifib-adj}
   Use your sequent calculus from \cref{ex:poset-bifib} to prove that in a bifibration of posets, if $x\le y$ in $\sM$, we have an adjunction $y_! \dashv x^*$.
 \end{ex}
 
-\begin{ex}{ex:poset-bifib-iso}
+\begin{ex}\label{ex:poset-bifib-iso}
   Use your sequent calculus from \cref{ex:poset-bifib} to prove that in a bifibration of posets, if $x\cong y$ in $\sM$, we have an isomorphism $x_! \cong x^*$ (that is, for any $a$ in the fiber over $y$, we have $x_!(a) \cong x^*(a)$).
 \end{ex}
 
@@ -1806,7 +1819,7 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:catprod-functor-uniq}
+\begin{ex}\label{ex:catprod-functor-uniq}
   Suppose we have
   \begin{mathpar}
     f\in\cG(A,B)\and
@@ -1845,7 +1858,7 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   Write down the terms corresponding to these two derivations and show directly that they are related by $\equiv$.
 \end{ex}
 
-\begin{ex}{ex:catprod-monoidal}
+\begin{ex}\label{ex:catprod-monoidal}
   Use the type theory for categories with products to prove that in any category with products we have
   \begin{mathpar}
     A\times B \cong B\times A\and
@@ -1856,19 +1869,19 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   Note that since we are in categories now rather than posets, to show that two types $A$ and $B$ are isomorphic we must derive $x:A\types M:B$ and $y:B\types N:A$ and also show that their substitutions in both orders are equal (modulo $\equiv$) to identities.
 \end{ex}
 
-\begin{ex}{ex:catprod-subcong}
+\begin{ex}\label{ex:catprod-subcong}
   Prove \cref{thm:catprod-subcong} ($\equiv$ is a congruence in the unary type theory for categories with products).
 \end{ex}
 
-\begin{ex}{ex:catprod-subassoc}
+\begin{ex}\label{ex:catprod-subassoc}
   Prove \cref{thm:catprod-subassoc} (substitution is associative in the unary type theory for categories with products).
 \end{ex}
 
-\begin{ex}{ex:catprod-initial}
+\begin{ex}\label{ex:catprod-initial}
   Prove \cref{thm:catprod-initial} (initiality for the unary type theory for categories with products).
 \end{ex}
 
-\begin{ex}{ex:catfib}
+\begin{ex}\label{ex:catfib}
   A functor $P:\sA\to \sM$ is called a \textbf{fibration} if for any $b\in \sA$ and $f:x\to P(b)$, there exists a morphism $\phi:a\to b$ in \sA such that $P(\phi)=f$ and $\phi$ is \emph{cartesian}, meaning that for any $\psi:c\to b$ and $g:P(c)\to x$ such that $P(\psi)=fg$, there exists a unique $\chi:c\to a$ such that $P(\chi)=g$ and $\phi\chi=\psi$.
   The object $c$ is denoted $f^*(b)$.
   \begin{enumerate}
@@ -1882,17 +1895,17 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:catprod-fib}
+\begin{ex}\label{ex:catprod-fib}
   Generalize \cref{ex:mslat-fib} from posets to categories, combining your type theory from \cref{ex:catfib} with the one for categories with products from \cref{sec:beta-eta}.
 \end{ex}
 
-\begin{ex}{ex:catprod-2free}
+\begin{ex}\label{ex:catprod-2free}
   The category $\bPrCat$ is a 2-category whose 2-cells are arbitrary natural transformations (that is, there is no nonvacuous notion of a ``product-preserving natural transformation'').
   Let \cG be a directed graph; as in \cref{ex:cat-2free}, define a 2-functor $\bGr(\cG,-):\bPrCat\to\bCat$, and show that $\F\bPrCat\cG$ is a representing object for it.
   \textit{(Use induction over the derivations of the judgments in its type-theoretic description.)}
 \end{ex}
 
-\begin{ex}{ex:catprod-flexible}
+\begin{ex}\label{ex:catprod-flexible}
   \cref{ex:cat-2free,ex:catprod-2free} address one worry that a category theorist might have about the strictness of our constructions.
   Another such worry is that the morphisms in \bPrCat preserve specified products \emph{strictly}, while it is usually more natural in category theory to preserve products only up to isomorphism.
   This is not a problem if our main purpose is to have a syntax to describe objects and morphisms in particular categories with products; indeed, it is exactly what we would want.
@@ -1903,7 +1916,7 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   Deduce that $\F\bPrCat\cG$ satisfies a universal property relative to the 2-category of categories with products and functors that preserve them up to isomorphism.
 \end{ex}
 
-\begin{ex}{ex:catprod-induction}
+\begin{ex}\label{ex:catprod-induction}
   Here is another way to prove the result of \cref{ex:catprod-flexible}.
   \begin{enumerate}
   \item Use the initiality of $\F\bPrCat\cG$ to show that if \cM has finite products and $Q:\cM\to \F\bPrCat\cG$ preserves finite products strictly, then any map of directed graphs $\cG \to \cM$ that lifts the inclusion $\cG \to \F\bPrCat\cG$ extends to a section $\F\bPrCat\cG \to \cM$ of $Q$ in \bPrCat.\label{item:catprod-induction}
@@ -2099,7 +2112,7 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:catcoprod-functor-uniq}
+\begin{ex}\label{ex:catcoprod-functor-uniq}
   This is the dual of \cref{ex:catprod-functor-uniq}, though of course its proof is not dual.
   Suppose we have
   \begin{mathpar}
@@ -2126,13 +2139,13 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
   Then write down the terms corresponding to the two derivations and show directly that they are related by $\equiv$.
 \end{ex}
 
-\begin{ex}{ex:cat-prod-coprod}
+\begin{ex}\label{ex:cat-prod-coprod}
   Combine the type theories of \cref{sec:catprod,sec:catcoprod} to obtain a unary type theory for categories with both products and coproducts.
   Prove the initiality theorem.
   (Note in particular that no compatibility between the products and coproducts is required or ensured.)
 \end{ex}
 
-\begin{ex}{ex:cat-opfib}
+\begin{ex}\label{ex:cat-opfib}
   A functor $P:\sA\to\sB$ is called an \textbf{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration (as in \cref{ex:catfib}).
   The dual of $f^*(b)$ is written $f_!(a)$.
   \begin{enumerate}
@@ -2143,7 +2156,7 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:cat-prod-coprod-uniq}
+\begin{ex}\label{ex:cat-prod-coprod-uniq}
   Suppose we have
   \begin{mathpar}
     f\in\cG(A,C)\and
@@ -2155,7 +2168,7 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
   Then write down the corresponding terms and show directly that they are identified by $\equiv$.
 \end{ex}
 
-\begin{ex}{ex:cat-bifib}
+\begin{ex}\label{ex:cat-bifib}
   A functor $P:\sA\to\sB$ is called a \textbf{bifibration} if it is both a fibration and an opfibration.
   \begin{enumerate}
   \item Combine the theories of \cref{ex:catfib,ex:cat-opfib} to obtain a type theory for bifibrations.
@@ -2165,7 +2178,7 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
 \end{ex}
 
 % Is this worth it?  I think there's not much to say beyond \label{ex:catprod-2free}.
-% \begin{ex}{ex:2free-catcoprod}
+% \begin{ex}\label{ex:2free-catcoprod}
 %   As in \cref{ex:cat-2free,ex:catprod-2free} show that $\F\bCoprCat\cG$ is a representing object for a suitable 2-functor $\bGr(\cG,-):\bCoprCat\to\bCat$.
 % \end{ex}
 
@@ -2480,23 +2493,23 @@ are isomorphisms.
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:multicat-defns}
+\begin{ex}\label{ex:multicat-defns}
   Prove that the definitions of multicategory in terms of multi-composition and one-place composition are equivalent, in the strong sense that they yield isomorphic categories of multicategories.
 \end{ex}
 
-\begin{ex}{ex:multicat-repr}
+\begin{ex}\label{ex:multicat-repr}
   Fill in the details in the proof of \cref{thm:multicat-repr}.
 \end{ex}
 
-\begin{ex}{ex:mcat-lax-func}
+\begin{ex}\label{ex:mcat-lax-func}
   Show that the category whose objects are representable multicategories but whose morphisms are \emph{arbitrary} functors of multicategories is equivalent to the category of monoidal categories and \emph{lax} monoidal functors.
 \end{ex}
 
-\begin{ex}{ex:mcat-strong-func}
+\begin{ex}\label{ex:mcat-strong-func}
   Show that the category of representable multicategories and functors that ``preserve tensor products'', in the sense that if $\chi:(A_1,\dots,A_n) \to \bigtensor_i A_i$ is a tensor product then $F(\chi)$ is also \emph{a} tensor product, is equivalent to the category of monoidal categories and \emph{strong} monoidal functors.
 \end{ex}
 
-\begin{ex}{ex:multicat-coprod}
+\begin{ex}\label{ex:multicat-coprod}
   Fill in the details in the proof of \cref{thm:multicat-coprod}.
 \end{ex}
 
@@ -2810,19 +2823,19 @@ We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is 
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:natded-monpos}
+\begin{ex}\label{ex:natded-monpos}
   Prove the well-formedness, cut-admissibility, and initiality theorems for the natural deduction for monoidal posets.
 \end{ex}
 
-\begin{ex}{ex:monpos-invertible}
+\begin{ex}\label{ex:monpos-invertible}
   Prove that the rules $\tensorL$ and $\one L$ in the sequent calculus for monoidal posets are invertible in the sense of \cref{ex:mslat-invertible}: whenever we have a derivation of their conclusions, we also have derivations of their premises.
 \end{ex}
 
-\begin{ex}{ex:monpos-mslat}
+\begin{ex}\label{ex:monpos-mslat}
   Write down either a sequent calculus or a natural deduction for monoidal posets that are also meet-semilattices, and prove its initiality theorem.
 \end{ex}
 
-\begin{ex}{ex:monpos-jslat}
+\begin{ex}\label{ex:monpos-jslat}
   Let us augment the sequent calculus for monoidal posets by the following versions of the rules for join-semilattices:
   \begin{mathpar}
     \inferrule{\types A\type \\ \types B\type}{\types A\join B\type}\and
@@ -3241,17 +3254,17 @@ The rules for $\one$ are similar.
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:repmulticat-moncat}
+\begin{ex}\label{ex:repmulticat-moncat}
   Our proof of \cref{thm:moncat-initial} relied on the fact that monoidal categories are equivalent to representable multicategories, which we sketched but did not prove carefully.
   If we don't assume this fact, then our proof of \cref{thm:moncat-initial} is actually just about free representable multicategories.
   Using this version of the theorem, prove \emph{using type theory} that any representable multicategory is monoidal: that is, its tensor product is coherently associative and unital.
 \end{ex}
 
-\begin{ex}{ex:moncat-multisubadm}
+\begin{ex}\label{ex:moncat-multisubadm}
   Formulate and prove the admissibility of a ``multi-substitution'' rule like \cref{thm:multiposet-multicutadm} for the type theories considered in this section.
 \end{ex}
 
-\begin{ex}{ex:moncat-context-splitting}
+\begin{ex}\label{ex:moncat-context-splitting}
   The annotation $\Gamma|\Delta$ on $\match_{A\tensor B}^{\Gamma|\Delta}$ is something that appears only in the non-symmetric case, so we encourage the reader not to worry overmuch about it.
   However, for the reader who nevertheless insists on worrying, here is some extra reassurance.
   \begin{enumerate}
@@ -3282,7 +3295,7 @@ The rules for $\one$ are similar.
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:debruijn-context-concat}
+\begin{ex}\label{ex:debruijn-context-concat}
   Describe precisely what has to happen to de-Bruijn-style variables when concatenating contexts, and formulate the rules for the type theories of this section using de Bruijn variables.
 % Let us write $A[+n]$, $M[+n]$, $\Gamma[+n]$, and so on for the operation of adding $n$ to all the variable indices\footnote{Technically, all the \emph{free} variable indices; we will return to this in \cref{sec:moncat}.} in any syntactic object; thus for instance $f(x_1,x_2)[+3] = f(x_4,x_5)$.
 % Also, if $\Gamma$ is a context, let us write $|\Gamma|$ for its length.
@@ -3491,7 +3504,7 @@ The categorical side of this involves moving to \emph{generalized multicategorie
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:moncat-prod-coprod-context}
+\begin{ex}\label{ex:moncat-prod-coprod-context}
   Find an example of a distributive monoidal category with products in which the two terms in~\eqref{eq:ttt-arg} represent distinct morphisms.
 \end{ex}
 
@@ -3676,11 +3689,11 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:gen-multicat-repr}
+\begin{ex}\label{ex:gen-multicat-repr}
   Fill in the details in the proof of \cref{thm:symm-multicat-repr,thm:semicart-multicat-repr,thm:cart-multicat-repr}.
 \end{ex}
 
-\begin{ex}{ex:club-generators}
+\begin{ex}\label{ex:club-generators}
   Let \fS be a faithful cartesian club.
   \begin{enumerate}
   \item Prove that if \fS contains the transposition $\{1,2\}\toiso \{1,2\}$, then it contains all bijections.
@@ -3689,15 +3702,15 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:cartmulti-oneplace}
+\begin{ex}\label{ex:cartmulti-oneplace}
   Define one-place versions of \fS-multicategories and show that they are equivalent to the multi-composition version defined in the text.
 \end{ex}
 
-\begin{ex}{ex:distrib}
+\begin{ex}\label{ex:distrib}
   Show that representable cartesian multicategories with coproducts are equivalent to distributive categories.
 \end{ex}
 
-\begin{ex}{ex:absolute}
+\begin{ex}\label{ex:absolute}
   Of course, for any \fS a \textbf{functor} between \fS-multicategories is required to preserve the $\sigma$-actions.
   Prove that:
   \begin{enumerate}
@@ -3706,12 +3719,12 @@ Of course, cartesian closed categories are just closed cartesian monoidal catego
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:relevance-moncat}
+\begin{ex}\label{ex:relevance-moncat}
   Define a notion of \textbf{relevance monoidal category}, by adding ``natural diagonals'' to a symmetric monoidal category, and show that such monoidal categories are equivalent to representable relevance multicategories.
   (See~\cite{dp:relevant-cats}.)
 \end{ex}
 
-\begin{ex}{ex:cocartesian-clubs}
+\begin{ex}\label{ex:cocartesian-clubs}
   Define a notion of \textbf{faithful cocartesian club} and a corresponding notion of generalized multicategory that includes \emph{cocartesian} monoidal categories as the maximal case.
 \end{ex}
 
@@ -4227,7 +4240,7 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:cart-typetheory}
+\begin{ex}\label{ex:cart-typetheory}
   Prove \cref{thm:semicart-multicat-repr,thm:cart-multicat-repr} using our posetal type theories.
   Specifically:
   \begin{enumerate}
@@ -4236,11 +4249,11 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:nnlem}
+\begin{ex}\label{ex:nnlem}
   Prove that $\neg\neg(P\join\neg P)$ is an intuitionistic tautology, i.e.\ construct a derivation of $()\types\neg\neg(P\join\neg P)$ in the natural deduction for Heyting algebras.
 \end{ex}
 
-\begin{ex}{ex:demorgan}
+\begin{ex}\label{ex:demorgan}
   Of the four ``de Morgan's laws'', three are intuitionistic tautologies and one is not.
   Construct derivations of three of the following sequents in the natural deduction for Heyting algebras:
   \begin{align*}
@@ -4251,7 +4264,7 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{align*}
 \end{ex}
 
-\begin{ex}{ex:frames}
+\begin{ex}\label{ex:frames}
   A \textbf{frame} is a lattice with infinitary joins satisfying the infinite distributive law $A \meet \left(\bigjoin_i B_i\right) \cong \bigjoin_i (A\meet B_i)$.
   \begin{enumerate}
   \item Prove that any (small) frame is a Heyting algebra.
@@ -4260,7 +4273,7 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:not-lem}
+\begin{ex}\label{ex:not-lem}
   Give concrete examples of Heyting algebras satisfying the following:
   \begin{enumerate}
   \item There is an element $P$ for which $P\join \neg P$ is not the top element.
@@ -4268,12 +4281,12 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:relevance-eg}
+\begin{ex}\label{ex:relevance-eg}
   Describe a concrete example of a closed relevance monoidal lattice containing two objects $A$ and $B$ such that there is no morphism from $\one$ (the unit object) to $A\hom (B\hom A)$.
   Deduce that $()\types A\hom (B\hom A)$ is not derivable in the type theory for closed relevance monoidal lattices.
 \end{ex}
 
-\begin{ex}{ex:seqcalc-logic}
+\begin{ex}\label{ex:seqcalc-logic}
   One of the advantages of sequent calculus over natural deduction is that because all of its rules \emph{introduce} operations on the left or the right, it is easier to conclude underivability theorems.
   \begin{enumerate}
   \item Define a sequent calculus for closed \fS-monoidal lattices, and prove the cut admissibility and initiality theorems.
@@ -4281,7 +4294,7 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:hilbert}
+\begin{ex}\label{ex:hilbert}
   Another way of deriving tautologies is called a \textbf{Hilbert system}.
   A Hilbert system can be formulated as a sort of type theory where the judgments all have empty context, i.e.\ are of the form $\types A$ where $A$ is a propositional formula.
   Instead of the ``modular'' left/right rules of sequent calculus or the introduction/elimination rules of natural deduction, where the rules for each connective do not refer to any other connective, a Hilbert system gives a special place to implication $\To$.
@@ -4312,7 +4325,7 @@ It is possible to formulate type theories that ensure the $\meet/\join$ distribu
   It should also be noted that the symbol $\types$ is often used differently in the context of Hilbert systems; rather than $\types$ being part of each judgment, the notation ``$\Gamma\types A$'' means that we can derive $A$ (that is, $\types A$ in our notation) in the Hilbert system augmented by all the formulas in $\Gamma$ as additional axioms.)
 \end{ex}
 
-\begin{ex}{ex:cocartesian-typetheory}
+\begin{ex}\label{ex:cocartesian-typetheory}
   Is there a well-behaved type theory (i.e.\ having admissible cut and an initiality theorem) corresponding to the (posetal version of the) ``cocartesian multicategories'' of \cref{ex:cocartesian-clubs}?
   \textit{(As of this writing, the answer is not known to the author.)}
 \end{ex}
@@ -4540,7 +4553,7 @@ A cartesian multigraph contains operations and equations, so to use it as base d
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:stlc-cartmulti}
+\begin{ex}\label{ex:stlc-cartmulti}
   Complete the proof in \cref{thm:stlc-initial} that type theory yields a cartesian multicategory by checking \cref{defn:fS-multicategory}\ref{item:cartmulti-3} and \ref{item:cartmulti-4}, or perhaps the corresponding one-place axioms you found in \cref{ex:cartmulti-oneplace}.
 \end{ex}
 
@@ -4729,11 +4742,11 @@ This suggests a type theory corresponding somehow to the ``fat symmetric multica
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:smc}
+\begin{ex}\label{ex:smc}
   Finish the theory of this section: prove the admissibility of substitution, state the $\beta$- and $\eta$-conversion rules, and prove the initiality theorem.
 \end{ex}
 
-\begin{ex}{ex:smc-usage}
+\begin{ex}\label{ex:smc-usage}
   Another approach to linear type theory is to annotate some types in the context with an ``unused'' marker such as $(-)^0$, and allow weakening of ``unused'' types.
   Thus we could have for instance $x:A^0,y:B,z:C^0 \types y:B$, since $x$ and $z$ are marked as unused.
   Two of these contexts $\Gamma$ and $\Delta$ can be \emph{merged} if they contain the same types in the same order, and each type is used (the opposite of unused) in at most one of them; in that case they merge to a context $\Gamma\merge\Delta$ containing the same types again, with those used that are used in either $\Gamma$ or $\Delta$.
@@ -4748,7 +4761,7 @@ This suggests a type theory corresponding somehow to the ``fat symmetric multica
   \end{enumerate}
 \end{ex}
 
-\begin{ex}{ex:semicart-relevance-strucadm}
+\begin{ex}\label{ex:semicart-relevance-strucadm}
   Is it possible to formulate a theory for semicartesian or relevance monoidal categories in which the appropriate structural rules are admissible?
 \end{ex}
 
@@ -5323,12 +5336,12 @@ Formally this is the same as specifying a $\sig$-algebra structure on $A$ --- th
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:wf-rigid}
+\begin{ex}\label{ex:wf-rigid}
   Prove that a well-founded $\sig$-labeled tree has no nonidentity automorphisms.
   Thus, the passage to isomorphism classes in the definition of $W\sig$ is ``categorically harmless''.
 \end{ex}
 
-\begin{ex}{ex:natw}
+\begin{ex}\label{ex:natw}
   Exhibit a signature $\sig$ such that $W\sig \cong \dN$ and \cref{thm:tree-ind} reduces to ordinary mathematical induction.
 \end{ex}
 
@@ -5361,7 +5374,7 @@ Then $\{W\sig_i\}_{i\in\sig_0}$ has a similar tautological $\sig$-algebra struct
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:multi-sorted-W}
+\begin{ex}\label{ex:multi-sorted-W}
   Prove that $\{W\sig_i\}_{i\in\sig_0}$ is the initial $\sig$-algebra.
 \end{ex}
 
@@ -5457,11 +5470,11 @@ As in \cref{sec:trees}, we will usually think of this theorem slightly different
 
 \subsection*{Exercises}
 
-\begin{ex}{ex:tree-quotient}
+\begin{ex}\label{ex:tree-quotient}
   Prove \cref{thm:tree-quotient}.
 \end{ex}
 
-\begin{ex}{ex:infop-ac}
+\begin{ex}\label{ex:infop-ac}
   Why is the axiom of choice required to generalize \cref{thm:tree-quotient} to the case of infinitary operations?
 \end{ex}
 
