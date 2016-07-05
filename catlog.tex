@@ -14,6 +14,9 @@
 \let\sect\section
 \def\idfunc{\mathsf{id}}
 \def\finsubset{\subset_{\mathrm{fin}}}
+% coalgebras
+\let\comult\triangle
+\let\counit\varepsilon
 % well-founded trees and algebras
 \def\ay{\mathrm{ar}}
 \def\sig{\Sigma}
@@ -1166,17 +1169,17 @@ and then annotate the same derivation by cut-free terms, using substitution for 
   }{x:A\types h(g(f(x))):D}
 \end{mathpar}
 Since, as we have proven, both the cut-ful and the cut-free theory present the same free structure, it follows that \emph{two terms in the cut-ful theory are equal modulo $\equiv$ exactly when their images in the cut-free theory are identical}.
-Informally, we are just comparing two  ``removing all the identities and the parentheses''; but as we will see, in a more complicated theory much more can be going on.
+Informally, we are just comparing two terms by  ``removing all the identities and the parentheses''; but in a more complicated theory much more can be going on.
 
 In this sense, type theory can be considered to be about solving \emph{coherence problems} in category theory.
 In general, the coherence problem for a categorical structure is to decide when two morphisms ``constructed from its basic data'' are equal (or isomorphic, etc.)
 For instance, the classical coherence theorem of MacLane for monoidal categories says, informally, that two parallel morphisms constructed from the basic constraint isomorphisms of a monoidal category are \emph{always} equal; whereas the analogous theorem for braided monoidal categories says that they are equal if and only if they have the same underlying braid.
-A type-theoretic calculus of canonical forms gives a way to answer this question, by translating a cut-ful theory into a cut-free one.
-(And indeed, cut-elimination methods have frequently been used in the proof of coherence theorems; [TODO: some citations].)
+A type-theoretic calculus of canonical forms gives a way to answer this question, by translating a cut-ful theory into a cut-free one, and cut-elimination methods have frequently been used in the proof of coherence theorems; [TODO: some citations].
 % ~\cite{blute:ll-coh},~\cite{bcst:natded-coh-wkdistrib}
 % https://golem.ph.utexas.edu/category/2008/02/logicians_needed_now.html#c015266
 % https://golem.ph.utexas.edu/category/2008/02/logicians_needed_now.html#c015167
 % and other references therein
+We will not explore this aspect here, however.
 
 \label{sec:identifying-initial-objects}
 A related remark is that categorical logic is about \emph{showing that two different categories have the same\footnote{Of course, technically, an object of one category is not generally also an object of another one.  So what we mean is that there is an easy way to transform the initial object of one category into the initial object of another.} initial object}.
@@ -2332,7 +2335,7 @@ If it weren't for those two horrific-looking terms in the middle, the rest of th
 The horrific-looking terms are there because we can only apply the associativity of $m$ to a single term belonging to $(A\times A)\times A$, so we need to tuple up the terms $i(x)$, $x$, and $j(x)$ and replace them by the projections from that tuple (using $\beta$-conversion).
 In \cref{chap:simple} we will remedy this problem by introducing a type theory that allows us to state associativity (and $m$ itself) without tupling.
 
-The construction of unary $\times$-theories, given the ordinary unary type theory for categories with products under directed graphs, while somewhat involved, is quite general\footnote{We will not attempt to make this generality precise, but the approach is similar to the general theory of ``globular computads'' in~[TODO: cite].} and can be applied to pretty much any type theory with an initiality theorem.
+The construction of unary $\times$-theories, given the ordinary unary type theory for categories with products under directed graphs, while somewhat involved, is quite general\footnote{We will not attempt to make this generality precise, but the approach is similar to the general theory of ``globular computads'' in~\cite{batanin:cptd-fin}.} and can be applied to pretty much any type theory with an initiality theorem.
 For instance, by starting from the type theory for categories with coproducts instead, we obtain a notion of ``unary $+$-theory''; while starting from the theory of \cref{ex:cat-prod-coprod} for categories with both products and coproducts, we obtain a notion of ``unary $(\times,+)$-theory''.
 We will discuss some more important special cases in \cref{sec:algthy-opd}.
 
@@ -5018,6 +5021,54 @@ In particular, if \cG has one type, then $\F\bSymMulti\cG$ has one object.
 A (symmetric) multicategory with one object is called an \textbf{operad} (enriched in \bSet --- though much of the interest of operads lies in operads enriched in other categories); they were originally defined by~\cite{may:goils}, and the terminology has since been much generalized~\cite{leinster:higher-opds}.
 (Indeed, arbitrary multicategories are sometimes called ``colored operads''.)
 
+On the other hand, there are cases where we want to allow tensor products in the codomain.
+For instance, the theory of bimonoids mentioned in \cref{sec:intro} would have one type $A$, four generating morphisms
+\begin{mathpar}
+  m:(A,A)\to A\and
+  e:() \to A\and
+  \comult:A\to A\tensor A\and
+  \counit : A\to \one
+\end{mathpar}
+and the axioms shown in \cref{fig:smc-bimonoid}.
+An antipode would augment this by a generating morphism $i:A\to A$ and the axioms
+\begin{align*}
+  x:A &\types \match_\tensor(\comult(x),uv.m(u,i(v))) \equiv \match_\one(\counit(x),e) :A\\
+  x:A &\types \match_\tensor(\comult(x),uv.m(i(u),v)) \equiv \match_\one(\counit(x),e) :A
+\end{align*}
+
+\begin{figure}
+  \centering
+  \begin{align*}
+    x:A,y:A,z:A &\types x\cdot (y\cdot z) \equiv (x\cdot y)\cdot z :A\\
+    x:A &\types x\cdot e \equiv x:A\\
+    x:A &\types e\cdot x \equiv x:A\\
+    x:A &\types
+          \begin{multlined}[t]
+            \match_\tensor(\comult(x),uv.\tpair{u}{\comult(v)})\\[\jot]
+            \equiv
+            \match_\tensor(\comult(x),uv.\match_\tensor(\comult(u),wz.\tpair{w}{\tpair{z}{v}})\\
+            : A\tensor (A\tensor A)
+          \end{multlined}\\
+    x:A &\types \match_\tensor(\comult(x),uv.\match_\one(\counit(u),v)) \equiv x : A\\
+    x:A &\types \match_\tensor(\comult(x),uv.\match_\one(\counit(v),u)) \equiv x : A\\
+    x:A,y:A &\types
+              \begin{multlined}[t]
+                \match_\tensor(\comult(x),uv,\match_\tensor(\comult(y),wz.\tpair{m(u,w)}{m(v,z)}))\\[\jot]
+                \equiv \comult(m(x,y)) : A\tensor A
+              \end{multlined}\\
+    x:A,y:A &\types \counit(m(x,y)) \equiv \match_\one(\counit(x),\match_\one(\counit(y),\ott)) :\one\\
+    () &\types \comult(e) \equiv \tpair{e}{e} :A\tensor A\\
+    () &\types \counit(e) \equiv \ott :\one
+  \end{align*}
+  \caption{Axioms for a bimonoid}
+  \label{fig:smc-bimonoid}
+\end{figure}
+
+If we also include another antipode $j:A\to A$, we can then try to
+reproduce the uniqueness argument from \cref{sec:intro}.
+
+[TODO]
+
 
 \subsection*{Exercises}
 
@@ -5376,14 +5427,42 @@ Instead the ``usages'' of a variable are controlled by the codomain arity of the
 In general, we write $\vec f(\vec M)$ for the list of ``all the values of $f$'' applied to the list of arguments $\vec M$.
 
 This does require one further technical device (that will be almost invisible in practice).
-Suppose we have $f:()\to (B,C)$, written in type theory as $()\types (f_1,f_2):(B,C)$, and we compose/tensor it with itself to get a morphism $() \to (B,B,C,C)$.
+Suppose we have $f:()\to (B,C)$, written in our type theory as $()\types (f_1,f_2):(B,C)$, and we compose/tensor it with itself to get a morphism $() \to (B,B,C,C)$.
 We would na\"ively write this as $() \types (f_1,f_1,f_2,f_2)$, but this is ambiguous since we can't tell which $f_1$ matches which $f_2$.
 We disambiguate the possibilities by writing $() \types (f_1,f'_1,f_2,f'_2)$ or $() \types (f_1,f'_1,f'_2,f_2)$.
 Although this issue seems to only arise for morphisms with empty domain and greater than unary codomain, for consistency we formulate the syntax with a label (like $'$) on \emph{every} term former, and simply omit them informally when there is no risk of ambiguity (which includes the vast majority of cases).
 We assume given an infinite alphabet of symbols \fA for this purpose (such as $','',''',\dots$, or $1,2,3,\dots$), and we annotate our judgments with a finite subset $\fB\subseteq \fA$ indicating which labels might have been used already in the terms.
 
+Thus, a first approximation to our generator rule is
+\[ \inferrule*{
+  \Gamma \types^\fB (\vec M^1,\dots,\vec M^n,\vec N \mid \vec Z)
+  : (\vec A^1,\dots, \vec A^n,\vec C)\\
+  f^1 \in \cG(\vec A^1,\vec D^1)\\\cdots\\
+  f^n \in \cG(\vec A^n,\vec D^n)\\\\
+  \fa_i\notin \fB\text{ and pairwise distinct}
+}{\Gamma \types^{\fB\cup\{\fa_i\}} (\vec f^{1,\fa_1}(\vec M^1),\dots,\vec f^{n,\fa_n}(\vec M^n),\vec N \mid \vec Z)
+  : (\vec D^1,\dots, \vec D^n,\vec C)}
+\]
+Since we have taken over subscripts to indicate the multiple outputs of a single operation, we are using superscripts to distinguish among the $n$ generators $f^1,\dots,f^n$ being applied at once.
+For instance, if $f^1\in \cG((A^1_1,A^1_2),(D^1_1,D^1_2,D^1_3))$ then we have
+\[ x^1_1:A^1_1, x^1_2:A^1_2 \types (f^1_1(x^1_1,x^1_2),f^1_2(x^1_1,x^1_2),f^1_3(x^1_1,x^1_2)):(D^1_1,D^1_2,D^1_3) \]
 
-Now, how exactly do we prevent duplication of derivations?
+We also have to modify the above rule to allow generators with empty target, which get collected into the $\vec Z$'s.
+Thus we have
+\[ \inferrule*{
+  \Gamma \types^\fB (\vec M^1,\dots,\vec M^n,\vec P^1,\dots,\vec P^m,\vec N \mid \vec Z)
+  : (\vec A^1,\dots, \vec A^n,\vec B^1,\dots,\vec B^m,\vec C)\\
+  f^1 \in \cG(\vec A^1,\vec D^1)\\\cdots\\
+  f^n \in \cG(\vec A^n,\vec D^n)\\\\
+  g^1 \in \cG(\vec B^1,())\\\cdots\\
+  g^m \in \cG(\vec B^n,())\\\\
+  \fa_i,\fb_j\notin \fB\text{ and pairwise distinct}
+}{\Gamma \types^{\fB\cup\{\fa_i,\fb_j\}} \left(\vec f^{1,\fa_1}(\vec M^1),\dots,\vec f^{n,\fa_n}(\vec M^n),\vec N
+    \;\middle|\; \vec g^{1,\fb_1}(\vec P^1),\dots,\vec g^{m,\fb_m}(\vec P^m), \vec Z\right)
+  : (\vec D^1,\dots, \vec D^n,\vec C)}
+\]
+Eventually we will also have to incorporate shuffles into the rulea as in \cref{sec:symmoncat}, but we postpone that for now.
+Let us consider instead how to prevent duplication of derivations.
 In addition to our desired term
 \begin{align}
   x:A, y:C &\types (f(x),g(y)):(B,D)\label{eq:prop-good-term}
@@ -5394,6 +5473,24 @@ In addition to our desired term
 \end{align}
 so how do we prevent ourselves from being able to apply the generator rule again to the latter two, obtaining two more derivations of the same morphism as~\eqref{eq:prop-good-term}?
 The idea is to force ourselves to ``apply all functions as soon as possible'': we cannot apply $g$ to $y$ in~\eqref{eq:prop-goodish-term-1} because we \emph{could have} already applied it to produce~\eqref{eq:prop-good-term}.
+On the other hand, we could apply $h:(B,C) \to E$ in~\eqref{eq:prop-goodish-term-1} to get
+\[ x:A, y:C \types (h(f(x),y)):E \]
+because $h$ uses $f$ as one of its inputs and so could not have been applied at the same time as $f$.
+
+In the general case, in a judgment $\Gamma\types^\fB (\vec{M}\mid\vec{W}):\Delta$ we will assign to each label $\fa\in\fB$ (that is, to each ``use'' of a generator morphism) a natural number called its \textbf{depth}.
+The depth of $f^\fa$ is defined recursively to be one greater than the maximum depth of all the labels occurring ``outermost'' in the arguments of $f^\fa$, with variables and 0-ary generators considered to have depth $0$.
+Thus for instance in $x:A, y:C \types (h(f(x),y)):E$, the depth of $f$ is $1$ since its argument is a variable $x$, hence of depth $0$; while the depth of $h$ is $2$ since its arguments $f(x)$ and $y$ have depth $1$ and $0$ respectively.
+(This definition appears to require inspecting the term, but when we make it formal it will be part of the derivation.)
+
+Now we require, as a condition on the application of the generator rule, that each of the new generators appearing in the conclusion (the $f_i$ and $g_j$) is applied to at least one argument that is of maximum depth in the principal premise.
+This ensures that the new generators are precisely those of maximum depth in the conclusion.
+It also means that we can never apply this rule to 0-ary generators, so we incorporate those into the $\idfunc$ rule
+
+
+
+
+
+
 
 To be precise, we augment our judgments (\emph{not} their terms) by labeling some of the types in the consequent as \emph{active}, denoted by an underline.
 The identity rule makes all types active, while the generator rule makes only the outputs of the generators active.
@@ -5480,36 +5577,36 @@ The uniqueness of antipodes in a bimonoid presented in \cref{sec:intro} is an ex
 \begin{alignat*}{2}
 m&:(M,M)\to M &&\quad\text{(written infix as $m(x,y) = x\cdot y$)}\\
 e&:()\to M\\
-\triangle&:M\to (M,M) &&\quad\text{(written a little abusively as $\triangle_i(x) = x_i$)}\\
-\ep &:M\to () &&\quad\text{(written $\ep(x) = \cancel{x}$)}
+\comult&:M\to (M,M) &&\quad\text{(written a little abusively as $\comult_i(x) = x_i$)}\\
+\counit &:M\to () &&\quad\text{(written $\counit(x) = \cancel{x}$)}
 \end{alignat*}
 while the generators of $\equiv$ are the bimonoid axioms.
 
 Here is another example.
-If $A$ is an object of a prop, a \textbf{dual} of $A$ is an object $A^*$ with morphisms $\eta:()\to (A,A^*)$ and $\ep:(A^*,A)\to ()$ such that $\ep \circ_{A^*} \eta = \idfunc_A$ and $\ep \circ_{A} \eta = \idfunc_A^*$.
+If $A$ is an object of a prop, a \textbf{dual} of $A$ is an object $A^*$ with morphisms $\eta:()\to (A,A^*)$ and $\counit:(A^*,A)\to ()$ such that $\counit \circ_{A^*} \eta = \idfunc_A$ and $\counit \circ_{A} \eta = \idfunc_A^*$.
 (In a symmetric monoidal category this reduces to the usual notion of dual.)
 If $A$ has a dual $A^*$, and $f:A\to A$, the \textbf{trace} of $f$ is the composite
-\[ \tr(f) = \ep \circ_{A,A^*} (f \circ_A \eta) \]
-or equivalently $(\ep \circ_A f)\circ_{A,A^*} \eta$.
+\[ \tr(f) = \counit \circ_{A,A^*} (f \circ_A \eta) \]
+or equivalently $(\counit \circ_A f)\circ_{A,A^*} \eta$.
 In the type theory for props, the axioms of a dual say
 \begin{mathpar}
-  x:A \types (\eta_1 \mid \ep(\eta_2,x)) \equiv x :A\and
-  y:A^* \types (\eta_2 \mid \ep(y,\eta_1)) \equiv y :A^*
+  x:A \types (\eta_1 \mid \counit(\eta_2,x)) \equiv x :A\and
+  y:A^* \types (\eta_2 \mid \counit(y,\eta_1)) \equiv y :A^*
 \end{mathpar}
-while the trace is $(\,\mid \ep(\eta_2,f(\eta_1)))$.
-Recall that $\equiv$ is a congruence for substitution; thus the dual axioms mean that \emph{any term} $M$ (appearing even as a sub-term of some other term) can be replaced by $\eta_1^\fa$ if we simultaneously add $\ep^\fb(\eta_2^\fa,M)$ to the list of null terms (here \fa and \fb are fresh labels).
-And dually, if $\ep^\fb(\eta_2^\fa,M)$ appears in the null terms, for any term $M$, then it can be removed by replacing $\eta_1^\fa$ (wherever it appears) with $M$.
+while the trace is $(\,\mid \counit(\eta_2,f(\eta_1)))$.
+Recall that $\equiv$ is a congruence for substitution; thus the dual axioms mean that \emph{any term} $M$ (appearing even as a sub-term of some other term) can be replaced by $\eta_1^\fa$ if we simultaneously add $\counit^\fb(\eta_2^\fa,M)$ to the list of null terms (here \fa and \fb are fresh labels).
+And dually, if $\counit^\fb(\eta_2^\fa,M)$ appears in the null terms, for any term $M$, then it can be removed by replacing $\eta_1^\fa$ (wherever it appears) with $M$.
 
 Now a classical fact about the trace is that it is \emph{cyclic}: if $A$ and $A'$ both have duals $A^*$ and $(A')^*$, and $f:A\to A'$ and $g:A'\to A$, then $\tr(gf) = \tr(fg)$.
 To prove this using traditional commutative-diagram reasoning is quite involved.
 It does have a pretty and intuitive proof using string diagrams.
 However, its proof in the type theory for props is one line:
-\[ \tr(gf) = (\,\mid \ep(\eta_2,g(f(\eta_1))))
-= (\,\mid \ep(\eta_2,g(\eta'_1)),\ep'(\eta'_2,f(\eta_1)))
-= (\,\mid \ep(\eta'_2,f(g(\eta'_1))))
+\[ \tr(gf) = (\,\mid \counit(\eta_2,g(f(\eta_1))))
+= (\,\mid \counit(\eta_2,g(\eta'_1)),\counit'(\eta'_2,f(\eta_1)))
+= (\,\mid \counit(\eta'_2,f(g(\eta'_1))))
 = \tr(fg).
 \]
-Here $\eta,\ep$ exhibit the dual of $A$, while $\eta',\ep'$ exhibit the dual of $A'$.
+Here $\eta,\counit$ exhibit the dual of $A$, while $\eta',\counit'$ exhibit the dual of $A'$.
 The first and last equality are by definition;
 the second applies the first duality equation for $A'$ with $x=f(\eta_1)$; and the third applies the first duality equation for $A$ with $x=g(\eta'_1)$.
 
