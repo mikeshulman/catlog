@@ -1,0 +1,342 @@
+\chapter{Introduction}
+\label{chap:intro}
+
+% [TODO: Introduce the word "connective" somewhere; maybe only for posets?]
+
+% [TODO: Mention how the syntactic/free object gives "completeness" of a theory.]
+
+\section{Appetizer: inverses in group objects}
+\label{sec:intro}
+
+In this section we consider an extended example.
+We do not expect the reader to understand it very deeply, but we hope it will give some motivation for what follows, as well as a taste of the power and flexibility of categorical logic as a tool for category theory.
+
+Our example will consist of several varations on the following theorem:
+
+\begin{thm}
+  If a monoid has inverses (hence is a group), then those inverses are unique.
+\end{thm}
+
+When ``monoid'' and ``group'' have their usual meaning, namely sets equipped with structure, the proof is easy.
+For any $x$, if $y$ and $z$ are both two-sided inverse of $x$, then we have
+\begin{equation}
+y = y \cdot e = y \cdot (x \cdot z) = (y\cdot x)\cdot z = e\cdot z = z\label{eq:invuniq-easy}
+\end{equation}
+However, the theorem is true much more generally than this.
+We consider first the case of monoid/group objects in a category with products.
+A \emph{monoid object} is an object $A$ together with maps $m:A\times A \to A$ and $e:1\to A$ satisfying associativity and unitality axioms:
+\begin{equation}
+  \vcenter{\xymatrix{
+      A\times A\times A\ar[r]^-{1\times m}\ar[d]_{m\times 1} &
+      A\times A\ar[d]^m\\
+      A\times A\ar[r]_m &
+      A
+    }}
+  \qquad
+  \vcenter{\xymatrix{ A \ar[r]^-{(1,e)} \ar[dr]_{1} &
+    A\times A \ar[d]_m & A \ar[l]_-{(e,1)} \ar[dl]^{1} \\
+    & A }}
+\end{equation}
+An \emph{inverse operator} for a monoid object is a map $i:A\to A$ such that the following diagrams commute:
+\begin{equation}
+  \vcenter{\xymatrix@C=1pc{& A\times A \ar[rr]^{i\times 1} && A\times A \ar[dr]^m \\
+      A \ar[ur]^{\Delta} \ar[dr]_{\Delta} \ar[rr]^{!} && 1 \ar[rr]^{e} && A \\
+      & A\times A \ar[rr]_{1\times i} && A\times A \ar[ur]_{m}}}
+\end{equation}
+The internalized claim, then, is that \emph{any two inverse operators for a monoid object are equal}.
+A standard category-theoretic proof would be to suppose $i$ and $j$ are both inverse operators and draw a large commutative diagram such as that shown in \cref{fig:uniqinv-diagram}.
+Here the composite around the top is equal to $i$, the composite around the bottom is equal to $j$, and all the internal polygons commute either by one of the monoid axioms, the inverse axiom for $i$ or $j$, or the universal property of products.
+(We encourage the reader to verify this.)
+
+\begin{figure}
+  \centering
+  \[\xymatrix{
+    & A\times A \ar[dr]_-{1\times\Delta} \ar[rr]^{\pi_1}
+    && A \ar[dr]_{(1,e)} \ar@/^13mm/[ddrr]^{1}\\
+    && A\times A\times A \ar[dr]^{1\times 1\times j}
+    && A\times A \ar[dr]^m\\
+    A \ar[rrr]^{(i,1,j)} \ar[uur]_{(i,1)} \ar[ddr]^{(1,j)} &&&
+    A\times A\times A \ar[ur]_{1\times m} \ar[dr]^{m\times 1} && A\\
+    && A\times A\times A \ar[ur]_{i\times 1\times 1}
+    && A \times A \ar[ur]_m\\
+    &  A\times A \ar[ur]_-{\Delta\times 1} \ar[rr]_{\pi_2}
+    && A\ar[ur]^{(e,1)} \ar@/_13mm/[uurr]_{1}
+    }
+  \]
+  \caption{Uniqueness of inverses by diagram chasing}
+  \label{fig:uniqinv-diagram}
+\end{figure}
+
+While there is a certain beauty to \cref{fig:uniqinv-diagram}, it takes considerable effort to write it down and arrange it in such a pleasing form (as opposed to a horrid mess on scratch paper), let alone typeset it prettily.
+And this is really a fairly simple fact about monoids; for more complicated theorems, the complexity of the resulting diagrams grows accordingly.
+
+Nevertheless, there is a sense in which \cref{fig:uniqinv-diagram} is obtained \emph{algorithmically} from the simple proof~\eqref{eq:invuniq-easy}.
+Specifically, each expression in~\eqref{eq:invuniq-easy} corresponds to one or more paths through \cref{fig:uniqinv-diagram}, and each equality in~\eqref{eq:invuniq-easy} corresponds to a commuting polygon in \cref{fig:uniqinv-diagram}.\footnote{Not every polygon in \cref{fig:uniqinv-diagram} corresponds to anything in~\eqref{eq:invuniq-easy}, though: the ``universal property'' quadrilaterals on the left are ``invisible'' algebraically.
+  This is why we said each expression corresponds to ``one or more'' paths: $y\cdot (x\cdot z)$ and $(y\cdot x)\cdot z$ don't care which route we take from $A$ to $A\times A\times A$.}
+With experience, one can learn to do such translations without much effort, at least in simple cases.
+However, if it really is an algorithm, we shouldn't have to re-do it on a case-by-case basis at all; we should be able to prove a single general ``meta-theorem'' and then appeal to it whenever we want to.
+This is the goal of categorical logic.
+
+Specifically, the \emph{internal logic of a category with products} allows us to replace \cref{fig:uniqinv-diagram} by an argument that looks almost the same as~\eqref{eq:invuniq-easy}.
+The morphisms $m$ and $e$ are represented in this logic by the notations
+\begin{mathpar}
+  x:A,y:A \types x\cdot y :A \and
+  \types e:A.
+\end{mathpar}
+Don't worry if this notation doesn't make a whole lot of sense yet.
+The symbol $\types$ (called a ``turnstile'') is the logic version of a morphism arrow $\to$, and the entire notation is called a \emph{sequent} or a \emph{judgment}.
+The fact that $m$ is a morphism $A\times A \to A$ is indicated by the fact that $A$ appears twice to the left of $\types$ and once to the right; the comma ``$,$'' in between $x:A$ and $y:A$ represents the product $\times$, and the variables $x,y$ are there so that we have a good notation ``$x\cdot y$'' for the morphism $m$.
+In particular, the notation $x:A,y:A \types x\cdot y :A$ should be bracketed as
+\[ ((x:A),(y:A)) \types ((x\cdot y) :A). \]
+Similarly, the associativity, unit, and inverse axioms are indicated by the notations
+\begin{mathpar}
+  x:A,y:A,z:A \types (x\cdot y)\cdot z = x\cdot (y\cdot z) : A \\
+  x:A \types x\cdot e = x : A \and
+  x:A \types e\cdot x = x : A \\
+  x:A \types x\cdot i(x) = e : A \and
+  x:A \types i(x) \cdot x = e : A
+\end{mathpar}
+Now~\eqref{eq:invuniq-easy} can be essentially copied in this notation:
+\[ x:A \types i(x) = i(x) \cdot e = i(x) \cdot (x \cdot j(x)) = (i(x)\cdot x)\cdot j(x) = e\cdot j(x) = j(x) : A.\]
+The essential point is that the notation \emph{looks set-theoretic}, with ``variables'' representing ``elements'', and yet (as we will see) its formal structure is such that it can be interpreted into \emph{any} category with products.
+Therefore, writing the proof in this way yields automatically a proof of the general theorem that any two inverse \emph{operators} for a monoid \emph{object} in a category with products are equal.
+
+Before leaving this appetizer section, we mention some further generalizations of this result.
+While type theory allows us to use set-like notation to prove facts about any category with finite products, the allowable notation is fairly limited, essentially restricting us to algebraic calculations with variables.
+However, if our category has more structure, then we can ``internalize'' more set-theoretic arguments.
+
+As an example, note that for ordinary monoids in sets, the uniqueness of inverses~\eqref{eq:invuniq-easy} is expressed ``pointwise'' rather than in terms of inverse-assigning operators.
+In other words, for each element $x\in A$, if $x$ has two two-sided inverses $y$ and $z$, then $y=z$, regardless of whether any other elements of $A$ have inverses.
+If we think hard enough, we can express this diagrammatically in terms of the category \bSet is to consider the following two sets:
+\begin{align*}
+  B &= \setof{(x,y,z)\in A^3 | xy=e, yx=e, xz=e, zx=e}\\
+  C &= \setof{(y,z)\in B^2 | y=z}
+\end{align*}
+In other words, $B$ is the set of elements $x$ equipped with two inverses, and $C$ is the set of pairs of equal elements.
+Then the uniqueness of pointwise inverses can be expressed by saying there is a commutative diagram
+\[ \xymatrix{ B \ar[d] \ar[r] & C \ar[d] \\ A^3 \ar[r]_{\pi_{23}} & A^2 } \]
+where the vertical arrows are inclusions and the lower horizontal arrow projects to the second and third components.
+
+This is a statement that makes sense for a monoid object $A$ in any category with finite \emph{limits}.
+The object $C$ can be constructed categorically as the equalizer of the two projections $A\times A \toto A$ (which is in fact isomorphic to $A$ itself), while the object $B$ is a ``joint equalizer'' of four parallel pairs, one of which is
+\[ \vcenter{\xymatrix{ & A \times A \ar[dr]^m \\
+    A\times A\times A \ar[ur]^{\pi_{12}} \ar[dr]_{!} && A \\
+    & 1 \ar[ur]_e }} \]
+and the others are similar.
+We can then try to \emph{prove}, in this generality, that there is a commutative square as above.
+We can do this by manipulating arrows, or by appealing to the Yoneda lemma, but we can also use the \emph{internal logic of a category with finite limits}.
+This is a syntax like the internal logic for categories with finite products, but which also allows us to \emph{hypothesize equalities}.
+The judgment in question is
+\begin{equation}\label{eq:pointwise-unique-inverses}
+  x:A, y:A, z:A, x\cdot y = e, y\cdot x=e, x\cdot z = e, z\cdot x = e \types y=z.
+\end{equation}
+As before, the comma binds the most loosely, so this should be read as
+\[ ((x:A), (y:A), (z:A), (x\cdot y = e), (y\cdot x=e), (x\cdot z = e), (z\cdot x = e)) \types (y=z). \]
+We can prove this by set-like equational reasoning, essentially just as before.
+The ``interpretation machine'' then produces from this a morphism $B\to C$, for the objects $B$ and $C$ constructed above.
+
+Next, note that in the category \bSet, the uniqueness of inverses ensures that if every element $x\in A$ has an inverse, then there is a \emph{function} $i:A\to A$ assigning inverses --- even without using the axiom of choice.
+(If we define functions as sets of ordered pairs, as is usual in set-theoretic foundations, we could take $i = \setof{(x,y) | xy=e}$; the pointwise uniqueness ensures that this is indeed a function.)
+This fact can be expressed in the internal logic of an \emph{elementary topos}.
+We postpone the definition of a topos until later; for now we just remark that its structure allows both sides of the turnstile $\types$ to contain \emph{logical formulas} such as $\exists x, \forall y, \phi(x,y)$ rather than just elements and equalities.
+In this language we can state and prove the following:
+\[ \forall x:A, \exists y:A, x\cdot y = e \land y\cdot x = e \types
+\exists i:A^A, \forall x:A, (x\cdot i(x) = e \land i(x)\cdot x = e)
+\]
+As before, the proof is essentially exactly like the usual set-theoretic one.
+Moreover, the interpretation machine allows us to actually extract an ``inverse operator'' morphism in the topos from this proof.
+As before, such a result can also be stated and proved using arrows and commutative diagrams, but as the theorems get more complicated, the translation gets more tedious to do by hand, and the advantage of type-theoretic notation becomes greater.
+
+So much for adding extra structure.
+In fact, we can also take structure away!
+A monoid object can be defined internal to any \emph{monoidal} category, not just a cartesian monoidal one; now the structure maps are $m:A\tensor A\to A$ and $e:\one\to A$, and the commutative diagrams are essentially the same.
+
+To define an inverse operator in this case, however, we need some sort of ``diagonal'' $\comult:A\to A\tensor A$ and also a ``projection'' or ``augmentation'' $\counit:A\to \one$.
+The most natural hypothesis is that these maps make $A$ into a \emph{comonoid} object, i.e.\ a monoid in the opposite monoidal category, and that the monoid and comonoid structures preserve each other; this is the notion of a \emph{bimonoid} (or ``bialgebra'').
+(\cref{ex:cartmon-bimon-uniq}: in a cartesian monoidal category, every object is a bimonoid in a unique way.)
+
+Now given a bimonoid $A$, we can define an ``inverse operator'' --- which in this context is usually called an \emph{antipode} --- to be a map $i:A\to A$ such that
+\begin{equation}
+  \vcenter{\xymatrix@C=1pc{& A\tensor A \ar[rr]^{i\tensor 1} && A\tensor A \ar[dr]^m \\
+      A \ar[ur]^{\comult} \ar[dr]_{\comult} \ar[rr]^{\counit} && \one \ar[rr]^{e} && A \\
+      & A\tensor A \ar[rr]_{1\tensor i} && A\tensor A \ar[ur]_{m}}}
+\end{equation}
+commutes, where now $\comult$ and $\counit$ are the comonoid structure of $A$ rather than the diagonal and projection of a cartesian product.
+A bimonoid equipped with an antipode is called a \emph{Hopf monoid} (or ``Hopf algebra'').
+The obvious question then is, if a bimonoid has two antipodes, are they equal?
+
+In some cases it is possible to apply the previous results directly.
+For instance, the category of \emph{(co)commutative} comonoids in a symmetric monoidal category inherits a monoidal structure that turns out to be \emph{cartesian} (\cref{ex:ccmon-cart}), so a cocommutative bimonoid is actually a monoid in a cartesian monoidal category, and we can apply the first version of our result.
+Similarly, the category of commutative monoids is cocartesian, so a commutative bimonoid is a comonoid in a cocartesian monoidal category, so we can apply the dual of the first version of our result.
+But what if neither the multiplication nor the comultiplication is commutative?
+
+Internal logic is up to this task.
+In a monoidal category we can consider judgments with multiple outputs as well as multiple inputs.\footnote{For the benefit of readers who are already experts, I should mention that this is \emph{not} ordinary ``classical linear logic'': the comma represents the same monoidal structure $\tensor$ on both sides of the turnstile, rather than $\tensor$ on the left and $\parr$ on the right.}
+This allows us to describe monoids and comonoids in a roughly ``dual'' way.
+Don't worry about the precise syntax being used on the right; it will be explained in \cref{sec:prop-smc}.
+\begin{alignat*}{2}
+  x:A, y:A &\types x\cdot y:A &\qquad x:A &\types (x_1,x_2):(A,A)\\
+  &\types e:A &\qquad x:A &\types (\mid\cancel{x}):()\\
+  x:A,y:A,z:A &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :A &\qquad x:A &\types (x_{11},x_{12},x_2)=(x_1,x_{21},x_{22}):(A,A,A)\\
+  x:A &\types x\cdot e=x:A &\qquad x:A &\types (x_1\mid\cancel{x_2}) = x:A\\
+  x:A &\types e\cdot x=x:A &\qquad x:A &\types (x_2\mid\cancel{x_1}) = x:A
+\end{alignat*}
+In this language, the bimonoid axioms are
+\begin{align*}
+  x:A,y:A &\types (x_1\cdot y_1,x_2\cdot y_2) = ((x\cdot y)_1,(x\cdot y)_2) :(A,A)\\
+          &\types (e_1,e_2)=(e,e):(A,A)\\
+  x:A,y:A &\types (\mid\cancel{x\cdot y}) = (\mid\cancel{x},\cancel{y}) : ()\\
+  &\types (\mid\cancel{e})=():()
+\end{align*}
+And an antipode is a map $x:A \types i(x):A$ such that
+\begin{align*}
+  x:A &\types x_1\cdot i(x_2) = (e\mid\cancel{x}) :A\\
+  x:A &\types i(x_1)\cdot x_2 = (e\mid\cancel{x}) :A
+\end{align*}
+Now if we have another antipode $j$, we can compute
+\begin{align*}
+  x:A \types i(x)
+  &= i(x)\cdot e\\
+  &= (i(x_1)\cdot e\mid\cancel{x_2})\\
+  &= i(x_1)\cdot (x_{21} \cdot j(x_{22}))\\
+  &= (i(x_1)\cdot x_{21}) \cdot j(x_{22})\\
+  &= (e \cdot j(x_{2})\mid\cancel{x_1})\\
+  &= e\cdot j(x)\\
+  &= j(x) \qquad :A
+\end{align*}
+yielding the same result $i=j$.
+So even in a non-cartesian situation, we can use a very similar set-like argument, as long as we keep track of where elements get ``duplicated and discarded''.
+
+This concludes our ``appetizer''; I hope it has given you a taste of what categorical logic looks like, and what it can do for category theory.
+In the next section we will rewind back to the beginning and start with very simple cases.
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:cartmon-bimon-uniq}
+  Prove that in a cartesian monoidal category, every object is a bimonoid in a unique way.
+\end{ex}
+
+\begin{ex}\label{ex:ccmon-cart}
+  Show that the category of cocommutative comonoids in a symmetric monoidal category inherits a monoidal structure, and that this monoidal structure is cartesian.
+\end{ex}
+
+\begin{ex}\label{ex:antipode}
+  Prove, using arrows and commutative diagrams, that any two antipodes for a bimonoid (not necessarily commutative or cocommutative) are equal.
+\end{ex}
+
+\begin{ex}\label{ex:eckmann-hilton}
+  Suppose $A$ is a set with two monoid structures $(m_1,e)$ and $(m_2,e)$ having the same unit element $e$, and satisfying the ``interchange law'' $m_1(m_2(x,y),m_2(z,w)) = m_2(m_1(x,z),m_1(y,w))$.
+  Then we have
+  \[ m_1(x,y) = m_1(m_2(x,e),m_2(e,y)) = m_2(m_1(x,e),m_1(e,y)) = m_2(x,y) \]
+  and also
+  \[ m_1(x,y) = m_1(m_2(e,x),m_2(y,e)) = m_2(m_1(e,y),m_1(x,e)) = m_2(y,x) \]
+  so that $m_1=m_2$ and both are commutative.
+  This is called the \emph{Eckmann-Hilton argument}.
+  State and prove an analogous fact about objects in any category with finite products having two monoid structures satisfying an ``interchange law''.
+  \textit{(In \cref{ex:catprod-eckmann-hilton,ex:catprod-ehnr-again} you will re-do this proof using internal logic for comparison.)}
+\end{ex}
+
+\begin{ex}\label{ex:near-ring}
+  A ``distributive near-ring'' is like a ring but without the assumption that addition is commutative; thus we have a monoid structure $(\cdot,1)$ and a group structure $(+,0)$ such that $\cdot$ distributes over $+$ on both sides.
+  \begin{enumerate}
+  \item Prove that every distributive near-ring is actually a ring.
+    \textit{(For this reason, in an unqualified ``near-ring'' only one side of distributivity is assumed.)}
+  \item Define a ``distributive near-ring object'' in a category with finite products, and prove that any such is actually a ``ring object''.
+    \textit{(In \cref{ex:catprod-nearring,ex:catprod-ehnr-again} you will re-do this proof using internal logic for comparison.)}
+  \end{enumerate}
+\end{ex}
+
+
+\section{On type theory and category theory}
+\label{sec:generalities}
+
+Since there are many other introductions to categorical logic (a non-exhaustive list could include~\cite{mr:focl,ls:hocl,jacobs:cltt,goldblatt:topoi,ptj:elephant}), it seems appropriate to say a few words about what distinguishes this one.
+Our description may not make very much sense to the beginner who doesn't yet know what we are talking about, but it may help to orient the expert, and as the beginner becomes more expert he or she can return to it later on.
+
+Our perspective is very much that of the category theorist: our primary goal is to use type theory as a convenient syntax to prove things about categories.
+The way that it does this is by giving concrete presentations of \emph{free} categorical structures, so that by working in those presentations we can deduce conclusions about \emph{any} such structure.
+There are other such syntaxes for category theory, notably string diagram calculi, that function in a similar way (giving a concrete presentation of free structures) to the extent that they are made precise.
+Indeed, the \emph{usual} way of reasoning in category theory, in which we speak explicitly about objects, arrows, commutative diagrams, and so on, can also be interpreted, from this point of view, to be simply making use of the \emph{obvious} presentation of a free structure rather than some fancier one.
+(It can be tempting for the category theorist to want to generalize away from free structures to arbitrary ones, but this temptation should be resisted; see \cref{rmk:free}.)
+
+In particular, this means that we are not interested in aspects of type theory such as computability, canonicity, proof search, cut-elimination, focusing, and so on \emph{for their own sake}.
+However, at the same time we recognize their importance for type theory as a subject in its own right, which suggests that they should not be ignored by the category theorist.
+If nothing else, the category theorist will encounter these words when speaking to type theorists, and so it is advantageous to have at least a passing familiarity with them.
+
+In fact, our perspective is that it is precisely the esoteric-sounding notion of \emph{cut elimination} (or \emph{admissibility of substitution}) that essentially \emph{defines} what we mean by a \emph{type theory}.
+Of course this is not literally true; a more careful statement would be that type theories with cut elimination are those that exhibit the most behavior most characteristic of type theories.
+(Jean-Yves Girard remarked that ``a logic without cut-elimination is like a car without an engine.'')
+A ``type theory without cut elimination'' may still yield explicit presentations of free structures, but reasoning with such a presentation will not yield the characteristic benefits of categorical logic.
+
+So what is this mysterious cut-elimination, from a categorical perspective?
+Informally, it says that the morphisms in a free categorical structure can be presented \emph{without explicit reference to composition}.
+This is a bit of a cheat, because as we will see, in fact what we do is to build just enough ``implicit'' reference to composition into our rules to ensure that we no longer need to talk about composition explicitly.
+However, this does not make the process trivial, and it can still yield valuable results.
+
+As a simple example of nontriviality, if an arrow is constructed by applying a universal property, then that property automatically determines some of the composites of that arrow.
+For instance, a pairing $\pair{f}{g}:X\to A\times B$ must compose with the projections $\pi_1:A\times B\to A$ and $\pi_2:A\times B\to B$ to give $f$ and $g$ respectively.
+Thus, these composites do not need to be ``built in'' by hand.
+
+Another interesting fact about cut-elimination is that the composition it produces is automatically associative (and unital), despite the fact that we do not apparently put associativity in anywhere (even implicitly).
+Do\v{s}en~\cite{dosen:cutelim-cats} %\footnote{[TODO: Read Do\v{s}en and Petri\'{c}, \textit{Proof-Theoretical Coherence}, \url{http://www.mi.sanu.ac.rs/~kosta/publications.htm}]}
+ uses this to ``explain'' or ``justify'' the definition of category (and other basic category-theoretic notions) in terms of cut-elimination.
+Of course, for our intended audience of category theorists it is cut-elimination, rather than associativity, that requires explanation and justification; but nevertheless the relationship is intriguing.
+
+Both of these facts are instances of an underlying general principle: by presenting a free categorical structure without explicit reference to composition, we are free to then \emph{define} its composition as an operation on its already-existing morphisms, and we can choose this definition so as to ensure that various desirable properties hold automatically.
+This eliminates or reduces the need for quotienting by equivalence relations in the presentation of a free structure.
+Put differently, a type theory isolates a class of \emph{canonical forms} for morphisms.
+In simple cases every morphism has exactly one canonical form, so that no equivalence relation on the canonical forms is needed; in more complicated situations we still need an equivalence relation, but we can make do with a much simplified one.
+
+Another characteristic advantage of categorical logic is that it enables us to use ``set-like'' reasoning to prove things about arbitrary categories, by means of ``term calculi'' associated to its presentations of free structures.
+From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
+This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
+
+Despite the usefulness of terms, we will maintain and emphasize throughout the principle that terms should be just a convenient notation for derivation trees.
+This perspective has many advantages.
+For instance, it means that a (constructive) proof of cut-elimination \emph{is already} a definition of substitution into terms; it is not necessary to separately define a notion of ``substitution into terms'' and then prove that this \emph{separately defined} notion of substitution is admissible.
+It also deals quite nicely with the problems of $\alpha$-equivalence and bound variable renaming: as an operation on derivations, substitution doesn't need to care about ``whether a free variable is going to get captured''; the point is just that when we choose a term to represent the substituted derivation we have to accord with the general rules for how terms are assigned to derivations.
+
+Most importantly, however, adhering to the ``terms are derivations'' principle greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present the initial category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
+If the ``terms are derivations'' principle is broken, then one generally ends up wanting to induct on derivations anyway, and then having to prove laboriously that the resulting ``operation'' on terms is independent of their derivations.
+
+For similar reasons, we present our type theories so as to ensure that as many structural rules as possible are admissible rather than primitive: not only cut/substitution, but also exchange, contraction, and weakening.
+Many introductions to type theory are somewhat vague about exactly how these rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
+However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which technically requires being explicit about exactly how exchange works.
+If we make exchange admissible, then it is automatically functorial, just as making substitution admissible gives associativity for free; this considerably simplifies the theory.
+Having structural rules as primitive would also make the notation quite tedious if we continued to adhere to the principle that terms are just a notation for derivations.
+
+In fact, much of the literature on categorical logic and type theory contains gaps or even errors relating to these points.
+It is very tempting to prove the initiality theorem by induction on derivations without realizing that by breaking the ``terms are derivations'' principle one thereby incurs an obligation to prove that the interpretation of a term is independent of its derivation.
+It is also very tempting to include too many primitive rules, perhaps based on the thought that if a rule is true anyway, it's simpler to assume it than to have to prove it; of course, thinking of rules as \emph{operations} in an algebraic theory makes clear that if there are too many of them, then the initial algebra will be too big.
+
+Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts, including also the still more general ``polycategories'' and their generalizations).
+Although multicategories have been present in categorical logic from close to the beginnings of both (Lambek's original definition of multicategory~\cite{lambek:dedsys-ii} was motivated by logical considerations), they are rarely mentioned in introductions to the subject.
+One concrete advantage of using multicategories is a more direct correspondence between the type theory and the category theory: type theory distinguishes between a sequent $A,B\types C$ and a sequent $A\times B\types C$ (even though they are bijectively related), so it seems natural to work with a categorical structure that also distinguishes between morphisms $(A,B)\to C$ and $A\times B\to C$.
+
+However, the correspondence and motivation goes deeper than that.
+We may ask \emph{why} type theory distinguishes these two kinds of sequents?
+We will discuss this in more detail in \cref{sec:why-multicats}, but the short answer is that ``it makes cut-elimination work''.
+More specifically, it enables us to formulate type theory in such a way that \emph{each rule refers to at most one type former}; this enables us to ``commute these rules past each other'' in the proof of cut-elimination.
+Moreover, including sequents such as $A,B\types C$ allows us to describe certain operations in a type-theoretic style that would not otherwise be possible, such as a monoidal tensor product.
+A type theorist speaks of this in terms of \emph{deciding on the judgmental structure first} (including ``structural rules'') and then defining the connectives to ``internalize'' various aspects of that structure.
+
+From a categorical point of view, the move to (generalized) multicategories has the feature that \emph{it gives things universal properties}.
+For instance, the tensor product in a monoidal category has no universal property, but the tensor product in a multicategory does.
+In general, from a well-behaved 2-monad $T$ we can define a notion of ``$T$-multicategory''~\cite{burroni:t-cats,leinster:higher-opds,hermida:coh-univ,cs:multicats} in which $T$-algebra structure acquires a universal property (specifically, $T$ is replaced by a lax- or colax-idempotent 2-monad with the same algebras).
+In type theoretic language, the move to $T$-multicategories corresponds to including the desired operations in the judgmental structure.
+The fact that the $T$-operations then have universal properties is what enables us to write down the usual sort of type-theoretic left/right or introduction/elimination rules for them.
+
+Making this correspondence explicit is helpful for many reasons.
+Pedagogically, it can help the category theorist, who believes in universal properties, to understand why type theories are formulated the way they are.
+It also makes the ``initiality theorems'' more modular: first we model the judgmental structure with a multicategory, and then we add more type formers corresponding to objects with various universal properties.
+It can even be helpful from a purely type-theoretic perspective, suggesting more systematic ways to formulate cut admissibility theorems (see e.g.\ \cref{thm:monpos-cutadm,thm:natded-logic-multicutadm}). % [TODO: Also the polycategorical case]).
+Finally, it provides a guide for new applications of categorical logic: when seeking a categorical structure to model a given type theory, we should look for a kind of multicategory corresponding to its judgments; while when seeking an internal logic for a categorical structure, we should represent it using universal properties in some kind of multicategory, from which we can extract an appropriate judgmental structure.
+
+These facts about cut-elimination and multicategories have surely been known in some form to experts for a long time, but I am not aware of a clear presentation of them for the beginner coming from a category-theoretic background.
+They are not strictly necessary if one wants simply to use type theory for internal reasoning about categories, and there are plenty of good introductions that take a geodesic route to that application.
+However, I believe that they yield a deeper understanding of the type/category correspondence; and they are especially valuable when it comes to designing type theories that correspond to new categorical structures (or vice versa).
+
+I will not assume that the reader has any acquaintance with type theory, or any interest in it apart from its uses for category theory.
+However, because one of my goals is to help the reader become familiar with the lingo and concerns of type theorists, I will sometimes include a little more detail than is strictly necessary for categorical applications.
+The reader should feel free to skip over these brief digressions.
+
