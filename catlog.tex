@@ -184,77 +184,109 @@ Our example will consist of several varations on the following theorem:
 \end{thm}
 
 When ``monoid'' and ``group'' have their usual meaning, namely sets equipped with structure, the proof is easy.
-For any $x$, if $i(x)$ and $j(x)$ are both two-sided inverse of $x$, then we have
-\[ i(x) = i(x) \cdot e = i(x) \cdot (x \cdot j(x)) = (i(x)\cdot x)\cdot j(x) = e\cdot j(x) = j(x) \]
+For any $x$, if $y$ and $z$ are both two-sided inverse of $x$, then we have
+\begin{equation}
+y = y \cdot e = y \cdot (x \cdot z) = (y\cdot x)\cdot z = e\cdot z = z\label{eq:invuniq-easy}
+\end{equation}
 However, the theorem is true much more generally than this.
 We consider first the case of monoid/group objects in a category with products.
-A \emph{monoid object} is an object $M$ together with maps $m:M\times M \to M$ and $e:1\to M$ satisfying associativity and unitality axioms:
+A \emph{monoid object} is an object $A$ together with maps $m:A\times A \to A$ and $e:1\to A$ satisfying associativity and unitality axioms:
 \begin{equation}
   \vcenter{\xymatrix{
-      M\times M\times M\ar[r]^-{1\times m}\ar[d]_{m\times 1} &
-      M\times M\ar[d]^m\\
-      M\times M\ar[r]_m &
-      M
+      A\times A\times A\ar[r]^-{1\times m}\ar[d]_{m\times 1} &
+      A\times A\ar[d]^m\\
+      A\times A\ar[r]_m &
+      A
     }}
   \qquad
-  \vcenter{\xymatrix{ M \ar[r]^-{(1,e)} \ar[dr]_{1} &
-    M\times M \ar[d]_m & M \ar[l]_-{(e,1)} \ar[dl]^{1} \\
-    & M }}
+  \vcenter{\xymatrix{ A \ar[r]^-{(1,e)} \ar[dr]_{1} &
+    A\times A \ar[d]_m & A \ar[l]_-{(e,1)} \ar[dl]^{1} \\
+    & A }}
 \end{equation}
-An \emph{inverse operator} for a monoid object is a map $i:M\to M$ such that
+An \emph{inverse operator} for a monoid object is a map $i:A\to A$ such that the following diagrams commute:
 \begin{equation}
-  \vcenter{\xymatrix@C=1pc{& M\times M \ar[rr]^{i\times 1} && M\times M \ar[dr]^m \\
-      M \ar[ur]^{\Delta} \ar[dr]_{\Delta} \ar[rr]^{!} && 1 \ar[rr]^{e} && M \\
-      & M\times M \ar[rr]_{1\times i} && M\times M \ar[ur]_{m}}}
+  \vcenter{\xymatrix@C=1pc{& A\times A \ar[rr]^{i\times 1} && A\times A \ar[dr]^m \\
+      A \ar[ur]^{\Delta} \ar[dr]_{\Delta} \ar[rr]^{!} && 1 \ar[rr]^{e} && A \\
+      & A\times A \ar[rr]_{1\times i} && A\times A \ar[ur]_{m}}}
 \end{equation}
-The internalized claim, then, is that any two inverse operators are equal.
-The \emph{internal logic of a category with products} allows us to prove this by using essentially the same argument that we did in the case of ordinary monoids in \bSet.
+The internalized claim, then, is that \emph{any two inverse operators for a monoid object are equal}.
+A standard category-theoretic proof would be to suppose $i$ and $j$ are both inverse operators and draw a large commutative diagram such as that shown in \cref{fig:uniqinv-diagram}.
+Here the composite around the top is equal to $i$, the composite around the bottom is equal to $j$, and all the internal polygons commute either by one of the monoid axioms, the inverse axiom for $i$ or $j$, or the universal property of products.
+(We encourage the reader to verify this.)
+
+\begin{figure}
+  \centering
+  \[\xymatrix{
+    & A\times A \ar[dr]_-{1\times\Delta} \ar[rr]^{\pi_1}
+    && A \ar[dr]_{(1,e)} \ar@/^13mm/[ddrr]^{1}\\
+    && A\times A\times A \ar[dr]^{1\times 1\times j}
+    && A\times A \ar[dr]^m\\
+    A \ar[rrr]^{(i,1,j)} \ar[uur]_{(i,1)} \ar[ddr]^{(1,j)} &&&
+    A\times A\times A \ar[ur]_{1\times m} \ar[dr]^{m\times 1} && A\\
+    && A\times A\times A \ar[ur]_{i\times 1\times 1}
+    && A \times A \ar[ur]_m\\
+    &  A\times A \ar[ur]_-{\Delta\times 1} \ar[rr]_{\pi_2}
+    && A\ar[ur]^{(e,1)} \ar@/_13mm/[uurr]_{1}
+    }
+  \]
+  \caption{Uniqueness of inverses by diagram chasing}
+  \label{fig:uniqinv-diagram}
+\end{figure}
+
+While there is a certain beauty to \cref{fig:uniqinv-diagram}, it takes considerable effort to write it down and arrange it in such a pleasing form (as opposed to a horrid mess on scratch paper), let alone typeset it prettily.
+And this is really a fairly simple fact about monoids; for more complicated theorems, the complexity of the resulting diagrams grows accordingly.
+
+Nevertheless, there is a sense in which \cref{fig:uniqinv-diagram} is obtained \emph{algorithmically} from the simple proof~\eqref{eq:invuniq-easy}.
+Specifically, each expression in~\eqref{eq:invuniq-easy} corresponds to one or more paths through \cref{fig:uniqinv-diagram}, and each equality in~\eqref{eq:invuniq-easy} corresponds to a commuting polygon in \cref{fig:uniqinv-diagram}.\footnote{Not every polygon in \cref{fig:uniqinv-diagram} corresponds to anything in~\eqref{eq:invuniq-easy}, though: the ``universal property'' quadrilaterals on the left are ``invisible'' algebraically.
+  This is why we said each expression corresponds to ``one or more'' paths: $y\cdot (x\cdot z)$ and $(y\cdot x)\cdot z$ don't care which route we take from $A$ to $A\times A\times A$.}
+With experience, one can learn to do such translations without much effort, at least in simple cases.
+However, if it really is an algorithm, we shouldn't have to re-do it on a case-by-case basis at all; we should be able to prove a single general ``meta-theorem'' and then appeal to it whenever we want to.
+This is the goal of categorical logic.
+
+Specifically, the \emph{internal logic of a category with products} allows us to replace \cref{fig:uniqinv-diagram} by an argument that looks almost the same as~\eqref{eq:invuniq-easy}.
 The morphisms $m$ and $e$ are represented in this logic by the notations
 \begin{mathpar}
-  x:M,y:M \types x\cdot y :M \and
-  \types e:M.
+  x:A,y:A \types x\cdot y :A \and
+  \types e:A.
 \end{mathpar}
 Don't worry if this notation doesn't make a whole lot of sense yet.
 The symbol $\types$ (called a ``turnstile'') is the logic version of a morphism arrow $\to$, and the entire notation is called a \emph{sequent} or a \emph{judgment}.
-The fact that $m$ is a morphism $M\times M \to M$ is indicated by the fact that $M$ appears twice to the left of $\types$ and once to the right; the comma ``$,$'' in between $x:M$ and $y:M$ represents the product $\times$, and the variables $x,y$ are there so that we have a good notation ``$x\cdot y$'' for the morphism $m$.
-In particular, the notation $x:M,y:M \types x\cdot y :M$ should be bracketed as
-\[ ((x:M),(y:M)) \types ((x\cdot y) :M). \]
+The fact that $m$ is a morphism $A\times A \to A$ is indicated by the fact that $A$ appears twice to the left of $\types$ and once to the right; the comma ``$,$'' in between $x:A$ and $y:A$ represents the product $\times$, and the variables $x,y$ are there so that we have a good notation ``$x\cdot y$'' for the morphism $m$.
+In particular, the notation $x:A,y:A \types x\cdot y :A$ should be bracketed as
+\[ ((x:A),(y:A)) \types ((x\cdot y) :A). \]
 Similarly, the associativity, unit, and inverse axioms are indicated by the notations
 \begin{mathpar}
-  x:M,y:M,z:M \types (x\cdot y)\cdot z = x\cdot (y\cdot z) : M \\
-  x:M \types x\cdot e = x : M \and
-  x:M \types e\cdot x = x : M \\F
-  x:M \types x\cdot i(x) = e : M \and
-  x:M \types i(x) \cdot x = e : M
+  x:A,y:A,z:A \types (x\cdot y)\cdot z = x\cdot (y\cdot z) : A \\
+  x:A \types x\cdot e = x : A \and
+  x:A \types e\cdot x = x : A \\
+  x:A \types x\cdot i(x) = e : A \and
+  x:A \types i(x) \cdot x = e : A
 \end{mathpar}
-Now the \bSet-based proof can be essentially copied in this notation:
-\[ x:M \types i(x) = i(x) \cdot e = i(x) \cdot (x \cdot j(x)) = (i(x)\cdot x)\cdot j(x) = e\cdot j(x) = j(x) : M.\]
+Now~\eqref{eq:invuniq-easy} can be essentially copied in this notation:
+\[ x:A \types i(x) = i(x) \cdot e = i(x) \cdot (x \cdot j(x)) = (i(x)\cdot x)\cdot j(x) = e\cdot j(x) = j(x) : A.\]
 The essential point is that the notation \emph{looks set-theoretic}, with ``variables'' representing ``elements'', and yet (as we will see) its formal structure is such that it can be interpreted into \emph{any} category with products.
 Therefore, writing the proof in this way yields automatically a proof of the general theorem that any two inverse \emph{operators} for a monoid \emph{object} in a category with products are equal.
-
-To be sure, such a proof could be written in standard categorical style using commutative diagrams as well (\cref{ex:fp-inv-uniq}), and experienced category theorists become quite good at translating proofs in this way.
-The point of categorical logic is that this sort of work is \emph{so} straightforward that it's actually completely unnecessary to do at all: we can prove a ``meta-theorem'' that does all the work for us.
 
 Before leaving this appetizer section, we mention some further generalizations of this result.
 While type theory allows us to use set-like notation to prove facts about any category with finite products, the allowable notation is fairly limited, essentially restricting us to algebraic calculations with variables.
 However, if our category has more structure, then we can ``internalize'' more set-theoretic arguments.
 
-As an example, note that for ordinary monoids in sets the uniqueness of inverses can be expressed ``pointwise'' rather than in terms of inverse-assigning operators.
-In other words, for each element $x\in M$, if $x$ has two two-sided inverses $y$ and $z$, then $y=z$.
+As an example, note that for ordinary monoids in sets, the uniqueness of inverses~\eqref{eq:invuniq-easy} is expressed ``pointwise'' rather than in terms of inverse-assigning operators.
+In other words, for each element $x\in A$, if $x$ has two two-sided inverses $y$ and $z$, then $y=z$, regardless of whether any other elements of $A$ have inverses.
 If we think hard enough, we can express this diagrammatically in terms of the category \bSet is to consider the following two sets:
 \begin{align*}
-  A &= \setof{(x,y,z)\in M^3 | xy=e, yx=e, xz=e, zx=e}\\
-  B &= \setof{(y,z)\in M^2 | y=z}
+  B &= \setof{(x,y,z)\in A^3 | xy=e, yx=e, xz=e, zx=e}\\
+  C &= \setof{(y,z)\in B^2 | y=z}
 \end{align*}
-In other words, $A$ is the set of elements $x$ equipped with two inverses, and $B$ is the set of pairs of equal elements.
+In other words, $B$ is the set of elements $x$ equipped with two inverses, and $C$ is the set of pairs of equal elements.
 Then the uniqueness of pointwise inverses can be expressed by saying there is a commutative diagram
-\[ \xymatrix{ A \ar[d] \ar[r] & B \ar[d] \\ M^3 \ar[r]_{\pi_{23}} & M^2 } \]
+\[ \xymatrix{ B \ar[d] \ar[r] & C \ar[d] \\ A^3 \ar[r]_{\pi_{23}} & A^2 } \]
 where the vertical arrows are inclusions and the lower horizontal arrow projects to the second and third components.
 
-This is a statement that makes sense for a monoid object $M$ in any category with finite \emph{limits}.
-The object $B$ can be constructed categorically as the equalizer of the two projections $M\times M \toto M$ (which is in fact isomorphic to $M$ itself), while the object $A$ is a ``joint equalizer'' of four parallel pairs, one of which is
-\[ \vcenter{\xymatrix{ & M \times M \ar[dr]^m \\
-    M\times M\times M \ar[ur]^{\pi_{12}} \ar[dr]_{!} && M \\
+This is a statement that makes sense for a monoid object $A$ in any category with finite \emph{limits}.
+The object $C$ can be constructed categorically as the equalizer of the two projections $A\times A \toto A$ (which is in fact isomorphic to $A$ itself), while the object $B$ is a ``joint equalizer'' of four parallel pairs, one of which is
+\[ \vcenter{\xymatrix{ & A \times A \ar[dr]^m \\
+    A\times A\times A \ar[ur]^{\pi_{12}} \ar[dr]_{!} && A \\
     & 1 \ar[ur]_e }} \]
 and the others are similar.
 We can then try to \emph{prove}, in this generality, that there is a commutative square as above.
@@ -262,20 +294,20 @@ We can do this by manipulating arrows, or by appealing to the Yoneda lemma, but 
 This is a syntax like the internal logic for categories with finite products, but which also allows us to \emph{hypothesize equalities}.
 The judgment in question is
 \begin{equation}\label{eq:pointwise-unique-inverses}
-  x:M, y:M, z:M, x\cdot y = e, y\cdot x=e, x\cdot z = e, z\cdot x = e \types y=z.
+  x:A, y:A, z:A, x\cdot y = e, y\cdot x=e, x\cdot z = e, z\cdot x = e \types y=z.
 \end{equation}
 As before, the comma binds the most loosely, so this should be read as
-\[ ((x:M), (y:M), (z:M), (x\cdot y = e), (y\cdot x=e), (x\cdot z = e), (z\cdot x = e)) \types (y=z). \]
+\[ ((x:A), (y:A), (z:A), (x\cdot y = e), (y\cdot x=e), (x\cdot z = e), (z\cdot x = e)) \types (y=z). \]
 We can prove this by set-like equational reasoning, essentially just as before.
-The ``interpretation machine'' then produces from this a morphism $A\to B$, for the objects $A$ and $B$ constructed above.
+The ``interpretation machine'' then produces from this a morphism $B\to C$, for the objects $B$ and $C$ constructed above.
 
-Next, note that in the category \bSet, the uniqueness of inverses ensures that if every element $x\in M$ has an inverse, then there is a \emph{function} $i:M\to M$ assigning inverses --- even without using the axiom of choice.
+Next, note that in the category \bSet, the uniqueness of inverses ensures that if every element $x\in A$ has an inverse, then there is a \emph{function} $i:A\to A$ assigning inverses --- even without using the axiom of choice.
 (If we define functions as sets of ordered pairs, as is usual in set-theoretic foundations, we could take $i = \setof{(x,y) | xy=e}$; the pointwise uniqueness ensures that this is indeed a function.)
 This fact can be expressed in the internal logic of an \emph{elementary topos}.
 We postpone the definition of a topos until later; for now we just remark that its structure allows both sides of the turnstile $\types$ to contain \emph{logical formulas} such as $\exists x, \forall y, \phi(x,y)$ rather than just elements and equalities.
 In this language we can state and prove the following:
-\[ \forall x:M, \exists y:M, x\cdot y = e \land y\cdot x = e \types
-\exists i:M^M, \forall x:M, (x\cdot i(x) = e \land i(x)\cdot x = e)
+\[ \forall x:A, \exists y:A, x\cdot y = e \land y\cdot x = e \types
+\exists i:A^A, \forall x:A, (x\cdot i(x) = e \land i(x)\cdot x = e)
 \]
 As before, the proof is essentially exactly like the usual set-theoretic one.
 Moreover, the interpretation machine allows us to actually extract an ``inverse operator'' morphism in the topos from this proof.
@@ -283,19 +315,19 @@ As before, such a result can also be stated and proved using arrows and commutat
 
 So much for adding extra structure.
 In fact, we can also take structure away!
-A monoid object can be defined internal to any \emph{monoidal} category, not just a cartesian monoidal one; now the structure maps are $m:M\otimes M\to M$ and $e:I\to M$, and the commutative diagrams are essentially the same.
+A monoid object can be defined internal to any \emph{monoidal} category, not just a cartesian monoidal one; now the structure maps are $m:A\tensor A\to A$ and $e:\one\to A$, and the commutative diagrams are essentially the same.
 
-To define an inverse operator in this case, however, we need some sort of ``diagonal'' $\Delta:M\to M\otimes M$ and also a ``projection'' or ``augmentation'' $\varepsilon:M\to I$.
-The most natural hypothesis is that these maps make $M$ into a \emph{comonoid} object, i.e.\ a monoid in the opposite monoidal category, and that the monoid and comonoid structures preserve each other; this is the notion of a \emph{bimonoid} (or ``bialgebra'').
+To define an inverse operator in this case, however, we need some sort of ``diagonal'' $\comult:A\to A\tensor A$ and also a ``projection'' or ``augmentation'' $\counit:A\to \one$.
+The most natural hypothesis is that these maps make $A$ into a \emph{comonoid} object, i.e.\ a monoid in the opposite monoidal category, and that the monoid and comonoid structures preserve each other; this is the notion of a \emph{bimonoid} (or ``bialgebra'').
 (\cref{ex:cartmon-bimon-uniq}: in a cartesian monoidal category, every object is a bimonoid in a unique way.)
 
-Now given a bimonoid $M$, we can define an ``inverse operator'' --- which in this context is usually called an \emph{antipode} --- to be a map $i:M\to M$ such that
+Now given a bimonoid $A$, we can define an ``inverse operator'' --- which in this context is usually called an \emph{antipode} --- to be a map $i:A\to A$ such that
 \begin{equation}
-  \vcenter{\xymatrix@C=1pc{& M\otimes M \ar[rr]^{i\otimes 1} && M\otimes M \ar[dr]^m \\
-      M \ar[ur]^{\Delta} \ar[dr]_{\Delta} \ar[rr]^{\varepsilon} && I \ar[rr]^{e} && M \\
-      & M\otimes M \ar[rr]_{1\otimes i} && M\otimes M \ar[ur]_{m}}}
+  \vcenter{\xymatrix@C=1pc{& A\tensor A \ar[rr]^{i\tensor 1} && A\tensor A \ar[dr]^m \\
+      A \ar[ur]^{\comult} \ar[dr]_{\comult} \ar[rr]^{\counit} && \one \ar[rr]^{e} && A \\
+      & A\tensor A \ar[rr]_{1\tensor i} && A\tensor A \ar[ur]_{m}}}
 \end{equation}
-commutes, where now $\Delta$ and $\varepsilon$ are the comonoid structure of $M$ rather than the diagonal and projection of a cartesian product.
+commutes, where now $\comult$ and $\counit$ are the comonoid structure of $A$ rather than the diagonal and projection of a cartesian product.
 A bimonoid equipped with an antipode is called a \emph{Hopf monoid} (or ``Hopf algebra'').
 The obvious question then is, if a bimonoid has two antipodes, are they equal?
 
@@ -309,34 +341,34 @@ In a monoidal category we can consider judgments with multiple outputs as well a
 This allows us to describe monoids and comonoids in a roughly ``dual'' way.
 Don't worry about the precise syntax being used on the right; it will be explained in \cref{sec:prop-smc}.
 \begin{alignat*}{2}
-  x:M, y:M &\types x\cdot y:M &\qquad x:M &\types (x_1,x_2):(M,M)\\
-  &\types e:M &\qquad x:M &\types (\mid\cancel{x}):()\\
-  x:M,y:M,z:M &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :M &\qquad x:M &\types (x_{11},x_{12},x_2)=(x_1,x_{21},x_{22}):(M,M,M)\\
-  x:M &\types x\cdot e=x:M &\qquad x:M &\types (x_1\mid\cancel{x_2}) = x:M\\
-  x:M &\types e\cdot x=x:M &\qquad x:M &\types (x_2\mid\cancel{x_1}) = x:M
+  x:A, y:A &\types x\cdot y:A &\qquad x:A &\types (x_1,x_2):(A,A)\\
+  &\types e:A &\qquad x:A &\types (\mid\cancel{x}):()\\
+  x:A,y:A,z:A &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :A &\qquad x:A &\types (x_{11},x_{12},x_2)=(x_1,x_{21},x_{22}):(A,A,A)\\
+  x:A &\types x\cdot e=x:A &\qquad x:A &\types (x_1\mid\cancel{x_2}) = x:A\\
+  x:A &\types e\cdot x=x:A &\qquad x:A &\types (x_2\mid\cancel{x_1}) = x:A
 \end{alignat*}
 In this language, the bimonoid axioms are
 \begin{align*}
-  x:M,y:M &\types (x_1\cdot y_1,x_2\cdot y_2) = ((x\cdot y)_1,(x\cdot y)_2) :(M,M)\\
-          &\types (e_1,e_2)=(e,e):(M,M)\\
-  x:M,y:M &\types (\mid\cancel{x\cdot y}) = (\mid\cancel{x},\cancel{y}) : ()\\
+  x:A,y:A &\types (x_1\cdot y_1,x_2\cdot y_2) = ((x\cdot y)_1,(x\cdot y)_2) :(A,A)\\
+          &\types (e_1,e_2)=(e,e):(A,A)\\
+  x:A,y:A &\types (\mid\cancel{x\cdot y}) = (\mid\cancel{x},\cancel{y}) : ()\\
   &\types (\mid\cancel{e})=():()
 \end{align*}
-And an antipode is a map $x:M \types i(x):M$ such that
+And an antipode is a map $x:A \types i(x):A$ such that
 \begin{align*}
-  x:M &\types x_1\cdot i(x_2) = (e\mid\cancel{x}) :M\\
-  x:M &\types i(x_1)\cdot x_2 = (e\mid\cancel{x}) :M
+  x:A &\types x_1\cdot i(x_2) = (e\mid\cancel{x}) :A\\
+  x:A &\types i(x_1)\cdot x_2 = (e\mid\cancel{x}) :A
 \end{align*}
 Now if we have another antipode $j$, we can compute
 \begin{align*}
-  x:M \types i(x)
+  x:A \types i(x)
   &= i(x)\cdot e\\
   &= (i(x_1)\cdot e\mid\cancel{x_2})\\
   &= i(x_1)\cdot (x_{21} \cdot j(x_{22}))\\
   &= (i(x_1)\cdot x_{21}) \cdot j(x_{22})\\
   &= (e \cdot j(x_{2})\mid\cancel{x_1})\\
   &= e\cdot j(x)\\
-  &= j(x) \qquad :M
+  &= j(x) \qquad :A
 \end{align*}
 yielding the same result $i=j$.
 So even in a non-cartesian situation, we can use a very similar set-like argument, as long as we keep track of where elements get ``duplicated and discarded''.
@@ -345,10 +377,6 @@ This concludes our ``appetizer''; I hope it has given you a taste of what catego
 In the next section we will rewind back to the beginning and start with very simple cases.
 
 \subsection*{Exercises}
-
-\begin{ex}\label{ex:fp-inv-uniq}
-  Prove, using arrows and commutative diagrams, that any two inverse operators for a monoid object in a category with finite products are equal.
-\end{ex}
 
 \begin{ex}\label{ex:cartmon-bimon-uniq}
   Prove that in a cartesian monoidal category, every object is a bimonoid in a unique way.
@@ -360,6 +388,28 @@ In the next section we will rewind back to the beginning and start with very sim
 
 \begin{ex}\label{ex:antipode}
   Prove, using arrows and commutative diagrams, that any two antipodes for a bimonoid (not necessarily commutative or cocommutative) are equal.
+\end{ex}
+
+\begin{ex}\label{ex:eckmann-hilton}
+  Suppose $A$ is a set with two monoid structures $(m_1,e)$ and $(m_2,e)$ having the same unit element $e$, and satisfying the ``interchange law'' $m_1(m_2(x,y),m_2(z,w)) = m_2(m_1(x,z),m_1(y,w))$.
+  Then we have
+  \[ m_1(x,y) = m_1(m_2(x,e),m_2(e,y)) = m_2(m_1(x,e),m_1(e,y)) = m_2(x,y) \]
+  and also
+  \[ m_1(x,y) = m_1(m_2(e,x),m_2(y,e)) = m_2(m_1(e,y),m_1(x,e)) = m_2(y,x) \]
+  so that $m_1=m_2$ and both are commutative.
+  This is called the \emph{Eckmann-Hilton argument}.
+  State and prove an analogous fact about objects in any category with finite products having two monoid structures satisfying an ``interchange law''.
+  \textit{(In \cref{ex:catprod-eckmann-hilton,ex:catprod-ehnr-again} you will re-do this proof using internal logic for comparison.)}
+\end{ex}
+
+\begin{ex}\label{ex:near-ring}
+  A ``distributive near-ring'' is like a ring but without the assumption that addition is commutative; thus we have a monoid structure $(\cdot,1)$ and a group structure $(+,0)$ such that $\cdot$ distributes over $+$ on both sides.
+  \begin{enumerate}
+  \item Prove that every distributive near-ring is actually a ring.
+    \textit{(For this reason, in an unqualified ``near-ring'' only one side of distributivity is assumed.)}
+  \item Define a ``distributive near-ring object'' in a category with finite products, and prove that any such is actually a ``ring object''.
+    \textit{(In \cref{ex:catprod-nearring,ex:catprod-ehnr-again} you will re-do this proof using internal logic for comparison.)}
+  \end{enumerate}
 \end{ex}
 
 
@@ -2398,14 +2448,16 @@ This is another advantage of the multiple-antecedent type theories to be present
 
 \begin{ex}\label{ex:catprod-eckmann-hilton}
   Write down a $\times$-theory for objects having two monoid structures with the same unit and satisfying an internalized version of the ``interchange law'' $m_1(m_2(x,y),m_2(z,w)) = m_2(m_1(x,z),m_1(y,w))$.
-  Prove in the resulting type theory that $m_1=m_2$ (this is called the \emph{Eckmann-Hilton argument}).
+  Prove in the resulting type theory that $m_1=m_2$ and both are commutative.
+  Compare this proof to \cref{ex:eckmann-hilton}.
+  \textit{(In \cref{ex:catprod-ehnr-again} you will re-do this proof using a better internal logic for comparison.)}
 \end{ex}
 
 \begin{ex}\label{ex:catprod-nearring}
-  A ``distributive near-ring'' is like a ring but without the assumption that addition is commutative; thus we have a monoid structure $(\cdot,1)$ and a group structure $(+,0)$ such that $\cdot$ distributes over $+$ on both sides.
+  Recall the notion of ``distributive near-ring'' from \cref{ex:near-ring}.
   Write down a $\times$-theory for internal distributive near-ring objects in a category with products.
-  Then use the resulting type theory to prove that every distributive near-ring object is in fact a ring object, i.e.\ the addition is automatically commutative.
-  \textit{(For this reason, in an unqualified ``near-ring'' only one side of distributivity is assumed.)}
+  Then use the resulting type theory to prove that every distributive near-ring object is in fact a ring object; compare this proof to \cref{ex:near-ring}.
+  \textit{(In \cref{ex:catprod-ehnr-again} you will re-do this proof using a better internal logic for comparison.)}
 \end{ex}
 
 
@@ -2478,7 +2530,7 @@ It turns out that the solution is the same.
 
 We might also want to talk about operations that \emph{have} no obvious universal property, obviously violating~\eqref{princ:ump}.
 For instance, what about monoidal categories?
-In the usual presentation of a monoidal category, the tensor product $A\otimes B$ has no universal property.
+In the usual presentation of a monoidal category, the tensor product $A\tensor B$ has no universal property.
 It turns out that there is a way to give it a universal property, and this also leads us to higher-ary antecedents.
 
 Finally, there is also another motivation not having anything to do with~\eqref{princ:independence} and~\eqref{princ:ump}: we may want to generalize the ``input data'' \cG from which we generate our free objects.
@@ -5096,7 +5148,7 @@ reproduce the uniqueness argument from \cref{sec:intro}.
   Two of these contexts $\Gamma$ and $\Delta$ can be \emph{merged} if they contain the same types in the same order, and each type is used (the opposite of unused) in at most one of them; in that case they merge to a context $\Gamma\merge\Delta$ containing the same types again, with those used that are used in either $\Gamma$ or $\Delta$.
   For instance, $(A^0,B,C^0)\merge(A,B^0,C^0) = (A,B,C^0)$.
   \begin{enumerate}
-  \item Formulate a type theory containing $\otimes,\times,+,\hom$ using contexts with usage markers and merging rather than concatenation.
+  \item Formulate a type theory containing $\tensor,\times,+,\hom$ using contexts with usage markers and merging rather than concatenation.
     For instance, the rule $\tensorI$ should be
     \[ \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma\merge\Delta \types \tpair M N : A\tensor B.}\]
     Prove that exchange, and weakening for unused types, are admissible and functorial, by pushing them up the entire derivation as we did in the cartesian case in \cref{sec:stlc}.
