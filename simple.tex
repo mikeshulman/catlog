@@ -67,10 +67,10 @@ For instance, what about monoidal categories?
 In the usual presentation of a monoidal category, the tensor product $A\tensor B$ has no universal property.
 It turns out that there is a way to give it a universal property, and this also leads us to higher-ary antecedents.
 
-Finally, there is also another motivation not having anything to do with~\eqref{princ:independence} and~\eqref{princ:ump}: we may want to generalize the ``input data'' \cG from which we generate our free objects.
-The unary type theory for categories with products allows us to prove theorems of the form ``in any category with products, for any morphisms $f:A\to B$, $g:C\to D$ \dots'', but it doesn't permit these quantifications to include ``for any $f:A\times B\to C$''.
-This is because the type theory generates a free category-with-products from a directed graph \cG whose vertices and edges are the objects and morphisms we hypothesize; but there is no way to express $f:A\times B\to C$ as an edge of \cG, since \cG has no products of objects yet.
-This problem turns out to have the same solution as well.
+% Finally, there is also another motivation not having anything to do with~\eqref{princ:independence} and~\eqref{princ:ump}: we may want to generalize the ``input data'' \cG from which we generate our free objects.
+% The unary type theory for categories with products allows us to prove theorems of the form ``in any category with products, for any morphisms $f:A\to B$, $g:C\to D$ \dots'', but it doesn't permit these quantifications to include ``for any $f:A\times B\to C$''.
+% This is because the type theory generates a free category-with-products from a directed graph \cG whose vertices and edges are the objects and morphisms we hypothesize; but there is no way to express $f:A\times B\to C$ as an edge of \cG, since \cG has no products of objects yet.
+% This problem turns out to have the same solution as well.
 
 As already mentioned, on the type-theoretic side what we will do in this chapter is allow multiple types in the antecedent of a judgment (but still, for now, only one type in the consequent); we call these \emph{simple type theories}.
 In a simple type theory the antecedent is often called the \emph{context}.
@@ -119,7 +119,7 @@ However, for completeness let me point out now that this general correspondence 
 On one hand, any type theory that adheres to~\eqref{princ:independence} should have semantics in a kind of generalized multicategory that can be ``read off'' from the shape of its contexts and its structural rules.
 On the other hand, to construct a type theory for a given categorical structure, we should seek to represent that structure as a generalized multicategory in which all the relevant objects have independent universal properties; then we can ``read off'' from the domains of morphisms in those multicategories the shape of the contexts and the structural rules of our desired type theory.
 
-We will not attempt to make this correspondence precise in any general way, and in practice it has many tweaks and variations that would probably be exceptions to any putative general theorem; but it is a very useful heuristic.
+We will not attempt to make this correspondence precise in any general way, and in practice it has many tweaks and variations that would probably be exceptions to any putative general theorem; but it is a useful heuristic.
 
 
 \section{Introduction to multicategories}
