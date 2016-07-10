@@ -266,7 +266,7 @@ If nothing else, the category theorist will encounter these words when speaking 
 In fact, our perspective is that it is precisely the esoteric-sounding notion of \emph{cut elimination} (or \emph{admissibility of substitution}) that essentially \emph{defines} what we mean by a \emph{type theory}.
 Of course this is not literally true; a more careful statement would be that type theories with cut elimination are those that exhibit the most behavior most characteristic of type theories.
 (Jean-Yves Girard remarked that ``a logic without cut-elimination is like a car without an engine.'')
-A ``type theory without cut elimination'' may still yield explicit presentations of free structures, but reasoning with such a presentation will not yield the characteristic benefits of categorical logic.
+A ``type theory without cut elimination'' can still yield explicit presentations of free structures, but will tend to lack some of the characteristic features of categorical logic.
 
 So what is this mysterious cut-elimination, from a categorical perspective?
 Informally, it says that the morphisms in a free categorical structure can be presented \emph{without explicit reference to composition}.
@@ -285,11 +285,14 @@ Of course, for our intended audience of category theorists it is cut-elimination
 Both of these facts are instances of an underlying general principle: by presenting a free categorical structure without explicit reference to composition, we are free to then \emph{define} its composition as an operation on its already-existing morphisms, and we can choose this definition so as to ensure that various desirable properties hold automatically.
 This eliminates or reduces the need for quotienting by equivalence relations in the presentation of a free structure.
 Put differently, a type theory isolates a class of \emph{canonical forms} for morphisms.
-In simple cases every morphism has exactly one canonical form, so that no equivalence relation on the canonical forms is needed; in more complicated situations we still need an equivalence relation, but we can make do with a much simplified one.
+In simple cases every morphism has exactly one canonical form, so that no equivalence relation on the canonical forms is needed.
+In more complicated situations we still need an equivalence relation, but the necessary equivalence relation is often simpler and/or more intuitive than that involved in more tautological presentations of free structures.
 
 Another characteristic advantage of categorical logic is that it enables us to use ``set-like'' reasoning to prove things about arbitrary categories, by means of ``term calculi'' associated to its presentations of free structures.
-From this perspective, the admissibility of substitution (which is another name for cut-elimination) says that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
-This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
+(This is what we exhibited several examples of in \cref{sec:intro}.)
+Such syntax is not actually a characteristic of \emph{all} type theories, but of a large class of common ones that are sometimes known as ``natural deduction'' theories (although this usage of the term is much broader than its traditional denotation).
+Roughly speaking, natural deduction theories ``build in composition'' on the left side only, which from a categorical perspective suggests that they are talking about representable presheaves, i.e.\ describing a category by way of its Yoneda embedding.
+The characteristic ``set-like'' syntax of natural deduction theories then corresponds to the point of view that considers an arbitrary morphism $x:X\to A$ in a category to be a ``generalized element'' of $A$.
 
 Despite the usefulness of terms, we will maintain and emphasize throughout the principle that terms should be just a convenient notation for derivation trees.
 This perspective has many advantages.
@@ -299,13 +302,21 @@ It also deals quite nicely with the problems of $\alpha$-equivalence and bound v
 Most importantly, however, adhering to the ``terms are derivations'' principle greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present the initial category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
 If the ``terms are derivations'' principle is broken, then one generally ends up wanting to induct on derivations anyway, and then having to prove laboriously that the resulting ``operation'' on terms is independent of their derivations.
 
+Informally, the ``terms are derivations'' principle means that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
+That is, the meaning of ``$2+3$'' should not depend on whether we obtained it by substituting $x=2$ into $x+3$ or by substituting $y=3$ into $2+y$.
+This is obviously a desirable feature, and arguably even a necessary one if our ``notation'' is to be worthy of the name.
+Moreover, this ``freedom from mind-reading'' should hold \emph{by definition} of the meaning of our notation: the meaning of $2+3$ should be defined on its own without reference to $x+3$ and $2+y$, with the fact that we can obtain it from the latter expressions by substitution being a later observation.
+
+This principle demands in particular that substitution be an ``admissible rule'' rather than a primitive one (that is, an operation defined on terms/derivations, rather than one of the rules for producing them).
 For similar reasons, we present our type theories so as to ensure that as many structural rules as possible are admissible rather than primitive: not only cut/substitution, but also exchange, contraction, and weakening.
+The meaning of $x+y$ should not depend on which of the variables $x$ and $y$ happens to have been mentioned first in the course of a proof.
+
 Many introductions to type theory are somewhat vague about exactly how these rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
 However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which technically requires being explicit about exactly how exchange works.
 If we make exchange admissible, then it is automatically functorial, just as making substitution admissible gives associativity for free; this considerably simplifies the theory.
 Having structural rules as primitive would also make the notation quite tedious if we continued to adhere to the principle that terms are just a notation for derivations.
 
-In fact, much of the literature on categorical logic and type theory contains gaps or even errors relating to these points.
+In fact, much of the literature on categorical logic contains gaps or even errors relating to these points.
 It is very tempting to prove the initiality theorem by induction on derivations without realizing that by breaking the ``terms are derivations'' principle one thereby incurs an obligation to prove that the interpretation of a term is independent of its derivation.
 It is also very tempting to include too many primitive rules, perhaps based on the thought that if a rule is true anyway, it's simpler to assume it than to have to prove it; of course, thinking of rules as \emph{operations} in an algebraic theory makes clear that if there are too many of them, then the initial algebra will be too big.
 
