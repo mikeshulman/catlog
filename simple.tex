@@ -2427,7 +2427,7 @@ Type theory, with its technology of cut-admissibility, gives us a concrete way t
       (A\to B\to C)\to (A\to B) \to (A\to C)
     \end{mathpar}
     \textit{(Remember that the type operator $\to$ associates to the right: $X\to Y\to Z$ means $X\to (Y\to Z)$.)}\label{item:cl1}
-  \item Let \textbf{CL} denote the type theory obtained from simply typed $\lambda$-calculus by \emph{removing} the $\lambda$-abstraction rule:
+  \item By \textbf{combinatory logic} we will mean the type theory obtained from simply typed $\lambda$-calculus by \emph{removing} the $\lambda$-abstraction rule:
     \[ \xcancel{\inferrule*{\Gamma,x:A \types M:B}{\Gamma \types \lambda x.M:A\to B}} \]
     and instead adding axioms called $I$, $K$, and $S$ having the above types (for any $A,B,C$):
     \begin{mathpar}
@@ -2436,8 +2436,8 @@ Type theory, with its technology of cut-admissibility, gives us a concrete way t
       \inferrule{\types A\type\\\types B\type\\\types C\type}{\Gamma\types S_{ABC}:(A\to B\to C)\to (A\to B) \to (A\to C)}
     \end{mathpar}
     Prove that the removed $\lambda$-abstraction rule is \emph{admissible} in \textbf{CL}.
-    That is, given a derivation in \textbf{CL} of $\Gamma,x:A \types M:B$, we can construct a derivation in \textbf{CL} of $\Gamma\types [x]M:A\to B$ for some $[x]M$ (note that this is an \emph{operation} on terms of \textbf{CL}, like substitution).\label{item:cl2}
-  \item Write down some $\equiv$-laws satisfied by the $I$, $K$, and $S$ you defined in~\ref{item:cl1}, and show that when they are used as generators for an $\equiv$ on \textbf{CL} it also presents a free closed cartesian multicategory.
+    That is, given a derivation in combinatory logic of $\Gamma,x:A \types M:B$, we can construct a derivation in combinatory logic of $\Gamma\types [x]M:A\to B$ for some $[x]M$ (note that this is an \emph{operation} on combinatory logic terms, like substitution).\label{item:cl2}
+  \item Write down some $\equiv$-laws satisfied by the $I$, $K$, and $S$ you defined in~\ref{item:cl1}, and show that when they are used as generators for an $\equiv$ for combinatory logic, it also presents a free closed cartesian multicategory.
     One way to do this is by a direct induction on derivations; another way is exhibit a bijection between its terms and those of the simply typed $\lambda$-calculus.
   \item Compare to \cref{ex:hilbert}.
   \end{enumerate}
