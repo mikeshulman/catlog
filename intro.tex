@@ -147,6 +147,7 @@ As before, the proof is essentially exactly like the usual set-theoretic one.
 Moreover, the interpretation machine allows us to actually extract an ``inverse operator'' morphism in the topos from this proof.
 As before, such a result can also be stated and proved using arrows and commutative diagrams, but as the theorems get more complicated, the translation gets more tedious to do by hand, and the advantage of type-theoretic notation becomes greater.
 
+\begin{props}
 So much for adding extra structure.
 In fact, we can also take structure away!
 A monoid object can be defined internal to any \emph{monoidal} category, not just a cartesian monoidal one; now the structure maps are $m:A\tensor A\to A$ and $e:\one\to A$, and the commutative diagrams are essentially the same.
@@ -206,9 +207,10 @@ Now if we have another antipode $j$, we can compute
 \end{align*}
 yielding the same result $i=j$.
 So even in a non-cartesian situation, we can use a very similar set-like argument, as long as we keep track of where elements get ``duplicated and discarded''.
+\end{props}
 
 This concludes our ``appetizer''; I hope it has given you a taste of what categorical logic looks like, and what it can do for category theory.
-In the next section we will rewind back to the beginning and start with very simple cases.
+In \cref{chap:unary} we will rewind back to the beginning and start with very simple cases.
 
 \subsection*{Exercises}
 
