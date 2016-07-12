@@ -323,8 +323,10 @@ It is easy to see that conversely every derivation is represented by a unique te
 The above simple inductive proof of \cref{thm:category-tad} depends in particular on the presence of the subscript on the symbol $\circ$.
 Similar annotations will reappear in many subsequent theories.
 In the present case we could omit these annotations and still reconstruct a unique derivation, because we know the domain and codomain of all the generating morphisms in \cG.
-However, this would require a more ``global'' analysis of the term; whereas a clean inductive proof such as the above has the advantage that it can be regarded as a recursively defined \emph{algorithm for type-checking}.
-This can be programmed into a computer, and arguably represents reasonably faithfully what human mathematicians do when reading syntax.
+However, this would require a more ``global'' analysis of the term; whereas a clean inductive proof such as the above has the advantage that it can be regarded as a \textit{recursively defined algorithm}.
+
+We call this algorithm \emph{type-checking}: it starts with a putative sequent with term $\phi :(A\types B)$ and, by following the algorithm of \cref{thm:category-tad} until it terminates or encounters a contradiction, either produces a derivation of that sequent or decides that it has no such derivation.
+This algorithm can be programmed into a computer, and arguably represents reasonably faithfully what human mathematicians do when reading syntax.
 With that said, when writing for a human reader (and even an electronic reader whose programmer has been clever enough) it is often possible to leave off annotations of this sort without fear of ambiguity, and we will frequently do so.
 
 Not all type theories have the property that terms uniquely determine their derivations by a direct inductive algorithm; but those that don't tend to be much more complicated to analyze and prove the initiality theorem for.
@@ -1323,6 +1325,22 @@ This completes the definition of the \textbf{unary type theory for categories wi
   Such is indeed the case (although for technical reasons the $\eta$-conversion is usually applied in the less intuitive right-to-left direction and called an ``expansion'' rather than a ``reduction'').
   This \emph{process of reduction} (and expansion) belongs to the ``computational'' side of type theory, which (though of course important in its own right) is somewhat tangential to our category-theoretic emphasis, so we will not discuss it in detail.
   % (However, in \cref{cha:canonical} we will directly characterize the \emph{result of reduction}, and thereby implicitly the process thereof.)
+\end{rmk}
+
+\begin{rmk}\label{rmk:equality-terms}
+  Note that this type theory has three kinds of judgments (or ``judgment forms''):
+  \begin{mathpar}
+    \types A\type \and x:A\types M:B \and x:A\types M\equiv N:B.
+  \end{mathpar}
+  Categorically, these will represent the objects of a category, the morphisms of a category, and the equalities between those morphisms.
+  We have discussed how in the morphism judgment $x:A\types M:B$, the term $x.M$ is an annotation that isomorphically represents a particular derivation of the un-annotated judgment $A\types B$.
+  In the object judgment $\types A\type$, we can similarly regard $A$ as a term annotation isomorphically representing a particular derivation of an un-annotatated judgment ``$\types\ftype$''.
+  (We could thus write it as $\types A:\ftype$ or $A:(\types \ftype)$, but we generally don't, to avoid confusion with elements of the ``universe types'' that will be introduced much later.)
+
+  By contrast, the equality judgment $x:A\types M\equiv N:B$ is the \emph{un-annotated} version; we have not introduced any terms representing its derivations.
+  This is because two morphisms in a category can't be ``equal in more than one way'', so there is never any reason to care which derivation of an equality judgment we used.
+  (Of course, this perspective has to be modified when one moves on to \emph{higher} category theory.)
+  Note that the terms $x.M$ and $x.N$ annotating particular derivations of the morphism judgment appear in the un-annotated equality judgment, just as the terms $A$ and $B$ annotating particular derivations of the object judgment appear in the un-annotated morphism judgment $A\types B$.
 \end{rmk}
 
 \begin{thm}\label{thm:catprod-subadm}
