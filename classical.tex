@@ -15,257 +15,34 @@ But don't belabor them, and perhaps just cite references like~\cite{cs:wkdistrib
 [Cartesian polycategories.  I expect that the polycomposition coming from their definition as generalized polycategories includes the ``mix rule'', and is sufficient for a direct structural proof of cut admissibility.]
 
 
-\section{Posetal props and symmetric monoidal posets}
-\label{sec:proppos-smpos}
-
-Now let us consider sequents $\Gamma\types\Delta$ where the commas on both sides are intended to represent the \emph{same} tensor product $\tensor$.
-For simplicity, we assume this tensor product is symmetric, so that we have an exchange rule on both sides.
-This leads us to consider different identity and cut rules (in fact, two identity rules):
-\begin{mathpar}
-  \inferrule*{ }{()\types()}\and
-  \inferrule*{\Gamma\types\Delta}{\Gamma,A\types \Delta,A}\and
-  \inferrule*[Right=cut]{\Gamma\types\Xi,\Psi \\ \Psi,\Phi \types \Delta}{\Gamma,\Phi \types \Delta,\Xi}
-\end{mathpar}
-As always, of course, we intend for the cut rule to be admissible, but writing down at this point what it should be helps us build it into other rules appropriately.
-
-To prove an initiality theorem, we need an appropriate categorical structure.
-We define a \textbf{prop} to be a symmetric polygraph \cP together with the following data and axioms:
-\begin{enumerate}
-\item A morphism $\idfunc_{()}:()\to ()$.
-\item For every $A\in\cP$, a morphism $\idfunc_A :(A)\to (A)$.
-  % For every $f:\Gamma\to\Delta$ and object $A$, a morphism $(f,\idfunc_A):(\Gamma,A) \to (\Delta,A)$.
-  % By induction from this and the previous, we have $\idfunc_{\Gamma} :\Gamma\to\Gamma$ for any $\Gamma$.
-\item For every $f:\Gamma\to (\Xi,\Psi)$ and $g:(\Psi,\Phi)\to \Delta$, a composite $g\circ_\Psi f : (\Gamma,\Phi) \to (\Xi,\Delta)$.
-% \item Identities are invariant under permutation: $\sigma\idfunc_{\Gamma}\sigma = \idfunc_{\sigma\Gamma}$.
-\item Composition is invariant under permutation: $\tau(g\circ_\Psi f)\sigma = (\tau g)\circ_\Psi (f\sigma)$ and $g\sigma \circ_\Psi f = g\circ_{\sigma \Psi} \sigma f$.
-\item Composition is unital:
-  % $g\circ_\Psi \idfunc_\Psi = g$ and $\idfunc_\Psi\circ_\Psi f = f$.
-  $g\circ_A \idfunc_A = g$ and $\idfunc_A\circ_A f = f$.
-\item Composition is associative: given $f:\Gamma\to (\Xi,\Theta,\Psi)$ and $g:(\Psi,\Phi)\to (\Delta,\Upsilon)$ and $h:(\Upsilon,\Theta,\Lambda)\to \Omega$, we have
-  \[h \circ_{\Upsilon,\Theta} (g\circ_\Psi f) = (h\circ_\Upsilon g) \circ_{\Theta,\Psi} f \qquad \text{(as morphisms} (\Gamma,\Phi,\Lambda) \to (\Xi,\Delta,\Omega)). \]
-\item Composition is interchanging: $g\circ_{()}f = f\circ_{()}g$ (modulo a symmetry action).
-\end{enumerate}
-By composing along empty lists, we get a ``tensor product'' of morphisms: if $f:\Gamma\to\Xi$ and $g:\Phi\to\Delta$, then $g\circ_{()}f : (\Gamma,\Phi) \to (\Xi,\Delta)$.
-(This sort of operation is what distinguishes a prop from a ``properad''.)
-In particular, we can produce identity morphisms for lists: $\idfunc_{(A,B)} = \idfunc_A \circ_{()} \idfunc_B$ and so on.
-
-Similarly we have $f\circ_{()}g : (\Phi,\Gamma) \to (\Delta,\Xi)$, and the interchange axiom means that these two morphisms are related by the appropriate symmetric group actions.
-In the special case when $\Gamma=\Phi=\Xi=\Delta=()$, the Eckmann--Hilton argument implies that the morphisms $()\to ()$ form a commutative monoid; thus our props are the original ones of Adams--MacLane~\cite{maclane:natural-assoc,maclane:cat-alg} rather than the ``graphical'' ones of Batanin--Berger~\cite{bb:htapm}.
-
-It may not be obvious that the above axioms do actually give the original notion of prop.
-Eventually we will prove this; but in this section we restrict to the posetal case, in which case the axioms are irrelevant.
-By a \textbf{posetal prop} we mean a prop in which there is at most one morphism $\Gamma\to\Delta$ for any $\Gamma,\Delta$.
-Given a relational polygraph \cG, we define the \textbf{type theory for posetal props under \cG} to have the two identity rules and a Yoneda-ified generator rule, plus a primitive exchange rule on both sides (in \cref{sec:prop-smc} we will make exchange admissible):
-\begin{mathpar}
-  \inferrule{ }{()\types()}\and
-  \inferrule{\Gamma\types\Delta}{\Gamma,A\types \Delta,A}\and
-  \inferrule{\Gamma\types\Xi,\Psi \\ f\in\cG(\Psi,\Phi; \Delta)}{\Gamma,\Phi \types \Delta,\Xi}\\
-  \inferrule{\Gamma,A,B,\Delta\types \Psi}{\Gamma,B,A,\Delta\types \Psi}\and
-  \inferrule{\Gamma\types \Delta,A,B,\Psi}{\Gamma\types \Delta,B,A,\Psi}
-\end{mathpar}
-
-\begin{thm}\label{thm:prop-cutadm}
-  For any polygraph \cG, the intended cut rule is admissible in the type theory for posetal props under \cG:
-  \[ \inferrule*[Right=cut]{\Gamma\types\Xi,\Psi \\ \Psi,\Phi \types \Delta}{\Gamma,\Phi \types \Delta,\Xi}\]
-  [TODO: To deal with primitive exchange, this rule may need to incorporate permutations.]
-\end{thm}
-\begin{proof}
-  As always, we induct on the derivation of $\Psi,\Phi \types \Delta$.
-  \begin{enumerate}
-  \item If it is the empty identity rule $()\types()$, then $\Gamma\types\Xi,\Psi$ is just $\Gamma\types\Xi$ and is also the desired conclusion.
-  \item If it ends with the other identity rule, then there are two cases.
-    \begin{enumerate}
-    \item If $A$ is in $\Phi$, then we have $\Phi=\Phi',A$ and $\Delta=\Delta',A$ and a derivation of $\Psi,\Phi'\types\Delta'$.
-      Applying the inductive hypothesis to this we get $\Gamma,\Phi'\types \Xi,\Delta'$, and then applying the identity rule again gives the desired conclusion.
-    \item If $A$ is in $\Psi$, then we have $\Psi=\Psi',A$ and $\Delta=\Delta',A$ and a derivation of $\Psi',\Phi\types\Delta'$.
-      Now we can inductively cut this with the given $\Gamma\types \Xi,A,\Psi'$ along $\Psi'$ to get $\Gamma,\Phi\types \Xi,A,\Delta'$ which is the desired conclusion.
-    \end{enumerate}
-  \item Finally, suppose $\Psi,\Phi \types \Delta$ ends with the rule for an $f$.
-    Thus, we have $\Delta=\Delta_1,\Delta_2$ and $\Psi=\Psi_1,\Psi_2$ and $\Phi=\Phi_1,\Phi_2$, where $f\in\cG(\Psi_2,\Phi_2,\Upsilon;\Delta_1)$ and a given derivation of $\Psi_1,\Phi_1\types \Delta_2,\Upsilon$.
-    We first inductively cut the latter with our given $\Gamma\types \Xi,\Psi_1,\Psi_2$ along $\Psi_1$ to get $\Gamma,\Phi_1\types \Xi,\Psi_2,\Delta_2,\Upsilon$, then apply the $f$ rule on $\Psi_2,\Upsilon$ to get the desired $\Gamma,\Phi_1,\Phi_2\types \Xi,\Delta_1,\Delta_2$ as desired.\qedhere
-  \end{enumerate}
-\end{proof}
-
-\begin{thm}\label{thm:posprop-initial}
-  For any relational polygraph \cG, the free posetal prop generated by \cG is described by the type theory for posetal props under \cG: its objects are those of \cG, and we have $\Gamma\le\Delta$ just when $\Gamma\types\Delta$ is derivable.
-\end{thm}
-\begin{proof}
-  \cref{thm:prop-cutadm} implies that these definitions give us a posetal prop $\F\bSMPos\cG$.
-  Now if \cM is any other posetal prop and $P:\cG\to\cM$ is a map of relational polygraphs, to extend $P$ to $\F\bSMPos\cG$ it suffices to check that it preserves the relation.
-  This follows by an easy induction on the rules.
-\end{proof}
-
-Now, there are actually \emph{three} ways we could imagine introducing tensor products in a prop.
-Fortunately, they are all equivalent.
-
-\begin{lem}\label{thm:prop-tensor}
-  For any two objects $A$ and $B$ in a prop \cP, the following are equivalent.
-  \begin{enumerate}
-  \item A morphism $(A,B) \to A\tensor B$, precomposition with which defines bijections\label{item:prop-tensor-left}
-    \[ \cP(\Gamma,A\tensor B;\Delta) \to \cP(\Gamma,A,B;\Delta) \]
-  \item A morphism $A\tensor B \to (A,B)$, postcomposition with which defines bijections\label{item:prop-tensor-right}
-    \[ \cP(\Gamma;\Delta,A\tensor B) \to \cP(\Gamma;\Delta,A,B) \]
-  \item Morphisms $(A,B) \to A\tensor B$ and $A\tensor B \to (A,B)$ whose composites in both directions
-    \begin{gather*}
-      A\tensor B \too (A,B)  \too A\tensor B\\
-      (A,B)\too A\tensor B \too (A,B)
-    \end{gather*}
-    are identities.\label{item:prop-tensor-iso}
-  \end{enumerate}
-\end{lem}
-\begin{proof}
-  If we have~\ref{item:prop-tensor-iso}, then pre- or post-composing with the other morphism yields the bijections in~\ref{item:prop-tensor-left} and~\ref{item:prop-tensor-right}.
-  On the other hand, given~\ref{item:prop-tensor-left}, the identity $(A,B)\to (A,B)$ must be the composite $(A,B)\to A\tensor B \to (A,B)$ for some unique morphism $A\tensor B \to (A,B)$, and the other composite must be the identity since its precomposite with $(A,B)\to A\tensor B$ is $(A,B)\to A\tensor B$; so~\ref{item:prop-tensor-iso} holds.
-  (This is basically the Yoneda lemma.)
-  The case of~\ref{item:prop-tensor-right} is dual.
-\end{proof}
-
-The case with units is similar.
-
-\begin{lem}\label{thm:prop-unit}
-  In a prop \cP, the following are equivalent.
-  \begin{enumerate}
-  \item A morphism $()\to \one$, precomposition with which defines bijections
-    \[\cP(\Gamma,\one;\Delta) \to \cP(\Gamma;\Delta).\]
-  \item A morphism $\one\to()$, postcomposition with which defines bijections
-    \[\cP(\Gamma;\Delta,\one) \to \cP(\Gamma;\Delta).\]
-  \item Morphisms $()\to \one$ and $\one\to()$ whose composites in both directions are identities.\qed
-  \end{enumerate}
-\end{lem}
-
-\begin{thm}\label{thm:prop-smc}
-  There is an equivalence between (1) symmetric monoidal categories and (2) props with tensors and units in the sense of \cref{thm:prop-tensor,thm:prop-unit}.
-\end{thm}
-\begin{proof}
-  Given a symmetric monoidal category \cC, we define a prop \cP by
-  \[ \cP(A_1,\dots,A_n ; B_1,\dots,B_m) = \cC(A_1\tensor \cdots\tensor A_n, B_1\tensor\cdots\tensor B_m)\]
-  or, more succinctly, $\cP(\Gamma;\Delta) = \cC(\bigtensor\Gamma, \bigtensor\Delta)$.
-  Of course, $\bigtensor() = \one$.
-  The identity rules come from $\idfunc_\one$ and $f\tensor \idfunc_A$, while the composite of $f:\Gamma\to (\Xi,\Psi)$ and $g:(\Psi,\Phi)\to \Delta$ is $(\bigtensor\Xi \tensor g) \circ (f\tensor \bigtensor \Phi)$.
-  Of course, this prop has tensors and units quite trivially.
-
-  Conversely, given a prop with tensors and units, we have an underlying category with an object $\one$ and an operation $\tensor$.
-  The functoriality of $\tensor$ is defined on $f:A\to A'$ and $g:B\to B'$ as the composite
-  \[ A\tensor B \too (A,B) \xto{(f,\idfunc)} (A',B) \xto{(\idfunc,g)} (A',B') \too A'\tensor B'. \]
-  The axioms of a prop ensure that this is the same as if we put $f$ and $g$ in the other order (or we could write simply $(f,g)$ using the yet-to-be-defined polycomposition).
-  Functoriality is similarly easy.
-  For associativity, we have
-  \[ ((A\tensor B)\tensor C) \too (A\tensor B,C) \too (A,B,C) \too (A,B\tensor C) \to (A\tensor (B\tensor C)) \]
-  and for unitality we have
-  \[ (A\tensor \unit) \too (A,\unit) \too (A) \]
-  and dually.
-  It is straightforward to check that these are natural isomorphisms and satisfy the necessary axioms.
-  For symmetry, we use the fact that our prop is a \emph{symmetric} polygraph and act by symmetry on the morphisms $(A,B)\to A\tensor B$ and $A\tensor B\to (A,B)$, obtaining ``inverse isomorphisms'' $(B,A) \to A\tensor B$ and $A\tensor B \to (B,A)$.
-  From these we can show $A\tensor B \cong B\tensor A$ and check naturality and the axioms.
-
-  It is straightforward to check that these two constructions are inverses.
-\end{proof}
-
-\cref{thm:prop-tensor,thm:prop-unit} give several ways to introduce $\tensor$ and $\unit$ into the type theory of posetal props.
-For a sequent calculus, the symmetrical approach is probably the most natural:
-\begin{mathpar}
-  \inferrule{\Gamma,A,B\types \Delta}{\Gamma,A\tensor B\types \Delta}\;\tensorL\and
-  \inferrule{\Gamma\types \Delta,A,B}{\Gamma\types \Delta,A\tensor B}\;\tensorR\and
-  \inferrule{\Gamma\types\Delta}{\Gamma,\one\types\Delta}\;\one L\and
-  \inferrule{\Gamma\types\Delta}{\Gamma\types\Delta,\one}\;\one R\and
-\end{mathpar}
-Of course, we also include the identity and generator rules (the former only for base types coming from \cG), the exchange rules, and the type judgment:
-\begin{mathpar}
-  \inferrule{ }{()\types()}\and
-  \inferrule{\Gamma\types\Delta\\ A\in\cG}{\Gamma,A\types \Delta,A}\and
-  \inferrule{\Gamma\types\Xi,\Psi \\ f\in\cG(\Psi,\Phi; \Delta)}{\Gamma,\Phi \types \Delta,\Xi}\\
-  \inferrule{\Gamma,A,B,\Delta\types \Psi}{\Gamma,B,A,\Delta\types \Psi}\and
-  \inferrule{\Gamma\types \Delta,A,B,\Psi}{\Gamma\types \Delta,B,A,\Psi}\\
-  \inferrule{A\in\cG}{\types A\type}\and
-  \inferrule{ }{\types \one\type}\and
-  \inferrule{\types A\type \\ \types B\type}{\types A\tensor B\type}
-\end{mathpar}
-We call this the \textbf{classical sequent calculus for symmetric monoidal posets under \cG}.
-(``Classical'' because we have multiple formulas on both sides, ``posets'' because we are not yet distinguishing derivations or introducing terms.)
-
-\begin{thm}\label{thm:seqcalc-smpos-invertible}
-  All the rules for $\tensor$ and $\one$ in the classical sequent calculus for symmetric monoidal posets under \cG are invertible.
-\end{thm}
-\begin{proof}
-  Suppose we have a derivation of $\Gamma,A\tensor B\types \Delta$; we want a derivation of $\Gamma,A,B\types \Delta$.
-  We induct on the given derivation.
-  \begin{enumerate}
-  \item The easy case is when it ends with $\tensorL$ whose premise is what we want.
-  \item If it ends with $\tensorL$ acting on another type, or any of $\tensorR$, $\one L$, or $\one R$, then we induct on the premise and then apply that rule to the result.
-  \item If it ends with the identity rule for $C$, then since $C\in \cG$ it can't be $A\tensor B$, so we can again induct on the premise and apply the identity rule afterwards.
-  \item Finally, if it ends with a generator rule for $f$, then since the domain of $f$ is a list of objects of $\cG$, none of them can be $A\tensor B$; so $A\tensor B$ must be in the sequent that the generator rule cuts with, and we can induct on that and then apply the generator rule.
-  \end{enumerate}
-  The other rules $\tensorR$, $\one L$, and $\one R$ are similar.
-\end{proof}
-
-\begin{thm}\label{thm:seqcalc-smpos-identity}
-  The following general identity rule is admissible in the classical sequent calculus for symmetric monoidal posets under \cG:
-  \begin{mathpar}
-    \inferrule{\Gamma\types\Delta\\ \types A\type}{\Gamma,A\types \Delta,A}\and
-  \end{mathpar}
-  In particular, since $()\types()$, we have $A\types A$ whenever $\types A\type$.
-\end{thm}
-\begin{proof}
-  We induct on the derivation of $\types A\type$.
-  \begin{enumerate}
-  \item If it is from \cG, we apply the postulated identity rule.
-  \item If it is $\one$, we have the following derivation:
-    \begin{mathpar}
-      \inferrule*{\inferrule*{\inferrule*{ }{()\types()}}{() \types \one}}{\one\types\one}
-    \end{mathpar}
-  \item If it is $A_1\tensor A_2$, we have by induction a derivation $\sD_1$ of $\Gamma,A_1\types,\Delta,A_1$, and then (again by induction) a derivation $\sD_2$ of $\Gamma,A_1,A_2\types \Delta,A_1,A_2$.
-    Now we augment this in a similar way:
-    \begin{equation*}
-      \inferrule*{
-        \inferrule*{
-          \inferrule*{\sD_2\\\\\vdots}{\Gamma,A_1,A_2\types \Delta,A_1,A_2}
-        }{
-          \Gamma,A_1\tensor A_2\types \Delta,A_1,A_2
-        }}{
-        \Gamma,A_1\tensor A_2\types \Delta,A_1\tensor A_2
-      }\qedhere
-    \end{equation*}
-  \end{enumerate}
-\end{proof}
-
-\begin{thm}\label{thm:seqcalc-smpos-cutadm}
-  The prop cut rule from \cref{thm:prop-cutadm} is admissible in the classical sequent calculus for symmetric monoidal posets under \cG.
-\end{thm}
-\begin{proof}
-  Suppose given derivations of $\Gamma\types\Xi,\Psi$ and $\Psi,\Phi \types \Delta$; we want to derive $\Gamma,\Phi \types \Delta,\Xi$.
-  We induct on the derivation of $\Psi,\Phi \types \Delta$.
-  \begin{enumerate}
-  \item If it ends with an identity or a generator, we do as in \cref{thm:prop-cutadm}.
-  \item If it ends with $\tensorR$ or $\one R$, we can simply apply the inductive hypothesis to cut with the premise of that rule.
-  \item If it ends with $\tensorL$, there are two cases.
-    If the introduced $A\tensor B$ is in $\Phi$, then we can inductively cut the premise along $\Psi$ again.
-  \item On the other hand, if the introduced $A\tensor B$ is in $\Psi$, then our other derivation has the form $\Gamma\types\Xi,\Psi',A\tensor B$.
-    Since $\tensorR$ is invertible by \cref{thm:seqcalc-smpos-invertible}, we can also derive $\Gamma\types\Xi,\Psi',A,B$, and then cut with the premise $\Psi',A,B,\Phi \types \Delta$ of our $\tensorL$.
-  \item The case of $\one L$ is similar.\qedhere
-  \end{enumerate}
-\end{proof}
-
-\begin{thm}\label{thm:seqcalc-smpos-initial}
-  For any relational polygraph \cG, the free symmetric monoidal poset generated by \cG is described by the classical sequent calculus for symmetric monoidal posets under \cG.
-\end{thm}
-\begin{proof}
-  \cref{thm:seqcalc-smpos-identity,thm:seqcalc-smpos-cutadm} imply in particular that the sequent calculus gives us a posetal prop $\F\bSMPos\cG$.
-  Moreover, the rules for $\tensor$ and $\one$ give $\F\bSMPos\cG$ the tensor and unit structure of \cref{thm:prop-tensor,thm:prop-unit}, so that it is a symmetric monoidal poset.
-  Now if \cM is any other symmetric monoidal poset and $P:\cG\to\cM$ a map of symmetric relational polygraphs, there is a unique extension of $P$ to the objects of $\F\bSMPos\cG$.
-  As usual, by induction on the rules of the sequent calculus and the fact that \cM is a posetal prop, this extension preserves the relations $\Gamma\le\Delta$.
-  Finally, it also preserves the tensor and unit structure, so it is a strict functor of symmetric monoidal posets.
-\end{proof}
-
-
 \section{Props and symmetric monoidal categories}
 \label{sec:prop-smc}
 
-So much for symmetric monoidal posets.
-What we really want, however, is a type theory for symmetric monoidal \emph{categories}, in which we can talk about equality of morphisms, and that can also deal with tensors in the codomain.
+We would like a type theory for symmetric monoidal categories that can also deal ``primitively'' with tensors in the codomain (without needing to wrap and unwrap terms belonging to a tensor product type).
+For this purpose we need a categorical structure like a multicategory, but which also allows sequences of objects in the codomain of morphisms.
+Such a structure is called a \textbf{prop}, and the simplest way to define it is the following:
+
+\begin{defn}\label{defn:prop}
+  A \textbf{prop} consists of
+  \begin{enumerate}
+  \item A set of \textbf{objects}, and
+  \item A symmetric strict monoidal category (that is, a symmetric monoidal category whose associators and unitors are identities) whose underlying monoid of objects is freely generated by the set of objects of the prop.\label{item:prop2}
+  \end{enumerate}
+\end{defn}
+
+We write the objects of the monoidal category in~\ref{item:prop2} as finite lists $(A,B,\dots,Z)$ of generating objects.
+The monoidal structure is given by concatenation of lists; the unit object is the empty list $()$.
+We will use the notation $\ptens$ for the tensor product in this monoidal category, to remind ourselves that it plays a different role than $\tensor$: in type theory, $\tensor$ is an operation on types, whereas $\ptens$ simply corresponds to concatenation of contexts.
+
+The underlying data of a prop, from which we intend to freely generate one, is a \emph{polygraph}.
+
+\begin{defn}
+  A \textbf{polygraph} \cG is a set of objects together with a set of arrows, each assigned a domain and codomain that are both finite lists of objects.
+\end{defn}
 
 In our type theories for categories and multicategories in \cref{sec:category-cutadm,sec:multicat-moncat} (before introducing any operations such as products or tensors), we did not have to impose any equivalence relation on the derivations.
-However, in the case of props, the interchange rule makes things more complicated.
-For instance, if we have $f\in \cG(A;B)$ and $g\in\cG(C;D)$, then in the type theory of \cref{sec:proppos-smpos} are two distinct derivations of a sequent representing $f\circ_{()} g$:
+However, in the case of props, the interchange rule for $\ptens$ makes things more complicated.
+For instance, if we have $f\in \cG(A;B)$ and $g\in\cG(C;D)$, here are two plausible-looking derivations of a sequent representing $f\ptens g$:
 \begin{mathpar}
   \inferrule*[Right=$g$]{
     \inferrule*{
@@ -290,14 +67,14 @@ For instance, if we have $f\in \cG(A;B)$ and $g\in\cG(C;D)$, then in the type th
     A,C\types B,D
   }\and
 \end{mathpar}
-If we write down a term calculus whose terms correspond exactly to derivations in this theory, as we usually do, then the desired equality between these two derivations would look something like
+If we write down a term calculus whose terms correspond exactly to derivations, as we usually do, then the desired equality between these two derivations would look something like
 \begin{equation}
   x:A, y:C \types (f,\idfunc)((\idfunc,g)(x,y)) \equiv (\idfunc,g)((f,\idfunc)(x,y)) : (B,D)\label{eq:prop-bad-terms}
 \end{equation}
 Note that unlike the $\beta$- and $\eta$-conversions, the equality~\eqref{eq:prop-bad-terms} is not directional: it makes no sense to regard one or the other side as ``simpler'' or ``more canonical'' than the other.
 We would like to avoid having to assume such equalities in $\equiv$, and furthermore the terms appearing in~\eqref{eq:prop-bad-terms} are rather ugly.
 One approach to deal with this would be to break the bijection between terms and deductions, in a way that enables us to represent both of the above two derivations by the same term.
-However, a better approach is to design a different theory in which there is only \emph{one} derivation of $f\circ_{()} g$, allowing us to maintain the principle that terms correspond uniquely to derivations.
+However, a better approach is to design a different theory in which there is only \emph{one} derivation of $f\ptens g$, allowing us to maintain the principle that terms correspond uniquely to derivations.
 
 The non-directionality of~\eqref{eq:prop-bad-terms} also makes it unclear how to design a type theory in which one would be permitted but not the other.
 Instead we will forbid \emph{both} of them, replacing the generator rule by a ``multi-generator'' rule allowing only a one-step derivation
@@ -308,49 +85,50 @@ The first reason is that when doing equational reasoning (such as for the antipo
 The second reason is that in general, we also need to include some ``terms without a type'' (e.g.\ coming from morphisms with empty codomain $()$, which is a judgmental representation of the unit object), and this looks a little nicer when all the terms are grouped together: we write for instance $(f(x),g(y)\mid h(z))$ to mean that $h(z):()$.
 
 There are also, of course, function symbols with \emph{multiple} outputs.
-To deal with this case we write $f_1(x)$, $f_2(x)$, and so on for the terms corresponding to all the types in the codomain.
+To deal with this case we write $f\s1(x)$, $f\s2(x)$, and so on for the terms corresponding to all the types in the codomain.
+(This notation is motivated by the classical ``Sweedler notation'' for comonoids and comodules; later on we will compare them formally.)
 For example, we write the composite of $f:(A,B) \to (C,D)$ with $g:(E,D)\to (F,G)$ as
-\[ x:A, y:B, z:E \types (f_1(x,y),g_1(z,f_2(x,y)),g_2(z,f_2(x,y))):(C,F,G) \]
+\[ x:A, y:B, z:E \types (f\s1(x,y),g\s1(z,f\s2(x,y)),g\s2(z,f\s2(x,y))):(C,F,G) \]
 Note that the variables in a context are not literally treated ``linearly'', since they can occur multiple times in the multiple ``components'' of a map $f$.
 Instead the ``usages'' of a variable are controlled by the codomain arity of the morphisms applied to them.
 In general, we write $\vec f(\vec M)$ for the list of ``all the values of $f$'' applied to the list of arguments $\vec M$.
+Thus if $f:(A,B,C)\to (D,E)$ then $\vec f(\vec M)$ would be $(f\s1(M_1,M_2,M_3),f\s2(M_1,M_2,M_3))$.
 
 This does require one further technical device (that will be almost invisible in practice).
-Suppose we have $f:()\to (B,C)$, written in our type theory as $()\types (f_1,f_2):(B,C)$, and we compose/tensor it with itself to get a morphism $() \to (B,B,C,C)$.
-We would na\"ively write this as $() \types (f_1,f_1,f_2,f_2)$, but this is ambiguous since we can't tell which $f_1$ matches which $f_2$.
-We disambiguate the possibilities by writing $() \types (f_1,f'_1,f_2,f'_2)$ or $() \types (f_1,f'_1,f'_2,f_2)$.
+Suppose we have $f:()\to (B,C)$, written in our type theory as $()\types (f\s1,f\s2):(B,C)$, and we compose/tensor it with itself to get a morphism $() \to (B,B,C,C)$.
+We would na\"ively write this as $() \types (f\s1,f\s1,f\s2,f\s2)$, but this is ambiguous since we can't tell which $f\s1$ matches which $f\s2$.
+We disambiguate the possibilities by writing $() \types (f\s1,f'\s1,f\s2,f'\s2)$ or $() \types (f\s1,f'\s1,f'\s2,f\s2)$.
 Although this issue seems to only arise for morphisms with empty domain and greater than unary codomain, for consistency we formulate the syntax with a label (like $'$) on \emph{every} term former, and simply omit them informally when there is no risk of ambiguity (which includes the vast majority of cases).
-We assume given an infinite alphabet of symbols \fA for this purpose (such as $','',''',\dots$, or $1,2,3,\dots$), and we annotate our judgments with a finite subset $\fB\subseteq \fA$ indicating which labels might have been used already in the terms.
+We assume given an infinite alphabet of symbols \fA for this purpose (such as $','',''',\dots$, or $1,2,3,\dots$), and we annotate our judgments with a finite subset $\fB\subseteq \fA$ indicating which labels might have been used already in the terms (so that we can avoid re-using them).
 
 Thus, a first approximation to our generator rule is
 \[ \inferrule*{
-  \Gamma \types^\fB (\vec M^1,\dots,\vec M^n,\vec N \mid \vec Z)
-  : (\vec A^1,\dots, \vec A^n,\vec C)\\
-  f^1 \in \cG(\vec A^1,\vec D^1)\\\cdots\\
-  f^n \in \cG(\vec A^n,\vec D^n)\\\\
-  \fa_i\notin \fB\text{ and pairwise distinct}
-}{\Gamma \types^{\fB\cup\{\fa_i\}} (\vec f^{1,\fa_1}(\vec M^1),\dots,\vec f^{n,\fa_n}(\vec M^n),\vec N \mid \vec Z)
-  : (\vec D^1,\dots, \vec D^n,\vec C)}
+  \Gamma \types^\fB (\vec M,\dots,\vec N,\vec P \mid \vec Z)
+  : (\vec A,\dots, \vec B,\vec C)\\
+  f \in \cG(\vec A,\vec D)\\\cdots\\
+  g \in \cG(\vec B,\vec E)\\\\
+  \fa,\dots,\fb\notin \fB\text{ and pairwise distinct}
+}{\Gamma \types^{\fB\cup\{\fa,\dots,\fb\}} (\vec f^{\fa}(\vec M),\dots,\vec g^{\fb}(\vec N),\vec P \mid \vec Z)
+  : (\vec D,\dots, \vec E,\vec C)}
 \]
-Since we have taken over subscripts to indicate the multiple outputs of a single operation, we are using superscripts to distinguish among the $n$ generators $f^1,\dots,f^n$ being applied at once.
-For instance, if $f^1\in \cG((A^1_1,A^1_2),(D^1_1,D^1_2,D^1_3))$ then we have
-\[ x^1_1:A^1_1, x^1_2:A^1_2 \types (f^1_1(x^1_1,x^1_2),f^1_2(x^1_1,x^1_2),f^1_3(x^1_1,x^1_2)):(D^1_1,D^1_2,D^1_3) \]
-
-We also have to modify the above rule to allow generators with empty target, which get collected into the $\vec Z$'s.
+We also have to allow generators with empty target, which get collected into the $\vec Z$'s.
 Thus we have
 \[ \inferrule*{
-  \Gamma \types^\fB (\vec M^1,\dots,\vec M^n,\vec P^1,\dots,\vec P^m,\vec N \mid \vec Z)
-  : (\vec A^1,\dots, \vec A^n,\vec B^1,\dots,\vec B^m,\vec C)\\
-  f^1 \in \cG(\vec A^1,\vec D^1)\\\cdots\\
-  f^n \in \cG(\vec A^n,\vec D^n)\\\\
-  g^1 \in \cG(\vec B^1,())\\\cdots\\
-  g^m \in \cG(\vec B^n,())\\\\
-  \fa_i,\fb_j\notin \fB\text{ and pairwise distinct}
-}{\Gamma \types^{\fB\cup\{\fa_i,\fb_j\}} \left(\vec f^{1,\fa_1}(\vec M^1),\dots,\vec f^{n,\fa_n}(\vec M^n),\vec N
-    \;\middle|\; \vec g^{1,\fb_1}(\vec P^1),\dots,\vec g^{m,\fb_m}(\vec P^m), \vec Z\right)
-  : (\vec D^1,\dots, \vec D^n,\vec C)}
+  \Gamma \types^\fB (\vec M,\dots,\vec N,\vec P,\dots,\vec Q,\vec R \mid \vec Z)
+  : (\vec A,\dots, \vec B,\vec C,\dots,\vec D, \vec E)\\
+  f \in \cG(\vec A,\atleastone{\vec F})\\\cdots\\
+  g \in \cG(\vec B,\atleastone{\vec G})\\\\
+  h \in \cG(\vec C,())\\\cdots\\
+  k \in \cG(\vec D,())\\\\
+  \fa,\dots,\fb,\fc,\dots,\fd\notin \fB\text{ and pairwise distinct}
+}{\Gamma \types^{\fB\cup\{\fa,\dots,\fb,\fc,\dots,\fd\}}
+  \left(\vec f^{\fa}(\vec M),\dots,\vec g^{\fb}(\vec N),\vec R
+    \;\middle|\;
+    \vec h^{\fc}(\vec P),\dots,\vec k^{\fd}(\vec Q), \vec Z\right)
+  : (\vec F,\dots, \vec G,\vec E)}
 \]
-Eventually we will also have to incorporate shuffles into the rulea as in \cref{sec:symmoncat}, but we postpone that for now.
+(Here $\atleastone{\vec F}$ means that $\vec F$ contains at least one type.)
+Eventually we will also have to incorporate shuffles into the rule as in \cref{sec:symmoncat}, but we postpone that for now.
 Let us consider instead how to prevent duplication of derivations.
 In addition to our desired term
 \begin{align}
@@ -366,97 +144,313 @@ On the other hand, we could apply $h:(B,C) \to E$ in~\eqref{eq:prop-goodish-term
 \[ x:A, y:C \types (h(f(x),y)):E \]
 because $h$ uses $f$ as one of its inputs and so could not have been applied at the same time as $f$.
 
-In the general case, in a judgment $\Gamma\types^\fB (\vec{M}\mid\vec{W}):\Delta$ we will assign to each label $\fa\in\fB$ (that is, to each ``use'' of a generator morphism) a natural number called its \textbf{depth}.
-The depth of $f^\fa$ is defined recursively to be one greater than the maximum depth of all the labels occurring ``outermost'' in the arguments of $f^\fa$, with variables and 0-ary generators considered to have depth $0$.
-Thus for instance in $x:A, y:C \types (h(f(x),y)):E$, the depth of $f$ is $1$ since its argument is a variable $x$, hence of depth $0$; while the depth of $h$ is $2$ since its arguments $f(x)$ and $y$ have depth $1$ and $0$ respectively.
-(This definition appears to require inspecting the term, but when we make it formal it will be part of the derivation.)
+To be precise, we augment our judgments (\emph{not} their terms) by labeling some of the types in the consequent as \textbf{active}, denoted by $\actv{A}$.
+We write $\oneactv{\vec A}$ to mean that at least one of the types in $\vec A$ is active, $\allactv{\vec A}$ to mean that they are all active, and $\zeroactv{\vec A}$ to mean that none of them are active; if we write just $\vec A$ then we are not specifying whether or not any of the types are active.
 
-Now we require, as a condition on the application of the generator rule, that each of the new generators appearing in the conclusion (the $f_i$ and $g_j$) is applied to at least one argument that is of maximum depth in the principal premise.
-This ensures that the new generators are precisely those of maximum depth in the conclusion.
-It also means that we can never apply this rule to 0-ary generators, so we incorporate those into the $\idfunc$ rule
-
-
-
-
-
-
-
-To be precise, we augment our judgments (\emph{not} their terms) by labeling some of the types in the consequent as \emph{active}, denoted by an underline.
-The identity rule makes all types active, while the generator rule makes only the outputs of the generators active.
+The identity rule will make all types active, while the generator rule makes only the outputs of the generators active.
 We then restrict the generator rule to require that at least one of the \emph{inputs} of each generator being applied must be active in the premise; this means that none of them could have been applied any sooner, since at least one of their arguments was just introduced by the previous rule.
 Thus, our desired derivation
 \begin{mathpar}
   \inferrule*[Right={$f,g$}]{\inferrule*{ }{A,C \types \actv{A},\actv{C}}}{A,C\types \actv{B},\actv{D}}
 \end{mathpar}
-is allowed, while the undesired ones such as
+is allowed, while the undesired one
 \begin{mathpar}
   \inferrule*[Right=$g$???]{\inferrule*[Right=$f$]{\inferrule*{ }{A,C \types \actv{A},\actv{C}}}{A,C\types \actv{B},C}}{A,C \types B,D}
 \end{mathpar}
 is not allowed, since in the attempted application of $g$ the input type $C$ is not active.
-
-Of course, this restriction on its own would prevent generators with nullary domain from ever being applied.
+Thus our generator rule now becomes
+\[ \inferrule*{
+  \Gamma \types^\fB (\vec M,\dots,\vec N,\vec P,\dots,\vec Q,\vec R \mid \vec Z)
+  : (\oneactv{\vec A},\dots, \oneactv{\vec B},\oneactv{\vec C},\dots,\oneactv{\vec D}, \vec E)\\
+  f \in \cG(\vec A,\atleastone{\vec F})\\\cdots\\
+  g \in \cG(\vec B,\atleastone{\vec G})\\\\
+  h \in \cG(\vec C,())\\\cdots\\
+  k \in \cG(\vec D,())\\\\
+  \fa,\dots,\fb,\fc,\dots,\fd\notin \fB\text{ and pairwise distinct}
+}{\Gamma \types^{\fB\cup\{\fa,\dots,\fb,\fc,\dots,\fd\}}
+  \left(\vec f^{\fa}(\vec M),\dots,\vec g^{\fb}(\vec N),\vec R
+    \;\middle|\;
+    \vec h^{\fc}(\vec P),\dots,\vec k^{\fd}(\vec Q), \vec Z\right)
+  : (\allactv{\vec F},\dots, \allactv{\vec G},\zeroactv{\vec E})}
+\]
+Of course, this rule can now never apply generators with nullary domain.
 Since these can always be applied at the very beginning, we incorporate them into the identity rule.
-
-Finally, since we want to make the exchange rule admissible, we have to build permutations into the rules as well.
-As in \cref{sec:symmoncat}, each rule adds only the part of a permutation that hasn't already been specified by the premises.
-
-\begin{figure}
-  \centering
-  \begin{mathpar}
-    \inferrule{
-      f_1 \in \cG((),\vec{B_1})\\\cdots\\
-      f_n \in \cG((),\vec{B_n})\\\\
-      g_1 \in \cG((),())\\\cdots\\
-      g_m \in \cG((),())\\\\
-      \sigma : {\vec A},{\vec B}_1,\dots, {\vec B}_n \toiso \Delta\\
-      \sigma\text{ preserves the relative order of } B_{11}, B_{21},B_{31},\dots, B_{n1}\\
-      \text{All types in }\Delta\text{ are active}\\
-      \fa_i,\fb_j\in \fB\text{ and pairwise distinct}
+Thus the identity rule is now
+\[\inferrule{
+      f \in \cG((),\atleastone{\vec{B}})\\\cdots\\
+      g \in \cG((),\atleastone{\vec{C}})\\\\
+      h \in \cG((),())\\\cdots\\
+      k \in \cG((),())\\\\
+      \fa,\dots,\fb,\fc,\dots,\fd\in \fB\text{ and pairwise distinct}
     }{\vec x:\vec A\types^\fB
-      \left(\sigma\left(\vec x,{\vec f}_1^{\fa_1},\dots,{\vec f}_n^{\fa_n}\right)
-      \,\middle|\, g_1^{\fb_1},\dots,g_m^{\fb_m}\right)
+      \left(\vec x,{\vec f}^{\fa},\dots,{\vec g}^{\fb} \,\middle|\, h^{\fc},\dots,k^{\fd}\right)
+      :(\allactv{\vec A}, \allactv{\vec B}, \dots,\allactv{\vec C})}
+\]
+Finally, since we want to make the exchange rule admissible, we have to build permutations into the rules as well.
+As in \cref{sec:symmoncat}, each rule should add exactly the part of a permutation that can't be ``pushed into the premises''.
+Because we've formulated the generator rule so that the premise and conclusion have the same context (note that this is a different from the composition rule for props, as we've formulated it, which can change the domain), any desired permutation in the domain can be pushed all the way up to the identity rule.
+Thus, for the generator rule it remains to deal with permutation in the codomain.
+
+The freedom we have in the premises of the generator rule is to (inductively) permute the types \emph{within} each list $\vec A,\vec B,\vec C,\vec D,\vec E$, and also to block-permute the lists $\vec A,\dots,\vec B$ and separately the lists $\vec C,\dots,\vec D$ (with a corresponding permutation of the generators $f,\dots,g$ and $h,\dots,k$).
+(If we permuted the main premise any more than this, it would no longer have the requisite shape to apply the rule to.)
+Permutations of $\vec C,\dots,\vec D$ don't do us any good in terms of permuting the codomain of the conclusion, but we can push permutations of $\vec E$ directly into the premise, and also a block-permutation of $\vec F,\dots,\vec G$ into a block-permutation of $\vec A,\dots,\vec B$.
+
+What remains that we have to build into the rule can be described precisely by a permutation of $\vec F,\dots,\vec G,\vec E$ that (1) preserves the relative order of the types in $\vec E$, and (2) preserves the relative order of the \emph{first} types $F_1,\dots,G_1$ in the lists $\vec F,\dots,\vec G$.
+That is, any permutation of $\vec F,\dots,\vec G,\vec E$ can be factored uniquely as one with these two properties followed by a block sum of a block-permutation of $\vec F,\dots,\vec G$ with a permutation of $\vec E$.
+(The choice of the first types is arbitrary; we could just as well use the last types, etc.)
+
+There is no real need to allow ourselves to permute the nullary terms, since semantically their order doesn't matter anyway.
+But it is convenient to allow ourselves to write the nullary terms in any order, so we incorporate permutations there too.
+The freedom in the premises allows us to permute the term in $\vec Z$ arbitrarily, and also to permute the terms $h,\dots,k$ among themselves; thus what remains is precisely a shuffle.
+
+The final generator rule is therefore
+\[ \inferrule*{
+  \Gamma \types^\fB (\vec M,\dots,\vec N,\vec P,\dots,\vec Q,\vec R \mid \vec Z)
+  : (\oneactv{\vec A},\dots, \oneactv{\vec B},\oneactv{\vec C},\dots,\oneactv{\vec D}, \vec E)\\
+  f \in \cG(\vec A,\atleastone{\vec F})\\\cdots\\
+  g \in \cG(\vec B,\atleastone{\vec G})\\\\
+  h \in \cG(\vec C,())\\\cdots\\
+  k \in \cG(\vec D,())\\\\
+  \fa,\dots,\fb,\fc,\dots,\fd\notin \fB\text{ and pairwise distinct}\\\\
+  \sigma : (\allactv{\vec F},\dots, \allactv{\vec G},\zeroactv{\vec E}) \toiso \Delta \;\text{preserving activeness}\\\\
+  \sigma \text{ preserves the relative order of types in } \vec E\\
+  \sigma \text{ preserves the relative order of } F_1,\dots, G_1\\
+  \tau \in \nShuf(h,\dots,k;\vec Z)
+}{\Gamma \types^{\fB\cup\{\fa,\dots,\fb,\fc,\dots,\fd\}}
+  \left( \sigma\left(\vec f^{\fa}(\vec M),\dots,\vec g^{\fb}(\vec N),\vec R\right)
+    \;\middle|\;
+    \tau\left(\vec h^{\fc}(\vec P),\dots,\vec k^{\fd}(\vec Q), \vec Z\right)\right)
+  : \Delta}
+\]
+In the identity rule, the only useful freedom in the premises is to block-permute the $\vec B,\dots,\vec C$.
+Thus what remains is a permutation that preserves the relative order of the first types $B_1,\dots, C_1$.
+Any permutation in the nullary terms can be pushed into the premises, so we have the final rule:
+\[\inferrule{
+      f \in \cG((),\atleastone{\vec{B}})\\\cdots\\
+      g \in \cG((),\atleastone{\vec{C}})\\\\
+      h \in \cG((),())\\\cdots\\
+      k \in \cG((),())\\\\
+      \fa,\dots,\fb,\fc,\dots,\fd\in \fB\text{ and pairwise distinct}\\\\
+      \sigma : (\allactv{\vec A}, \allactv{\vec B}, \dots,\allactv{\vec C}) \toiso \Delta \;\text{preserving activeness}\\\\
+      \sigma\text{ preserves the relative order of } B_1,\dots, C_1
+    }{\vec x:\vec A\types^\fB
+      \left(\sigma\left(\vec x,{\vec f}^{\fa},\dots,{\vec g}^{\fb} \right) \,\middle|\, h^{\fc},\dots,k^{\fd}\right)
       :\Delta}
-    \and
-    \inferrule{
-      \Gamma \types^\fB (\vec M_1,\dots,\vec M_n,\vec P_1,\dots,\vec P_m,\vec N \mid \vec Z)
-      : (\vec A_1,\dots, \vec A_n,\vec B_1,\dots,\vec B_m,\vec C)\\
-      \text{At least one type in each } \vec A_i, \vec B_j\text{ is active}\\
-      f_1 \in \cG(\vec A_1,\vec D_1)\\\cdots\\
-      f_n \in \cG(\vec A_n,\vec D_n)\\\\
-      g_1 \in \cG(\vec B_1,())\\\cdots\\
-      g_m \in \cG(\vec B_m,())\\\\
-      \sigma : \vec D_1,\dots,\vec D_n, \vec C \toiso \Delta\\
-      \sigma \text{ preserves the relative order of types in } \vec C\\
-      \sigma \text{ preserves the relative order of } D_{11}, D_{21}, D_{31},\dots, D_{n1}\\
-      \text{In }\Delta\text{ all types from } \vec D_i \text{ are active, all types from } \vec C\text{ are inactive}\\
-      \tau \in \mathrm{Shuf}(m,|\vec Z|)\\
-      \fa_i,\fb_j\notin \fB\text{ and pairwise distinct}
-    }{\Gamma \types^{\fB\cup\{\fa_i,\fb_j\}} %\fa_1,\dots,\fa_n,\fb_1,\dots,\fb_m\}}
-      \left(\sigma\left({\vec f}_1^{\fa_1}(\vec M_1),\dots,{\vec f}_n^{\fa_n}(\vec M_n),\vec N\right)
-      \,\middle|\, \tau\left({ g}_1^{\fb_1}(\vec P_1),\dots,{ g}_m^{\fb_m}(\vec P_m),\vec Z\right)\right)
-      :\Delta
-    }
-  \end{mathpar}
-  \caption{Type theory for props}
-  \label{fig:props}
-\end{figure}
+\]
+Note that this also allows us to incorporate an arbitrary permutation in the domain.
+This completes our definition of the \textbf{type theory for props under \cG}.
 
-The resulting \textbf{type theory for props under \cG} is shown in \cref{fig:props}.
-Note that nearly all the subscripts shown are for indexing distinct morphisms or contexts, not for distinguishing between the different outputs of the some morphism as above.
-The latter is mostly hidden in the notation $\vec f$, though indicated in a couple of places by double subscripts $D_{11}, D_{21},\dots$
+Since our terms are less directly connected to derivations than usual, there is more content to the following lemma.
 
-The notation is quite heavy, but the idea is not so bad.
-For the identity rule, we suppose given a context of variables belonging to types, and a list of generating morphisms with nullary domain.
-Then we collect together all the variables in the context together with all the outputs of those of our generators with non-nullary codomain and permute them arbitrarily, except that we maintain the relative order of the first outputs of each generator (this prevents introduction of an extra permutation in the choice of how to order the list of generators).
-Combined with our generators with nullary codomain, this gives a list of terms belonging to the appropriately permuted list of types (from the context and the generator outputs), in which all types are active.
+\begin{thm}\label{thm:prop-tad}
+  If there is some assignment of activeness to the types in $\Delta$ such that $\Gamma \types^\fB (\vec M\mid\vec Z):\Delta$ is derivable in the type theory for props, then that assignment is unique, as is the derivation.
+\end{thm}
+\begin{proof}
+  We define the \textbf{depth} of a variable to be $0$, and the \textbf{depth} of an occurrence of a function symbol in a term as the least natural number strictly greater than the depths of all its arguments.
+  This is a purely syntactic definition, which is well-defined by the well-foundedness of syntax.
+  Note that a nullary function symbol always has depth $0$, while a function symbol applied to a positive number of variables alone has depth $1$.
 
-For the generator rule, we suppose given a list of generating morphisms with non-nullary domain --- or more precisely two lists, one of morphisms with non-nullary codomain and one of those with nullary codomain.
-We also suppose given a term judgment producing the domains of these morphisms concatenated in order, each containing at least one active type, and followed by some other number of types.
-Then we collect all the outputs of our generators applied to these inputs, together with the types that were not input into any of them, and permute them arbitrarily, except that we mantain the relative order of the first outputs and of the un-inputted types (again, this prevents introduction of spurious permutations).
-We activate all the outputs of our current generators, and deactivate all other types.
-Finally, we similarly shuffle together the generators and the given terms of nullary codomain.
+  Now note that in any derivable term in the type theory for props, any two function symbols marked with the same label $\fa\in\fB$ must be applied to exactly the same arguments, and therefore have the same depth.
+  Therefore, given that $\Gamma \types^\fB (\vec M\mid\vec Z):\Delta$ is derivable, we may regard the depth as a function defined on \fB rather than on occurrences of function symbols.
 
-[TODO: Examples, unique derivations of terms, admissibility and functoriality of exchange, admissibility of cut, initiality.  Wait until after writing \cref{sec:symmoncat}.]
+  We claim that in any derivable term judgment, the terms associated to active types are precisely those (non-nullary ones) whose head symbol has maximum depth.
+  The proof is by induction on derivations.
+  In the identity rule, all terms have depth $0$ and all types are active.
+  Now consider the generator rule, and suppose inductively that the claim is true for the main premise, with maximal depth $n$, say.
+  Then since each of the new labels introduced by the rule is applied to at least one term from an active type, which therefore has the maximal depth $n$, it must have depth $n+1$.
+  It follows that the new maximum depth is $n+1$, and that these new symbols are precisely those of maximal depth; but they are also precisely those associated to active types.
+  This proves the claim.
+
+  It follows immediately that the terms uniquely determine the activeness of the types, since depth is a syntactic invariant of the terms.
+  Moreover, we can tell from the terms which rule must have been applied last (if the maximum depth is $0$, it must come from the identity rule; otherwise it must come from the generator rule) and which labels that rule must have introduced (those of maximum depth).
+  If it is the generator rule, then the ordering of the corresponding function symbols as $f,\dots,g$ and $h,\dots,k$ must be the order in which $f\s1,\dots,g\s1$ and $h,\dots,k$ appear in the term list, since the permutations $\sigma$ and $\tau$ preserve those orders.
+  Then $\sigma^{-1}$ is uniquely determined by the fact that it must place all the outputs of $f$ first, and so on until all the outputs of $g$, then all the terms of non-maximum depth in the same order that they were given in the conclusion.
+  Similarly, $\tau^{-1}$ is uniquely determined by the fact that it has to place $h,\dots,k$ first and the nullary terms of non-maximum depth last, preserving internal order in each group.
+  Finally, this determines the main premise uniquely as well.
+  The argument for the identity rule is similar, with no $\tau$ and with $\sigma^{-1}$ placing all the variables first in the order of the context.
+  Inductively, therefore, the entire derivation is uniquely determined.
+\end{proof}
+
+Note that this proof is a little more complicated than most type-checking algorithms.
+In particular, it requires crawling through the structure of the terms twice: once to calculate depths, and then again to construct the derivation by peeling off terms of maximum depth step by step.
+
+Because the activeness of types is uniquely determined by the terms, and hence also by the derivations, in the future we will omit the activeness labels as long as there is a specified term or derivation.
+We now proceed to show that our type theory has the structure of a prop, beginning with the admissibility of exchange on the right.
+
+\begin{lem}\label{thm:prop-symadm}
+  If we have a derivation of $\Gamma\types \Delta$ and a permutation $\rho$ of $\Delta$, then we can construct a derivation of $\Gamma\types \rho\Delta$.
+  %, having the same height as our original derivation.
+\end{lem}
+\begin{proof}
+  This essentially follows from how we built the rules.
+  If the derivation ends with the identity rule, then we can compose $\rho$ with the specified permutation $\sigma$ from that rule, and reorder the generators $f,\dots,g$ in the rule according to the order that $\rho\sigma$ puts them in.
+  If the derivation ends with the generator rule, then we similarly compose $\rho$ with $\sigma$, reorder the generators $f,\dots,g$, and inductively push the remaining part of the permutation (that acting on the non-active terms) into the main premise.
+  % The preservation of height is obvious.
+\end{proof}
+
+For cut admissibility, it seems helpful to first prove the admissibility of the single-generator rule.
+
+\begin{lem}\label{thm:prop-onecutadm}
+  Given a derivation of $\Gamma\types \Delta,\vec A$ and a generator $f\in \cG(\vec A,\vec B)$, we can construct a derivation of $\Gamma\types \Delta,\vec B$.
+  Moreover, if none of the types in $\vec A$ are active in the given derivation, then all of the types in $\Delta$ that are active in the given derivation are still active in the result.
+\end{lem}
+\begin{proof}
+  If any of the types in $\vec A$ are active, we can simply apply the generator rule with $f$ as the only generator.
+  Otherwise, none of them were introduced by the final rule in the derivation of $\Gamma\types \Delta,\vec A$.
+  If that rule was the identity rule, then $\vec A$ must be empty (since all types in the conclusion of the identity rule are active), so we can just add $f$ to that application of the identity rule.
+
+  If that rule was the generator rule, then $\vec A$ must also appear at the end of its main premise.
+  If none of the types in $\vec A$ are active therein, then we can inductively apply $f$ to that premise; by the second clause of the inductive hypothesis, this does not alter the activeness of the other types in the premise, so we can re-apply the generator rule.
+  Finally, if at least one of the types in $\vec A$ \emph{is} active in the main premise, then we can add $f$ to the generator rule, applying it alongside all the other generators, since it satisfies the condition that at least one of its arguments be active.
+  (Technically, this may require us to first permute the consequent of the main premise so that $\vec A$ appears before all the other non-inputs to the generator rule.)
+  % This is not a problem for the induction since in this case we are not actually using the inductive hypothesis at all.
+  In all cases, the second claim of the lemma is obvious.
+\end{proof}
+
+By combining \cref{thm:prop-symadm,thm:prop-onecutadm}, we can postcompose with a generator $f\in \cG(\vec A,\vec B)$ whose domain types $\vec A$ appear anywhere in the consequent of a judgment $\Gamma\types\Delta$, in any order.
+
+\begin{thm}\label{thm:prop-cutadm}
+  Cut is admissible: given derivations of $\Gamma\types \Delta$ and $\Delta \types \Phi$, we can construct a derivation of $\Gamma\types \Phi$.
+\end{thm}
+\begin{proof}
+  We induct on the derivation of $\Delta \types \Phi$.
+  If it comes from the identity rule, then we just have to compose $\Gamma\types \Delta$ with some number of nullary-domain generators and permute its codomain; we do this one by one using \cref{thm:prop-onecutadm} and then \cref{thm:prop-symadm}.
+  Similarly, if it comes from the generator rule, we inductively cut with its main premise, then apply all of the new generators one by one using \cref{thm:prop-onecutadm}.
+\end{proof}
+
+As an example, suppose we want to cut the following terms:
+\begin{gather}
+  x:A,y:B \types (f\s1(y),k(g,f\s3(y)),f\s2(y) \mid h(x)) : (C,D,E)\label{eq:ceg5a}
+  \\\notag\\
+  u:C,v:D,w:E \types (m(u,\ell\s2(w)),s,\ell\s1(w) \mid n(v)) : (F,G,H)\label{eq:ceg5b}
+\end{gather}
+Here the generators are
+\begin{mathpar}
+  f:B \to (C,E,P)\and
+  g:() \to Q\and
+  h:A \to ()\and
+  k:(Q,P) \to D\and
+  \ell:E \to (H,R)\and
+  m:(C,R) \to F\and
+  n:D\to ()\and
+  s:() \to G
+\end{mathpar}
+The depths are
+\begin{mathpar}
+  f=1\and g=0\and h=1 \and k=2\and \ell=1 \and m=2 \and n=1 \and s=0
+\end{mathpar}
+Thus, the final rule of the second derivation must apply $m$ only, so our inductive job is to cut 
+\begin{gather}
+  x:A,y:B \types (f\s1(y),k(g,f\s3(y)),f\s2(y) \mid h(x)) : (C,D,E)\label{eq:ceg2a}
+  \\\notag\\
+  u:C,v:D,w:E \types (u,\ell\s2(w),s,\ell\s1(w) \mid n(v)) : (C,R,G,H)\label{eq:ceg2b}
+\end{gather}
+Now the final rule of the second derivation must apply $\ell$ and $n$ together, so our inductive job is to cut
+\begin{gather}
+  x:A,y:B \types (f\s1(y),k(g,f\s3(y)),f\s2(y) \mid h(x)) : (C,D,E)\label{eq:ceg1a}
+  \\\notag\\
+  u:C,v:D,w:E \types (w,v,u,s \mid\,) : (E,D,C,G)\label{eq:ceg1b}
+\end{gather}
+The latter is obtained from the identity rule, so our task is now to apply \cref{thm:prop-onecutadm} to the former and the single generator $s:()\to G$.
+Peeling down the derivation of the former, we obtain
+\[ x:A,y:B \types (g,f\s3(y),f\s1(y),f\s2(y) \mid h(x)) : (Q,P,C,E) \]
+and then
+\[ x:A,y:B \types (y,x,g \mid\,) : (B,A,Q) \]
+which is also obtained from the identity rule.
+The identity rule can therefore also give us
+\[ x:A,y:B \types (y,x,g,s \mid\,) : (B,A,Q,G). \]
+Re-applying $f,h$ and then $k$, we obtain
+\[ x:A,y:B \types (g,f\s3(y),f\s1(y),f\s2(y),s \mid h(x)) : (Q,P,C,E,G) \]
+and then
+\[ x:A,y:B \types (f\s1(y),k(g,f\s3(y)),f\s2(y),s \mid h(x)) : (C,D,E,G). \]
+Permuting this, we obtain
+\[ x:A,y:B \types (f\s2(y),f\s1(y),k(g,f\s3(y)),s \mid h(x)) : (E,C,D,G). \]
+as the result of cutting~\eqref{eq:ceg1a} and~\eqref{eq:ceg1b}.
+
+Backing out the induction one more step, we must apply $\ell$ and $n$ to this using \cref{thm:prop-onecutadm}.
+We cannot apply $\ell$ directly since its domain $E$ is not active (its term $f\s2(y)$ has depth $1$ while the maximum depth is $2$).
+Thus, we back up to the main premise
+\[ x:A,y:B \types (g,f\s3(y),f\s1(y),f\s2(y),s \mid h(x)) : (Q,P,C,E,G) \]
+in which $E$ is active.
+Thus, we can apply $\ell$ in the same generator rule as $k$, obtaining
+\begin{equation}
+  x:A,y:B \types (\ell\s1(f\s2(y)),\ell\s2(f\s2(y)),f\s1(y),k(g,f\s3(y)),s \mid h(x)) : (H,R,C,D,G).\label{eq:ceg4}
+\end{equation}
+Now the domain $D$ of the generator $n$ \emph{is} active, so we can directly apply it with another generator rule, obtaining (after permutation)
+\begin{equation}
+  x:A,y:B \types (f\s1(y),\ell\s2(f\s2(y)),s,\ell\s1(f\s2(y)) \mid n(k(g,f\s3(y))),h(x)) : (C,R,G,H).\label{eq:ceg3}
+\end{equation}
+as the result of cutting~\eqref{eq:ceg2a} and~\eqref{eq:ceg2b}.
+
+Finally, we must compose this with $m$ using \cref{thm:prop-onecutadm}.
+Neither of the domain types $C$ and $R$ is active in~\eqref{eq:ceg3} (in fact, \emph{no} types are active in~\eqref{eq:ceg3}, since the last rule applied was a generator rule with only a generator of nullary codomain), so we have to inductively peel back to~\eqref{eq:ceg4} in which $R$ is active (though not $C$).
+Thus, we can then apply $m$ in the same generator rule as $n$, obtaining
+\begin{equation}
+  x:A,y:B \types (m(f\s1(y),\ell\s2(f\s2(y))),s,\ell\s1(f\s2(y)) \mid n(k(g,f\s3(y))),h(x)) : (F,G,H)\label{eq:ceg}
+\end{equation}
+as our end result.
+
+Note that the terms in~\eqref{eq:ceg} from those in~\eqref{eq:ceg5b} by substituting $f\s1(y)$ for $u$, $k(g,f\s3(y))$ for $v$, and $f\s2(y)$ for $w$, and appending the nullary term $h(x)$ of~\eqref{eq:ceg5a} to the nullary terms of~\eqref{eq:ceg5b}.
+(Our less than completely explicit proof of \cref{thm:prop-onecutadm} does not really determine the order of the nullary terms in the end result; we henceforth adopt this convention that those associated to the terms being substituted into come first, followed by those associated to the terms being substituted.)
+Because the distance between terms and derivations is greater than usual, there is also more content to this observation than usual.
+We can make it formal by introducing a notion of substitution for untyped terms, and then proving that the terms produced by \cref{thm:prop-cutadm} are actually instances of this notion.
+We call these ``untyped term'' \textbf{pre-terms}; they are defined by the judgments:
+\begin{mathpar}
+  \inferrule{(x:A) \in \Gamma}{\Gamma \types x \preterm}\and
+  \inferrule{\Gamma \types M\preterm \\ \dots \\ \Gamma \types N\preterm\\\\
+    f\in \cG(A,\dots,B;\vec C)\\
+    \fa\in\fB \\ k\in \dN
+  }{\Gamma \types f^\fa\s k(M,\dots,N) \preterm}
+\end{mathpar}
+We define substitution into preterms in a fairly obvious way; for convenience we define a notion of ``simultaneous substitution'' of a list of preterms $\vec M$ for a list of variables $\vec x$
+\begin{alignat*}{2}
+  x_k[\vec M/\vec x] &= M_k\\
+  y[\vec M/\vec x] &= y &\quad (y\notin \vec x)\\
+  f^\fa\s k(N,\dots,P)[\vec M/\vec x] &= f^\fa\s k(N[\vec M/\vec x],\dots,P[\vec M/\vec x])
+\end{alignat*}
+Then we can prove:
+
+\begin{lem}\label{thm:prop-cutissub}
+  If $\Gamma \types (\vec M\mid \vec Z):\vec A$ and $\vec x:\vec A \types (\vec N\mid \vec W):\vec B$, then the composite constructed by \cref{thm:prop-cutadm} is $\Gamma \types (\vec N[\vec M/\vec x]\mid \vec W[\vec M/\vec x],\vec Z):\vec B$.
+\end{lem}
+\begin{proof}
+  Inducting on the derivation of the second judgment, we trace through the proofs and find that the resulting terms are eventually obtained by applying a generator or identity rule, producing terms that match the inductive definition of substitution into pre-terms.
+\end{proof}
+
+This actually turns out to be quite useful.
+For instance, the following is quite easy to prove:
+
+\begin{lem}\label{thm:prop-presubassoc}
+  Substitution into pre-terms is associative: $P[\vec N/\vec y][\vec M/\vec x] = P[\vec N[\vec M/\vec x]/\vec y]$.\qed
+\end{lem}
+
+Therefore, we can immediately conclude:
+
+\begin{thm}\label{thm:prop-cutassoc}
+  Cut is associative.
+\end{thm}
+\begin{proof}
+  Since derivations are determined uniquely by their terms by \cref{thm:prop-tad}, this follows from \cref{thm:prop-cutissub,thm:prop-presubassoc}.
+\end{proof}
+
+This would be rather messier to prove by a direct induction on the construction of \cref{thm:prop-cutadm}.
+(The construction of \cref{thm:prop-cutadm} is still necessary, however, to show that the substituted pre-terms in \cref{thm:prop-cutissub} are well-typed.)
+Unitality follows similarly, so we have a category.
+
+In order to have a monoidal category, we need to add an additional equality rule\dots [TODO]
+
+[TODO: Don't say ``nullary terms'', that sounds like the domain.  Say ``scalar terms'' or ``null terms''.]
+
+\begin{thm}\label{thm:prop-moncat}
+  The contexts and derivable term judgments in the type theory for props under \cG form a strict monoidal category.
+\end{thm}
+\begin{proof}
+  The monoidal structure on contexts is of course concatenation, with the empty context as unit.
+  To tensor morphisms, it is easiest to first tensor with identities: given $\Gamma\types (\vec M\mid \vec Z):\Delta$, we construct $\Gamma,\vec x:\vec A\types (\vec M,\vec x\mid \vec Z):\Delta,\vec A$ by inducting until we get down to the identity rule and then just adding variables to the context.
+  Now we obtain the tensor product of $\Gamma\types \Delta$ and $\Phi\types \Psi$ by first tensoring with identities to get $\Gamma,\Phi \types \Delta,\Phi$ and $\Delta,\Phi\types \Delta,\Psi$ and then composing to get $\Gamma,\Phi\types \Delta,\Psi$.
+  Since composition is by substitution, which is unital, it follows (using again the fact that derivations are uniquely determined by their terms) that this is equal [TODO: modulo permuting scalar terms] to what we would get by doing it the other way (using $\Gamma,\Phi\types \Gamma,\Psi$ and $\Gamma,\Psi\types \Delta,\Psi$).
+  Functoriality, associativity, and unitality follow similarly.
+\end{proof}
 
 
 \newpage
@@ -466,11 +460,15 @@ The uniqueness of antipodes in a bimonoid presented in \cref{sec:intro} is an ex
 \begin{alignat*}{2}
 m&:(M,M)\to M &&\quad\text{(written infix as $m(x,y) = x\cdot y$)}\\
 e&:()\to M\\
-\comult&:M\to (M,M) &&\quad\text{(written a little abusively as $\comult_i(x) = x_i$)}\\
+\comult&:M\to (M,M) &&\quad\text{(written a little abusively as $\comult\s i(x) = x\s i$)}\\
 \counit &:M\to () &&\quad\text{(written $\counit(x) = \cancel{x}$)}
 \end{alignat*}
 while the generators of $\equiv$ are the bimonoid axioms.
+The slightly abusive notation $\comult\s i(x) = x\s i$ yields exactly the traditional ``Sweedler notation'' for comodules.
+Since there is no other meaning of $x\s i$ when $x$ is a variable (or more generally a term that already has a single output type), it is unambiguous as long as no type has more than one comultiplication.
+It may be regarded as a ``dual'' to the usual shorthand notation ``$x y$'' (rather than $x\cdot y$ or $m(x,y)$) for the multiplication of elements of a monoid.
 
+% TODO: Get rid of $\circ_{}$
 Here is another example.
 If $A$ is an object of a prop, a \textbf{dual} of $A$ is an object $A^*$ with morphisms $\eta:()\to (A,A^*)$ and $\counit:(A^*,A)\to ()$ such that $\counit \circ_{A^*} \eta = \idfunc_A$ and $\counit \circ_{A} \eta = \idfunc_A^*$.
 (In a symmetric monoidal category this reduces to the usual notion of dual.)
@@ -479,25 +477,25 @@ If $A$ has a dual $A^*$, and $f:A\to A$, the \textbf{trace} of $f$ is the compos
 or equivalently $(\counit \circ_A f)\circ_{A,A^*} \eta$.
 In the type theory for props, the axioms of a dual say
 \begin{mathpar}
-  x:A \types (\eta_1 \mid \counit(\eta_2,x)) \equiv x :A\and
-  y:A^* \types (\eta_2 \mid \counit(y,\eta_1)) \equiv y :A^*
+  x:A \types (\eta\s1 \mid \counit(\eta\s2,x)) \equiv x :A\and
+  y:A^* \types (\eta\s2 \mid \counit(y,\eta\s1)) \equiv y :A^*
 \end{mathpar}
-while the trace is $(\,\mid \counit(\eta_2,f(\eta_1)))$.
-Recall that $\equiv$ is a congruence for substitution; thus the dual axioms mean that \emph{any term} $M$ (appearing even as a sub-term of some other term) can be replaced by $\eta_1^\fa$ if we simultaneously add $\counit^\fb(\eta_2^\fa,M)$ to the list of null terms (here \fa and \fb are fresh labels).
-And dually, if $\counit^\fb(\eta_2^\fa,M)$ appears in the null terms, for any term $M$, then it can be removed by replacing $\eta_1^\fa$ (wherever it appears) with $M$.
+while the trace is $(\,\mid \counit(\eta\s2,f(\eta\s1)))$.
+Recall that $\equiv$ is a congruence for substitution; thus the dual axioms mean that \emph{any term} $M$ (appearing even as a sub-term of some other term) can be replaced by $\eta\s1^\fa$ if we simultaneously add $\counit^\fb(\eta\s2^\fa,M)$ to the list of null terms (here \fa and \fb are fresh labels).
+And dually, if $\counit^\fb(\eta\s2^\fa,M)$ appears in the null terms, for any term $M$, then it can be removed by replacing $\eta\s1^\fa$ (wherever it appears) with $M$.
 
 Now a classical fact about the trace is that it is \emph{cyclic}: if $A$ and $A'$ both have duals $A^*$ and $(A')^*$, and $f:A\to A'$ and $g:A'\to A$, then $\tr(gf) = \tr(fg)$.
 To prove this using traditional commutative-diagram reasoning is quite involved.
 It does have a pretty and intuitive proof using string diagrams.
 However, its proof in the type theory for props is one line:
-\[ \tr(gf) = (\,\mid \counit(\eta_2,g(f(\eta_1))))
-= (\,\mid \counit(\eta_2,g(\eta'_1)),\counit'(\eta'_2,f(\eta_1)))
-= (\,\mid \counit(\eta'_2,f(g(\eta'_1))))
+\[ \tr(gf) = (\,\mid \counit(\eta\s2,g(f(\eta\s1))))
+= (\,\mid \counit(\eta\s2,g(\eta'\s1)),\counit'(\eta'\s2,f(\eta\s1)))
+= (\,\mid \counit(\eta'\s2,f(g(\eta'\s1))))
 = \tr(fg).
 \]
 Here $\eta,\counit$ exhibit the dual of $A$, while $\eta',\counit'$ exhibit the dual of $A'$.
 The first and last equality are by definition;
-the second applies the first duality equation for $A'$ with $x=f(\eta_1)$; and the third applies the first duality equation for $A$ with $x=g(\eta'_1)$.
+the second applies the first duality equation for $A'$ with $x=f(\eta\s1)$; and the third applies the first duality equation for $A$ with $x=g(\eta'\s1)$.
 
 One thing to note about these examples is that they use only the type theory of props, not its extension to symmetric monoidal categories.
 In general, because the underlying prop of a symmetric monoidal category remembers its morphisms both into and out of tensor products, it seems rarely necessary to invoke the actual tensor product objects.
