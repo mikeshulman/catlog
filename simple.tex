@@ -5,7 +5,7 @@ At this point we have done about all we can with \emph{unary} type theories, whe
 (In fact, most introductions to type theory skip over the unary case altogether, but I find it clarifying to start with cases that are as simple as possible.)
 The most common type theories allow finite \emph{lists} of types as the antecedent.
 These are the object of study in this chapter; we call them \emph{simple type theories}.
-This term is more common in the literature than ``unary'', but perhaps not with the exact meaning we are giving it; the word ``simple'' is primarily used to contrast with ``dependent'' type theories.
+This term is more common in the literature than ``unary'', but perhaps not with the exact meaning we are giving it; the word ``simple'' is primarily used to contrast with ``dependent'' type theories (see \cref{chap:dtt}).
 
 
 \section{Towards multicategories}
@@ -712,7 +712,7 @@ For instance, if $f\in\cG(A,A;A)$ then we can write four sequents
 \end{array}
 \]
 The two in the left column are the same by $\alpha$-equivalence, and similarly the two in the right column are identical; but the columns are distinct from each other.
-(In fact, in the type theory of the present section, the sequents in the right-hand column are impossible; but in the theories to be considered in \cref{sec:cartmoncat,sec:symmoncat} they will be possible.)
+(In fact, in the type theory of the present section, the sequents in the right-hand column are impossible; but in the theories to be considered in \cref{sec:stlc,sec:symmoncat} they will be possible.)
 
 \begin{rmk}
 The intent of $\alpha$-equivalence is that the names or labels of variables are themselves meaningless, but they carry the information of which variable occurrences in a term refer to which variables in the context (or, later, to which variable binding sites).
@@ -1570,7 +1570,7 @@ As in that case, the smaller operations suffice to generate the more general one
 What is somewhat less clear is how these rules can be made \emph{admissible} in line with principle~\eqref{princ:adm}.
 For now let us ignore this question and take these rules (when we want them) as \emph{primitive} (recall \cref{rmk:admissible-derivable-1}).
 This makes the treatment more parametric in \fS, and makes little difference for presenting free posets, since in that case we are only interested in the existence or nonexistence of derivations.
-We will address the question of admissibility in \cref{sec:heyting-algebras,sec:cartmoncat,sec:symmoncat}.
+We will address the question of admissibility in \cref{sec:heyting-algebras,sec:stlc,sec:symmoncat}.
 
 For the rest of this subsection, let \fS be one of the four possibilities above (so in particular, it will always contain the bijections).
 All our type theories will then include the appropriate primitive structural rules, according to the above table.
@@ -2006,7 +2006,7 @@ While we are stuck with these labels, it is probably best (for a classically tra
 The point is simply that we make our mathematics more general by generalizing our logic, and this is the logic that corresponds naturally to cartesian closed lattices, which are certainly a categorically natural notion.
 
 The observation that the logical operations of ``and'', ``or'', ``if-then'', and so on in the poset $\tv$ have the same universal properties (and hence can be represented by the same type operations) as the operations $A\times B$, $A+B$, $B^A$ in the category \bSet has a distinguished pedigree and many names: \emph{propositions as types}, \emph{proofs as terms}, or the \emph{Curry--Howard correspondence} (see~\cite{wadler:pat} for some history).
-As we will see, this correspondence is also central to the use of dependent type theory as a foundation for mathematics.
+As we will see, this correspondence is also central to the use of dependent type theory (\cref{chap:dtt}) as a foundation for mathematics.
 Some ``constructivist'' mathematicians have argued that this correspondence should determine the \emph{meanings} of the logical operations in terms of proofs --- that is, a proof of ``$P$ and $Q$'' should be a pair $(p,q)$ where $p$ is a proof of $P$ and $q$ is a proof of $Q$; a proof of ``if $P$ then $Q$'' should be a function transforming any proof of $P$ into a proof of $Q$; and so on.
 This is sometimes called the \emph{Brouwer--Heyting--Kolmogorov (BHK) interpretation}.
 However, we will have little to say about the philosophical side of constructive logic.
@@ -2141,7 +2141,6 @@ Of course, any closed monoidal lattice satisfies the distributive law $A\tensor 
 
 \section{Simply typed $\lambda$-calculus}
 \label{sec:stlc}
-\label{sec:cartmoncat}
 
 We now move back up the ladder from posets to categories.
 In this case it becomes more important to adhere to principle~\eqref{princ:adm} and make our structural rules admissible.
@@ -2357,6 +2356,68 @@ A cartesian multigraph contains operations and equations, so to use it as base d
   As always, this works because the rules for type operations (including the new one $\to$) are defined to mirror those of categorical universal properties.
 \end{proof}
 
+\begin{rmk}\label{rmk:ctx-judgment}
+  Throughout this chapter, we have been taking the notion of ``finite list'' as given externally: the context of a judgment is a finite list of types, and we assume we know what a finite list means.
+  However, it is also possible to incorporate the definition of ``finite list'' into the type theory, by adding a \emph{judgment for contexts} alongside the judgment for types.
+  The rules for this judgment are:
+  \begin{mathpar}
+    \inferrule{ }{\types () \ctx}\and
+    \inferrule{\types \Gamma \ctx \\ \types A \type}{\types (\Gamma,A)\ctx}
+  \end{mathpar}
+  In other words, there is an empty context, and from any context we can make a new one by adding a type on the end.
+  Similarly, instead of the ``identity/variable'' rule having a condition $(x:A)\in \Gamma$ (relying on our external knowledge of what it means to ``be an element of a finite list''), we can replace it by a judgment ``$\Gamma \types x\var A$'' meaning ``$x$ is a variable of type $A$ in context $\Gamma$'', with rules
+  \begin{mathpar}
+    \inferrule{\types \Gamma \ctx \\ \types A \type}{\Gamma,A \types \pop\var A}\and
+    \inferrule{\types \Gamma \ctx \\ \types A \type \\ \Gamma \types x\var B}{\Gamma,A \types \shf(x)\var B}\and
+    \inferrule{\Gamma \types x\var A}{\Gamma\types \use(x):A}
+  \end{mathpar}
+  That is, there is a variable associated to the last type in a context, and variables associated to other types in the context are defined inductively.
+  Thus, for example, the variables in the context $A,B,C$ are
+  \begin{mathpar}
+    \inferrule*{ }{A,B,C \types \pop\var C}\and
+    \inferrule*{\inferrule*{ }{A,B \types \pop\var B}}{A,B,C\types \shf(\pop)\var B}\and
+    \inferrule*{\inferrule*{\inferrule*{ }{A \types \pop\var A}}{A,B\types \shf(\pop)\var A}}{A,B,C\types \shf(\shf(\pop))\var A}\and
+  \end{mathpar}
+  Note that modulo a change of notation, these ``variables'' are precisely \emph{de Bruijn indices}: the number of ``$\shf$''s says how many types we need to ``count backwards'' from the right.
+  At present this is merely a curiosity, but when we come to consider dependent type theories in \cref{chap:dtt} it will be much more important.
+\end{rmk}
+
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:stlc-cartmulti}
+  Complete the proof in \cref{thm:stlc-initial} that type theory yields a cartesian multicategory by checking \cref{defn:fS-multicategory}\ref{item:cartmulti-3} and \ref{item:cartmulti-4}, or perhaps the corresponding one-place axioms you found in \cref{ex:cartmulti-oneplace}.
+\end{ex}
+
+\begin{ex}\label{ex:combinatory-logic}\ 
+  \begin{enumerate}
+  \item Write down terms in the simply typed $\lambda$-calculus (with $\to$ the only type constructor) that have the following types (for arbitrary $A,B,C$):
+    \begin{mathpar}
+      A\to A\\
+      A\to B\to A\\
+      (A\to B\to C)\to (A\to B) \to (A\to C)
+    \end{mathpar}
+    \textit{(Remember that the type operator $\to$ associates to the right: $X\to Y\to Z$ means $X\to (Y\to Z)$.)}\label{item:cl1}
+  \item By \textbf{combinatory logic} we will mean the type theory obtained from simply typed $\lambda$-calculus by \emph{removing} the $\lambda$-abstraction rule:
+    \[ \xcancel{\inferrule*{\Gamma,x:A \types M:B}{\Gamma \types \lambda x.M:A\to B}} \]
+    and instead adding axioms called $I$, $K$, and $S$ having the above types (for any $A,B,C$):
+    \begin{mathpar}
+      \inferrule{\types A\type}{\Gamma\types I_A:A\to A}\and
+      \inferrule{\types A\type\\\types B\type}{\Gamma\types K_{AB}:A\to B\to A}\and
+      \inferrule{\types A\type\\\types B\type\\\types C\type}{\Gamma\types S_{ABC}:(A\to B\to C)\to (A\to B) \to (A\to C)}
+    \end{mathpar}
+    Prove that the removed $\lambda$-abstraction rule is \emph{admissible} in \textbf{CL}.
+    That is, given a derivation in combinatory logic of $\Gamma,x:A \types M:B$, we can construct a derivation in combinatory logic of $\Gamma\types [x]M:A\to B$ for some $[x]M$ (note that this is an \emph{operation} on combinatory logic terms, like substitution).\label{item:cl2}
+  \item Write down some $\equiv$-laws satisfied by the $I$, $K$, and $S$ you defined in~\ref{item:cl1}, and show that when they are used as generators for an $\equiv$ for combinatory logic, it also presents a free closed cartesian multicategory.
+    One way to do this is by a direct induction on derivations; another way is exhibit a bijection between its terms and those of the simply typed $\lambda$-calculus.
+  \item Compare to \cref{ex:hilbert}.
+  \end{enumerate}
+\end{ex}
+
+
+\section{Finite-product theories}
+\label{sec:fp-theories}
+
 To end this section, recall from \cref{sec:unary-theories} that for almost any type theory with an initiality theorem we can build a notion of a ``theory'' that allows generating morphisms with arbitrary types in their domains and codomains, as well as generating equalities between arbitrary terms.
 We have not explicitly mentioned this in the present chapter, but it is true for all of the type theories we have considered.
 
@@ -2405,10 +2466,6 @@ Type theory, with its technology of cut-admissibility, gives us a concrete way t
 
 \subsection*{Exercises}
 
-\begin{ex}\label{ex:stlc-cartmulti}
-  Complete the proof in \cref{thm:stlc-initial} that type theory yields a cartesian multicategory by checking \cref{defn:fS-multicategory}\ref{item:cartmulti-3} and \ref{item:cartmulti-4}, or perhaps the corresponding one-place axioms you found in \cref{ex:cartmulti-oneplace}.
-\end{ex}
-
 \begin{ex}\label{ex:catprod-ehnr-again}
   Re-do \cref{ex:catprod-eckmann-hilton,ex:catprod-nearring} using the present multicategorical $\times$-theories.
   Notice how much nicer they are.
@@ -2418,41 +2475,10 @@ Type theory, with its technology of cut-admissibility, gives us a concrete way t
   Show that for any $\times$-theory \cG there is another $\times$-theory \cH whose generating arrows contain only base types in their domains and codomains and such that $\F\bPrCat\cG\simeq \F\bPrCat\cH$.
 \end{ex}
 
-\begin{ex}\label{ex:combinatory-logic}\ 
-  \begin{enumerate}
-  \item Write down terms in the simply typed $\lambda$-calculus (with $\to$ the only type constructor) that have the following types (for arbitrary $A,B,C$):
-    \begin{mathpar}
-      A\to A\\
-      A\to B\to A\\
-      (A\to B\to C)\to (A\to B) \to (A\to C)
-    \end{mathpar}
-    \textit{(Remember that the type operator $\to$ associates to the right: $X\to Y\to Z$ means $X\to (Y\to Z)$.)}\label{item:cl1}
-  \item By \textbf{combinatory logic} we will mean the type theory obtained from simply typed $\lambda$-calculus by \emph{removing} the $\lambda$-abstraction rule:
-    \[ \xcancel{\inferrule*{\Gamma,x:A \types M:B}{\Gamma \types \lambda x.M:A\to B}} \]
-    and instead adding axioms called $I$, $K$, and $S$ having the above types (for any $A,B,C$):
-    \begin{mathpar}
-      \inferrule{\types A\type}{\Gamma\types I_A:A\to A}\and
-      \inferrule{\types A\type\\\types B\type}{\Gamma\types K_{AB}:A\to B\to A}\and
-      \inferrule{\types A\type\\\types B\type\\\types C\type}{\Gamma\types S_{ABC}:(A\to B\to C)\to (A\to B) \to (A\to C)}
-    \end{mathpar}
-    Prove that the removed $\lambda$-abstraction rule is \emph{admissible} in \textbf{CL}.
-    That is, given a derivation in combinatory logic of $\Gamma,x:A \types M:B$, we can construct a derivation in combinatory logic of $\Gamma\types [x]M:A\to B$ for some $[x]M$ (note that this is an \emph{operation} on combinatory logic terms, like substitution).\label{item:cl2}
-  \item Write down some $\equiv$-laws satisfied by the $I$, $K$, and $S$ you defined in~\ref{item:cl1}, and show that when they are used as generators for an $\equiv$ for combinatory logic, it also presents a free closed cartesian multicategory.
-    One way to do this is by a direct induction on derivations; another way is exhibit a bijection between its terms and those of the simply typed $\lambda$-calculus.
-  \item Compare to \cref{ex:hilbert}.
-  \end{enumerate}
-\end{ex}
-
 % \section{Programming with $\lambda$-calculus}
 % \label{sec:primrec}
 
 % [NNOs, primitive recursion, functional programming, perhaps more general GADTs]
-
-
-% \section{$\lambda$-calculus and de Bruijn variables}
-% \label{sec:de-bruijn}
-
-% [Arise automatically from judgmental contexts]
 
 
 \section{Symmetric monoidal categories}

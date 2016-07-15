@@ -7,7 +7,7 @@
 \author{Michael Shulman}
 \date{DRAFT for AARMS Summer School 2016\\Version of \today}
 \makeatletter
-\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bTh}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bTh}
 \autodefs{\nAut\nShuf}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
@@ -31,9 +31,15 @@
 % judgments
 \let\types\vdash
 \def\type{\;\ftype}
+\def\ctx{\;\fctx}
+\def\preterm{\;\fpreterm}
 \newcommand{\pc}{\mathrel{\mathord{:}?}}
 \newcommand{\atom}{\mathrel{\downarrow}}
 \newcommand{\can}{\mathrel{\uparrow}}
+\newcommand{\var}{\mathrel{\Downarrow}}
+\newcommand{\pop}{\mathsf{pop}}
+\newcommand{\shf}{\mathsf{shift}}
+\newcommand{\use}{\mathsf{use}}
 \newcommand{\atomcan}{\ensuremath{\mathord{\downarrow\uparrow}}}
 \newcommand{\focus}[1]{[#1]}
 \newcommand{\postcsym}[1]{#1\mathord{\circ}}
@@ -41,7 +47,14 @@
 \newcommand{\precsym}[1]{\mathord{\circ}#1}
 \let\preceeds\prec
 \renewcommand{\prec}[2]{(#1)\precsym{#2}}
-\newcommand{\actv}[1]{\underline{#1}}
+% props and their type theory
+\def\s#1{_{\scriptscriptstyle(#1)}}
+\let\ptens\bullet
+\newcommand{\actv}[1]{{#1}^\star}
+\newcommand{\atleastone}[1]{{#1}^{\scriptscriptstyle \ge 1}}
+\newcommand{\oneactv}[1]{{#1}^{\star\scriptscriptstyle\ge 1}}
+\newcommand{\zeroactv}[1]{{#1}^{\star\scriptscriptstyle = 0}}
+\newcommand{\allactv}[1]{{#1}^{\star}}
 % substitution
 \newcommand{\alsub}[1]{\langle #1\rangle}
 \newcommand{\hsub}[1]{\llbracket #1\rrbracket}
@@ -160,6 +173,7 @@
 \makeatother
 \usepackage{version}
 \excludeversion{props}
+\includeonly{simple}
 \begin{document}
 \maketitle
 
@@ -180,9 +194,11 @@
 
 \include{simple}
 
-%\include{classical}
+\include{classical}
 
 %\include{fol}
+
+\include{dtt}
 
 \appendix
 
