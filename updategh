@@ -1,0 +1,12 @@
+#!/bin/bash
+
+git checkout master
+latexmk -pdf catlog
+cp catlog.pdf /tmp
+git checkout gh-pages || exit 1
+cp /tmp/catlog.pdf .
+git add catlog.pdf
+git commit -m 'update'
+git push
+git checkout master
+cp /tmp/catlog.pdf .
