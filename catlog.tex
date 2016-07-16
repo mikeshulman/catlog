@@ -7,7 +7,7 @@
 \author{Michael Shulman}
 \date{DRAFT for AARMS Summer School 2016\\Version of \today}
 \makeatletter
-\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bCartMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bTh}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fprop\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bCartMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bTh}
 \autodefs{\nAut\nShuf}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
@@ -30,7 +30,9 @@
 \let\merge\boxplus
 % judgments
 \let\types\vdash
+\let\cb\mid
 \def\type{\;\ftype}
+\def\prop{\;\fprop}
 \def\ctx{\;\fctx}
 \def\preterm{\;\fpreterm}
 \newcommand{\pc}{\mathrel{\mathord{:}?}}
@@ -134,6 +136,9 @@
 \def\toR{\mathord{\to}R}
 \def\toI{\mathord{\to}I}
 \def\toE{\mathord{\to}E}
+% equality
+\def\eqI{\mathord{=}I}
+\def\eqE{\mathord{=}E}
 % Theories
 \def\timesthy#1{\bTh_{\times,#1}}
 \def\m#1{\llbracket #1\rrbracket}

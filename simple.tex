@@ -2495,10 +2495,18 @@ The category of contexts of a type theory, like the free cartesian multicategory
 In particular, the category of contexts of \cG uniquely determines, up to equivalence, the category of morphisms of theories from \cG into any category with products (such morphisms are often called \textbf{models} of the theory).
 Two theories that generate equivalent categories of contexts have ``the same models'' in all categories, and are said to be \textbf{Morita equivalent}.
 For instance, the notion of group can be presented with a multiplication, unit, and inverse, or with a unit and ``division'' operation; these are distinct theories but are Morita equivalent.
+(The study of finite-product theories, particularly those with only one type, is also known as \emph{universal algebra}; although classical universal algebraists mainly study models in \bSet rather than more general categories.)
 
 There is a thread in categorical logic that \emph{defines} ``theories'' to be the categories they freely generate (hence the name ``Lawvere theory'').
 These freely generated categories are very useful; but of course in practice algebraic theories are generally specified by generators and relations, so it is also important to understand the process by which these generate a category.
 Type theory, with its technology of cut-admissibility, gives us a concrete way to construct and understand such categories, rather than (for example) simply deducing their existence by an adjoint functor theorem.
+
+\begin{rmk}
+  This seems an appropriate place to mention an alternative approach to terms in type theory that is fairly common, especially for finite-product theories.
+  Rather than giving rules that inductively generate judgments (with contexts) and then assigning terms to represent them uniquely with variables associated to the types in the context, some authors instead suppose given from the start a different collection of ``variables'' associated to each type.
+  Then the terms (without contexts) are defined inductively by applying generating morphisms to variables of appropriate types, and finally a ``valid context for a term'' is \emph{defined} to be any list of variables (with their associated types) that includes all the variables appearing (freely) in the term.
+  The end result is much the same, but our way of keeping track of the context all the way through matches the category theory better (since every morphism in a category has a specified domain) and makes for cleaner inductive arguments.
+\end{rmk}
 
 
 \subsection*{Exercises}
