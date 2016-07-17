@@ -22,7 +22,7 @@ In this section, we will describe and study type theories of this sort, with one
 Unlike the type theories considered in \cref{chap:simple}, which were directly motivated by a corresponding categorical structure, in the present case it seems more natural to describe the type theory first and then define an appropriate categorical structure in order to match it.
 (This is not to say that there are not lots of naturally occurring examples of this categorical structure; there are!
 It's just that without the type theory in mind, we might not be led to define and study that exact class of categorical structures.)
-Thus, we postpone consideration of their categorical semantics to \cref{sec:hyperdoctrines,sec:sub}.
+Thus, we postpone consideration of their categorical semantics to \cref{sec:hyperdoctrines,sec:subobjects}.
 
 We will also make several simplifying assumptions in this section.
 Firstly, the base type theory will always be a bare theory of cartesian multicategories under some multigraph, with no type operations and no axioms.
@@ -64,7 +64,7 @@ As in \cref{sec:logic}, we simplify our lives by always assuming exchange; and o
 
 In this section we will also depart from our general principle and take the cut rule \emph{for propositions} to be primitive rather than admissible:
 \[ \inferrule{\Gamma\cb\Theta \types \ph \\ \Gamma\cb \Psi,\ph\types \psi}{\Gamma\cb \Psi,\Theta\types \psi}\]
-This simplifies a few of the rules, like the elimination rule for equality, and does not entail much loss: since we are considering the propositions to be posetal, we don't care about whether a judgment has more than one derivation, so it doesn't matter to have extra rules around.
+This simplifies a few of the rules, like the elimination rules for existential quantification and equality, and does not entail much loss: since we are considering the propositions to be posetal, we don't care about whether a judgment has more than one derivation, so it doesn't matter to have extra rules around.
 (In \cref{sec:indexed-moncat} we will generalize away from the posetal case, necessitating the more complicated versions of these rules.)
 
 There is one other structural rule, however, that we \emph{do} want to make admissible: substitution of terms into propositions (and their entailments).
@@ -97,46 +97,46 @@ For instance, the rules for $\join$ are
 \end{mathpar}
 and likewise we have rules for $\bot,\meet,\top,\tensor,\one$, and $\hom$.\footnote{Since cut is primitive, we could simplify the rule $\joinI1$ to $\Gamma\cb A\types A\join B$, but we will stick with the familiar versions of the rules we have already encountered.}
 Of course, in the cartesian case we can dispense with $\tensor$ and $\one$ (since they coincide with $\meet$ and $\top$), and write $\hom$ instead as $\To$ or $\to$, and we could also formulate the rules with an unchanging proposition context as in \cref{sec:heyting-algebras}.
-The modularity of type theory means we can also mix and match, choosing the rules corresponding to some of these connectives but not others; in \cref{sec:sub} we will see that some groups of connectives are particularly natural from a categorical perspective.
+The modularity of type theory means we can also mix and match, choosing the rules corresponding to some of these connectives but not others; in \cref{sec:subobjects} we will see that some groups of connectives are particularly natural from a categorical perspective.
 
 The interesting new things happen with the \emph{new} operations on propositions that \emph{do} change the type context.
 We will consider three such operations, which are particularly natural both categorically and logically.
 The first two are the \emph{quantifiers} ``for all'' (the ``universal quantifier'') and ``there exists'' (the ``existential quantifier'').
 The rules introducing these two propositions both look the same:
 \begin{mathpar}
-  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A,\ph) \prop}\and
-  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A,\ph) \prop}\and
+  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A.\ph) \prop}\and
+  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A.\ph) \prop}\and
 \end{mathpar}
 (Note that in both cases the variable $x$ is \emph{bound} in the resulting proposition, just as it is in $\lambda x.M$.
-If there is no danger of confusion, we may abbreviate these to $\forall x,\ph$ and $\exists x,\ph$, but in general the type annotation is necessary to make type-checking possible.)
+If there is no danger of confusion, we may abbreviate these to $\all x.\ph$ and $\exis x.\ph$, but in general the type annotation is necessary to make type-checking possible.)
 But the rules governing entailments involving them, of course, are different.
 
 Recall that in natural deduction, each type operation has both one or more \emph{introduction} rules and one or more \emph{elimination} rules (while in sequent calculus, these are rephrased as \emph{right} and \emph{left} rules respectively).
 In the past we have motivated these rules by appeal to universal properties in a categorical structure, with one group of rules giving the basic data and the other giving their universal factorization property.
-The rules for $\exists$ and $\forall$ do correspond to universal properties, but since we have postponed the semantics of first-order logic to \cref{sec:hyperdoctrines} we will attempt to instead motivate their rules from an intuitive understanding of logic.
+The rules for $\exis$ and $\all$ do correspond to universal properties, but since we have postponed the semantics of first-order logic to \cref{sec:hyperdoctrines} we will attempt to instead motivate their rules from an intuitive understanding of logic.
 
-Informally, how do we prove that $\forall x:A,\ph$?
+Informally, how do we prove that $\forall x:A.\ph$?
 Arguably the most basic way to do it is to assume given an arbitrary $x:A$ and prove that $\ph$ is true (here $\ph$ is a statement involving $x$, hence involving our arbitrary assumed $x:A$).
 This suggests the following introduction rule:
 \begin{mathpar}
-  \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A,\ph}\;\forall I
+  \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallI
 \end{mathpar}
 Note that since $\Theta$ appears in the conclusion, where $x$ is no longer in the type context, $\Theta$ cannot depend on $x$, even though syntactically the premise would allow that.
 
-Similarly, what good does it do to know that $\forall x:A,\ph$?
+Similarly, what good does it do to know that $\forall x:A.\ph$?
 The most basic thing it tells us is that if we have any particular element $M$ of $A$, then $\ph$ is true about $M$, i.e.\ with $M$ replacing $x$.
 This suggests the following elimination rule:
 \begin{mathpar}
-  \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A,\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forall E
+  \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forallE
 \end{mathpar}
 
 \begin{rmk}
   Note that this rule involves substitution into propositions.
   Thus, formally speaking we have to state all the rules for the proposition judgment $\Gamma\types \ph\prop$ first, \emph{then} prove that substitution into propositions is admissible (thereby defining the notation $\ph[M/x]$), and only after that can we state all the rules for the entailment judgment $\Gamma\cb\Theta\types\ph$.
-  A similar situation obtained for the equality judgment $\equiv$ for simple and unary type theories, which often involved substitution into terms (e.g.\ $(\lambda x.M)N \equiv M[N/x]$), so that we had to prove the admissibility of the latter before stating the rules for $\equiv$.
+  A similar situation obtained for the equality judgment $\equiv$ for simple and unary type theories, which often involved substitution into terms (e.g.\ $(\lambda x.M)N \equiv M[N/x]$), so that we had to prove the admissibility of the latter before stating the rules for $\equiv$ (and likewise, when proving the initiality theorems, we had to show that our functor-in-progress took substitution to composition before defining it on equalities).
   However, in practice we actually state all the rules at once, with the implicit understanding that afterwards we will define substitution so that the rules involving it make sense.
   
-  However, when making use of such a shortcut, we do have to be careful to notice whether we are introducing any ``cyclic dependencies''.
+  We do have to be careful, when taking such a shortcut, to notice whether we are introducing any ``cyclic dependencies''.
   For instance, if there are any rules for the term or proposition judgments whose premises involve the entailment judgment, it is no longer possible to complete the definition of the former, \emph{then} define substitution for them, and \emph{then} give the definition of the latter: we would have to give the definition all at once, including (somehow) defining substitution at the same time.
   It is possible to do this, but it is much more difficult and leads us into the realm of dependent type theory; see \cref{chap:dtt}.
 
@@ -145,28 +145,28 @@ This suggests the following elimination rule:
   See also \cref{rmk:subset-quotient}.
 \end{rmk}
 
-Moving on to the existential quantifier, the most basic way to prove $\exists x:A,\ph$ is to exhibit a particular element $M$ of $A$ and prove that it has the property $\ph$ (that is, $\ph$ with $M$ replacing $x$ is true).
+Moving on to the existential quantifier, the most basic way to prove $\exists x:A.\ph$ is to exhibit a particular element $M$ of $A$ and prove that it has the property $\ph$ (that is, $\ph$ with $M$ replacing $x$ is true).
 This is of course a ``constructive'' proof.
 In classical mathematics one can also give ``nonconstructive'' existence proofs, but these arise by use of the law of excluded middle or its equivalent law of double negation.
 The \emph{basic} way to prove existence, which uses no other logical laws than the meaning of ``existence'', is to supply a witness.
-This leads to the following introduction rule for $\exists$:
+This leads to the following introduction rule for $\exis$:
 \begin{mathpar}
-  \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A,\ph}\;\exists I
+  \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A.\ph}\;\existsI
 \end{mathpar}
 
-Finally, what good does it do to know that $\exists x:A,\ph$?
+Finally, what good does it do to know that $\exists x:A.\ph$?
 It means we are free to assume that we have some element of $A$ satisfying $\ph$ (but about which we assume nothing else).
 This leads to the following elimination rule:
 \begin{mathpar}
-  \inferrule{\Gamma \types \psi\prop \\ \Gamma\cb\Theta\types \exists x:A,\ph \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta\types \psi}\;\exists E
+  \inferrule{\Gamma \types \psi\prop \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,\exists x:A.\ph\types \psi}\;\existsE
 \end{mathpar}
-This is perhaps the least intuitive of the quantifier rules: it says that if we can prove $\exists x:A,\ph$, and if we can prove some other statement $\psi$ under the additional assumption of some arbitrary $x:A$ that satisfies $\ph$, then we can in fact conclude $\psi$ without any additional assumptions.
-(Note the similarity in structure between $\exists E$ and $\tensorE$; this suggests the eventual universal property we will find corresponding to $\exists$.)
+This is perhaps the least intuitive of the quantifier rules: it says that if we can prove some other statement $\psi$ under the assumption of some arbitrary $x:A$ that satisfies $\ph$, then we can also conclude $\psi$ under the assumption of $\exists x:A.\ph$.
+(Note the similarity in structure between $\existsE$ and $\tensorE$; this suggests the eventual universal property we will find corresponding to $\exis$.)
 
 We include the premise $\Gamma \types \psi\prop$ to ensure that $\psi$ doesn't depend on the variable $x$, since otherwise we would not want to let ourselves write $\Gamma\cb\Theta\types \psi$ (with $x$ not appearing in $\Gamma$, as implied by our conventions and the fact that in a premise we wrote $\Gamma,x:A$).
-We also don't want $x$ to appear in $\Theta$, but the derivability of the other premise $\Gamma\cb\Theta\types \exists x:A,\ph$ is sufficient to ensure that.
+We also don't want $x$ to appear in $\Theta$, but the derivability of the other premise $\Gamma\cb\Theta\types \exists x:A.\ph$ is sufficient to ensure that.
 
-This completes the rules for the quantifiers $\forall$ and $\exists$.
+This completes the rules for the quantifiers $\all$ and $\exis$.
 The third and last new operation on propositions is perhaps the subtlest of all: the \emph{equality proposition}.
 Its formation rule is unsurprising: it says that for any two terms of the same type, we can consider the proposition that they are equal.
 \begin{mathpar}
@@ -216,12 +216,12 @@ We again use the left rule once on the hypothesis $y=_A z$, with $\ph$ being $x=
 \begin{figure}
   \centering
   \begin{mathpar}
-    \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A,\ph) \prop}\and
-    \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A,\ph}\;\forall I\and
-    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A,\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forall E\\
-    \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A,\ph) \prop}\and
-    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A,\ph}\;\exists I\and
-    \inferrule{\Gamma \types \psi\prop \\\Gamma\cb\Theta\types \exists x:A,\ph \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta\types \psi}\;\exists E\and
+    \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A.\ph) \prop}\and
+    \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallI\and
+    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forallE\and
+    \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A.\ph) \prop}\and
+    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A.\ph}\;\existsI\and
+    \inferrule{\Gamma \types \psi\prop \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,\exists x:A.\ph\types \psi}\;\existsE\and
     \inferrule{\Gamma\types M:A \\ \Gamma\types N:A}{\Gamma\types (M =_A N)\prop}\and
     \inferrule{\Gamma\types M:A}{\Gamma\cb ()\types (M=_A M)}\;\eqI\and
     \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma\cb\Theta[M/x,N/y],(M=_A N)\types \ph[M/x,N/y]}\;\eqE
@@ -234,7 +234,7 @@ We summarize the new rules for first-order logic (above and beyond those from th
 This completes the definition of \textbf{intuitionistic first-order logic} (if we include all the structural rules), as well as \textbf{intuitionistic first-order linear logic} (if we include only exchange), and so on.
 The qualifier ``intuitionistic'' is because, like in \cref{sec:logic}, we cannot prove the law of excluded middle $\ph\join\neg\ph$ (where $\neg\ph$ means $\ph\hom\bot$), or its equivalent the law of double negation $\neg\neg\ph\hom\ph$.
 In \cref{sec:logic} we motivated this by noting that leaving it out just means our ``logic'' has models in all Heyting algebras rather than just Boolean algebras.
-We will be able to say something similar, and hopefully even more convincing, about first-order logic in \cref{sec:sub}.
+We will be able to say something similar, and hopefully even more convincing, about first-order logic in \cref{sec:subobjects}.
 
 We are still, however, missing some ``generator'' rules that would allow us to speak of a ``first-order theory''.
 In addition to our multigraph \cG giving the base types and terms, we would like to also have a set \cP of ``base propositions'' (usually called \textbf{atomic propositions}).
@@ -251,10 +251,10 @@ If we write $\cA(A_1,\dots,A_n;\Theta;\ph)$ for the assertion that there is such
 With this rule added to the other rules for entailment, we complete the definition of a \textbf{first-order theory} (of the appropriate sort).
 A few important subsystems of intuitionistic first-order logic that will reappear later are:
 \begin{itemize}
-\item \emph{Coherent} logic: includes $\meet,\top,\join,\bot,\exists,=$ but not $\To$ or $\forall$ (hence also not $\neg$).
-\item \emph{Regular} logic: includes $\meet,\top,\exists,=$ but not $\join,\bot,\To,\neg,\forall$.
-\item \emph{Horn} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\neg,\forall,\exists$.
-% \item \emph{Left-exact} or \emph{finite-limit} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\forall,\exists$.  [TODO: Need a restricted form of $\exists$, which ties a partial knot between propositions and entailment, hence including substitution too.]
+\item \emph{Coherent} logic: includes $\meet,\top,\join,\bot,\exis,=$ but not $\To$ or $\all$ (hence also not $\neg$).
+\item \emph{Regular} logic: includes $\meet,\top,\exis,=$ but not $\join,\bot,\To,\neg,\all$.
+\item \emph{Horn} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\neg,\all,\exis$.
+% \item \emph{Left-exact} or \emph{finite-limit} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\all,\exis$.  [TODO: Need a restricted form of $\exis$, which ties a partial knot between propositions and entailment, hence including substitution too.]
 \item Another important logic is \emph{geometric} logic, which is like coherent logic but also includes the ``infinitary disjunction'' from \cref{ex:frames}.
 \end{itemize}
 
@@ -268,10 +268,10 @@ Since we are not considering categorical structures or initiality in this sectio
   Some of the defining clauses are
   \begin{align*}
     (\ph\meet\psi)[M/x] &= \ph[M/x] \meet \psi[M/x]\\
-    (\forall y:B,\ph)[M/x] &= \forall y:B,\ph[M/x]\\
+    (\forall y:B.\ph)[M/x] &= \forall y:B.\ph[M/x]\\
     (N=_B P)[M/x] &= (N[M/x] =_B P[M/x])
   \end{align*}
-  In the case of $\forall$ (and also $\exists$), we have to ensure (by $\alpha$-equivalence if necessary) that $x$ and $y$ are distinct variables.
+  In the case of $\all$ (and also $\exis$), we have to ensure (by $\alpha$-equivalence if necessary) that $x$ and $y$ are distinct variables.
   This is the same issue that arose in \cref{sec:multicat-moncat,sec:multicat-prod-coprod,sec:stlc} when substituting into terms with bound variables such as $\case$ and $\lambda$-abstractions.
   As always, this is only an issue when representing derivations by terms; the underlying operation on derivations has no notion of ``bound variable''.
 
@@ -279,11 +279,15 @@ Since we are not considering categorical structures or initiality in this sectio
   But since terms never involve propositions, there is no cyclic dependency: we can first prove the admissibility of substitution into terms, and then use it to prove the admissibility of substitution into propositions.
 \end{proof}
 
+Moreover, just as substitution into terms is associative, substitution into propositions satisfies as ``functoriality'' property that can be proven in the same way:
+\begin{equation}
+  \ph[N/y][M/x] = \ph[M/x][N[M/x]/y]\label{eq:fol-subprop-funct}
+\end{equation}
 Similarly, we can prove the admissibility of substitution into entailment judgments, although as mentioned before this is not as important since we consider propositions posetally here.
 
 \begin{rmk}
   Recall from \cref{sec:natded-logic} that the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
-  The same is true for intuitionistic first-order logic with $\forall$ and $\exists$, if we allow ``variable assumptions'' that can be discharged by the quantifier rules; we leave the details to the reader.
+  The same is true for intuitionistic first-order logic with $\all$ and $\exis$, if we allow ``variable assumptions'' that can be discharged by the quantifier rules; we leave the details to the reader.
   The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
 \end{rmk}
 
@@ -294,7 +298,7 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
 \end{ex}
 
 \begin{ex}\label{ex:fol-seqcalc}
-  Formulate sequent calculus rules for $\exists,\forall,=$ and prove cut admissibility for them.
+  Formulate sequent calculus rules for $\exis,\all,=$ and prove cut admissibility for them.
 \end{ex}
 
 \begin{ex}\label{ex:eq-frob-from-hom}
@@ -307,19 +311,19 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
 \begin{ex}\label{ex:quantifier-laws}
   Three of the following four sequents are derivable in intuitionistic first-order logic (for any type $A$,  context $\Gamma$, and proposition $\Gamma,x:A\types\ph\prop$); derive them.
   \begin{align*}
-    \Gamma \cb \exists x:A, \neg \ph &\types \neg\forall x:A, \ph\\
-    \Gamma \cb \forall x:A, \neg \ph &\types \neg\exists x:A, \ph\\
-    \Gamma \cb \neg\forall x:A, \ph &\types \exists x:A, \neg \ph\\
-    \Gamma \cb \neg\exists x:A, \ph &\types \forall x:A, \neg \ph
+    \Gamma \cb \exists x:A. \neg \ph &\types \neg\forall x:A. \ph\\
+    \Gamma \cb \forall x:A. \neg \ph &\types \neg\exists x:A. \ph\\
+    \Gamma \cb \neg\forall x:A. \ph &\types \exists x:A. \neg \ph\\
+    \Gamma \cb \neg\exists x:A. \ph &\types \forall x:A. \neg \ph
   \end{align*}
 \end{ex}
 
 \begin{ex}\label{ex:exists-frob}
   Derive the following sequent in regular logic, for any type $A$, context $\Gamma$, and propositions $\Gamma\types\ph\prop$ and $\Gamma,x:A\types\psi\prop$:
   \begin{equation}
-    \Gamma \cb \ph\meet (\exists x:A,\psi) \types (\exists x:A, (\ph\meet\psi))\label{eq:exists-frob}
+    \Gamma \cb \ph\meet (\exists x:A.\psi) \types (\exists x:A. (\ph\meet\psi))\label{eq:exists-frob}
   \end{equation}
-  Thus this (nontrivial!)\ interaction between $\meet$ and $\exists$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exists$.
+  Thus this (nontrivial!)\ interaction between $\meet$ and $\exis$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exis$.
   Many authors like to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$.
   This is true, but it forces one to assert laws like the distributive law and~\eqref{eq:exists-frob} ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
 \end{ex}
@@ -339,35 +343,302 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
 \section{First-order hyperdoctrines}
 \label{sec:hyperdoctrines}
 
-% [A ``presheaf on a multicategory'' for dependent types: motivate as the ``contravariant representables''.]
+Now we move on to the categorical semantics of first-order logic.
+Continued adherence to principle~\eqref{princ:structural} suggests that the \emph{structural rules}, including the substitution of terms into propositions, should correspond to basic operations in an appropriate categorical structure.
+Thus, we should have a cartesian multicategory \cM whose objects and morphisms represent the types and terms, together with a set $\cP(A_1,\dots,A_n)$ of ``propositions'' for each finite list of objects, admitting ``substitution'' operations, and so on.
 
-% Quantifiers: Need
-% \begin{itemize}
-% \item Adjoints to pullback along projections
-% \item (strict) BC for pullbacks of projections (for substitution)
-% \item Frobenius/Hopf for left adjoints (for elim in arbitrary context) = ``FHL left adjoint'' of multicategories
-% \end{itemize}
+It is possible to make this precise (see \cref{ex:pshf-multicat}).
+However, since (I hope) the point about contexts in type theory corresponding to domains of generalized multicategories has already been made sufficiently in \cref{chap:simple}, and such categorical generality seems in practice not to be very useful, at this point we make a small concession to established tradition and to convenience.
+Thus, instead of a cartesian multicategory, we will use a category with products to represent our base theory.
+Since we do not include product types in our base theory, this means that the free structure generated from a first-order logic will involve the \emph{category of contexts} introduced in \cref{sec:fp-theories}, and possess a universal property only up to equivalence.
 
-% Equality: need
-% \begin{itemize}
-% \item Left adjoint to pullback along diagonal (for Lawvere/Martin-L\"of rule, when applied to $\top$)
-% \item (strict) BC for pullbacks of $(\Delta\times 1)$ along $(1\times f)$ (for substitution)
-% \item Frobenius/Hopf (for Lawvere in arbitrary context) = ``FHL left adjoint''
-% \end{itemize}
-% Since $\Delta$ has a retraction, the whole left adjoint can be recovered from its value at $\top$.
-% Now FHL gives general transport, which by instantiation gives Paulin-Mohring.
-% This (together with $\exists$) should allow us to construct left adjoints to pullback along arbitrary morphisms by Lawvere's formula, and also to prove BC for ``sliding and splitting'' and the ``Frobenius law''.
+This change enables us to describe a categorical counterpart of the propositions and their entailments much more simply.
+Let \cS be a category (generally one having products), and let \fS be a faithful cartesian club.
+Recall from \cref{sec:cartmulti} the notion of \fS-multicategory and \fS-multiposet.
+In contrast to \cref{chap:unary,chap:simple}, in this chapter we will assume for simplicity that our multiposets \emph{do} satisfy antisymmetry: if $x\le y$ and $y\le x$ then $x=y$.
+Allowing distinct isomorphic objects, while morally correct, would lead us down a 2-categorical road that we prefer to postpone until \cref{sec:indexed-moncat}.
 
-\newpage
+\begin{defn}
+  An \textbf{\cS-indexed \fS-multiposet} is a functor \cP from $\cS\op$ to the category of \fS-multiposets.
+\end{defn}
+
+This simple definition includes categorical counterparts of the type contexts (objects of \cS), terms (morphisms of \cS), substitution into terms (composition in \cS), propositions (objects of $\cP(\Gamma)$), entailments (morphisms of $\cP(\Gamma)$), cut for propositions (composition in $\cP(\Gamma)$), and substitution of terms into propositions and entailments (the functorial action of $\cP$).
+In general for a morphism $f:\Gamma\to\Delta$ in \cS, we write $f^* : \cP(\Delta) \to \cP(\Gamma)$ for this latter action and call it a \textbf{reindexing} or \textbf{substitution} functor.
+
+The propositional operations imported from \cref{sec:logic} are also easy to describe categorically.
+
+\begin{defn}
+  Let \cP be an \cS-indexed \fS-multiposet.
+  We say that \cP has \textbf{products}, \textbf{coproducts}, is \textbf{representable}, or is \textbf{closed}, if each \fS-multiposet $\cP(\Gamma)$ has the corresponding structure, and that structure is preserved by the reindexing functors $f^*$.
+\end{defn}
+
+We did not define formally in \cref{sec:multicats-catth} what it means for a functor to preserve all these properties of a multicategory, but we trust the reader can do it.
+The requirement that $f^*$ preserve these properties is necessary because substitution in type theory does, by definition, preserve the type operations: $(\ph\meet\psi)[M/x] = (\ph[M/x] \meet \psi[M/x])$ and so on.
+Thus, in the free structure built from type theory the reindexing functors do preserve all the relevant structure, so we can't hope for it to be initial except in a world where that structure is always preserved.
+
+Of course, one may naturally wonder, where do indexed multiposets with these properties come from?
+We will consider this question in more depth in \cref{sec:subobjects}, but for now we mention one very important example that should help the intuition.
+
+\begin{eg}
+  Let \cS be the category of sets, and define $\cP(\Gamma)$ to be the poset of subsets of the set $\Gamma$, with its cartesian multiposet structure.
+  The latter is in fact a Heyting algebra, and moreover a Boolean algebra: $\meet$ is intersection, $\join$ is union, $\neg$ is complement.
+\end{eg}
+
+It remains to consider categorical analogues of the quantifiers and equality.
+Lawvere's fundamental insight~\cite{lawvere:adjointness,lawvere:comprehension} was that these correspond categorically to \emph{adjoint functors}.
+
+Consider for instance the rules for $\all$.
+If we remove the built-in substitution from $\forallE$, we can write the two rules as
+\begin{mathpar}
+  \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallI\and
+  \inferrule{\Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma,x:A\cb\Theta\types \ph}\;\forallE
+\end{mathpar}
+which are clearly inverses to each other.
+Categorically, they say that to have a morphism from $\Theta$ to $\forall x:A.\ph$ in $\cP(\Gamma)$ is equivalent to having a morphism from $\Theta$ to $\ph$ in $\cP(\Gamma,A)$.
+Here the second $\Theta$ technically denotes the weakening of $\Theta$ to the context $\Gamma,x:A$, which categorically will be the functorial action of $\cP$ applied to the projection $(\Gamma,A)\to \Gamma$.
+Note that the latter is one of the projections of a cartesian product in the category of contexts.
+This leads to the following definition.
+
+\begin{defn}\label{defn:multicat-radj}
+  Let $F:\cM\to\cN$ be a functor of \fS-multicategories.
+  We say it \textbf{has a right adjoint} if for each object $B\in\cN$ there is an object $GB\in\cM$ and a morphism $\ep_B:FGB\to B$ in \cN such that for any $A_1,\dots,A_n\in \cM$, the composite
+  \[ \cM(A_1,\dots,A_n;GB) \xto{F} \cN(FA_1,\dots,FA_n;FGB) \xto{\ep_B\circ -} \cN(FA_1,\dots,FA_n;B) \]
+  is a bijection.
+\end{defn}
+
+The case $n=1$ of this definition implies immediately that the underlying ordinary functor of $F$ has a right adjoint in the usual sense.
+Conversely, in the case when \cM and \cN are representable, it is sufficient to have such an underlying adjoint together with the fact that $F$ preserves tensor products; see \cref{ex:moncat-radj}.
+Moreover, if $G$ exists, it can be made into a functor $\cN\to\cM$, that is right adjoint to \cM in an appropriate 2-category of \fS-multicategories; see \cref{ex:multicat-radj}.
+
+We need one more thing for a categorical analogue of $\all$: we need to know that this structure is ``preserved by the reindexing functors'' in an appropriate sense.
+The appropriate sense is the following.
+
+\begin{defn}\label{defn:bc}
+  Let \cS be a category, let $\cP:\cS\op\to\bCat$ be a functor, and suppose we have a commutative square in \cS:
+  \[ \xymatrix{ A \ar[r]^h \ar[d]_f & C \ar[d]^g \\ B \ar[r]_k & D. } \]
+  Suppose furthermore that the functors $f^*:\cP(B) \to \cP(A)$ and $g^*:\cP(D) \to\cP(C)$ have right adjoints $f_*$ and $g_*$.
+  We say that \cP satisfies the \textbf{right Beck--Chevalley condition} with respect to this square (or sometimes that the square satisfies the Beck-Chevalley condition with respect to \cP) if the composite natural transformation
+  \[ k^* g_* \xto{\eta k^* g_*} f_* f^* k^* g_*  = f_* h^* g^* g_* \xto{f_* h^* \ep} f_* h^* \]
+  is an isomorphism.
+  Dually, if $f^*$ and $g^*$ have left adjoints $f_!$ and $g_!$, we say \cP satisfies the \textbf{left Beck--Chevalley condition} with respect to the above square if the composite
+  \[ f_! h^* \xto{f_! h^* \eta} f_! h^* g^* g_! = f_! f^* k^* g_! \xto{\ep k^* g_!} k^* g_! \]
+  is an isomorphism.
+\end{defn}
+
+When \cP is an \cS-indexed \fS-multiposet, we apply this definition to its underlying functor into posets (regarded as categories).
+Since our posets are antisymmetric, every isomorphism is an equality, and so in this case we have $k^* g_* = f_* h^*$ (or $f_! h^* = k^* g_!$).
+Now we can state:
+
+\begin{defn}
+  An \cS-indexed \fS-multiposet \textbf{has universal quantifiers} if
+  \begin{enumerate}
+  \item For any objects $\Gamma,A\in \cS$, the reindexing functor $\cP(\Gamma) \to \cP(\Gamma\times A)$ has a right adjoint in the sense of \cref{defn:multicat-radj}; and
+  \item For any morphism $f:\Gamma\to\Delta$ and object $A$ in \cS, \cP satisfies the right Beck--Chevalley condition with respect to the square
+    \[ \xymatrix@C=3pc{ \Gamma\times A \ar[r]^{f\times \idfunc_A} \ar[d] & \Delta\times A \ar[d] \\ \Gamma \ar[r]_f & \Delta. } \]
+  \end{enumerate}
+\end{defn}
+
+Note that the Beck--Chevalley condition is true in the syntax because the universal quantifier is preserved by substitution, by definition of substitution: $(\forall x:A.\ph)[M/y] = \forall x:A. \ph[M/y]$ as long as $y\neq x$.
+
+The situation with $\exis$ is similar, but a little more complicated.
+If we remove the cut built into $\existsE$, we get
+\[ \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\]
+which looks like one direction of some kind of adjunction.
+The other direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
+\begin{mathpar}
+  \inferrule*[right=cut]{\inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A \cb \ph \types \ph}}{\Gamma,x:A \cb \ph \types \exists x:A.\ph}  \\ 
+    \inferrule*[Right=weakening]{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,(\exists x:A.\ph)\types \psi
+    }}{\Gamma,x:A\cb\Theta,\ph\types \psi}
+\end{mathpar}
+The other subtlety is the presence of the extra context $\Theta$.
+Translating directly across the correspondence to multicategories, this leads to the following definition.
+
+\begin{defn}\label{defn:multicat-hopf-ladj}
+  Let $G:\cM\to\cN$ be a functor of \fS-multicategories.
+  We say it \textbf{has a Hopf left adjoint} if for each object $B\in\cN$ there is an object $FB\in\cM$ and a morphism $\eta:B\to GFB$ in \cN such that for any objects $A_1,\dots,A_n,C_1,\dots,C_m,D\in \cM$, the composite
+  \[ \cM(\vec A,FB,\vec C;D) \xto{G} \cN(G\vec A, GFB, G\vec C; GD) \xto{-\circ_{(n+1)} \eta} \cN(G\vec A, B, G\vec C; GD) \]
+  is a bijection.
+\end{defn}
+
+As before, the case $n=m=1$ implies that the underlying ordinary functor has a left adjoint in the usual sense.
+Conversely, when \cM and \cN are representable and $G$ preserves tensor products, an underlying left adjoint is a Hopf left adjoint just when some canonical maps are isomorphisms; see \cref{ex:hopf-ladj}.
+Unlike the case of right adjoints, however, in general a Hopf left adjoint cannot be made into a functor of multicategories.
+
+\begin{defn}
+  An \cS-indexed \fS-multiposet \textbf{has existential quantifiers} if
+  \begin{enumerate}
+  \item For any objects $\Gamma$ and $A$ of \cS, the reindexing functor $\cP(\Gamma) \to \cP(\Gamma\times A)$ has a Hopf left adjoint in the sense of \cref{defn:multicat-hopf-ladj}; and
+  \item For any morphism $f:\Gamma\to\Delta$ and object $A$ in \cS, \cP satisfies the left Beck--Chevalley condition with respect to the square
+    \[ \xymatrix@C=3pc{ \Gamma\times A \ar[r]^{f\times \idfunc_A} \ar[d] & \Delta\times A \ar[d] \\ \Gamma \ar[r]_f & \Delta. } \]
+  \end{enumerate}
+\end{defn}
+
+Finally, we consider the rules for equality.
+If we remove the built-in substitutions, these look like
+\begin{mathpar}
+  \inferrule{ }{\Gamma,x:A\cb ()\types (x=_A x)}\and
+  \inferrule{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma,x:A,y:B\cb\Theta,(x=_A y)\types \ph}
+\end{mathpar}
+As with $\exis$, we can use a cut and a substitution to conclude the opposite of the second rule:
+\begin{mathpar}
+  \inferrule*[right=cut]{
+    \inferrule*{ }{\Gamma,x:A \cb () \types x=_A x}\\
+    \inferrule*[Right=subst $x/y$]{\Gamma,x:A,y:B\cb\Theta,(x=_A y)\types \ph}
+    {\Gamma,x:A\cb\Theta[x/y],(x=_A x)\types \ph[x/y]}
+  }{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}
+\end{mathpar}
+This looks very much like a (Hopf) left adjoint to substitution along the diagonal $(\Gamma,A) \to (\Gamma,A,A)$ in the category of contexts; but there is \emph{no} proposition in context $(\Gamma,A)$ that it is applied to.
+This suggests the following definitions.
+
+\begin{defn}\label{defn:multicat-hopf-ladj-empty}
+  Let $G:\cM\to\cN$ be a functor of \fS-multicategories.
+  We say it \textbf{has a Hopf left adjoint at $()$} if there is an object $F\in\cM$ and a morphism $\eta:()\to GF$ in \cN such that for any objects $A_1,\dots,A_n,C_1,\dots,C_m,D\in \cM$, the composite
+  \[ \cM(\vec A,F,\vec C;D) \xto{G} \cN(G\vec A, GF, G\vec C; GD) \xto{-\circ_{(n+1)} \eta} \cN(G\vec A, G\vec C; GD) \]
+  is a bijection.
+\end{defn}
+
+\begin{defn}
+  Suppose given an \cS-indexed \fS-multiposet \cP and a commutative square in \cS:
+  \[ \xymatrix{ A \ar[r]^h \ar[d]_f & C \ar[d]^g \\ B \ar[r]_k & D, } \]
+  and suppose that the reindexing functors $f^*$ and $g^*$ have Hopf left adjoints at $()$, given by objects $f_!\in \cP(B)$ and $g_!\in \cP(D)$.
+  Then there is a unique morphism $f_! \to k^* g_!$ in $\cP(B)$ such that the composite $() \xto{\eta} f^* f_! \to f^* k^* g_!$ in $\cP(A)$ is equal to the composite $() \xto{h^* \eta} h^* g^* g_!$ (note $f^* k^* = h^* g^*$).
+  We say that \cP satisfies the \textbf{left Beck--Chevalley condition at $()$} with respect to this square if this morphism $f_! \to k^* g_!$ is an isomorphism.
+\end{defn}
+
+% Note that \cref{defn:multicat-hopf-ladj} is of the form ``for every object $B$''; we say that $G$ \textbf{has a Hopf left adjoint at $B$} if the condition in \cref{defn:multicat-hopf-ladj} holds only for a particular object $B$.
+% Similarly, in the situation of \cref{defn:bc}, if $g^*$ has a left adjoint at $B$, and $f^*$ has a left adjoint at $h^*B$, we say that \cP \textbf{satisfies the left Beck--Chevalley condition at $B$} with respect to the given square if the relevant map $f_! h^* B \to k^* g_! B$ is an isomorphism.
+
+\begin{defn}
+  An \cS-indexed \fS-multiposet with unit objects \textbf{has equality} if
+  \begin{enumerate}
+  \item For any objects $\Gamma$ and $A$ of \cS, the reindexing functor $\cP(\Gamma\times A\times A) \to \cP(\Gamma\times A)$ has a Hopf left adjoint at $()$; and
+  \item For any morphism $f:\Gamma\to\Delta$ and object $A$ in \cS, \cP satisfies the left Beck--Chevalley condition at $()$ with respect to the square
+    \[ \xymatrix@C=5pc{ \Gamma\times A \ar[r]^{f\times \idfunc_A} \ar[d] & \Delta\times A \ar[d] \\
+      \Gamma\times A\times A \ar[r]_{f\times \idfunc_A \times \idfunc_A} & \Delta\times A\times A. } \]
+  \end{enumerate}
+\end{defn}
+
+As before, the Beck--Chevalley condition is true in the syntax because ``equality is preserved by substitution''.
+The relevant substitution here is not the one built into the equality rule, though, but the substitution for different variables, which doesn't change the equality proposition at all: $(x=_A y)[M/z] = (x=_A y)$ as long as $z\neq x$ and $z\neq y$.
+
+Note that we are sticking doggedly to the principle that just as the rules for a given type operation should be independent of any other type operations, the corresponding universal property should be statable without reference to any other objects with universal properties.\footnote{At least, other universal properties in the multiposets $\cP(\Gamma)$.
+We do still refer to cartesian products in \cS, but we could also remove those as in \cref{ex:pshf-multicat}.}
+If we \emph{do} have additional structure, particularly tensor products and units in the multiposets $\cP(\Gamma)$, then our various kinds of adjoints can be formulated in terms of those and ordinary adjunctions --- see \cref{ex:multicat-radj,ex:moncat-radj,ex:hopf-ladj,ex:hopf-ladj-at-one} --- and our examples in \cref{sec:subobjects} will mainly arise in this way.
+However, to make a closer connection to the type theory we prefer to formulate them independently first.
+
+\begin{defn}
+  A \textbf{first-order \fS-hyperdoctrine} consists of a category \cS with finite products together with an \cS-indexed \fS-multiposet that is closed and representable and has products, coproducts, universal and existential quantifiers, and equality.
+\end{defn}
+
+Note that since all the structure of a first-order \fS-hyperdoctrine is determined by universal properties, it is unique up to isomorphism, and hence unique on the nose in an (antisymmetric) poset.
+Thus, there is no need to suppose separately that we have \emph{chosen} such operations.
+
+\begin{thm}\label{thm:fol-initial}
+  The free first-order \fS-hyperdoctrine generated by a first-order \fS-theory can be presented, up to equivalence, by the type theory of the latter:
+  \cS is the category of type contexts, and
+  the objects and morphisms of $\cP(\Gamma)$ are the proposition judgments $\Gamma\types \ph\prop$ and the derivable entailments $\Gamma\cb\Theta\types\ph$.
+\end{thm}
+\begin{proof}
+  We have already observed that this structure defines an indexed \fS-multicategory and that the simple type operations $\meet,\top,\join,\bot,\tensor,\one,\hom$ yield the appropriate multicategorical strurcture.
+  Moreover, we defined the categorical notions of universal and existential quantifiers and equality precisely so that they would hold in the syntax; thus the description above does yield a first-order \fS-hyperdoctrine.
+
+  Now, the underlying multigraph of a first-order \fS-theory is of course a finite-product theory without axioms, and we showed in \cref{sec:fp-theories} that the category of contexts of its type theory is, up to equivalence, the free category with products it generates.
+  Thus, it maps uniquely (up to isomorphism) into the base category of any other first-order \fS-hyperdoctrine; it remains to show that this map extends uniquely to a map of hyperdoctrines, i.e.\ a natural transformation between the $\cP$-functors preserving all the structure.
+
+  As usual, we do this by induction on derivations.
+  The proposition judgment $\Gamma\types \ph\prop$ is easy: each rule corresponds to one of the objects with a universal property that we have assumed to exist in any first-order \fS-hyperdoctrine.
+  Next, since the rules for entailment involve substitution of terms into propositions, before defining our functor on entailments we have to first prove that it maps such substitutions to the reindexing functors in the target; this is another straightforward induction on derivations of $\Gamma\types \ph\prop$.
+  Now the rules for entailment involving simple type operations are also easy, just as in \cref{sec:logic}; the interesting part has to do with the rules for quantifiers and equality.
+
+  The rule $\forallI$ (refer to \cref{fig:fol}) simply applies the universal property of a right adjoint, so it exists in the target.
+  The rule $\forallE$ applies that universal property in reverse, then substitutes (applies a reindexing functor).
+
+  The rule $\existsE$ simply applies the universal property of a Hopf left adjoint.
+  The rule $\existsI$ is somewhat less obvious, but we can obtain it from the unit of that adjunction together with a substitution and a cut:
+  \begin{mathpar}
+    \inferrule*[right=cut]{
+      \Gamma\cb \Theta \types \ph[M/x]\\
+      \inferrule*[Right=subst $M/x$]{\Gamma\types M:A \\
+        \inferrule*[Right=unit]{ }{\Gamma,x:A \cb \ph \types \exists x:A.\ph}}{\Gamma\cb \ph[M/x] \types \exists x:A.\ph}
+    }{\Gamma\cb\Theta \types \exists x:A.\ph}
+  \end{mathpar}
+  Thus, it also exists in the target.
+
+  The rule $\eqI$ simply applies the unit of the Hopf left adjoint at $()$, followed by a substitution.
+  Finally, the rule $\eqE$ applies the universal property of that Hopf left adjoint, followed by another substitution.
+
+  This completes the definition on entailments.
+  Since everything is posetal there is not much left to do: we show that our map preserves all the hyperdoctrine structure, essentially by definition, and then that it is unique (modulo the up-to-isomorphism uniqueness of the functor on base categories), because its definition was forced at every step.
+\end{proof}
+
+% Since the diagonal has a retraction, the whole left adjoint can be recovered from its value at $\top$.
+% Now the Hopf left adjoint property gives general transport, which by instantiation gives Paulin-Mohring.
+% This (together with $\exis$) should allow us to construct left adjoints to pullback along arbitrary morphisms by Lawvere's formula, and also to prove BC for ``sliding and splitting'' and the ``Frobenius law''.
 
 
-\begin{rmk}\label{rmk:subset-quotient}
-  % Would introduce type dependency.
-\end{rmk}
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:pshf-multicat}
+  Define a notion of ``presheaf on a cartesian multicategory'' that corresponds more directly to the structure seen in our first-order type theory, without passing to the category of contexts.
+\end{ex}
+
+\begin{ex}\label{ex:multicat-radj}
+  Suppose a functor $F:\cM\to\cN$ of \fS-multicategories has a right adjoint in the sense of \cref{defn:multicat-radj}.
+  \begin{enumerate}
+  \item Prove that if \cM and \cN are both representable, then $F$ preserves tensor products in the sense of \cref{ex:mcat-strong-func}.
+  \item Extend $G$ to a functor $G:\cN\to\cM$.
+  \item Define a 2-category of \fS-multicategories and show that $G$ is right adjoint to $F$ in this 2-category (i.e.\ there are 2-cells $\eta : 1 \to G F$ and $\ep : F G \to 1$ in this 2-category satisfying the triangle identities).
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:moncat-radj}
+  Let \cM and \cN be representable \fS-multicategories.
+  Prove that a functor $F:\cM\to\cN$ has a right adjoint in the sense of \cref{defn:multicat-radj} if and only if (1) it preserves tensor products in the sense of \cref{ex:mcat-strong-func} and (2) its underlying ordinary functor has a right adjoint.
+\end{ex}
+
+\begin{ex}\label{ex:multicat-prod-ladj}
+  Show that an \fS-multicategory \cM has binary products, in the sense defined before \cref{thm:multicat-prod}, if and only if the diagonal $\cM\to \cM\times \cM$ has a right adjoint in the sense of \cref{defn:multicat-radj}.
+\end{ex}
+
+\begin{ex}\label{ex:beck-chev}
+  Let $\cP:\cS\op\to\bCat$ and suppose we have a commutative square in \cS:
+  \[ \xymatrix{ A \ar[r]^h \ar[d]_f & C \ar[d]^g \\ B \ar[r]_k & D. } \]
+  such that $f^*$ and $g^*$ have left adjoints and also $h^*$ and $k^*$ have right adjoints.
+  Prove that \cP satisfies the left Beck-Chevalley condition with respect to this square if and only if it satisfies the right Beck--Chevalley condition with respect to the transposed square
+  \[ \xymatrix{ A \ar[r]^f \ar[d]_h & B \ar[d]^k \\ C \ar[r]_g & D. } \]
+\end{ex}
+
+\begin{ex}\label{ex:hopf-ladj}
+  Let \cM and \cN be representable \fS-multicategories, and $G:\cM\to\cN$ a functor preserving tensor products.
+  Show that $G$ has a Hopf left adjoint if and only if its underlying ordinary functor has a left adjoint $F$ such that the canonical map
+  \begin{gather*}
+    F(A\tensor G B) \to F(G F A \tensor G B) \toiso F G(F A \tensor B) \to F A \tensor B
+  \end{gather*}
+  is an isomorphism for any $A\in\cN$ and $B\in \cM$.
+  % TODO: If $G$ is not assumed to preserve tensor products, does a "Hopf left adjoint" in the multicategory sense imply a Hopf adjunction in the monoidal category sense?
+\end{ex}
+
+\begin{ex}\label{ex:multicat-coprod-ladj}
+  Show that an \fS-multicategory \cM has binary coproducts, in the sense defined before \cref{thm:multicat-coprod}, if and only if the diagonal $\cM\to \cM\times \cM$ has a Hopf left adjoint.
+\end{ex}
+
+\begin{ex}\label{ex:hopf-ladj-at-one}
+  Let \cM and \cN be \fS-multicategories, let $G:\cM\to\cN$ be a functor having a Hopf left adjoint, and assume that \cN has a unit object.
+  Prove that $G$ also has a Hopf left adjoint at $()$.
+\end{ex}
 
 
 \section{Hyperdoctrines of subobjects}
-\label{sec:sub}
+\label{sec:subobjects}
+
+
+% \begin{rmk}\label{rmk:subset-quotient}
+%   Would introduce type dependency.
+% \end{rmk}
+
+
+\section{Finite-limit theories}
+\label{sec:lex-theories}
 
 
 \section{Indexed multicategories and monoidal categories}
