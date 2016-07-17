@@ -138,10 +138,10 @@ The ``interpretation machine'' then produces from this a morphism $B\to C$, for 
 Next, note that in the category \bSet, the uniqueness of inverses ensures that if every element $x\in A$ has an inverse, then there is a \emph{function} $i:A\to A$ assigning inverses --- even without using the axiom of choice.
 (If we define functions as sets of ordered pairs, as is usual in set-theoretic foundations, we could take $i = \setof{(x,y) | xy=e}$; the pointwise uniqueness ensures that this is indeed a function.)
 This fact can be expressed in the internal logic of an \emph{elementary topos}.
-We postpone the definition of a topos until later; for now we just remark that its structure allows both sides of the turnstile $\types$ to contain \emph{logical formulas} such as $\exists x, \forall y, \phi(x,y)$ rather than just elements and equalities.
+We postpone the definition of a topos until later; for now we just remark that its structure allows both sides of the turnstile $\types$ to contain \emph{logical formulas} such as $\exis x. \all y. \phi(x,y)$ rather than just elements and equalities.
 In this language we can state and prove the following:
-\[ \forall x:A, \exists y:A, x\cdot y = e \land y\cdot x = e \types
-\exists i:A^A, \forall x:A, (x\cdot i(x) = e \land i(x)\cdot x = e)
+\[ \forall x:A. \exists y:A. x\cdot y = e \land y\cdot x = e \types
+\exists i:A^A. \forall x:A. (x\cdot i(x) = e \land i(x)\cdot x = e)
 \]
 As before, the proof is essentially exactly like the usual set-theoretic one.
 Moreover, the interpretation machine allows us to actually extract an ``inverse operator'' morphism in the topos from this proof.

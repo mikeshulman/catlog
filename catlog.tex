@@ -136,6 +136,16 @@
 \def\toR{\mathord{\to}R}
 \def\toI{\mathord{\to}I}
 \def\toE{\mathord{\to}E}
+% forall
+\let\all\forall
+\def\forall#1:#2.{\all #1\mathord{:}#2.\,}
+\def\forallI{\mathord{\all}I}
+\def\forallE{\mathord{\all}E}
+% exists
+\let\exis\exists
+\def\exists#1:#2.{\exis #1\mathord{:}#2.\,}
+\def\existsI{\mathord{\exis}I}
+\def\existsE{\mathord{\exis}E}
 % equality
 \def\eqI{\mathord{=}I}
 \def\eqE{\mathord{=}E}
@@ -178,7 +188,7 @@
 \makeatother
 \usepackage{version}
 \excludeversion{props}
-%\includeonly{simple}
+\includeonly{intro,unary,simple,fol,dedsys}
 \begin{document}
 \maketitle
 
@@ -199,9 +209,11 @@
 
 \include{simple}
 
-%\include{classical}
+\include{classical}
 
-%\include{fol}
+\include{fol}
+
+\include{hol}
 
 \include{dtt}
 
