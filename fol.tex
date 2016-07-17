@@ -232,13 +232,6 @@ We again use the left rule once on the hypothesis $y=_A z$, with $\ph$ being $x=
 
 We summarize the new rules for first-order logic (above and beyond those from that we import from the propositional logic of \cref{sec:logic} by adding an unchanging type context) in \cref{fig:fol}.
 This completes the definition of \textbf{intuitionistic first-order logic} (if we include all the structural rules), as well as \textbf{intuitionistic first-order linear logic} (if we include only exchange), and so on.
-A few important subsystems of intuitionistic first-order logic that will reappear later are:
-\begin{itemize}
-\item \emph{Coherent} logic: includes $\meet,\top,\join,\bot,\exists,=$ but not $\To$ or $\forall$.
-\item \emph{Regular} logic: includes $\meet,\top,\exists,=$ but not $\join,\bot,\To,\forall$.
-\item \emph{Left-exact} or \emph{finite-limit} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\forall,\exists$.
-\item Another important logic is \emph{geometric} logic, which is like coherent logic but also includes the ``infinitary disjunction'' from \cref{ex:frames}.
-\end{itemize}
 The qualifier ``intuitionistic'' is because, like in \cref{sec:logic}, we cannot prove the law of excluded middle $\ph\join\neg\ph$ (where $\neg\ph$ means $\ph\hom\bot$), or its equivalent the law of double negation $\neg\neg\ph\hom\ph$.
 In \cref{sec:logic} we motivated this by noting that leaving it out just means our ``logic'' has models in all Heyting algebras rather than just Boolean algebras.
 We will be able to say something similar, and hopefully even more convincing, about first-order logic in \cref{sec:sub}.
@@ -254,7 +247,16 @@ Each of these should have an assigned type context $A_1,\dots,A_n$, an assigned 
 Here $\ph$ and the elements of $\Theta$ should be propositions in context $x_1:A_1,\dots,x_n:A_n$ --- not just atomic propositions, but arbitrary ones derivable from the atomic ones and the rules for making new propositions.
 If we write $\cA(A_1,\dots,A_n;\Theta;\ph)$ for the assertion that there is such an axiom, then the generator rule introducing axioms will be
 \[ \inferrule{\cA(A_1,\dots,A_n;\Theta;\ph) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \cb \Theta[\vec M/\vec x]\types \ph[\vec M/\vec x]} \]
+
 With this rule added to the other rules for entailment, we complete the definition of a \textbf{first-order theory} (of the appropriate sort).
+A few important subsystems of intuitionistic first-order logic that will reappear later are:
+\begin{itemize}
+\item \emph{Coherent} logic: includes $\meet,\top,\join,\bot,\exists,=$ but not $\To$ or $\forall$ (hence also not $\neg$).
+\item \emph{Regular} logic: includes $\meet,\top,\exists,=$ but not $\join,\bot,\To,\neg,\forall$.
+\item \emph{Horn} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\neg,\forall,\exists$.
+% \item \emph{Left-exact} or \emph{finite-limit} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\forall,\exists$.  [TODO: Need a restricted form of $\exists$, which ties a partial knot between propositions and entailment, hence including substitution too.]
+\item Another important logic is \emph{geometric} logic, which is like coherent logic but also includes the ``infinitary disjunction'' from \cref{ex:frames}.
+\end{itemize}
 
 Since we are not considering categorical structures or initiality in this section, all that remains to do is prove the admissibility of substitution.
 
@@ -285,8 +287,6 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
   The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
 \end{rmk}
 
-\newpage
-
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:fol:cutadm}
@@ -305,21 +305,34 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
 \end{ex}
 
 \begin{ex}\label{ex:quantifier-laws}
-  Three of the following four sequents are derivable in intuitionistic first-order logic (for any type $A$ and proposition $\ph$); derive them.
+  Three of the following four sequents are derivable in intuitionistic first-order logic (for any type $A$,  context $\Gamma$, and proposition $\Gamma,x:A\types\ph\prop$); derive them.
   \begin{align*}
-    () \cb \exists x:A, \neg \ph &\types \neg\forall x:A, \ph\\
-    () \cb \forall x:A, \neg \ph &\types \neg\exists x:A, \ph\\
-    () \cb \neg\forall x:A, \ph &\types \exists x:A, \neg \ph\\
-    () \cb \neg\exists x:A, \ph &\types \forall x:A, \neg \ph
+    \Gamma \cb \exists x:A, \neg \ph &\types \neg\forall x:A, \ph\\
+    \Gamma \cb \forall x:A, \neg \ph &\types \neg\exists x:A, \ph\\
+    \Gamma \cb \neg\forall x:A, \ph &\types \exists x:A, \neg \ph\\
+    \Gamma \cb \neg\exists x:A, \ph &\types \forall x:A, \neg \ph
   \end{align*}
 \end{ex}
 
-\begin{ex}\label{ex:fol-cats}
-  Write down a first-order theory for categories.
+\begin{ex}\label{ex:exists-frob}
+  Derive the following sequent in regular logic, for any type $A$, context $\Gamma$, and propositions $\Gamma\types\ph\prop$ and $\Gamma,x:A\types\psi\prop$:
+  \begin{equation}
+    \Gamma \cb \ph\meet (\exists x:A,\psi) \types (\exists x:A, (\ph\meet\psi))\label{eq:exists-frob}
+  \end{equation}
+  Thus this (nontrivial!)\ interaction between $\meet$ and $\exists$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exists$.
+  Many authors like to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$.
+  This is true, but it forces one to assert laws like the distributive law and~\eqref{eq:exists-frob} ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
 \end{ex}
 
-\begin{ex}\label{ex:fol-fields}
-  Write down a first-order theory for fields.
+\begin{ex}\label{ex:fol-egs}
+  Write down a first-order theory for each of the following structures.
+  If you can, formulate them so that they fit inside the specified fragment.
+  \begin{enumerate}
+  \item Partially ordered sets (Horn)
+  \item Totally ordered sets (coherent)
+  \item Fields (coherent)
+  \item Categories (regular)
+  \end{enumerate}
 \end{ex}
 
 
