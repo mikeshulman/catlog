@@ -1058,6 +1058,10 @@ The rules for $\one$ are similar.
   Now if \cM is a monoidal category and $P:\cG\to\cM$ a map of multigraphs, we extend it to $\F\bMonCat\cG$ by induction on derivations (of objects and morphisms and equalities) using the fact that \cM is a representable multicategory, observe that this definition is forced by functoriality and (strict) preservation of the monoidal structure, and then prove by induction that it is indeed a functor.
 \end{proof}
 
+Note that as in \cref{thm:catcoprod-initial}, we have to be careful to do the induction in the right order.
+Since the rules for equalities refer to substitution, we have to first define the functor on types and terms, then prove that it maps substitution to composition, then define it on equalities.
+This will be the case for almost all type theories we consider from now on (the case of products in \cref{sec:catprod} is very special in that its equality rules don't need to refer to substitution), so for the most part we will no longer bother to mention it.
+
 
 \subsection*{Exercises}
 

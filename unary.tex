@@ -1371,22 +1371,35 @@ The defining clauses are
   \pair{N_1}{N_2}[M/y] &= \pair{N_1[M/y]}{N_2[M/y]}
 \end{align*}
 
-Similarly, we also have:
+We leave it to the reader to similarly prove the following (\cref{ex:catprod-subcong-subassoc}):
 
-\begin{thm}\label{thm:catprod-subcong}
+\begin{lem}\label{thm:catprod-subcong}
   The relation $\equiv$ is a congruence for substitution in the unary type theory for categories with products under \cG.
   In other words, if we have derivations of $x:X \types M\equiv M':B$ and $y:B \types N\equiv N':C$, then we can derive $x:A \types N[M/y] \equiv N'[M'/y]:C$.\qed
-\end{thm}
+\end{lem}
 
-\begin{thm}\label{thm:catprod-subassoc}
+\begin{lem}\label{thm:catprod-subassoc}
   Substitution is associative in the unary type theory for categories with products under \cG: we have $P[N/z][M/y] = P[N[M/y]/z]$.\qed
-\end{thm}
+\end{lem}
+
+The proof of the initiality theorem is similar, but we write out some of the details for later reference.
 
 \begin{thm}\label{thm:catprod-initial}
-  For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.\qed
+  For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.
 \end{thm}
+\begin{proof}
+  \cref{thm:catprod-subcong,thm:catprod-subassoc,thm:catprod-subadm} show that we obtain a category with products in this way.
+  Now given any other category with products \cM and a map $P:\cG\to\cM$, we proceed inductively:
+  \begin{enumerate}
+  \item We define a map from types to the objects of \cM inductively on derivations of $\types A\type$, starting with $P$ and then using the chosen products in \cM.
+  \item Then we define a map from terms to the morphisms of \cM inductively on derivations of $x:A \types M:B$, composing with the image of $P$ for the generator rules, and using the universal properties of the finite products in \cM for the introduction and elimination rules.
+  \item Then we define a map from derivations of $x:A \types M\equiv N:B$ to equalities of morphisms in \cM by induction on the former, using the laws of the universal properties of products in \cM and the fact that equality is an equivalence relation and a congruence for everything.
+  \item Then we prove that this operation is functorial, i.e.\ it takes a substitution $N[M/x]$ to a composite in \cM, by induction on the derivation of $N$ (which is also, of course, how substitution is defined).
+  \item Then we prove that this functor preserves (the specified) products, essentially by definition.
+  \item Finally, we show that it is the unique such functor, since its definition was forced at every stage by the fact that it be a functor preserving products.\qedhere
+  \end{enumerate}
+\end{proof}
 
-The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,ex:catprod-subassoc,ex:catprod-initial}.
 
 \subsection*{Exercises}
 
@@ -1440,16 +1453,8 @@ The proofs of these theorems are left to the reader in \cref{ex:catprod-subcong,
   Note that since we are in categories now rather than posets, to show that two types $A$ and $B$ are isomorphic we must derive $x:A\types M:B$ and $y:B\types N:A$ and also show that their substitutions in both orders are equal (modulo $\equiv$) to identities.
 \end{ex}
 
-\begin{ex}\label{ex:catprod-subcong}
-  Prove \cref{thm:catprod-subcong} ($\equiv$ is a congruence in the unary type theory for categories with products).
-\end{ex}
-
-\begin{ex}\label{ex:catprod-subassoc}
-  Prove \cref{thm:catprod-subassoc} (substitution is associative in the unary type theory for categories with products).
-\end{ex}
-
-\begin{ex}\label{ex:catprod-initial}
-  Prove \cref{thm:catprod-initial} (initiality for the unary type theory for categories with products).
+\begin{ex}\label{ex:catprod-subcong-subassoc}
+  Prove \cref{thm:catprod-subcong,thm:catprod-subassoc} (substitution is associative and respects $\equiv$ in the unary type theory for categories with products).
 \end{ex}
 
 \begin{ex}\label{ex:catfib}
@@ -1595,7 +1600,7 @@ For instance, we encourage calculus students to write $F(x) = \int_0^x f(t)\,\ma
 If we adhere to this informal convention, then we rarely need to worry about technical definitions of $\alpha$-equivalence (unless we are trying to implement mathematics in a computer).
 
 With all of this out of the way, we can now consider the appropriate $\beta$- and $\eta$-conversion rules.
-However, we pause first to prove admissibility of cut, i.e.\ to construct substitution, as we will need substitution to state the $\beta$ and $\eta$ rules.
+However, we pause first to prove admissibility of cut, i.e.\ to construct substitution, as in this case we will need substitution to state the $\beta$ and $\eta$ rules.
 
 \begin{lem}\label{thm:catcoprod-subadm}
   Substitution is admissible in the unary type theory for categories with coproducts under \cG.
@@ -1660,12 +1665,14 @@ As in the dual case, by a \textbf{category with coproducts} we mean a category w
   For any directed graph \cG, the free category with coproducts generated by \cG can be described by the unary type theory for categories with coproducts under \cG: its objects are the derivations of $\types A\type$, and its morphisms $A\to B$ are the derivations of $A\types B$ (or equivalently the derivable term judgments $x:A \types M:B$ modulo $\alpha$-equivalence), modulo the equivalence relation $\equiv$.
 \end{thm}
 \begin{proof}
+  This is basically just like the proof of \cref{thm:catprod-initial}, with one slight twist.
   \cref{thm:catcoprod-subadm} defines substitution, and the same sort of induction proves it associative and unital; thus we have a category $\F\bCoprCat\cG$.
   The rules are defined just so as to give this category the structure of coproducts.
+  Then, given any category with coproducts \cM and map of graphs $P:\cG\to\cM$, we extend $P$ to a unique coproduct-preserving functor $\F\bCoprCat\cG\to\cM$ by successive inductions over all the derivations of the type theory.
 
-  Now if \cM is a category with coproducts and $P:\cG\to\cM$ is a map of graphs, we extend it to the objects of $\F\bCoprCat\cG$ in the obviously unique way (by induction on derivations of $\types A\type$), and to its morphisms by induction on derivations of $x:A\types M:B$.
-  All the non-identity rules are defined by a cut with a generator or one of the coproduct structure maps; thus their images in \cM are uniquely determined by the need for the extension to be a functor and to preserve the specified coproducts.
-  Finally, we show by a further induction that this extension is actually a functor (preserves all composites).
+  The twist is that we have to be careful about the order in which we do this.
+  Because the rules for $\equiv$ involve the substitution \emph{operation} on terms, to interpret these rules using the universal properties in \cM we need to know already that substitution maps to composition in \cM.
+  Thus we need to (1) extend $P$ to types, (2) extend $P$ to terms, (3) \emph{then} prove that this extension takes substitution to composition, (4) \emph{then} inductively show that derivations of $x:A\types M\equiv N:B$ map to equal morphisms, and (5) then complete the proof that we have a functor preserving coproducts.
 \end{proof}
 
 % At this point the reader is free (after doing some exercises) to move on directly to \cref{chap:simple}.
