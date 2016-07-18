@@ -440,17 +440,16 @@ Now we can state:
 
 Note that the Beck--Chevalley condition is true in the syntax because the universal quantifier is preserved by substitution, by definition of substitution: $(\forall x:A.\ph)[M/y] = \forall x:A. \ph[M/y]$ as long as $y\neq x$.
 
-The situation with $\exis$ is similar, but a little more complicated.
-If we remove the cut built into $\existsE$, we get
+Similarly, the rule $\existsE$
 \[ \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\]
-which looks like one direction of some kind of adjunction.
+certainly looks like one direction of some kind of adjunction.
 The other direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
 \begin{mathpar}
   \inferrule*[right=cut]{\inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A \cb \ph \types \ph}}{\Gamma,x:A \cb \ph \types \exists x:A.\ph}  \\ 
     \inferrule*[Right=weakening]{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,(\exists x:A.\ph)\types \psi
     }}{\Gamma,x:A\cb\Theta,\ph\types \psi}
 \end{mathpar}
-The other subtlety is the presence of the extra context $\Theta$.
+There is another subtlety for $\exis$, namely the presence of the extra context $\Theta$.
 Translating directly across the correspondence to multicategories, this leads to the following definition.
 
 \begin{defn}\label{defn:multicat-hopf-ladj}
@@ -610,12 +609,15 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
 
 \begin{ex}\label{ex:hopf-ladj}
   Let \cM and \cN be representable \fS-multicategories, and $G:\cM\to\cN$ a functor preserving tensor products.
-  Show that $G$ has a Hopf left adjoint if and only if its underlying ordinary functor has a left adjoint $F$ such that the canonical map
-  \begin{gather*}
-    F(A\tensor G B) \to F(G F A \tensor G B) \toiso F G(F A \tensor B) \to F A \tensor B
-  \end{gather*}
-  is an isomorphism for any $A\in\cN$ and $B\in \cM$.
+  \begin{enumerate}
+  \item Show that $G$ has a Hopf left adjoint if and only if its underlying ordinary functor has a left adjoint $F$ such that the canonical map
+    \begin{gather*}
+      F(A\tensor G B) \to F(G F A \tensor G B) \toiso F G(F A \tensor B) \to F A \tensor B
+    \end{gather*}
+    is an isomorphism for any $A\in\cN$ and $B\in \cM$.
+  \item If \cM and \cN are additionally closed, and $G$ is also closed in the sense that the canonical maps $G(A\hom B) \to G A \hom G B$ are isomorphisms, prove that $g$ has a Hopf left adjoint if and only if its underlying ordinary functor has a left adjoint.
   % TODO: If $G$ is not assumed to preserve tensor products, does a "Hopf left adjoint" in the multicategory sense imply a Hopf adjunction in the monoidal category sense?
+  \end{enumerate}
 \end{ex}
 
 \begin{ex}\label{ex:multicat-coprod-ladj}
@@ -641,7 +643,7 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
 \label{sec:lex-theories}
 
 
-\section{Indexed multicategories and monoidal categories}
+\section{Indexed monoidal categories}
 \label{sec:indexed-moncat}
 
 % Local Variables:

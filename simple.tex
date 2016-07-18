@@ -1825,6 +1825,7 @@ Let us now say a few words about what the natural deduction for Heyting algebras
 For a reader who thinks of logical connectives in terms of their action on truth values (e.g. ``if $A$ then $B$'' is true unless $A$ is true and $B$ is false), one way to make the connection to logic is to note that the poset of truth values
 \[ \tv = \{ \mathrm{false} < \mathrm{true} \}\]
 is a Heyting algebra, where the operations $\meet,\top,\join,\bot,\To$ correspond to ``and'', ``true'', ``or'', ``false'', and ``implies''.
+(One way to see this easily is to identify $\tv$, up to equivalence, with the full subcategory of \bSet consisting of sets having at most one element.)
 
 Now suppose \cG is a relational multigraph, whose objects we call \textbf{propositional variables}, and suppose furthermore that we have a map of relational multigraphs $\nu:\cG\to\tv$.
 In other words, we assign a truth value to each propositional variable, in such a way that if $(A_1,A_2,\dots,A_n)\le B$ in \cG, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true.
@@ -1982,7 +1983,7 @@ Using these rules, here is a derivation of one of ``de Morgan's laws'' as a taut
 % \end{mathpar}
 However, not \emph{every} tautology can be derived this way.
 In particular, $\neg\neg A \To A$ (the ``law of double negation'') and $A\join \neg A$ (the ``law of excluded middle'') are not derivable, because although they hold in $\tv$, their analogues fail to hold in other Heyting algebras.
-(In fact, they hold in a Heyting algebra exactly when that Heyting algebra is a \emph{Boolean} algebra.)
+(In fact, they hold in a Heyting algebra exactly when that Heyting algebra is a \emph{Boolean} algebra; see \cref{ex:heyt-bool}.)
 Thus, although we have something that ``looks like logic'', it is not exactly classical logic.
 
 One way to resolve this is to simply add another rule, such as the following for ``proof by contradiction'':
@@ -2062,6 +2063,15 @@ Of course, any closed monoidal lattice satisfies the distributive law $A\tensor 
 
 \begin{ex}\label{ex:nnlem}
   Prove that $\neg\neg(P\join\neg P)$ is an intuitionistic tautology, i.e.\ construct a derivation of $()\types\neg\neg(P\join\neg P)$ in the natural deduction for Heyting algebras.
+\end{ex}
+
+\begin{ex}\label{ex:heyt-bool}
+  Prove that the following are equivalent for a Heyting algebra:
+  \begin{enumerate}
+  \item The law of excluded middle $P\join\neg P$ is true, i.e.\ $P\join\neg P$ is the top element for all $P$.
+  \item The law of double negation $\neg\neg P\To P$ is true.
+  \item The Heyting algebra is a Boolean algebra, i.e.\ every element $P$ has a ``complement'' $\Pbar$ such that $P\meet\Pbar = \bot$ and $P\join\Pbar = \top$.
+  \end{enumerate}
 \end{ex}
 
 \begin{ex}\label{ex:demorgan}
