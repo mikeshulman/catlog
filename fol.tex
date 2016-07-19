@@ -526,7 +526,16 @@ If we \emph{do} have additional structure, particularly tensor products and unit
 However, to make a closer connection to the type theory we prefer to formulate them independently first.
 
 \begin{defn}
-  A \textbf{first-order \fS-hyperdoctrine} consists of a category \cS with finite products together with an \cS-indexed \fS-multiposet that is closed and representable and has products, coproducts, universal and existential quantifiers, and equality.
+  A \textbf{first-order \fS-hyperdoctrine} consists of a category \cS with finite products together with an \cS-indexed \fS-multiposet that is closed and representable and has products (finite meets), coproducts (finite joins), universal and existential quantifiers, and equality.
+
+  By default, a \textbf{first-order hyperdoctrine} refers to the cartesian case where $\fS$ contains all functions; in this case representability is equivalent to having finite meets.
+  More generally, an \cS-indexed cartesian multiposet is called a:
+  \begin{enumerate}
+  \item \textbf{coherent hyperdoctrine} if it has finite meets, finite joins, existential quantifiers, and equality;
+  \item \textbf{geometric hyperdoctrine} if it has finite meets, infinite joins, existential quantifiers, and equality;
+  \item \textbf{regular hyperdoctrine} if it has finite meets, existential quantifiers, and equality; and a
+  \item \textbf{Horn hyperdoctrine} if it has finite meets and equality.
+  \end{enumerate}
 \end{defn}
 
 Note that since all the structure of a first-order \fS-hyperdoctrine is determined by universal properties, it is unique up to isomorphism, and hence unique on the nose in an (antisymmetric) poset.
@@ -538,6 +547,7 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
   \item \cS is the category of type contexts; and
   \item the poset $\cP(\Gamma)$ is obtained from the poset of proposition judgments $\Gamma\types \ph\prop$ and derivable entailments $\Gamma\cb\Theta\types\ph$ by identifying isomorphic objects (since in this section our posets are antisymmetric).
   \end{itemize}
+  (And similarly for the other fragments with fewer type operations.)
 \end{thm}
 \begin{proof}
   We have already observed that this structure defines an indexed \fS-multicategory and that the simple type operations $\meet,\top,\join,\bot,\tensor,\one,\hom$ yield the appropriate multicategorical strurcture.
