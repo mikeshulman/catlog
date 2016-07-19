@@ -678,6 +678,28 @@ At the moment, we leave this proof to the reader; see \cref{ex:hyperdoctrine-all
 \section{Hyperdoctrines of subobjects}
 \label{sec:subobjects}
 
+Finally, we turn to the question of where hyperdoctrines come from.
+From now on we will focus entirely on the cartesian case, which is the most-studied and most-applicable.
+\cref{eg:subset-hyperdoctrine} suggests that from a category \cS, we should try to construct a hyperdoctrine such that for $\Gamma\in\cS$, $\cP(\Gamma)$ is a poset of ``subobjects'' of $\Gamma$.
+Moreover, there is a standard way to define a subobject of $\Gamma$, namely as an isomorphism class of monomorphisms with target $\Gamma$.
+
+We write this poset as $\sub_\cS(\Gamma)$, or just $\sub(\Gamma)$.
+To make $\sub_\cS$ into an \cS-indexed poset in a natural way, we need \cS to have pullbacks of monomorphisms along arbitrary morphisms.
+However, a category with finite products and pullbacks of monomorphisms automatically has all finite \emph{limits}, since the equalizer of $f,g:A\to B$ can be constructed as the pullback of the monomorphism $\Delta:B\to B\times B$ along $(f,g):A\to B\times B$.
+
+Thus, \emph{from now on we assume that \cS has finite limits}.
+Then $\sub_\cS$ is an \cS-indexed poset, and moreover it has products (meets) and a terminal (greatest) object; the former are given by pullback of monomorphisms and the latter by the monomorphism $\idfunc_\Gamma : \Gamma \to \Gamma$.
+We can also show:
+
+\begin{thm}
+  If \cS has finite limits, then $\sub_\cS$ has equality.
+  Therefore, it is a Horn hyperdoctrine.
+\end{thm}
+\begin{proof}
+  [TODO]
+\end{proof}
+
+
 
 % \begin{rmk}\label{rmk:subset-quotient}
 %   Would introduce type dependency.
