@@ -2003,10 +2003,17 @@ Thus, we can lift our notion of ``generalized logic'' back to informal mathemati
 It takes a bit of practice to learn to write informal mathematical proofs that could (at least in principle) be codified in such a generalized logic, but it is eminently possible.
 (It is much \emph{more} possible because, as discussed above, our ``generalized logic'' is expressed in a style that already closely mirrors ordinary mathematical reasoning; we simply have to learn which familiar styles of argument are valid in what situations.)
 
-The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra'' (whereas ordinary mathematical reasoning is only valid in Boolean algebras).
+The payoff is that the result is much more general than it appears, since it is true ``internally to any Heyting algebra''.
+By contrast, ordinary (``classical'') mathematical reasoning is only valid in \emph{Boolean} algebras (see \cref{ex:heyt-bool}).
 Lest the reader think that Heyting algebras seem esoteric, we point out that the lattice of open subsets of any topological space is a Heyting algebra (\cref{ex:frames}).
 
-[TODO: More about Heyting algebras: Boolean algebras, completeness theorem (and soundness, earlier?), adjoint functor theorems, frames, open sets.]
+\begin{rmk}\label{rmk:soundness-completeness}
+  In the context of logic, the initiality theorem (\cref{thm:heyting-initial}) corresponds to what are traditionally called \emph{soundness} and \emph{completeness} theorems.
+  A \emph{soundness} theorem says informally ``if something is provable, then it is true in all models''.
+  This follows from \cref{thm:heyting-initial} because the inequalities in a free Heyting algebra are exactly those that are provable (i.e.\ derivable) in the type theory; thus, if something is provable, then it is true in the free Heyting algebra, and therefore also in every other Heyting algebra.
+  Dually, a \emph{completeness} theorem says informally ``if something is true in all models, then it is provable''.
+  This also follows from \cref{thm:heyting-initial} because if something is true in all Heyting algebras, then it is in particular true in a free Heyting algebra; and hence, by our construction of the latter, it is provable in the type theory.
+\end{rmk}
 
 The ``generalized logic'' corresponding to Heyting algebras is called \textbf{intuitionistic} or \textbf{constructive logic}, because of its similarity to the mathematics advocated by certain mathematicians calling themselves ``intuitionist'' or ``constructive'' in the early 20th century.
 While we are stuck with these labels, it is probably best (for a classically trained category theorist first encountering the notion) not to read too much into them.
