@@ -688,8 +688,8 @@ We write this poset as $\sub_\cS(\Gamma)$, or just $\sub(\Gamma)$.
 To make $\sub_\cS$ into an \cS-indexed poset in a natural way, we need \cS to have pullbacks of monomorphisms along arbitrary morphisms.
 However, a category with finite products and pullbacks of monomorphisms automatically has all finite \emph{limits}, since the equalizer of $f,g:A\to B$ can be constructed as the pullback of the monomorphism $\Delta:B\to B\times B$ along $(f,g):A\to B\times B$.
 
-Thus, \emph{from now on we assume that \cS has finite limits}.
-Then $\sub_\cS$ is an \cS-indexed poset, and moreover it has products (meets) and a terminal (greatest) object; the former are given by pullback of monomorphisms and the latter by the monomorphism $\idfunc_\Gamma : \Gamma \to \Gamma$.
+Thus, \emph{from now on we assume that \cS has finite limits}, so that $\sub_\cS$ is an \cS-indexed poset.
+Moreover this \cS-indexedp poset has products (meets) and a terminal (greatest) object; the former are given by pullback of monomorphisms (which we henceforth call \emph{intersections}) and the latter by the monomorphism $\idfunc_\Gamma : \Gamma \to \Gamma$.
 We can also show:
 
 \begin{thm}
@@ -697,8 +697,21 @@ We can also show:
   Therefore, it is a Horn hyperdoctrine.
 \end{thm}
 \begin{proof}
-  [TODO]
+  For any objects $\Gamma$ and $A$, the diagonal $1\times \Delta : \Gamma\times A \to \Gamma\times A\times A$ is itself a monomorphism, so we can regard it as a subobject of $\Gamma\times A\times A$.
+  For this to give the desired Hopf left adjoint at $()$, we must show that for any monomorphisms $\Theta \mono \Gamma\times A\times A$ (being the intersection of some number of subobjects) and $C \mono \Gamma\times A\times A$, we have $\Theta \cap (\Gamma\times A) \le C$ as subobjects of $\Gamma\times A\times A$ if and only if we have $(1\times \Delta)^* \Theta \le (1\times \Delta)^* C$ as subobjects of $\Gamma\times A$.
+  However, $\Theta \cap (\Gamma\times A)$ and $(1\times \Delta)^* \Theta$ are the same object, and so this bijection is just using the universal property of the pullback $(1\times \Delta)^* C$:
+  \[ \xymatrix{ (1\times \Delta)^* \Theta \ar@(r,ul)[drr] \ar@(d,ul)[ddr] \ar@{.>}[dr] \\
+    & (1\times \Delta)^* C \ar[d] \ar[r] & C \ar[d]\\
+    & \Gamma\times A \ar[r]_-{1\times\Delta} & \Gamma\times A\times A } \]
+  Finally, we have a pullback square:
+  \[ \xymatrix{ \Gamma\times A \ar[r] \ar[d] & \Delta\times A \ar[d] \\
+    \Gamma\times A\times A \ar[r]_{f\times 1\times 1} & \Delta\times A\times A } \]
+  which implies the Beck--Chevalley condition.
 \end{proof}
+
+Therefore, any Horn theory can be interpreted into any category with finite limits.
+(In fact, more than this can be done in categories with finite limits, but it is slightly tricky to characterize exactly what; we will come back to this in \cref{sec:lex-theories}.)
+
 
 
 
