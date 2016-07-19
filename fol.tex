@@ -379,8 +379,8 @@ Thus, in the free structure built from type theory the reindexing functors do pr
 Of course, one may naturally wonder, where do indexed multiposets with these properties come from?
 We will consider this question in more depth in \cref{sec:subobjects}, but for now we mention one very important example that should help the intuition.
 
-\begin{eg}
-  Let \cS be the category of sets, and define $\cP(\Gamma)$ to be the poset of subsets of the set $\Gamma$, with its cartesian multiposet structure.
+\begin{eg}\label{eg:subset-hyperdoctrine}
+  Let $\cS=\bSet$ be the category of sets, and define $\cP(\Gamma)$ to be the poset of subsets of the set $\Gamma$, with its cartesian multiposet structure.
   The latter is in fact a Heyting algebra, and moreover a Boolean algebra: $\meet$ is intersection, $\join$ is union, $\neg$ is complement.
 \end{eg}
 
@@ -439,8 +439,11 @@ Now we can state:
 \end{defn}
 
 Note that the Beck--Chevalley condition is true in the syntax because the universal quantifier is preserved by substitution, by definition of substitution: $(\forall x:A.\ph)[M/y] = \forall x:A. \ph[M/y]$ as long as $y\neq x$.
+In \cref{eg:subset-hyperdoctrine}, the right adjoint to $(\pi_A)^* : \cP(\Gamma) \to \cP(\Gamma\times A)$ is similarly defined by
+\[ (\pi_A)_*(\ph) = \setof{ x\in \Gamma | \all y\in A. (x,y)\in\ph }. \]
 
-Similarly, the rule $\existsE$
+The existential quantifier is similar, but a bit more subtle.
+The rule $\existsE$
 \[ \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\]
 certainly looks like one direction of some kind of adjunction.
 The other direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
@@ -471,6 +474,9 @@ Unlike the case of right adjoints, however, in general a Hopf left adjoint canno
     \[ \xymatrix@C=3pc{ \Gamma\times A \ar[r]^{f\times \idfunc_A} \ar[d] & \Delta\times A \ar[d] \\ \Gamma \ar[r]_f & \Delta. } \]
   \end{enumerate}
 \end{defn}
+
+Unsurprisingly, in \cref{eg:subset-hyperdoctrine}, the left adjoint to $(\pi_A)^*:\cP(\Gamma) \to \cP(\Gamma\times A)$ is similarly defined by
+\[ (\pi_A)_!(\ph) = \setof{ x\in \Gamma | \exis y\in A. (x,y)\in\ph }. \]
 
 Finally, we consider the rules for equality.
 If we remove the built-in substitutions, these look like
@@ -519,6 +525,8 @@ This suggests the following definitions.
 
 As before, the Beck--Chevalley condition is true in the syntax because ``equality is preserved by substitution''.
 The relevant substitution here is not the one built into the equality rule, though, but the substitution for different variables, which doesn't change the equality proposition at all: $(x=_A y)[M/z] = (x=_A y)$ as long as $z\neq x$ and $z\neq y$.
+In \cref{eg:subset-hyperdoctrine}, the left adjoint to $(\Delta_A)^* : \cP(\Gamma\times A\times A) \to \cP(\Gamma\times A)$ at $()$ is defined by
+\[ (\Delta_A)_! = \setof{ (z,x,y)\in \Gamma\times A\times A | x=y }. \]
 
 Note that we are sticking doggedly to the principle that just as the rules for a given type operation should be independent of any other type operations, the corresponding universal property should be statable without reference to any other objects with universal properties.\footnote{At least, other universal properties in the multiposets $\cP(\Gamma)$.
 We do still refer to cartesian products in \cS, but we could also remove those as in \cref{ex:pshf-multicat}.}
@@ -581,6 +589,12 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
   This completes the definition on entailments.
   Since everything is posetal there is not much left to do: we show that our map preserves all the hyperdoctrine structure, essentially by definition, and then that it is unique (modulo the up-to-isomorphism uniqueness of the functor on base categories), because its definition was forced at every step.
 \end{proof}
+
+So far we only have one hyperdoctrine to apply this theorem to (other than the free ones produced by type theory), namely that of \cref{eg:subset-hyperdoctrine}.
+However, even this one example is not trivial: it implies the \emph{soundness theorem} for first-order intuitionistic logic with respect to classical models in \bSet.
+That is, anything we can derive using the rules of \cref{sec:fol} is necessarily \emph{true} as a statement about sets and their elements.
+Namely, if we can prove $\Gamma\cb ()\types \ph$, then we must have a morphism, in the cartesian multiposet of subsets of the interpretation of $\Gamma$, from the empty list to $\ph$; which means that $\ph$ must be interpreted by the top element, i.e.\ $\ph$ is ``true'' about all elements of $\Gamma$.
+In \cref{sec:subobjects} we will generalize this to hyperdoctrines constructed from more general categories.
 
 Note that all categorical structure corresponding to quantifiers and equality takes the form of \emph{certain} adjoints to reindexing functors.
 As we will see in \cref{sec:subobjects}, most examples arising in practice naturally have adjoints to \emph{all} the reindexing functors (if they have any).
@@ -651,7 +665,7 @@ At the moment, we leave this proof to the reader; see \cref{ex:hyperdoctrine-all
   Suppose $\cP:\cS\op\to\mathbf{Heyt}$ is a first-order \fS-hyperdoctrine as defined in the text.
   \begin{enumerate}
   \item Prove (using type theory or commutative diagrams, your choice) that in fact the reindexing functor $f^* : \cP(\Delta) \to \cP(\Gamma)$ has a Hopf left adjoint for \emph{all} morphisms $f:\Gamma\to\Delta$ in $\cS$.
-    \textit{(Hint: in the hyperdoctrine of subsets over $\mathbf{Set}$, these left adjoints can be defined by $f_!(\varphi) = \{ y\in \Delta \mid \exis x\in \Gamma. (x\in\varphi\meet f(x) = y) \}$.)}
+    \textit{(Hint: in the hyperdoctrine of subsets over $\mathbf{Set}$, these left adjoints can be defined by $f_!(\varphi) = \setof{ y\in \Delta | \exis x\in \Gamma. (x\in\varphi\meet f(x) = y) }$.)}
   \item Similarly, prove that $f^*$ has a right adjoint for all $f$.
   \item Prove that these left adjoints satisfy both Beck--Chevalley conditions for commutative squares of the following form:
     \[

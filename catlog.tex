@@ -7,7 +7,7 @@
 \author{Michael Shulman}
 \date{DRAFT for AARMS Summer School 2016\\Version of \today}
 \makeatletter
-\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fprop\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bCartMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bTh}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fprop\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bCartMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bTh\nSub}
 \autodefs{\nAut\nShuf}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
@@ -152,6 +152,8 @@
 % Theories
 \def\timesthy#1{\bTh_{\times,#1}}
 \def\m#1{\llbracket #1\rrbracket}
+% hyperdoctrines
+\newcommand{\sub}{\nSub}
 % 
 % Collect exercises at the end of each chapter.  The upshot of this
 % hackery is that we can write \begin{ex}\label{ex:name}...\end{ex} as
