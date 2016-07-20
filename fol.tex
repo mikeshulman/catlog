@@ -811,9 +811,9 @@ To get started, we make the following observations.
   A model of this theory in a regular category \cS is precisely an extremal epimorphism in \cS.
 \end{lem}
 \begin{proof}
-  By the proof of \cref{thm:regular-subobjects}, the interpretation of $y:B\types (\exists x:A.f(x)= y)\prop$ is constructed as follows:
+  By the proof of \cref{thm:regular-subobjects}, we can construct the interpretation of $y:B\types (\exists x:A.f(x)= y)\prop$ as follows:
   \begin{enumerate}
-  \item Start with the diagonal $B\to B\times B$, representing $y_1:B,y_2:B\types (y_1= y_2)\prop$.
+  \item Start with the diagonal $B\to B\times B$, for $y_1:B,y_2:B\types (y_1= y_2)\prop$.
   \item Pull it back along $(f\times \idfunc):A\times B\to B\times B$, representing the substitution $x:A,y:B\types (f(y)= y)\prop$.
     This yields the graph $(f,1):A\to A\times B$.
   \item Take the image of the composite $A\to A\times B \to B$.
@@ -825,22 +825,137 @@ To get started, we make the following observations.
 The next lemma requires only Horn logic, but there was not much point to stating it before now.
 
 \begin{lem}\label{thm:logic-mono}
-  Consider the Horn theory with two types $A,B$, one morphism $f:A\to B$, and one axiom $y:B,x_1:A,x_2:A \cb (f(x_1)=y),(f(x_2)=y) \types x_1=x_2$.
-  A model of this theory in a category \cS with finite limits is precisely an monomorphism in \cS.
+  Consider the Horn theory with two types $A,B$, one morphism $f:A\to B$, and one axiom $x_1:A,x_2:A \cb (f(x_1)=f(x_2)) \types x_1=x_2$.
+  A model of this theory in a category with finite limits is precisely a monomorphism.
 \end{lem}
 \begin{proof}
-  
+  The interpretation of $x_1:A,x_2:A \types (f(x_1)=f(x_2))\prop$ is the pullback of the diagonal $B\to B\times B$ along $f\times f$.
+  This is otherwise known as the \emph{kernel pair} of $f$, namely the pullback of $f$ along itself.
+  Thus, the axiom of our theory says pricely that this kernel pair is contained in the diagonal of $A$ (as a subobject of $A\times A$).
+  Now if we have $h,k:X\to A$ such that $f h = f k$, then $(h,k)$ factors through the kernel pair; hence it also factors through the diagonal, which means $h=k$; so $f$ is monic.
 \end{proof}
 
-% \begin{rmk}\label{rmk:subset-quotient}
-%   Would introduce type dependency.
-% \end{rmk}
+Our third lemma starts to reveal some of the real value of the logical approach.
+
+\begin{lem}\label{thm:logic-uniquechoice}
+  Suppose we have a regular theory containing two types $A,B$ and a proposition (not necessarily an atomic one) $x:A,y:B\types \ph\prop$ such that the following sequents are provable:
+  \begin{mathpar}
+    x:A \cb () \types \exists y:B.\ph\and
+    x:A,y_1:B,y_2:B \cb \ph[y_1/y], \ph[y_2/y] \types y_1=y_2
+  \end{mathpar}
+  Then for any interpretation of this theory in a regular category, the interpretation of $\ph$ is a monomorphism $\ph \mono A\times B$ such that the composite $\ph \to A\times B \to A$ is an isomorphism; hence the composite $A\cong \ph \to A\times B \to B$ defines a morphism from $A$ to $B$.
+\end{lem}
+\begin{proof}
+  Let us consider what the two assumptions say.
+  By construction of $\exis$, the first says that the image of $\ph \to A\times B \to A$ is all of $A$, which is to say that this composite is extremal epi.
+
+  The second says that if we pull $\ph \to A\times B$ back along the two projections $\pi_1,\pi_2 :A\times B\times B \toto A\times B$, then the intersection $(\pi_1)^*\ph \cap (\pi_2)^*\ph$ lies inside the diagonal $\Delta : A\times B \to A\times B\times B$.
+  We claim this means that the composite $\ph \to A\times B \to A$ is mono.
+  For if we have $f,g:X\to \ph$ that are equalized in $A$, we have an induced map $X \to A\times B\times B$ that factors through $(\pi_1)^*\ph \cap (\pi_2)^*\ph$.
+  Hence it also factors through $\Delta$, which is to say that the two composites $X \toto \ph \to A\times B$ are equal; but since $\ph\mono A\times B$ is mono, this implies $f=g$.
+
+  Thus, $\ph \to A\times B \to A$ is both extremal epi and mono.
+  But since it factors through itself, this implies it is an isomorphism.
+\end{proof}
+
+We leave the proof of the final lemma to the reader (\cref{ex:logic-uniquechoice-funct}).
+
+\begin{lem}\label{thm:logic-uniquechoice-funct}\ 
+  \begin{enumerate}
+  \item If in \cref{thm:logic-uniquechoice} the proposition $\ph$ is $f(x)=y$ for some morphism $f:A\to B$ in the theory, then the morphism $A\to B$ defined by \cref{thm:logic-uniquechoice} is just the interpretation of $f$.
+  \item If in a regular theory we have three types $A,B,C$ and propositions
+    \begin{mathpar}
+      x:A,y:B\types \ph\prop\and 
+      y:B,z:C\types \psi\prop\and 
+      x:A,z:C\types \chi\prop\and 
+    \end{mathpar}
+    all satisfying the hypotheses of \cref{thm:logic-uniquechoice}, and moreover we can prove
+    \begin{mathpar}
+      x:A,y:B,z:C \cb \ph,\psi \types \chi
+    \end{mathpar}
+    then under interpretation in any regular category, the induced morphisms $A\to B$ and $B\to C$ compose to the induced morphism $A\to C$.\qed
+  \end{enumerate}
+\end{lem}
+
+Putting all these lemmas together, we can prove a nontrivial theorem about regular categories.
+
+\begin{thm}\label{logic-extepi-regepi}
+  In a regular category, every extremal epi is in fact a regular epi (the coequalizer of some parallel pair).
+\end{thm}
+\begin{proof}
+  We will show that every extremal epi is the coequalizer of its kernel pair.
+  Note that since an extremal epi is epi by \cref{thm:extremal-epi}\ref{item:ee1}, factorizations through it are unique if they exist.
+  Now, given $f:A\to B$ and $g:A\to C$, we can say that $g$ coequalizes the kernel pair of $f$ if and only if the kernel pair of $f$ is contained in the kernel pair of $g$ as a subobject of $A\times A$.
+
+  Thus, consider the regular theory with three types $A,B,C$, two morphisms $f:A\to B$ and $g:A\to C$, and the axioms
+  \begin{mathpar}
+    y:B \cb () \types \exists x:A.f(x)= y\and
+    x_1:A,x_2:A \cb (f(x_1)=f(x_2)) \types (g(x_1)=g(x_2))
+  \end{mathpar}
+  The first says exactly that $f$ is extremal epi, while the second says that the kernel pair of $f$ is contained in the kernel pair of $g$.
+  In this theory, define $\ph$ to be the proposition
+  \[y:B,z:C \types \exists x:A.((f(x)=y) \meet (g(x)=z)) \prop\]
+  We will prove the following sequents in this theory:
+  \begin{enumerate}
+    \item $y:B \cb () \types \exists z:C.\ph$\label{item:eere1}
+    \item $y:B,z_1:C,z_2:C \cb \ph[z_1/z], \ph[z_2/z] \types z_1=z_2$\label{item:eere2}
+    \item $x:A,y:B,z:C \cb \ph, (f(x)=y) \types (g(x)=z)$\label{item:eere3}
+  \end{enumerate}
+  Then by \cref{thm:logic-uniquechoice,thm:logic-uniquechoice-funct}, the interpretation of $\ph$ will define a morphism $B\to C$ that factors $g$ through $f$.
+  \begin{enumerate}
+  \item Informally, suppose $y:B$.
+    By one of our axioms, there exists an $x:A$ such that $f(x)=y$.
+    Let $z=g(x)$; then of course $f(x)=y$ and $g(x)=z$.
+    \begin{figure}
+      \centering
+      \[\tiny
+      \inferrule*[Right=\tiny$\existsE$]{
+        \mathrm{(axiom)} \\
+        \inferrule*[Right=\tiny$\existsI$]{
+          g(x):C\\
+          \inferrule*[Right=\tiny$\existsI$]{
+            \inferrule*[Right=\tiny$\meetI$]{
+              \inferrule*{ }{y:B,x:A \cb (f(x)=y) \types (f(x)=y)}\\
+              \inferrule*[Right=\tiny$\eqI$]{ }{y:B,x:A \cb (f(x)=y) \types (g(x)=g(x))}
+            }{y:B,x:A \cb (f(x)=y) \types (f(x)=y) \meet (g(x)=g(x))
+            }}{y:B,x:A \cb (f(x)=y) \types \exists x:A.((f(x)=y) \meet (g(x)=g(x)))
+          }}{y:B,x:A \cb (f(x)=y) \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))
+        }}{y:B \cb() \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))}
+      \]
+      \caption{Derivation tree of~\ref{item:eere1} in proof of \cref{logic-extepi-regepi}}
+      \label{fig:eere1}
+    \end{figure}
+
+    A corresponding derivation tree is shown (with some parts abbreviated) in \cref{fig:eere1}.
+    The derivation trees of the next two would be even harder to fit on a page, but there is nothing tricky about translating the informal proofs into derivations.
+    Thus we leave it to the reader, with some hints about which rules are being used.
+  \item Suppose we have $y:B$ and $z_1,z_2:C$, and assume $\ph[z_1/z]$ and $\ph[z_2/z]$, that is to say $\exists x:A.(f(x)=y \meet g(x)=z_1)$ and $\exists x:A.(f(x)=y \meet g(x)=z_2)$.
+    Let $x_1,x_2:A$ be such (using $\existsE$), so that $f(x_1)=y$ and $g(x_1)=z_1$, while $f(x_2)=y$ and $g(x_2)=z_2$.
+    Then $f(x_1)=f(x_2)$ (using transitivity of equality), so by our other axiom, $g(x_1)=g(x_2)$; hence (using transitivity of equality again) $z_1=z_2$.
+  \item Suppose we have $x:A$ and $y:B$ and $z:C$, and that $f(x)=y$ and $\ph$, i.e.\ $\exists x:A.(f(x)=y \meet g(x)=z)$.
+    Let $x':A$ be such an element (using $\existsE$), so that $f(x')=y$ and $g(x')=z$.
+    Then $f(x) = f(x')$ (by transitivity), so by our second axiom, $g(x) = g(x')$, and therefore (by transitivity) $g(x) = z$.\qedhere
+  \end{enumerate}
+\end{proof}
+
+As always, this logical proof can be ``compiled out'' to a proof using commutative diagrams; see for instance~\cite[A1.3.4]{ptj:elephant}.
+However, I find the logical proof much easier to understand.
+
+
+\subsection{Coherent categories}
+\label{sec:coherent-categories}
+
+
+
+\subsection{Heyting categories}
+\label{sec:heyting-categories}
+
+
 
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:regular-epis}
-  A morphism in a category is a \textbf{regular epimorphism} if it is the coequalizer of some parallel pair.
-  Prove that every regular epimorphsim is an extremal epimorphism.
+  Prove that every regular epimorphism (in any category) is an extremal epimorphism.
 \end{ex}
 
 \begin{ex}\label{ex:regular-egs}
@@ -861,6 +976,16 @@ The next lemma requires only Horn logic, but there was not much point to stating
   \item Show that both of the previous parts apply when \cS is the category of topological spaces and \cM consists of the subspace inclusions.
   \end{enumerate}
 \end{ex}
+
+\begin{ex}\label{ex:logic-uniquechoice-funct}
+  Prove \cref{thm:logic-uniquechoice-funct}.
+\end{ex}
+
+
+% TODO: Where to put this?
+% \begin{rmk}\label{rmk:subset-quotient}
+%   Would introduce type dependency.
+% \end{rmk}
 
 
 \section{Finite-limit theories}
