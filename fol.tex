@@ -681,6 +681,10 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
 
 Finally, we turn to the question of where hyperdoctrines come from.
 From now on we will focus entirely on the cartesian case, which is the most-studied and most-applicable.
+
+\subsection{Horn hyperdoctrines from finite limits}
+\label{sec:horn-subobjects}
+
 \cref{eg:subset-hyperdoctrine} suggests that from a category \cS, we should try to construct a hyperdoctrine such that for $\Gamma\in\cS$, $\cP(\Gamma)$ is a poset of ``subobjects'' of $\Gamma$.
 Moreover, there is a standard way to define a subobject of $\Gamma$, namely as an isomorphism class of monomorphisms with target $\Gamma$.
 
@@ -689,10 +693,10 @@ To make $\sub_\cS$ into an \cS-indexed poset in a natural way, we need \cS to ha
 However, a category with finite products and pullbacks of monomorphisms automatically has all finite \emph{limits}, since the equalizer of $f,g:A\to B$ can be constructed as the pullback of the monomorphism $\Delta:B\to B\times B$ along $(f,g):A\to B\times B$.
 
 Thus, \emph{from now on we assume that \cS has finite limits}, so that $\sub_\cS$ is an \cS-indexed poset.
-Moreover this \cS-indexedp poset has products (meets) and a terminal (greatest) object; the former are given by pullback of monomorphisms (which we henceforth call \emph{intersections}) and the latter by the monomorphism $\idfunc_\Gamma : \Gamma \to \Gamma$.
+Moreover this \cS-indexed poset has products (meets) and a terminal (greatest) object; the former are given by pullback of monomorphisms (which we henceforth call \emph{intersections}) and the latter by the monomorphism $\idfunc_\Gamma : \Gamma \to \Gamma$.
 We can also show:
 
-\begin{thm}
+\begin{thm}\label{thm:horn-subobjects}
   If \cS has finite limits, then $\sub_\cS$ has equality.
   Therefore, it is a Horn hyperdoctrine.
 \end{thm}
@@ -713,11 +717,150 @@ Therefore, any Horn theory can be interpreted into any category with finite limi
 (In fact, more than this can be done in categories with finite limits, but it is slightly tricky to characterize exactly what; we will come back to this in \cref{sec:lex-theories}.)
 
 
+\subsection{Regular categories}
+\label{sec:regular-categories}
 
+Now we move on to regular logic.
+For $\sub_\cS$ to have existential quantifiers, we need some way to make a subobject $C\mono \Gamma\times A$ into a subobject of $\Gamma$.
+In $\sub_\bSet$, the desired subset of $\Gamma$ is the \emph{image} of the composite function $C\mono \Gamma\times A \to\Gamma$, so it seems natural to consider categories that have a well-behaved notion of ``image factorization''.
+
+\begin{defn}
+  An \textbf{extremal epimorphism} is a morphism $e:A\to B$ in a category such that if $e = m g$ with $m$ a monomorphism, then $m$ is an isomorphism.
+  A \textbf{regular category} is a category with finite limits such that every morphism $f$ factors as $m e$ where $m$ is a monomorphism and $e$ an extremal epimorphism, and moreover extremal epimorphisms are stable under pullback.
+\end{defn}
+
+We start with a lemma about extremal epimorphisms:
+
+\begin{lem}\label{thm:extremal-epi}
+  Let \cS be a category with finite limits.
+  \begin{enumerate}
+  \item Every extremal epimorphism is an epimorphism.\label{item:ee1}
+  \item If we have a commutative square in \cS
+    \[ \xymatrix{ A \ar[r] \ar[d]_e & C \ar[d]^m \\ B \ar[r] & D} \]
+    in which $e$ is an extremal epimorphism and $m$ a monomorphism, there exists a unique morphism $B\to C$ making both triangles commute.
+    (This means, by definition, that $e$ is also a \textbf{strong epimorphism}.)\label{item:ee2}
+  \item If a morphism $f$ in \cS factors as $m e$ with $e$ an extremal epi and $m$ a monomorphism, then such a factorization is unique up to isomorphism.\label{item:ee3}
+  \end{enumerate}
+\end{lem}
+\begin{proof}
+  For~\ref{item:ee1}, if $e$ is extremal epi and $f e = g e$, then the equalizer of $f$ and $g$ is a monomorphism through which $e$ factors; so it is an isomorphism and thus $f=g$.
+
+  For~\ref{item:ee2}, the projection $B\times_D C \to B$ is a monomorphism through which $e$ factors, so it is an isomorphism.
+  The composite $B\to B\times_D C \to C$ is then the desired morphism; its uniqueness follows from the fact that $m$ is mono.
+
+  For~\ref{item:ee3}, two such factorizations give a squares as in~\ref{item:ee2} whose transpose is also such a square, so it has diagonal fillers in both directions, giving inverse isomorphisms.
+\end{proof}
+
+\begin{thm}\label{thm:regular-subobjects}
+  A category \cS with finite limits is regular if and only if $\sub_\cS$ has existential quantifiers.
+\end{thm}
+\begin{proof}
+  First suppose \cS is regular, and that we have a subobject $\ph\mono \Gamma\times A$.
+  Factor the composite $\ph \mono \Gamma\times A \to \Gamma$ as an extremal epi $\ph \to \exis_A \ph$ followed by a mono $\exis_A \ph \mono \Gamma$.
+  Then we must show that given any other monos $\Theta \mono \Gamma$ and $\psi\mono \Gamma$, we have $\Theta \cap \exis_A \ph \le \psi$ if and only if $(\pi_A)^*\Theta \cap \ph \le (\pi_A)^* \psi$.
+  Now by the functoriality of pullback, we have a diagram:
+  \[ \xymatrix{ (\pi_A)^*\Theta \cap \ph \ar[dd] \ar[dr] \ar[rr] && \Theta \cap \exis_A \ph \ar'[d][dd] \ar[dr] \\
+    & \ph \ar[dd] \ar[rr] && \exis_A \ph \ar[dd]\\
+    (\pi_A)^*\Theta \ar[dr] \ar'[r][rr] && \Theta \ar[dr] \\
+    & \Gamma\times A \ar[rr]_{\pi_A} && \Gamma. } \]
+  Thus in one direction, if $\Theta \cap \exis_A \ph \le \psi$, we have a composite map $(\pi_A)^*\Theta \cap \ph \to \psi$ over $\Gamma$, which induces a map $(\pi_A)^*\Theta \cap \ph \le (\pi_A)^* \psi$ by the universal property of pullback $(\pi_A)^*$.
+  And in the other direction, if $(\pi_A)^*\Theta \cap \ph \le (\pi_A)^* \psi$, we have a square
+  \[ \xymatrix{ (\pi_A)^*\Theta \cap \ph \ar[r]  \ar[d] & (\pi_A)^* \psi \ar[r] & \psi \ar[d] \\
+    \Theta \cap \exis_A \ph \ar[rr] && \Gamma } \]
+  as in \cref{thm:extremal-epi}\ref{item:ee2}.
+  (The fact that the left-hand arrow is an extremal epi uses the assumption on a regular category that pullback preserves extremal epis.)
+  Thus there is a diagonal filler giving $\Theta \cap \exis_A \ph \le \psi$.
+
+  For the Beck--Chevalley condition, if we have $f:\Gamma\to\Delta$ and a mono $\ph\mono \Delta\times A$, by pasting pullback squares we see that the outer rectangle below is a pullback:
+  \[ \xymatrix{ (f\times \idfunc_A)^*\ph \ar[d]\ar[r] & \ph \ar[d] \\
+    \Gamma\times A \ar[r]^{f\times \idfunc_A}\ar[d] & \Delta\times A \ar[d] \\
+    \Gamma \ar[r]_f & \Delta } \]
+  Now if we pull back the factorization $\ph \to \exis_A \ph \to \Delta$ along $f$ we get another pair of pullback squares
+  \[ \xymatrix{ (f\times \idfunc_A)^*\ph \ar[d]\ar[r] & \ph \ar[d] \\
+    f^*(\exis_A \ph) \ar[r]^{f\times \idfunc_A}\ar[d] & \exis_A \ph \ar[d] \\
+    \Gamma \ar[r]_f & \Delta. } \]
+  Since monos and extremal epis are both stable under pullback, the left-hand maps form a factorization of the map $(f\times \idfunc_A)^*\ph \to \Gamma$; and since such factorizations are unique by \cref{thm:extremal-epi}\ref{item:ee3}, we must have $f^*(\exis_A \ph) \cong \exis_A ((f\times\idfunc_A)^*\ph)$, which is what the Beck--Chevalley condition requires.
+
+  Now suppose \cS has finite limits and $\sub_\cS$ has existential quantifiers.
+  Given a morphism $f:A\to B$, its ``graph'' $(f,1) : A\to B\times A$ is a monomorphism.
+  Applying the existential quantifier for the projection $\pi_A:B\times A\to B$, we obtain a monomorphism $\exis(f,1) : C\mono B$ with the property that $\exis(f,1) \le D$ as subobjects of $B$ if and only if $(f,1) \le (\pi_A)^*D$ as subobjects of $B\times A$.
+  By the universal property of pullback, the latter is equivalent to there being a map $A\to D$ such that the composite $A\to D \to B$ is equal to the composite $A \to B\times A\ to B$; but the latter is $f$, so this just means that $f$ factors through $D$.
+
+  In particular, since $\exis(f,1) \le \exis(f,1)$, it follows that $f$ factors through it, by some map $e:A\to \exis(f,1)$, say.
+  Moreover, if we have a monomorphism $D\mono \exis(f,1)$ that $e$ factors through, then $f$ factors through the composite mono $D\to B$, and thus $\exis(f,1)\le D$ as subobjects of $B$; hence $D\cong \exis(f,1)$.
+  Thus, $e$ is extremal epic, and so $A \xto{e} \exis(f,1) \to B$ is a factorization of $f$ as required in the definition of regular category.
+  
+  The uniqueness of factorizations means that if $f$ itself is extremal epic, then $\exis(f,1) \to B$ is an isomorphism.
+  And of course, conversely, if $\exis(f,1) \to B$ is an isomorphism, then $f$, like $e$, is extremal epic.
+  Now the Beck--Chevalley condition for existential quantifiers implies that the construction of $\exis(f,1)$ is preserved by pullback.
+  Thus so is the property of $\exis(f,1) \to B$ being an isomorphism, and thus so is the property of $f$ being extremal epic.
+  Therefore, $\cS$ is a regular category.
+\end{proof}
+
+Regular categories are quite common.
+Of course, $\bSet$ is regular.
+So is any presheaf category; and, as we will see later, so is any ``elementary topos''.
+Moreover, the category of models of any finite-product theory (like monoids, groups, rings, etc.)\ is also regular; see \cref{ex:regular-egs}.
+Thus, regular logic can be used to reason about any such category.
+
+In fact, regular logic is quite useful in proving basic facts about regular categories.
+To get started, we make the following observations.
+
+\begin{lem}\label{thm:logic-extremal-epi}
+  Consider the regular theory with two types $A,B$, one morphism $f:A\to B$, and one axiom $y:B \cb () \types \exists x:A.f(x)= y$.
+  A model of this theory in a regular category \cS is precisely an extremal epimorphism in \cS.
+\end{lem}
+\begin{proof}
+  By the proof of \cref{thm:regular-subobjects}, the interpretation of $y:B\types (\exists x:A.f(x)= y)\prop$ is constructed as follows:
+  \begin{enumerate}
+  \item Start with the diagonal $B\to B\times B$, representing $y_1:B,y_2:B\types (y_1= y_2)\prop$.
+  \item Pull it back along $(f\times \idfunc):A\times B\to B\times B$, representing the substitution $x:A,y:B\types (f(y)= y)\prop$.
+    This yields the graph $(f,1):A\to A\times B$.
+  \item Take the image of the composite $A\to A\times B \to B$.
+    This composite is just $f$, so its image is also the image of $f$.
+  \end{enumerate}
+  Therefore, to interpret $y:B \cb () \types \exists x:A.f(x)= y$ is to say that the image of $f$ is all of $B$, i.e.\ that $f$ is extremal epic.
+\end{proof}
+
+The next lemma requires only Horn logic, but there was not much point to stating it before now.
+
+\begin{lem}\label{thm:logic-mono}
+  Consider the Horn theory with two types $A,B$, one morphism $f:A\to B$, and one axiom $y:B,x_1:A,x_2:A \cb (f(x_1)=y),(f(x_2)=y) \types x_1=x_2$.
+  A model of this theory in a category \cS with finite limits is precisely an monomorphism in \cS.
+\end{lem}
+\begin{proof}
+  
+\end{proof}
 
 % \begin{rmk}\label{rmk:subset-quotient}
 %   Would introduce type dependency.
 % \end{rmk}
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:regular-epis}
+  A morphism in a category is a \textbf{regular epimorphism} if it is the coequalizer of some parallel pair.
+  Prove that every regular epimorphsim is an extremal epimorphism.
+\end{ex}
+
+\begin{ex}\label{ex:regular-egs}
+  Prove that if \cS is a regular category and \cT is any finite-product theory (see \cref{sec:fp-theories}), then the category of \cT-models in \cS is also regular.
+\end{ex}
+
+\begin{ex}\label{ex:factsys}
+  A (\textbf{unique} or \textbf{orthogonal}) \textbf{factorization system} on a category \cS is a pair $(\cE,\cM)$ of classes of morphisms in \cS such that
+  \begin{enumerate}
+  \item \cE and \cM are both closed under composition with isomorphisms;
+  \item every morphism $f$ in \cS factors as $f=m e$ where $m\in\cM$ and $e\in\cE$; and
+  \item if $m h = k e$ with $m\in\cM$ and $e\in \cE$, there exists a unique $\ell$ such that $m\ell=k$ and $\ell e = h$ (as in \cref{thm:extremal-epi}\ref{item:ee2}).
+  \end{enumerate}
+  A factorization system is \textbf{stable} if \cE is stable under pullback (\cM is automatically so), and \textbf{proper} if every morphism in \cE is an epimorphism and every morphism in \cM is a monomorphism.
+  \begin{enumerate}
+  \item Prove that if $(\cE,\cM)$ is a proper, stable, factorization system on a category \cS with finite limits, then there is a regular hyperdoctrine $\sub_\cM$ for which $\sum_\cM(\Gamma)$ is the sub-poset of $\sub_\cS(\Gamma)$ consisting only of monomorphisms in \cM.
+  \item If \cS additionally has finite coproducts that are stable under pullback, prove that $\sum_\cM(\Gamma)$ is a coherent hyperdoctrine.
+  \item Show that both of the previous parts apply when \cS is the category of topological spaces and \cM consists of the subspace inclusions.
+  \end{enumerate}
+\end{ex}
 
 
 \section{Finite-limit theories}
