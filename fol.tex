@@ -923,7 +923,7 @@ Putting all these lemmas together, we can prove a nontrivial theorem about regul
           }}{y:B,x:A \cb (f(x)=y) \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))
         }}{y:B \cb() \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))}
       \]
-      \caption{Derivation tree of~\ref{item:eere1} in proof of \cref{logic-extepi-regepi}}
+      \caption{Derivation tree of~\ref{item:eere1} in proof of \cref{thm:logic-extepi-regepi}}
       \label{fig:eere1}
     \end{figure}
 
@@ -946,10 +946,66 @@ However, I find the logical proof much easier to understand.
 \subsection{Coherent categories}
 \label{sec:coherent-categories}
 
+For coherent logic, there are few surprises.
+
+\begin{defn}
+  A \textbf{coherent category} is a regular category in which the posets $\sub(\Gamma)$ have finite unions that are preserved by pullback.
+\end{defn}
+
+\begin{thm}
+  A regular category \cS is coherent if and only if $\sub_\cS$ is a coherent hyperdoctrine.
+\end{thm}
+\begin{proof}
+  If $\sub_\cS$ is a coherent hyperdoctrine, then clearly its joins are unions in the subobject posets of \cS, and the Beck--Chevalley condition implies these are stable under pullback.
+  The converse is just as easy except for the presence of an additional context $\Theta$ in the rule for $\join$ (and similarly $\bot$, but we leave that case to the reader): we must show that if $\Theta \cap \ph \le \chi$ and $\Theta \cap \psi\le \chi$ in $\sub(\Gamma)$, then $\Theta \cap (\ph\cup \psi) \le \chi$.
+  But $\Theta \cap \ph \le \chi$ in $\sub(\Gamma)$ is equivalent to $m^*\ph \le m^*\chi$ in $\sub(\Theta)$, where $m:\Theta\mono \Gamma$ is the given monomorphism, and similarly for the other conditions; so this also follows from pullback-stability of unions.
+\end{proof}
+
+In particular, in a coherent category, every object has a smallest subobject $0_A \mono A$.
+It is not obvious, but true, that for any object $A$, the domain $0_A$ of this smallest subobject is an initial object (and hence isomorphic to $0_B$ for any other $B$).
+For this purpose we need an additional lemma.
+
+First note that although \crefrange{thm:logic-extremal-epi}{thm:logic-uniquechoice-funct} in \cref{sec:regular-categories} were stated for regular theories, they are in fact valid for theories in any fragment of logic \emph{containing} regular logic, and for any category \cS such that $\sub_\cS$ interprets that fragment of logic.
+In particular, they are valid for coherent theories and coherent categories.
+Second, we need the following further enhancement of \cref{thm:logic-uniquechoice}, whose proof we leave to the reader (\cref{ex:logic-uniquechoice-2}).
+
+\begin{lem}\label{thm:logic-uniquechoice-2}
+  Suppose we have a theory in a logic containing regular logic containing two types $A,B$ and propositions
+  \begin{mathpar}
+    x:A\types \alpha\prop\and
+    y:B\types \beta\prop\and
+    x:A,y:B\types \ph\prop
+  \end{mathpar}
+  such that the following sequents are provable:
+  \begin{mathpar}
+    x:A,y:B\cb\ph \types \alpha\and
+    x:A,y:B\cb\ph \types \beta\and
+    x:A \cb \alpha \types \exists y:B.(\beta\meet\ph)\and
+    x:A,y_1:B,y_2:B \cb \alpha, \beta[y_1/y], \beta[y_2/y], \ph[y_1/y], \ph[y_2/y] \types y_1=y_2
+  \end{mathpar}
+  Then for any interpretation of this theory in a category \cS such that $\sub_\cS$ models the appropriate logic, the interpretation of $\ph$ yields (as in \cref{thm:logic-uniquechoice}) a morphism from the interpretation of $\alpha$ to the interpretation of $\beta$.\qed
+\end{lem}
+
+\begin{thm}
+  If $0_A \mono A$ is the smallest subobject of $A$ in a coherent category, then $0_A$ is an initial object.
+\end{thm}
+\begin{proof}
+  Let $B$ be any other object, and consider the coherent theory with two types $A$ and $B$ and nothing else.
+  In this theory, let $\alpha = \bot$, $\beta=\top$, and $\ph=\bot$.
+  Then all the sequents \cref{thm:logic-uniquechoice-2} have a $\bot$ in their proposition context, hence follow immediately from $\bot E$.
+  Since $0_A$ is the interpretation of $\alpha$ and $B$ is the interpretation of $\beta$, we get a morphism $0_A \to B$.
+
+  To show that it is unique, consider the theory with two objects $Z$ and $B$ and two morphisms $f,g:Z\to B$, and the axiom $z:Z \cb () \types \bot$.
+  This is modeled by any two parallel morphisms in a coherent category whose domain has exactly one subobject (up to isomorphism), which is the case whenever its domain is the smallest subobject of some other object (like $0_A$).
+  In this theory, we can prove $z:Z \cb () \types f(z) = g(z)$ by $\bot E$, which easily implies $f=g$.
+\end{proof}
+
+We leave some further basic facts about coherent categories to the reader as \cref{ex:coherent-strictinitial,ex:coherent-effunions}.
 
 
 \subsection{Heyting categories}
 \label{sec:heyting-categories}
+
 
 
 
@@ -985,6 +1041,22 @@ However, I find the logical proof much easier to understand.
 \begin{ex}\label{ex:logic-extepi-regepi}
   Write out derivation trees for statements~\ref{item:eere2} and~\ref{item:eere3} in the proof of \cref{thm:logic-extepi-regepi}.
   Feel free to use transitivity of equality as a (derivable) rule, rather than writing it out explicitly in terms of $\eqE$.
+\end{ex}
+
+\begin{ex}\label{ex:logic-uniquechoice-2}
+  Prove \cref{thm:logic-uniquechoice-2}.
+\end{ex}
+
+\begin{ex}\label{ex:coherent-strictinitial}
+  Prove using coherent logic that in a coherent category, any morphism whose codomain is initial is an isomorphism.
+\end{ex}
+
+\begin{ex}\label{ex:coherent-effunions}
+  Prove using coherent logic that if we have monomorphisms $A \mono C$ and $B\mono C$ in a coherent category, then the square
+  \[ \xymatrix{ A\cap B \ar[r] \ar[d] & B \ar[d] \\ A \ar[r] & A\cup B} \]
+  is a pushout as well as a pullback.
+  Conclude that if two objects of a coherent category can be embedded as disjoint subobjects of some third object, then they have a coproduct.
+  (A coherent category in which this is true for any two objects is called \emph{positive} or \emph{extensive}.)
 \end{ex}
 
 % TODO: Where to put this?
