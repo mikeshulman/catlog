@@ -2745,7 +2745,7 @@ A (symmetric) multicategory with one object is called an \textbf{operad} (enrich
 (Indeed, arbitrary multicategories are sometimes called ``colored operads''.)
 
 On the other hand, there are cases where we want to allow tensor products in the codomain.
-For instance, the theory of bimonoids mentioned in \cref{sec:intro} would have one type $A$, four generating morphisms
+For instance, the theory of bimonoids \begin{props}mentioned in \cref{sec:intro} \end{props}would have one type $A$, four generating morphisms
 \begin{mathpar}
   m:(A,A)\to A\and
   e:() \to A\and
@@ -2753,11 +2753,6 @@ For instance, the theory of bimonoids mentioned in \cref{sec:intro} would have o
   \counit : A\to \one
 \end{mathpar}
 and the axioms shown in \cref{fig:smc-bimonoid}.
-An antipode would augment this by a generating morphism $i:A\to A$ and the axioms
-\begin{align*}
-  x:A &\types \match_\tensor(\comult(x),uv.m(u,i(v))) \equiv \match_\one(\counit(x),e) :A\\
-  x:A &\types \match_\tensor(\comult(x),uv.m(i(u),v)) \equiv \match_\one(\counit(x),e) :A
-\end{align*}
 
 \begin{figure}
   \centering
@@ -2787,10 +2782,17 @@ An antipode would augment this by a generating morphism $i:A\to A$ and the axiom
   \label{fig:smc-bimonoid}
 \end{figure}
 
+\begin{props}
+An antipode would augment this by a generating morphism $i:A\to A$ and the axioms
+\begin{align*}
+  x:A &\types \match_\tensor(\comult(x),uv.m(u,i(v))) \equiv \match_\one(\counit(x),e) :A\\
+  x:A &\types \match_\tensor(\comult(x),uv.m(i(u),v)) \equiv \match_\one(\counit(x),e) :A
+\end{align*}
 If we also include another antipode $j:A\to A$, we can then try to
 reproduce the uniqueness argument from \cref{sec:intro}.
 
 [TODO]
+\end{props}
 
 
 \subsection*{Exercises}
