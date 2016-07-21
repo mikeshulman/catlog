@@ -495,14 +495,22 @@ The existential quantifier is similar, but a bit more subtle.
 The rule $\existsE$
 \[ \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\]
 certainly looks like one direction of some kind of adjunction.
-The other direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
+The opposite direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
 \begin{mathpar}
   \inferrule*[right=cut]{\inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A\types x:A}\\
       \inferrule*{ }{\Gamma,x:A \cb \ph \types \ph}}{\Gamma,x:A \cb \ph \types \exists x:A.\ph}  \\ 
     \inferrule*[Right=weakening]{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,(\exists x:A.\ph)\types \psi
     }}{\Gamma,x:A\cb\Theta,\ph\types \psi}
 \end{mathpar}
-There is another subtlety for $\exis$, namely the presence of the extra context $\Theta$.
+Conversely, from the opposite of $\existsE$ we can derive $\existsI$:
+\begin{mathpar}
+  \inferrule*[right=cut]{
+    \Gamma\cb \Theta \types \ph[M/x]\\
+    \inferrule*[Right=subst $M/x$]{\Gamma\types M:A \\
+      \inferrule*[Right=unit]{ }{\Gamma,x:A \cb \ph \types \exists x:A.\ph}}{\Gamma\cb \ph[M/x] \types \exists x:A.\ph}
+  }{\Gamma\cb\Theta \types \exists x:A.\ph}
+\end{mathpar}
+There is one more subtlety for $\exis$, namely the presence of the extra context $\Theta$.
 Translating directly across the correspondence to multicategories, this leads to the following definition.
 
 \begin{defn}\label{defn:multicat-hopf-ladj}
@@ -534,15 +542,19 @@ Finally, we consider the rules for equality.
 If we remove the built-in substitutions, these look like
 \begin{mathpar}
   \inferrule{ }{\Gamma,x:A\cb ()\types (x=_A x)}\and
-  \inferrule{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma,x:A,y:B\cb\Theta,(x=_A y)\types \ph}
+  \inferrule{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma,x:A,y:A\cb\Theta,(x=_A y)\types \ph}
 \end{mathpar}
 As with $\exis$, we can use a cut and a substitution to conclude the opposite of the second rule:
 \begin{mathpar}
   \inferrule*[right=cut]{
     \inferrule*{ }{\Gamma,x:A \cb () \types x=_A x}\\
-    \inferrule*[Right=subst $x/y$]{\Gamma,x:A,y:B\cb\Theta,(x=_A y)\types \ph}
+    \inferrule*[Right=subst $x/y$]{\Gamma,x:A,y:A\cb\Theta,(x=_A y)\types \ph}
     {\Gamma,x:A\cb\Theta[x/y],(x=_A x)\types \ph[x/y]}
   }{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}
+\end{mathpar}
+And conversely, the first rule can be obtained directly from the opposite of the second:
+\begin{mathpar}
+  \inferrule*{\inferrule*{ }{\Gamma,x:A,y:A\cb(x=_A y)\types (x=_A y)}}{\Gamma,x:A\cb()\types (x=_A x)}
 \end{mathpar}
 This looks very much like a (Hopf) left adjoint to substitution along the diagonal $(\Gamma,A) \to (\Gamma,A,A)$ in the category of contexts; but there is \emph{no} proposition in context $(\Gamma,A)$ that it is applied to.
 This suggests the following definitions.
@@ -626,24 +638,8 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
   As usual, we do this by induction on derivations.
   The proposition judgment $\Gamma\types \ph\prop$ is easy: each rule corresponds to one of the objects with a universal property that we have assumed to exist in any first-order \fS-hyperdoctrine.
   Next, since the rules for entailment involve substitution of terms into propositions, before defining our functor on entailments we have to first prove that it maps such substitutions to the reindexing functors in the target; this is another straightforward induction on derivations of $\Gamma\types \ph\prop$.
-  Now the rules for entailment involving simple type operations are also easy, just as in \cref{sec:logic}; the interesting part has to do with the rules for quantifiers and equality.
-
-  The rule $\forallI$ (refer to \cref{fig:fol}) simply applies the universal property of a right adjoint, so it exists in the target.
-  The rule $\forallE$ applies that universal property in reverse, then substitutes (applies a reindexing functor).
-
-  The rule $\existsE$ simply applies the universal property of a Hopf left adjoint.
-  The rule $\existsI$ is somewhat less obvious, but we can obtain it from the unit of that adjunction together with a substitution and a cut:
-  \begin{mathpar}
-    \inferrule*[right=cut]{
-      \Gamma\cb \Theta \types \ph[M/x]\\
-      \inferrule*[Right=subst $M/x$]{\Gamma\types M:A \\
-        \inferrule*[Right=unit]{ }{\Gamma,x:A \cb \ph \types \exists x:A.\ph}}{\Gamma\cb \ph[M/x] \types \exists x:A.\ph}
-    }{\Gamma\cb\Theta \types \exists x:A.\ph}
-  \end{mathpar}
-  Thus, it also exists in the target.
-
-  The rule $\eqI$ simply applies the unit of the Hopf left adjoint at $()$, followed by a substitution.
-  Finally, the rule $\eqE$ applies the universal property of that Hopf left adjoint, followed by another substitution.
+  Now the rules for entailment involving simple type operations are also easy, just as in \cref{sec:logic}.
+  Finally, in the preceeding discussion we showed that the rules for quantifiers and equality are inter-derivable (in the presence of substitution and cut) with rules that exactly express the appropriate kind of adjunctions.
 
   This completes the definition on entailments.
   Since everything is posetal there is not much left to do: we show that our map preserves all the hyperdoctrine structure, essentially by definition, and then that it is unique (modulo the up-to-isomorphism uniqueness of the functor on base categories), because its definition was forced at every step.
