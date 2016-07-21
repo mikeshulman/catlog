@@ -497,7 +497,8 @@ The rule $\existsE$
 certainly looks like one direction of some kind of adjunction.
 The other direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
 \begin{mathpar}
-  \inferrule*[right=cut]{\inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A \cb \ph \types \ph}}{\Gamma,x:A \cb \ph \types \exists x:A.\ph}  \\ 
+  \inferrule*[right=cut]{\inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A\types x:A}\\
+      \inferrule*{ }{\Gamma,x:A \cb \ph \types \ph}}{\Gamma,x:A \cb \ph \types \exists x:A.\ph}  \\ 
     \inferrule*[Right=weakening]{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,(\exists x:A.\ph)\types \psi
     }}{\Gamma,x:A\cb\Theta,\ph\types \psi}
 \end{mathpar}
