@@ -1092,7 +1092,8 @@ Finally, we add the rest of the structure of first-order logic: universal quanti
 \end{proof}
 
 Heyting categories are thus in some sense the most natural categorical home for first-order logic.
-One origin of Heyting categories is explored in \cref{ex:lccc}.
+One origin of Heyting categories is explored in \cref{ex:lccc,ex:presheaves-sheaves}: any locally cartesian closed category with finite colimits is a Heyting category, including all elementary toposes and quasitoposes (which, as we will see in \cref{chap:hol}, also model \emph{higher}-order logic).
+This book is not about the category theory of (quasi)toposes, but we encourage the reader to learn more about them; some of my favorite sources are~\cite{mm:shv-gl,mclarty:ecat-etop,ptj:elephant,wyler:quasitopoi}.
 
 
 \subsection*{Exercises}
@@ -1163,9 +1164,17 @@ One origin of Heyting categories is explored in \cref{ex:lccc}.
   Prove:
   \begin{enumerate}
   \item If \cS has coequalizers that are stable under pullback, then it is a regular category.
-  \item If \cS has all finite limits that are stable under pullback, then it is a coherent category.
-  \item If \cS has all finite limits and is locally cartesian closed, then it is a Heyting category.
+  \item If \cS has all finite colimits that are stable under pullback, then it is a coherent category.
+  \item If \cS has all finite colimits and is locally cartesian closed, then it is a Heyting category.
   \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:presheaves-sheaves}\ 
+  \begin{enumerate}
+  \item Show that the category of presheaves on any small category has finite limits and colimits and is locally cartesian closed, hence is a Heyting category.\label{item:pshsh1}
+  \item Show that if \cS is locally cartesian closed with finite colimits, and $\cT$ is a reflective subcategory of \cS whose reflector preserves finite limits, then \cT is also locally cartesian closed with finite colimits.\label{item:pshsh2}
+  \end{enumerate}
+  The categories obtained by applying~\ref{item:pshsh2} to~\ref{item:pshsh1} are called \textbf{Grothendieck topoi}.
 \end{ex}
 
 
