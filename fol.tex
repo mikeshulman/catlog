@@ -785,7 +785,7 @@ We start with a lemma about extremal epimorphisms:
   Now suppose \cS has finite limits and $\sub_\cS$ has existential quantifiers.
   Given a morphism $f:A\to B$, its ``graph'' $(f,1) : A\to B\times A$ is a monomorphism.
   Applying the existential quantifier for the projection $\pi_A:B\times A\to B$, we obtain a monomorphism $\exis(f,1) : C\mono B$ with the property that $\exis(f,1) \le D$ as subobjects of $B$ if and only if $(f,1) \le (\pi_A)^*D$ as subobjects of $B\times A$.
-  By the universal property of pullback, the latter is equivalent to there being a map $A\to D$ such that the composite $A\to D \to B$ is equal to the composite $A \to B\times A\ to B$; but the latter is $f$, so this just means that $f$ factors through $D$.
+  By the universal property of pullback, the latter is equivalent to there being a map $A\to D$ such that the composite $A\to D \to B$ is equal to the composite $A \to B\times A \to B$; but the latter is $f$, so this just means that $f$ factors through $D$.
 
   In particular, since $\exis(f,1) \le \exis(f,1)$, it follows that $f$ factors through it, by some map $e:A\to \exis(f,1)$, say.
   Moreover, if we have a monomorphism $D\mono \exis(f,1)$ that $e$ factors through, then $f$ factors through the composite mono $D\to B$, and thus $\exis(f,1)\le D$ as subobjects of $B$; hence $D\cong \exis(f,1)$.
@@ -952,7 +952,7 @@ For coherent logic, there are few surprises.
   A \textbf{coherent category} is a regular category in which the posets $\sub(\Gamma)$ have finite unions that are preserved by pullback.
 \end{defn}
 
-\begin{thm}
+\begin{thm}\label{thm:coherent-subobjects}
   A regular category \cS is coherent if and only if $\sub_\cS$ is a coherent hyperdoctrine.
 \end{thm}
 \begin{proof}
@@ -1006,7 +1006,37 @@ We leave some further basic facts about coherent categories to the reader as \cr
 \subsection{Heyting categories}
 \label{sec:heyting-categories}
 
+Finally, we add the rest of the structure of first-order logic: universal quantification and implication.
 
+\begin{defn}
+  A \textbf{Heyting category} is a coherent category \cS such that for every $f:\Gamma\to\Delta$ in \cS, the pullback functor $f^*: \sub(\Delta) \to\sub(\Gamma)$ has a right adjoint.
+\end{defn}
+
+\begin{thm}\label{thm:heyting-subobjects}
+  A coherent category \cS is a Heyting category if and only if $\sub_\cS$ is a first-order hyperdoctrine.
+\end{thm}
+\begin{proof}
+  Since \cS is assumed to be coherent and in particular regular, by \cref{ex:reg-allbc} the \emph{left} adjoints of $f^*$ satisfy the Beck--Chevalley condition for pullbacks of projections.
+  Thus, by \cref{ex:beck-chev}, if these functors also have right adjoints, they automatically satisfy the Beck--Chevalley condition for all pullback squares as well, and in particular for pullbacks of projections.
+  Thus, if \cS is Heyting, then $\sub_\cS$ has universal quantifiers.
+  For implication, we note that the Heyting exponential $A\to B$ in $\sub(\Gamma)$ can equivalently be constructed by first pulling back from $\sub(\Gamma)$ to $\sub(A)$, then applying the right adjoint to this pullback; this operation is stable under pullback by the same Beck--Chevalley condition.
+
+  Conversely, suppose $\sub_\cS$ is a first-order hyperdoctrine, and in particular has universal quantifiers.
+  We consider two first-order theories, both with two types $A,B$, a morphism $f:A\to B$, and atomic propositions $x:A \types P(x)\prop$ and $y:B \types Q(y)\prop$.
+  \begin{enumerate}
+  \item Our first theory adds to this the axiom $x:A \cb Q(f(x))\types P(x)$.
+    We will show from this that $y:B \cb Q(y) \types (\forall x:A. (f(x)=y) \To P(x))$.
+    By the rules for $\all$ and $\To$, it suffices to derive $x:A,y:B \cb Q(y), (f(x)=y)\types P(x)$.
+    But then applying the rule for equality, it suffices to derive $x:A \cb Q(f(x)) \types P(x)$, which was an axiom.
+  \item Our second theory instead takes $y:B \cb Q(y) \types \types (\forall x:A. (f(x)=y) \To P(x))$ as an axiom.
+    Applying the rules for $\all$ and $\To$ in the other direction, we get $x:A,y:B \cb Q(y), (f(x)=y) \types P(x)$.
+    Substituting $f(x)$ for $y$ in this, we get $x:A\cb Q(f(x)), (f(x)=f(x)) \types P(x)$; but since $f(x)=f(x)$ is true by reflexivity we can cut to get $x:A \cb Q(f(x))\types P(x)$.
+  \end{enumerate}
+  Thus, if we define $\all f(P)$ by $y:B \types (\forall x:A. (f(x)=y) \To P(x))\prop$, we see that it has the correct universal property to be a right adjoint of pullback $f^*$ (the latter given by substitution of $f(x)$ for $y$).
+\end{proof}
+
+Heyting categories are thus in some sense the most natural categorical home for first-order logic.
+One origin of Heyting categories is explored in \cref{ex:lccc}.
 
 
 \subsection*{Exercises}
@@ -1034,6 +1064,10 @@ We leave some further basic facts about coherent categories to the reader as \cr
   \end{enumerate}
 \end{ex}
 
+\begin{ex}\label{ex:reg-allbc}
+  Prove that in a regular category, the pullback functor $f^*: \sub(\Delta) \to \sub(\Gamma)$ has a left adjoint for \emph{every} morphism $f:\Gamma\to\Delta$, and that these left adjoints satisfy the Beck--Chevalley condition with respect to every pullback square in \cS.
+\end{ex}
+
 \begin{ex}\label{ex:logic-uniquechoice-funct}
   Prove \cref{thm:logic-uniquechoice-funct}.
 \end{ex}
@@ -1058,6 +1092,27 @@ We leave some further basic facts about coherent categories to the reader as \cr
   Conclude that if two objects of a coherent category can be embedded as disjoint subobjects of some third object, then they have a coproduct.
   (A coherent category in which this is true for any two objects is called \emph{positive} or \emph{extensive}.)
 \end{ex}
+
+\begin{ex}\label{ex:unions-not-images}
+  Let \cD be a distributive lattice that is not a complete lattice, and let \cS be its free coproduct completion; the elements of \cS are set-indexed families $\{a_i\}_{i\in I}$ of elements of \cD, and the morphisms $\{a_i\}_{i\in I}\to \{b_j\}_{j\in J}$ are functions $f:I\to J$ such that $a_i\le b_{f(i)}$ for all $i$.
+  Prove that $\sub_\cS$ has the structure to model the type operations $\meet,\top,\join,\bot$, but not $\exis$.
+\end{ex}
+
+\begin{ex}\label{ex:lccc}
+  Suppose \cS is a category with finite limits.
+  Prove:
+  \begin{enumerate}
+  \item If \cS has coequalizers that are stable under pullback, then it is a regular category.
+  \item If \cS has all finite limits that are stable under pullback, then it is a coherent category.
+  \item If \cS has all finite limits and is locally cartesian closed, then it is a Heyting category.
+  \end{enumerate}
+\end{ex}
+
+
+\section{Comprehension}
+\label{sec:comprehension}
+
+% Maybe?  Making a hyperdoctrine, such as the syntactic one, into a category.
 
 % TODO: Where to put this?
 % \begin{rmk}\label{rmk:subset-quotient}
