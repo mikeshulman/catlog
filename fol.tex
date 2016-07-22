@@ -102,7 +102,8 @@ Thus, we will always do this in our rules for the proposition judgment.
 
 The other structural rules are all for entailment, and since at the moment we are interested in semantics where entailment corresponds to inequality in a poset, we only care about \emph{whether or not} an entailment is derivable rather than what all its derivations are.
 Thus, it makes little difference (for the purpose of categorical semantics) whether these rules are primitive or admissible.
-(However, there are still other technical advantages to admissibility, some of which we will see later.)
+(However, there are still other technical advantages to admissibility.)
+% some of which we will see later.
 
 Now we move on to the logical rules for the proposition and entailment judgments.
 To start with, there will be the usual rules for propositional logic from \cref{sec:logic}.
@@ -120,10 +121,9 @@ For instance, the rules for $\join$ are
     \Gamma\cb\Psi\types A\join B \\ \Gamma\cb\Theta,A \types C \\ \Gamma\cb\Theta,B\types C
   }{\Gamma\cb\Theta,\Psi \types C}\;\joinE
 \end{mathpar}
-and likewise we have rules for $\bot,\meet,\top,\tensor,\one$, and $\hom$.\footnote{Since cut is primitive, we could simplify the rules $\joinI1$ and $\joinI2$ to $\Gamma\cb A\types A\join B$ and $\Gamma\cb B\types A\join B$, or write $\joinE$ as a sequent-calculus-style left rule; but we will stick with the more familiar natural deduction versions.}
+and likewise we have rules for $\bot,\meet,\top,\tensor,\one$, and $\hom$.
+%\footnote{Since cut is primitive, we could simplify the rules $\joinI1$ and $\joinI2$ to $\Gamma\cb A\types A\join B$ and $\Gamma\cb B\types A\join B$, or write $\joinE$ as a sequent-calculus-style left rule; but we will stick with the more familiar natural deduction versions.}
 Of course, in the cartesian case we can dispense with $\tensor$ and $\one$ (since they coincide with $\meet$ and $\top$), and write $\hom$ instead as $\To$ or $\to$.
-% and we could also formulate the rules with an unchanging proposition context as in \cref{sec:heyting-algebras}.
-% TODO: Remark on this when we do natural deduction.
 The modularity of type theory means we can also mix and match, choosing the rules corresponding to some of these connectives but not others; in \cref{sec:subobjects} we will see that some groups of connectives are particularly natural from a categorical perspective.
 
 The interesting new things happen with the \emph{new} operations on propositions that \emph{do} change the type context.
@@ -195,7 +195,7 @@ and finally $\forallI^{-1}$ from $\forallL$ using cut and weakening:
   {\Gamma,x:A\cb \Theta\types \ph}
 \end{mathpar}
 In practice, therefore, we are free to use whichever rule we find most intuitive or convenient.
-% Formally, we will want $\forallL$ in \cref{sec:fol-seqcalc}, $\forallE$ in \cref{sec:fol-natded}, and $\forallI^{-1}$ in \cref{sec:hyperdoctrines}.
+To make substitition and cut admissible in \cref{sec:fol-natded} we will use $\forallE$, while for categorical semantics in \cref{sec:hyperdoctrines} we will use $\forallI^{-1}$.
 
 \begin{rmk}
   Note that many of these rules involve substitution into propositions.
@@ -290,7 +290,7 @@ And we can get $\existsI$ by substituting and cutting in $\existsL^{-1}$:
   }{\Gamma\cb\Theta\types \exists x:A.\ph}
 \end{mathpar}
 Thus, we are free to use whichever of these rules is most convenient.
-% Technically, we will want $\existsL/\existsI$ in \cref{sec:fol-seqcalc}, $\existsE/\existsI$ in \cref{sec:fol-natded}, and $\existsL/\existsL^{-1}$ in \cref{sec:hyperdoctrines}.
+To make substitition and cut admissible in \cref{sec:fol-natded} we will use $\existsE$ and $\existsI$, while for categorical semantics in \cref{sec:hyperdoctrines} we will use $\existsL$ and $\existsL^{-1}$.
 
 
 \subsection{Equality}
@@ -354,7 +354,7 @@ Firstly, like $\existsL$, it should technically have additional premises making 
     \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]
   }{\Gamma,x:A,y:A\cb\Theta,(x =_A y)\types \ph}
 \end{mathpar}
-Secondly, to make substitution into entailments admissible, it would need substitutions for $M$ and $N$ built in:
+Secondly, to make substitution into entailments admissible, it needs substitutions for $M$ and $N$ built in:
 \begin{equation}\label{eq:J-withsub}
   \inferrule{
     \Gamma,x:A,y:A \types \ph\prop\\
@@ -364,7 +364,7 @@ Secondly, to make substitution into entailments admissible, it would need substi
     \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]
   }{\Gamma\cb\Theta[M/x,N/y],(M =_A N)\types \ph[M/x,N/y]}
 \end{equation}
-Thirdly, to make cut for propositions admissible, it will need some further cuts built in as well; see \cref{fig:fol-natded}.
+Thirdly, to make cut for propositions admissible, it needs another cut built in as well; see \cref{fig:fol-natded}.
 
 
 \subsection{First-order theories}
@@ -426,35 +426,35 @@ A few important subsystems of intuitionistic first-order logic that will reappea
 At last we are ready to consider admissibility of substitution and cut.
 To be precise, we work with the \textbf{natural deduction for first-order intuitionistic \fS-logic} consisting of:
 \begin{enumerate}
-\item The rules for terms and propositions summarized in \cref{fig:fol-common};
+\item The rules for forming terms and propositions; % summarized in \cref{fig:fol-common};
 \item The exchange and possibly (depending on \fS) weakening and contraction rules;
 \item The identity rule $\Gamma \cb \ph\types\ph$ for all propositions $\ph$;
 \item The natural deduction rules for intuitionistic \fS-logic from \cref{fig:natded-logic}, with an arbitrary type context $\Gamma$; and
 \item The natural deduction rules for quantifiers, equality, and axioms summarized in \cref{fig:fol-natded}.
 \end{enumerate}
 Of course, the modularity of type theory means we can mix and match these rules, removing any number of type operations and their corresponding rules without altering the main theorems.
-(In particular, in the cartesian case we generally omit $\tensor$ and $\one$, since they are isomorphic to $\meet$ and $\top$.)
+%(In particular, in the cartesian case we generally omit $\tensor$ and $\one$, since they are isomorphic to $\meet$ and $\top$.)
 
-\begin{figure}
-  \centering
-  \begin{mathpar}
-  \inferrule{\types A\type \\ (x:A)\in \Gamma}{\Gamma\types x:A}\and
-  \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types M_1:A_1 \\ \cdots \\ \Gamma \types M_n:A_n}{\Gamma\types f(M_1,\dots,M_n):B}\and
-  \inferrule{P\in \cP(A_1,\dots,A_n) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \types P(M_1,\dots,M_n) \prop}\and
-  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\tensor\psi)\prop}\and
-  \inferrule{ }{\Gamma\types \one\prop}\and
-  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\meet\psi)\prop}\and
-  \inferrule{ }{\Gamma\types \top\prop}\and
-  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\join\psi)\prop}\and
-  \inferrule{ }{\Gamma\types \bot\prop}\and
-  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\hom\psi)\prop}\and
-  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A.\ph) \prop}\and
-  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A.\ph) \prop}\and
-  \inferrule{\Gamma\types M:A \\ \Gamma\types N:A}{\Gamma\types (M =_A N)\prop}
-  \end{mathpar}
-  \caption{Rules for terms and propositions}
-  \label{fig:fol-common}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \begin{mathpar}
+%   \inferrule{\types A\type \\ (x:A)\in \Gamma}{\Gamma\types x:A}\and
+%   \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types M_1:A_1 \\ \cdots \\ \Gamma \types M_n:A_n}{\Gamma\types f(M_1,\dots,M_n):B}\and
+%   \inferrule{P\in \cP(A_1,\dots,A_n) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \types P(M_1,\dots,M_n) \prop}\and
+%   \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\tensor\psi)\prop}\and
+%   \inferrule{ }{\Gamma\types \one\prop}\and
+%   \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\meet\psi)\prop}\and
+%   \inferrule{ }{\Gamma\types \top\prop}\and
+%   \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\join\psi)\prop}\and
+%   \inferrule{ }{\Gamma\types \bot\prop}\and
+%   \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\hom\psi)\prop}\and
+%   \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A.\ph) \prop}\and
+%   \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A.\ph) \prop}\and
+%   \inferrule{\Gamma\types M:A \\ \Gamma\types N:A}{\Gamma\types (M =_A N)\prop}
+%   \end{mathpar}
+%   \caption{Rules for terms and propositions}
+%   \label{fig:fol-common}
+% \end{figure}
 
 \begin{figure}
   \centering
@@ -526,10 +526,14 @@ Just as substitution into terms is associative, substitution into propositions s
   This works because all the rules for the natural deduction have a fully general proposition context in the conclusion as well.
 \end{proof}
 
-Recall from \cref{sec:natded-logic} that the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
+As in \cref{sec:heyting-algebras}, in the cartesian case we can make exchange, weakening, and contraction admissible as well, by reformulating the rules $\existsE$ and $\eqE$ to keep the same proposition context in the premises and the conclusion, and the identity rule to incorporate a weakening.
+
+Recall also from \cref{sec:natded-logic} that using this reformulation, the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
 The same is true for intuitionistic first-order logic with $\all$ and $\exis$, if we allow ``variable assumptions'' that can be discharged by the quantifier rules.
 The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
 We leave the details to the reader.
+
+% TODO: Give some examples of informal reasoning and how it translates to formal deduction.  One de Morgan's law for quantifiers?  Or Frobenius \cref{ex:exists-frob}?
 
 
 % \subsection{Sequent calculus}
@@ -571,7 +575,7 @@ We leave the details to the reader.
 \begin{ex}\label{ex:eq-frob-from-hom}
   Assuming we have $\hom$, show that the rule $\eqR$ is derivable (recall \cref{rmk:admissible-derivable-1}) from the following simpler rule with no proposition context $\Theta$:
   \begin{mathpar}
-    \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\ec\types \ph[x/y]}{\Gamma\cb(M=_A N)\types \ph[M/x,N/y]}
+    \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma\types\Theta\ctx \\ \Gamma,x:A\cb\Theta \types \ph[x/y]}{\Gamma\cb\Theta,(M=_A N)\types \ph[M/x,N/y]}
   \end{mathpar}
 \end{ex}
 
@@ -905,7 +909,7 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
   The proposition judgment $\Gamma\types \ph\prop$ is easy: each rule corresponds to one of the objects with a universal property that we have assumed to exist in any first-order \fS-hyperdoctrine.
   Next, since the rules for entailment involve substitution of terms into propositions, before defining our functor on entailments we have to first prove that it maps such substitutions to the reindexing functors in the target; this is another straightforward induction on derivations of $\Gamma\types \ph\prop$.
   Now the rules for entailment involving simple type operations are also easy, just as in \cref{sec:logic}.
-  Finally, in the preceeding discussion we showed that the rules for quantifiers and equality are inter-derivable (in the presence of substitution and cut) with rules that exactly express the appropriate kind of adjunctions.
+  Finally, in \crefrange{sec:forall}{sec:equality} and this section we showed that the natural deduction rules for quantifiers and equality are inter-derivable (in the presence of substitution and cut) with the rules that exactly express the appropriate kind of adjunctions.
 
   This completes the definition on entailments.
   Since everything is posetal there is not much left to do: we show that our map preserves all the hyperdoctrine structure, essentially by definition, and then that it is unique (modulo the up-to-isomorphism uniqueness of the functor on base categories), because its definition was forced at every step.
@@ -1359,7 +1363,7 @@ Finally, we add the rest of the structure of first-order logic: universal quanti
 
 Heyting categories are thus in some sense the most natural categorical home for first-order logic.
 One origin of Heyting categories is explored in \cref{ex:lccc,ex:presheaves-sheaves}: any locally cartesian closed category with finite colimits is a Heyting category, including all elementary toposes and quasitoposes (which, as we will see in \cref{chap:hol}, also model \emph{higher}-order logic).
-This book is not about the category theory of (quasi)toposes, but we encourage the reader to learn more about them; some of my favorite sources are~\cite{mm:shv-gl,mclarty:ecat-etop,ptj:elephant,wyler:quasitopoi}.
+This book is not about the category theory of (quasi)toposes, but we encourage the reader to learn more about them; some good sources are~\cite{mm:shv-gl,mclarty:ecat-etop,ptj:elephant,wyler:quasitopoi}.
 
 
 \subsection*{Exercises}
