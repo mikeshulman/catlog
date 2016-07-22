@@ -585,9 +585,14 @@ Without too much stretch, this can be regarded as a direct formalization of the 
 
 \begin{rmk}
   In particular, this (nontrivial!)\ interaction between $\meet$ and $\exis$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exis$.
-  There is sometimes a temptation to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$ (and perhaps even replacing entailments $\ph\types \psi$ by implications $\ph\To\psi$).
+  There is sometimes a temptation to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$, and perhaps even replacing entailments $\ph\types \psi$ by implications $\ph\To\psi$.
   This is technically possible, but it forces one to assert laws like these ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
   More importantly, as remarked in \cref{sec:natded-logic}, allowing arbitrarily many propositions in the context yields a formal theory that matches informal reasoning much better: as in the example above, informally we frequently apply inference rules in the presence of other unaffected hypotheses.
+
+  Furthermore, for categorical semantics it is important to maintain the distinction between entialment and implication, since entailment corresponds to a morphism in a category, whereas implication corresponds to an internal-hom in a category.
+  In particular, the former always exists, but the latter may not.
+  Phrasing the rules for logical operations such as $\exis$ and $\join$ in a way that matches ordinary reasoning, \emph{and} doesn't refer to any other operations such as $\To$, ensures that ordinary informal (constructive) reasoning can be formalized and remain valid in any category as long as it uses only operations that exist in that category.
+  This is important because we will see in \cref{sec:subobjects} that certain fairly natural conditions on categories allow them to model some, but not always all, of the logical operations.
 \end{rmk}
 
 The rule $\eqE'$ is a bit tricker to write in this style because of the arbitrary context $\Theta$ that has to be substituted into.
@@ -1427,6 +1432,7 @@ Finally, we add the rest of the structure of first-order logic: universal quanti
 Heyting categories are thus in some sense the most natural categorical home for first-order logic.
 One origin of Heyting categories is explored in \cref{ex:lccc,ex:presheaves-sheaves}: any locally cartesian closed category with finite colimits is a Heyting category, including all elementary toposes and quasitoposes (which, as we will see in \cref{chap:hol}, also model \emph{higher}-order logic).
 This book is not about the category theory of (quasi)toposes, but we encourage the reader to learn more about them; some good sources are~\cite{mm:shv-gl,mclarty:ecat-etop,ptj:elephant,wyler:quasitopoi}.
+In particular~\cite{ptj:elephant} includes a comprehensive discussion of regular, coherent, and Heyting categories from a purely category-theoretic viewpoint.
 
 
 \subsection*{Exercises}
@@ -1437,6 +1443,10 @@ This book is not about the category theory of (quasi)toposes, but we encourage t
 
 \begin{ex}\label{ex:regular-egs}
   Prove that if \cS is a regular category and \cT is any finite-product theory (see \cref{sec:fp-theories}), then the category of \cT-models in \cS is also regular.
+\end{ex}
+
+\begin{ex}\label{ex:regular-not-coherent}
+  Give an example of a regular category that is not a coherent category.
 \end{ex}
 
 \begin{ex}\label{ex:factsys}
@@ -1493,6 +1503,10 @@ This book is not about the category theory of (quasi)toposes, but we encourage t
   Prove that $\sub_\cS$ has the structure to model the type operations $\meet,\top,\join,\bot$, but not $\exis$.
 \end{ex}
 
+\begin{ex}\label{ex:coherent-not-heyting}
+  Give an example of a coherent category that is not a Heyting category.
+\end{ex}
+
 \begin{ex}\label{ex:lccc}
   Suppose \cS is a category with finite limits.
   Prove:
@@ -1536,12 +1550,13 @@ In the end, therefore, we will start with a category \cS with products and a \cS
 But what should the morphisms be?
 A first guess might be that a morphism from $(A\cb\alpha)$ to $(B\cb\beta)$ would be a morphism $f:A\to B$ such that $\alpha \le f^*\beta$.
 However, this would not give enough morphisms.
+
 In particular, by \cref{thm:logic-uniquechoice} we know that if \cP is a regular hyperdoctrine, then any proposition $\ph$ satisfying certain conditions gives rise to a morphism in any regular category that \cP maps into.
-But our first guess at such a construction would not produce such a morphism in general, so it cannot produce a regular category that \cP maps into.
+But our guess in the previous paragraph would not produce such a morphism in general, so it cannot produce a regular category that \cP maps into.
 
 The solution is to take \cref{thm:logic-uniquechoice}, or more precisely \cref{thm:logic-uniquechoice-2}, as a \emph{definition} of the morphisms.
 That is, we \emph{define} a morphism from $(A\cb\alpha)$ to $(B\cb\beta)$ to be an object $\ph\in \cP(A\times B)$ such that the sequents in \cref{thm:logic-uniquechoice-2} are valid in \cP.
-More precisely, we define a morphism to be a model of the theory with two types $A,B$, three atomic propositions $\alpha,\beta,\ph$ in contexts $A$ and $B$ and $(A,B)$ respectively, and four axioms
+More precisely, we define a morphism to be a model of the regular theory that has two types $A,B$, three atomic propositions $\alpha,\beta,\ph$ in contexts $A$ and $B$ and $(A,B)$ respectively, and four axioms
 \begin{mathpar}
   x:A,y:B\cb\ph(x,y) \types \alpha(x)\and
   x:A,y:B\cb\ph(x,y) \types \beta(y)\and
@@ -1551,7 +1566,14 @@ More precisely, we define a morphism to be a model of the theory with two types 
 This definition can, of course, be reinterpreted in terms of the categorical structure of \cP, but we will have no need to do that.
 
 Note that this definition only makes sense if \cP is at least a \emph{regular} hyperdoctrine, with existential quantifiers.
-We will come back to this point in \cref{sec:lex-theories}; for the moment, we simply assume that it is.
+We will come back to this point in \cref{sec:lex-theories}; for the moment, we simply assume that \cP is at least regular.
+
+\begin{thm}
+  If \cP is a regular hyperdoctrine, then the above definition yields a regular category.
+\end{thm}
+\begin{proof}
+  
+\end{proof}
 
 
 % Maybe?  Making a hyperdoctrine, such as the syntactic one, into a category.
