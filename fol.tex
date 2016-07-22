@@ -34,25 +34,18 @@ People have attempted to define first-order logics over non-cartesian base theor
 Secondly, in this section the logic will be posetal, so that we care only about the existence of derivations rather than their values, and hence we will not introduce terms belonging to propositions.
 We will generalize away from this assumption in \cref{sec:indexed-moncat}.
 
-\subsection{Primitive cuts}
-\label{sec:fol-cutful}
 
-As with propositional logic, we can formulate first-order logic in either a natural deduction or a sequent calculus style to make cut admissible.
-However, I feel that both choices require formulating at least one of the rules for quantifiers and equality in a less-than-maximally-intuitive way.
-Of course, intuitions differ from person to person, and the reader is free to make different choices when writing their own book.
-But it is also a more objective fact that the most \emph{categorically natural} versions of the rules, as we will see in \cref{sec:hyperdoctrines}, also do not exactly match either the sequent calculus or the natural deduction versions.
+\subsection{Structural rules and simple rules}
+\label{sec:fol-struc}
 
-For these reasons, we begin with a version of first-order logic in which the cut rule \emph{for propositions} is primitive, allowing us to formulate all the new rules however we please.
-Since we are only interested (at the moment) in \emph{whether or not} an entailment is derivable rather than what all its derivations are (corresponding to semantics in posets rather than more general categories), it doesn't matter to have extra rules around.
-But after introducing the rules for quantifiers and equality this way, we present sequent calculus and natural deduction versions in \cref{sec:fol-seqcalc,sec:fol-natded}; the latter will be necessary when we generalize away from the posetal case in \cref{sec:indexed-moncat}.
-
+With all that out of the way, we move on to actually describing the rules.
 As mentioned above, the base type theory is that for cartesian multicategories under a multigraph \cG:
 \begin{mathpar}
   \inferrule{\types A\type \\ (x:A)\in \Gamma}{\Gamma\types x:A}\;\idfunc
   \and
   \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types M_1:A_1 \\ \cdots \\ \Gamma \types M_n:A_n}{\Gamma\types f(M_1,\dots,M_n):B}\;f
 \end{mathpar}
-As usual, cut/substitution is admissible for \emph{this} theory (where we do care about distinguishing between different morphisms).
+As usual, cut/substitution is admissible for this theory.
 For the propositions, we have two kinds of judgment:
 \begin{mathpar}
   \Gamma\types \ph\prop \and
@@ -61,41 +54,18 @@ For the propositions, we have two kinds of judgment:
 where $\Theta$ is a context (i.e.\ a list) of propositions.
 Here the proposition $\ph$ should be regarded as a sort of ``term'' for the proposition judgment, that can be shown to uniquely determine a derivation of $\Gamma\types \ph\prop$.
 
-Since our logic is posetal in this section, we simplify our lives by asserting any desired structural rules for the propositions as primitive, the way we did in \cref{sec:monoidal-lattices}.
-Thus we may choose some or all of the following:
-\begin{mathpar}
-  \inferrule*[right=exchange]{\Gamma\cb\Theta,\ph,\psi,\Delta\types \chi}{\Gamma\cb\Theta,\psi,\ph,\Delta\types \chi}\and
-  \inferrule*[right=weakening]{\Gamma\cb \Theta,\Delta\types \chi}{\Gamma\cb\Theta,\ph,\Delta\types \chi}\and
-  \inferrule*[right=contraction]{\Gamma\cb\Theta,\ph,\ph,\Delta\types \chi}{\Gamma\cb\Theta,\ph,\Delta\types \chi}\and
-\end{mathpar}
-and depending on which we choose, we speak of \textbf{intuitionistic first-order logic} (all the structural rules), \textbf{intuitionistic first-order linear logic} (exchange only), etc.
-Also as in \cref{sec:logic}, we simplify our lives by always assuming exchange; and of course we also always have the identity rule:
-\[ \inferrule*{ }{\Gamma\cb \ph\types\ph} \]
-As metioned above, we will take the cut rule for propositions to be primitive; this is just the cut rule from \cref{sec:monoidal-lattices} with an extra type context $\Gamma$.
-\[ \inferrule{\Gamma\cb\Theta \types \ph \\ \Gamma\cb \Psi,\ph\types \psi}{\Gamma\cb \Psi,\Theta\types \psi}\]
+Before discussing the rules for these judgments, however, we have to decide what to do about the structural rules such as cut.
+As with propositional logic, we can formulate first-order logic in either a natural deduction or a sequent calculus style to make cut admissible.
+However, I feel that both choices require formulating at least one of the rules for quantifiers and equality in a less-than-maximally-intuitive way.
+Of course, intuitions differ from person to person.
+But it is also a more objective fact that the most \emph{categorically natural} versions of the rules, as we will see in \cref{sec:hyperdoctrines}, also do not exactly match either the sequent calculus or the natural deduction versions.
+There are also new structural rules, namely substitution of terms into propositions and entailments, that we would eventually like to be admissible as well.
 
-There are also two new structural rules arising from the dependency of propositions on types.
-The first is the \emph{substitution of terms into propositions}:
-\begin{mathpar}
-  \inferrule{\Gamma\types M:A \\ \Gamma,x:A\types \ph\prop}{\Gamma \types \ph[M/x] \prop}\and
-\end{mathpar}
-It \emph{is} important that we make this rule admissible, for the same reason as the admissibility of substitution into terms.
-We certainly want to be \emph{able} to make such substitutions, but if we asserted them as primitive then (to maintain the unique correspondence between names for propositions $\ph$ and the derivations of $\Gamma\types \ph\prop$) we would have to introduce ``$\ph[M/x]$'' as basic syntax, rather than an operation on syntax.
-For instance, we want to be able to substitute $M$ for $x$ and $N$ for $y$ into $x=y$, and we want to be able to actually \emph{do} that substitution on the syntax to get $M=N$, rather than having to write $(x=y)[M/x,N/y]$ everywhere.
-Another possibility would be to break the ``propositions are derivations'' correspondence and allow one proposition to have multiple derivations, but that has the same problems as breaking the ``terms are derivations'' correspondence in simple type theory; we do care about \emph{which} proposition we are talking about.
-
-Fortunately, it is just as easy to ensure that substitution into propositions is admissible as it is to ensure that cut is admissible in a natural deduction.
-We just make sure to ``build enough substitutions'' into the rules for the proposition judgment, so that their conclusions always have a fully general context.
-
-The second new structural rule is \emph{substitution of terms into entailments}:
-\begin{mathpar}
-  \inferrule{\Gamma\types M:A \\ \Gamma,x:A\cb\Theta\types \ph}{\Gamma\cb\Theta[M/x] \types \ph[M/x]}\and
-\end{mathpar}
-Since this is a rule for entailment, it is not as important for it to be admissible, for the same reason as cut for propositions.
-Thus, in this section we will take it to be primitive as well, allowing us to further simplify some of the rules for quantifiers and equality.
-But in the sequent calculus and natural deduction versions in \cref{sec:fol-seqcalc,sec:fol-natded}, we will make this rule admissible as well, by building substitutions into the entailment judgment just as we do for the proposition judgment.
-
-We summarize the \emph{primitive} structural rules for our theory in \cref{fig:fol-primstruc}.
+For these reasons we take the following approach.
+In this section we state all the structural rules, including both those that will stay primitive and those that will eventually be admissible.
+Then in \crefrange{sec:forall}{sec:equality} we discuss the rules for the quantifiers and equality, mentioning all the ways that each rule can be formulated and showing that they are equivalent in the presence of all the structural rules.
+Finally, in \cref{sec:fol-natded} we show that the natural deduction rules do make an appropriate selection of the structural rules admissible.
+%Finally, in \cref{sec:fol-seqcalc,sec:fol-natded} we show that with a consistent choice of either the sequent calculus rules or the natural deduction rules we can make an appropriate selection of the structural rules admissible.
 
 \begin{figure}
   \centering
@@ -105,15 +75,37 @@ We summarize the \emph{primitive} structural rules for our theory in \cref{fig:f
     \inferrule*[right=contraction (maybe)]{\Gamma\cb\Theta,\ph,\ph,\Delta\types \chi}{\Gamma\cb\Theta,\ph,\Delta\types \chi}\and
     \inferrule*{ }{\Gamma\cb \ph\types\ph}\and
     \inferrule*{\Gamma\cb\Theta \types \ph \\ \Gamma\cb \Psi,\ph\types \psi}{\Gamma\cb \Psi,\Theta\types \psi}\and
+    \inferrule*{\Gamma\types M:A \\ \Gamma,x:A\types \ph\prop}{\Gamma \types \ph[M/x] \prop}\and
     \inferrule*{\Gamma\types M:A \\ \Gamma,x:A\cb\Theta\types \ph}{\Gamma\cb\Theta[M/x] \types \ph[M/x]}\and
   \end{mathpar}
-  \caption{Primitive structural rules for first-order logic}
-  \label{fig:fol-primstruc}
+  \caption{Structural rules for first-order logic}
+  \label{fig:fol-struc}
 \end{figure}
+
+The complete list of structural rules is shown in \cref{fig:fol-struc}.
+As in \cref{sec:logic}, we always have exchange for propositions, but we allow ourselves the freedom to take or omit weakening and contraction, corresponding to a choice of a faithful cartesian club \fS.
+Depending on which we choose, we speak of \textbf{intuitionistic first-order logic} (all the structural rules), \textbf{intuitionistic first-order linear logic} (exchange only), etc.
+
+Then there are the identity and cut rule for propositions; the latter is just the cut rule from \cref{sec:monoidal-lattices} with an extra type context $\Gamma$.
+There are also two new structural rules arising from the dependency of propositions on types: substitution of terms into propositions and into entailments.
+
+Of all these structural rules, there is one that it is most important (for the purpose of categorical semantics) to make admissible: substitution of terms into propositions.
+This is for the same reason that we want substitution into terms to be admissible.
+Namely, we certainly want to be \emph{able} to make such substitutions, but if we asserted them as primitive then (to maintain the unique correspondence between names for propositions $\ph$ and the derivations of $\Gamma\types \ph\prop$) we would have to introduce ``$\ph[M/x]$'' as basic syntax, rather than an operation on syntax.
+
+For instance, we want to be able to substitute $M$ for $x$ and $N$ for $y$ into $x=y$, and we want to be able to actually \emph{do} that substitution on the syntax to get $M=N$, rather than having to write $(x=y)[M/x,N/y]$ everywhere.
+Another possibility would be to break the ``propositions are derivations'' correspondence and allow one proposition to have multiple derivations, but that has the same problems as breaking the ``terms are derivations'' correspondence in simple type theory; we do care about \emph{which} proposition we are talking about.
+
+Fortunately, it is just as easy to ensure that substitution into propositions is admissible as it is to ensure that cut is admissible in a natural deduction.
+We just make sure to ``build enough substitutions'' into the rules for the proposition judgment, so that their conclusions always have a fully general context.
+Thus, we will always do this in our rules for the proposition judgment.
+
+The other structural rules are all for entailment, and since at the moment we are interested in semantics where entailment corresponds to inequality in a poset, we only care about \emph{whether or not} an entailment is derivable rather than what all its derivations are.
+Thus, it makes little difference (for the purpose of categorical semantics) whether these rules are primitive or admissible.
+(However, there are still other technical advantages to admissibility, some of which we will see later.)
 
 Now we move on to the logical rules for the proposition and entailment judgments.
 To start with, there will be the usual rules for propositional logic from \cref{sec:logic}.
-% TODO: Sequent calculus reference?
 We import these rules into our present theory by assigning all of them an arbitrary context of types in the base theory that remains unchanged between the premises and the conclusion.
 For instance, the rules for $\join$ are
 \begin{mathpar}
@@ -150,6 +142,9 @@ Recall that in natural deduction each type operation has either \emph{introducti
 In the past we have motivated these rules by appeal to universal properties in a categorical structure, with one group of rules giving the basic data and the other giving their universal factorization property.
 The rules for $\exis$ and $\all$ do correspond to universal properties, but since we have postponed the semantics of first-order logic to \cref{sec:hyperdoctrines} we will attempt to instead motivate their rules from an intuitive understanding of logic.
 
+\subsection{The universal quantifier}
+\label{sec:forall}
+
 Informally, how do we prove that $\forall x:A.\ph$?
 Arguably the most basic way to do it is to assume given an arbitrary $x:A$ and prove that $\ph$ is true (here $\ph$ is a statement involving $x$, hence involving our arbitrary assumed $x:A$).
 This suggests the following introduction (or right) rule:
@@ -164,13 +159,13 @@ The simplest way to formulate this is
 \begin{mathpar}
   \inferrule{\Gamma\types M:A}{\Gamma\cb (\forall x:A.\ph) \types \ph[M/x]}\;\forallS
 \end{mathpar}
-But there are many other ways to say the same thing, including a sequent-calculus-style left rule and a natural-deduction-style elimination rule.
+But there are many other ways to say the same thing, including a sequent-calculus-style left rule, a natural-deduction-style elimination rule, and the opposite of the introduction rule:
 \begin{mathpar}
   \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forallE\and
   \inferrule{\Gamma\types M:A \\ \Gamma\cb \Theta, \ph[M/x] \types \psi}{\Gamma\cb \Theta, (\forall x:A.\ph) \types \psi}\;\forallL\and
   \inferrule{\Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma,x:A\cb \Theta\types \ph}\;\forallI^{-1}
 \end{mathpar}
-All of these rules are inter-derivable in the presence of primitive cut and substitution.
+All of these rules are inter-derivable in the presence of cut and substitution.
 For instance, we can derive $\forallE$ from $\forallI^{-1}$ using substitution:
 \begin{mathpar}
   \inferrule*[right=sub]{\Gamma\types M:A \\
@@ -199,13 +194,15 @@ and finally $\forallI^{-1}$ from $\forallL$ using cut and weakening:
     {\Gamma,x:A\cb (\forall x:A.\ph) \types \ph}}
   {\Gamma,x:A\cb \Theta\types \ph}
 \end{mathpar}
+In practice, therefore, we are free to use whichever rule we find most intuitive or convenient.
+% Formally, we will want $\forallL$ in \cref{sec:fol-seqcalc}, $\forallE$ in \cref{sec:fol-natded}, and $\forallI^{-1}$ in \cref{sec:hyperdoctrines}.
 
 \begin{rmk}
-  Note that this rule involves substitution into propositions.
+  Note that many of these rules involve substitution into propositions.
   Thus, formally speaking we have to state all the rules for the proposition judgment $\Gamma\types \ph\prop$ first, \emph{then} prove that substitution into propositions is admissible (thereby defining the notation $\ph[M/x]$), and only after that can we state all the rules for the entailment judgment $\Gamma\cb\Theta\types\ph$.
   A similar situation obtained for the equality judgment $\equiv$ for simple and unary type theories, which often involved substitution into terms (e.g.\ $(\lambda x.M)N \equiv M[N/x]$), so that we had to prove the admissibility of the latter before stating the rules for $\equiv$ (and likewise, when proving the initiality theorems, we had to show that our functor-in-progress took substitution to composition before defining it on equalities).
   However, in practice we actually state all the rules at once, with the implicit understanding that afterwards we will define substitution so that the rules involving it make sense.
-  
+
   We do have to be careful, when taking such a shortcut, to notice whether we are introducing any ``cyclic dependencies''.
   For instance, if there are any rules for the term or proposition judgments whose premises involve the entailment judgment, it is no longer possible to complete the definition of the former, \emph{then} define substitution for them, and \emph{then} give the definition of the latter: we would have to give the definition all at once, including (somehow) defining substitution at the same time.
   It is possible to do this, but it is much more difficult and leads us into the realm of dependent type theory; see \cref{chap:dtt}.
@@ -215,28 +212,90 @@ and finally $\forallI^{-1}$ from $\forallL$ using cut and weakening:
   %See also \cref{rmk:subset-quotient}.
 \end{rmk}
 
-Moving on to the existential quantifier, the most basic way to prove $\exists x:A.\ph$ is to exhibit a particular element $M$ of $A$ and prove that it has the property $\ph$ (that is, $\ph$ with $M$ replacing $x$ is true).
+
+\subsection{The existential quantifier}
+\label{sec:exists}
+
+% [TODO: Remind the extra context as needed for modeling natural reasoning here?]
+
+The most basic way to prove $\exists x:A.\ph$ is to exhibit a particular element $M$ of $A$ and prove that it has the property $\ph$ (that is, $\ph$ with $M$ replacing $x$ is true).
 This is of course a ``constructive'' proof.
 In classical mathematics one can also give ``nonconstructive'' existence proofs, but these arise by use of the law of excluded middle or its equivalent law of double negation.
 The \emph{basic} way to prove existence, which uses no other logical laws than the meaning of ``existence'', is to supply a witness.
-This leads to the following introduction rule for $\exis$:
+This leads to the following introduction (or right) rule for $\exis$:
 \begin{mathpar}
   \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A.\ph}\;\existsI
 \end{mathpar}
 
-Finally, what good does it do to know that $\exists x:A.\ph$?
+On the other hand, what good does it do to know that $\exists x:A.\ph$?
 It means we are free to assume that we have some element of $A$ satisfying $\ph$ (but about which we assume nothing else).
-This leads to the following elimination rule:
+This is most simply expressed by a left rule:
 \begin{mathpar}
-  \inferrule{\Gamma \types \psi\prop \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\;\existsE
+  \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\;\existsL\and
 \end{mathpar}
 This is perhaps the least intuitive of the quantifier rules: it says that if we can prove some other statement $\psi$ under the assumption of some arbitrary $x:A$ that satisfies $\ph$, then we can also conclude $\psi$ under the assumption of $\exists x:A.\ph$.
-(Note the similarity in structure between $\existsE$ and $\tensorE$; this suggests the eventual universal property we will find corresponding to $\exis$.)
+(Note the similarity in structure between $\existsL$ and $\tensorL$; this suggests the eventual universal property we will find corresponding to $\exis$.)
 
-We include the premise $\Gamma \types \psi\prop$ to ensure that $\psi$ doesn't depend on the variable $x$, since otherwise we would not want to let ourselves write $\Gamma\cb\Theta\types \psi$ (with $x$ not appearing in $\Gamma$, as implied by our conventions and the fact that in a premise we wrote $\Gamma,x:A$).
-We also don't want $x$ to appear in $\Theta$, but the derivability of the other premise $\Gamma\cb\Theta\types \exists x:A.\ph$ is sufficient to ensure that.
+By building in a cut, we can re-express $\existsL$ as an elimination rule instead:
+\begin{mathpar}
+  \inferrule{\Gamma\cb\Psi\types \exists x:A.\ph \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,\Psi\types \psi}\;\existsE\and
+\end{mathpar}
+Of course $\existsE$ follows from $\existsL$ plus cut, while we can obtain $\existsL$ from $\existsE$ by taking $\Psi$ to be $(\exists x:A.\ph)$.
 
-This completes the rules for the quantifiers $\all$ and $\exis$.
+Technically, we should actually add some additional premises to $\existsE$ and $\existsL$ to ensure that $\psi$ and $\Theta$ are defined in context $\Gamma$ rather than $\Gamma,x:A$, since otherwise the premises would permit the latter.
+Otherwise we would not want to let ourselves write $\Gamma\cb\Theta\types \psi$ (with $x$ not appearing in $\Gamma$, as implied by our conventions and the fact that in a premise we wrote $\Gamma,x:A$).
+Thus we ought to write them as
+\begin{mathpar}
+  \inferrule{\Gamma \types \psi\prop \\
+    \Gamma \types \Theta \ctx \\
+    \Gamma,x:A\cb\Theta,\ph\types \psi
+  }{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\;\existsL\and
+  \inferrule{\Gamma \types \psi\prop \\
+    \Gamma \types \Theta \ctx \\
+    \Gamma\cb\Psi\types \exists x:A.\ph \\
+    \Gamma,x:A\cb\Theta,\ph\types \psi
+}{\Gamma\cb\Theta,\Psi\types \psi}\;\existsE\and
+\end{mathpar}
+where $\Gamma \types \Theta \ctx$ is an abbreviation for
+\[ \Gamma \types B_1\prop \quad\cdots\quad \Gamma\types B_n \prop\]
+if $\Theta =(B_1,\dots, B_n)$.
+However, we often neglect to write such conditions explicitly.
+
+Finally, now that we have $\existsE/\existsL$, we note that $\existsI$ can also be reformulated in a couple of other ways:
+\begin{mathpar}
+  \inferrule{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,\ph\types \psi}\;\existsL^{-1}\and
+  \inferrule{ }{\Gamma,x:A\cb\ph\types \exists x:A.\ph}\;\existsS
+\end{mathpar}
+These are both inter-derivable with $\existsI$ in the presence of cut and substitution.
+For instance, we can deduce $\existsS$ as a special case of $\existsI$:
+\begin{mathpar}
+  \inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A\types x:A} \\
+    \inferrule*{ }{\Gamma,x:A\cb\ph\types \ph}}
+  {\Gamma,x:A\cb \ph\types \exists x:A.\ph}
+\end{mathpar}
+We can get $\existsL^{-1}$ from $\existsS$ and cut:
+\begin{mathpar}
+  \inferrule*[right=cut]{
+    \inferrule*[right=$\existsS$]{ }{\Gamma,x:A\cb\ph\types \exists x:A.\ph}\\
+    \inferrule*[Right=weak]{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,(\exists x:A.\ph)\types \psi}
+  }{\Gamma,x:A\cb\Theta,\ph\types \psi}
+\end{mathpar}
+And we can get $\existsI$ by substituting and cutting in $\existsL^{-1}$:
+\begin{mathpar}
+  \inferrule*[right=cut]{
+    \Gamma\cb\Theta\types \ph[M/x]\\
+    \inferrule*[Right=sub]{\Gamma\types M:A \\
+      \inferrule*[Right=$\existsL^{-1}$]{\Gamma\cb (\exists x:A.\ph)\types \exists x:A.\ph}{\Gamma,x:A\cb\ph\types \exists x:A.\ph
+      }}{\Gamma\cb \ph[M/x] \types \exists x:A.\ph}
+  }{\Gamma\cb\Theta\types \exists x:A.\ph}
+\end{mathpar}
+Thus, we are free to use whichever of these rules is most convenient.
+% Technically, we will want $\existsL/\existsI$ in \cref{sec:fol-seqcalc}, $\existsE/\existsI$ in \cref{sec:fol-natded}, and $\existsL/\existsL^{-1}$ in \cref{sec:hyperdoctrines}.
+
+
+\subsection{Equality}
+\label{sec:equality}
+
 The third and last new operation on propositions is perhaps the subtlest of all: the \emph{equality proposition}.
 Its formation rule is unsurprising: it says that for any two terms of the same type, we can consider the proposition that they are equal.
 \begin{mathpar}
@@ -250,20 +309,26 @@ It works here too, but it doesn't fit the general introduction/elimination patte
 
 It is one of the great insights of Lawvere~\cite{lawvere:comprehension} (presaged by Leibniz, and approximately contemporaneous with a similar observation by Martin-L\"of) that the rules of reflexivity, symmetry, transitivity, and substitutivity are equivalent to the following pair of rules:
 \begin{mathpar}
-  \inferrule*{\Gamma\types M:A}{\Gamma\cb ()\types (M=_A M)}\and
-  \inferrule*{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma\cb\Theta[M/x,N/y],(M=_A N)\types \ph[M/x,N/y]}
+  \inferrule{ }{\Gamma,x:A\cb \ec\types (x =_A x)}\;\eqR\and
+  \inferrule{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma,x:A,y:A\cb\Theta,(x =_A y)\types \ph}\;\eqL
+  % \inferrule*{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma\cb\Theta[M/x,N/y],(M=_A N)\types \ph[M/x,N/y]}
 \end{mathpar}
 The first, right/introduction, rule is simply reflexivity.
-(Of course, if we have the weakening rule, then we can more generally derive $\Gamma\cb \Theta\types (M=_A M)$ for any proposition context $\Theta$.)
+When combined with a substitution (to make substitution into entailment admissible) it becomes
+\begin{equation}\label{eq:refl-withsub}
+  \inferrule{\Gamma\types M:A}{\Gamma\cb \ec\types (M=_A M)}
+\end{equation}
+and if we have weakening, we can more generally derive $\Gamma\cb \Theta\types (M=_A M)$ for any proposition context $\Theta$.
 
-Intuitively, this rule says that if we have a statement about $x$ and $y$, and that statement becomes true when we substitute $x$ for $y$, then that statement is true under the hypothesis that $x=y$.
+The left rule is the tricky one to understand.
+Intuitively, it says that if we have a statement about $x$ and $y$, and that statement becomes true when we substitute $x$ for $y$, then that statement is true under the hypothesis that $x=y$.
 More generally, we can replace the truth of a statement with the truth of an entailment $\Theta\types \ph$, where we also substitute $x$ for $y$ in $\Theta$ in the premise.
 In other words, \emph{if we have a hypothesis that $x=y$, then we may as well write $x$ instead of $y$ everywhere that it appears}.
 
 To help motivate this rule further, let us derive symmetry and transitivity from it.
 Here is symmetry:
 \begin{mathpar}
-  \inferrule*{x:A,y:A \types (y=_A x) \prop \\ \inferrule*{ }{x:A \cb () \types (x=_A x)}}{x:A,y:A \cb (x=_A y) \types (y=_A x)}
+  \inferrule*{x:A,y:A \types (y=_A x) \prop \\ \inferrule*{ }{x:A \cb \ec \types (x=_A x)}}{x:A,y:A \cb (x=_A y) \types (y=_A x)}
 \end{mathpar}
 We use the left rule once, with $\ph$ being $y=_A x$, so that $\ph[x/y]$ is $x=_A x$, which we can prove by reflexivity.
 
@@ -277,48 +342,77 @@ And here is transitivity:
 We again use the left rule once on the hypothesis $y=_A z$, with $\ph$ being $x=_A z$, so that $\ph[y/z]$ is $x=_A y$, which we can prove by the identity rule from the other hypothesis.
 Note that both symmetry and transitivity are \emph{derivable rules} in the sense of \cref{rmk:admissible-derivable-1}.
 
-% To make cut admissible, we need at least a further substitution for $M=_A N$:
-% \begin{mathpar}
-%   \inferrule*{\Gamma\cb\Theta\types M=_A N \\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma\cb\Theta[M/x,N/y]\types \ph[M/x,N/y]}
-% \end{mathpar}
-% However, this is still not enough to make cut admissible: the proposition context $\Theta[M/x,N/y]$ is not fully general but contains a substitution.
+As with so many things, the only way to really understand this rule is to practice it.
+We recommend the reader try their hand at \cref{ex:equality}.
 
-\begin{figure}
-  \centering
-  \begin{mathpar}
-    \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A.\ph) \prop}\and
-    \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallI\and
-    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forallE\and
-    \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A.\ph) \prop}\and
-    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A.\ph}\;\existsI\and
-    \inferrule{\Gamma \types \psi\prop \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,\exists x:A.\ph\types \psi}\;\existsE\and
-    \inferrule{\Gamma\types M:A \\ \Gamma\types N:A}{\Gamma\types (M =_A N)\prop}\and
-    \inferrule{\Gamma\types M:A}{\Gamma\cb ()\types (M=_A M)}\;\eqI\and
-    \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma\cb\Theta[M/x,N/y],(M=_A N)\types \ph[M/x,N/y]}\;\eqE
-  \end{mathpar}
-  \caption{Quantifier and equality rules}
-  \label{fig:fol}
-\end{figure}
+There are a few more technical things to be said about $\eqL$.
+Firstly, like $\existsL$, it should technically have additional premises making clear what $\Theta$ and $\ph$ are:
+\begin{mathpar}
+  \inferrule{
+    \Gamma,x:A,y:A \types \ph\prop\\
+    \Gamma,x:A,y:A \types \Theta\ctx\\
+    \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]
+  }{\Gamma,x:A,y:A\cb\Theta,(x =_A y)\types \ph}
+\end{mathpar}
+Secondly, to make substitution into entailments admissible, it would need substitutions for $M$ and $N$ built in:
+\begin{equation}\label{eq:J-withsub}
+  \inferrule{
+    \Gamma,x:A,y:A \types \ph\prop\\
+    \Gamma,x:A,y:A \types \Theta\ctx\\\\
+    \Gamma\types M:A\\
+    \Gamma\types N:A\\
+    \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]
+  }{\Gamma\cb\Theta[M/x,N/y],(M =_A N)\types \ph[M/x,N/y]}
+\end{equation}
+Thirdly, to make cut for propositions admissible, it will need some further cuts built in as well; see \cref{fig:fol-natded}.
 
-We summarize the new rules for first-order logic (above and beyond those from that we import from the propositional logic of \cref{sec:logic} by adding an unchanging type context) in \cref{fig:fol}.
-This completes the definition of \textbf{intuitionistic first-order logic} (if we include all the structural rules), as well as \textbf{intuitionistic first-order linear logic} (if we include only exchange), and so on.
-The qualifier ``intuitionistic'' is because, like in \cref{sec:logic}, we cannot prove the law of excluded middle $\ph\join\neg\ph$ (where $\neg\ph$ means $\ph\hom\bot$), or its equivalent the law of double negation $\neg\neg\ph\hom\ph$.
-In \cref{sec:logic} we motivated this by noting that leaving it out just means our ``logic'' has models in all Heyting algebras rather than just Boolean algebras.
-We will be able to say something similar, and hopefully even more convincing, about first-order logic in \cref{sec:subobjects}.
 
-We are still, however, missing some ``generator'' rules that would allow us to speak of a ``first-order theory''.
+\subsection{First-order theories}
+\label{sec:first-order-theories}
+\label{sec:fol-natded}
+
+The last thing we need is some ``generator'' rules that would allow us to speak of a ``first-order theory''.
 In addition to our multigraph \cG giving the base types and terms, we would like to also have a set \cP of ``base propositions'' (usually called \textbf{atomic propositions}).
 Each of these should have an assigned \emph{type context}, i.e.\ a list of objects of \cG; we write $\cP(A_1,\dots,A_n)$ for the set of atomic propositions with context $A_1,\dots,A_n$.
 Then we will have a generator rule for propositions, with substitutions built in just like the generator rule for terms:
-\[ \inferrule{\ph\in \cP(A_1,\dots,A_n) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \types \ph(M_1,\dots,M_n) \prop} \]
+\[ \inferrule{P\in \cP(A_1,\dots,A_n) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \types P(M_1,\dots,M_n) \prop} \]
+
+\begin{rmk}
+  Note that while we write $\ph$ for a \emph{generic} proposition that might contain a variable $x$, and $\ph[M/x]$ for the result of substituting $M$ for that variable $x$, if $P$ is an \emph{atomic} proposition we write $P(x)$ and $P(M)$ for its instantiations at a variable $x$ or a more general term $M$.
+  As always, substitution $\ph[M/x]$ is an \emph{operation} on propositions; while the application $P(M)$ is, like the application of a function symbol $f(M)$, a \emph{primitive} part of syntax.
+  The relationship between them is that $(P(x))[M/x]$ is, by definition, $P(M)$ (see \cref{thm:fol-subprop-adm}).
+\end{rmk}
+
+\begin{rmk}
+  There is a substantial tradition of terminology according to which the phrase \emph{atomic proposition} includes not just these ``generating'' propositions, but also \emph{equality} propositions $(M=_A N)$.
+  This is entirely understandable historically, since when equality is presented using laws such as reflexivity, symmetry, transitivity, and substitution it appears ``axiomatic'' rather than governed by principled rules like those of the connectives and quantifiers.
+  However, from a modern (i.e.\ post-Lawvere~\cite{lawvere:comprehension}) perspective, we can see that the rules $\eqR$ and $\eqL$ have the same shape as those of the other connectives and quantifiers, and in \cref{sec:hyperdoctrines} we will see that they similarly express a categorical universal property.
+  Thus, it makes much more sense to call the equality rules \emph{logical}, like those of the connectives and quantifiers, and restrict the adjective \emph{atomic} to the generating propositions.
+\end{rmk}
 
 Finally, we should have some generating entailments, i.e.\ \emph{axioms}.
 Each of these should have an assigned type context $A_1,\dots,A_n$, an assigned proposition context $\Theta$, and an assigned consequent $\ph$.
 Here $\ph$ and the elements of $\Theta$ should be propositions in context $x_1:A_1,\dots,x_n:A_n$ --- not just atomic propositions, but arbitrary ones derivable from the atomic ones and the rules for making new propositions.
-If we write $\cA(A_1,\dots,A_n;\Theta;\ph)$ for the assertion that there is such an axiom, then the generator rule introducing axioms will be
+If we write $\cA(A_1,\dots,A_n;\Theta;\ph)$ for the assertion that there is such an axiom, then simplest form of the generator rule introducing axioms will be
+\[ \inferrule{\cA(A_1,\dots,A_n;\Theta;\ph)}{x_1:A_1,\dots,x_n:A_n \cb \Theta \types \ph} \]
+To make substitution into entailments admissible, we should build one in:
 \[ \inferrule{\cA(A_1,\dots,A_n;\Theta;\ph) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \cb \Theta[\vec M/\vec x]\types \ph[\vec M/\vec x]} \]
+And to make cut admissible we should also build in a cut; see \cref{fig:fol-natded}.
 
-With this rule added to the other rules for entailment, we complete the definition of a \textbf{first-order theory} (of the appropriate sort).
+With this rule added to the other rules for entailment, we complete the definition of \textbf{intuitionistic first-order \fS-logic}.
+If we include both weakening and contraction, we speak simply of \textbf{intuitionistic first-order logic}, while other values of \fS have appropriate names like \textbf{intuitionistic first-order linear logic} (no weakening or contraction) and so on.
+A \textbf{first-order theory} in any such logic consists of all the generating data:
+\begin{enumerate}
+\item A set of \emph{objects} (also called \emph{types} or \emph{sorts});
+\item A set of \emph{morphisms} (also called \emph{function symbols}), each with a list of objects as its domain and a single object as its codomain;
+\item A set of \emph{atomic propositions} (also called \emph{predicates} or \emph{relation symbols}), each with a list of objects as its domain or arity; and
+\item A set of \emph{axioms}, each consisting of a type context, a proposition context, and a consequent.
+\end{enumerate}
+
+The qualifier ``intuitionistic'' is because, like in \cref{sec:logic}, we cannot prove the law of excluded middle $\ph\join\neg\ph$ (where $\neg\ph$ means $\ph\hom\bot$), or its equivalent the law of double negation $\neg\neg\ph\hom\ph$.
+In \cref{sec:logic} we motivated this by noting that leaving it out just means our ``logic'' has models in all Heyting algebras rather than just Boolean algebras.
+We will be able to say something similar, and hopefully even more convincing, about first-order logic in \cref{sec:subobjects}.
+
 A few important subsystems of intuitionistic first-order logic that will reappear later are:
 \begin{itemize}
 \item \emph{Coherent} logic: includes $\meet,\top,\join,\bot,\exis,=$ but not $\To$ or $\all$ (hence also not $\neg$).
@@ -326,12 +420,73 @@ A few important subsystems of intuitionistic first-order logic that will reappea
 \item \emph{Horn} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\neg,\all,\exis$.
 % \item \emph{Left-exact} or \emph{finite-limit} logic: includes $\meet,\top,=$ but not $\join,\bot,\To,\all,\exis$.  [TODO: Need a restricted form of $\exis$, which ties a partial knot between propositions and entailment, hence including substitution too.]
 \item Another important logic is \emph{geometric} logic, which is like coherent logic but also includes the ``infinitary disjunction'' from \cref{ex:frames}.
+\item In \cref{sec:lex-theories} we will study a somewhat more complicated logic to define called \emph{finite-limit} or \emph{lex logic}.
 \end{itemize}
 
-Since we are not considering categorical structures or initiality in this section, all that remains to do is prove the admissibility of substitution.
+At last we are ready to consider admissibility of substitution and cut.
+To be precise, we work with the \textbf{natural deduction for first-order intuitionistic \fS-logic} consisting of:
+\begin{enumerate}
+\item The rules for terms and propositions summarized in \cref{fig:fol-common};
+\item The exchange and possibly (depending on \fS) weakening and contraction rules;
+\item The identity rule $\Gamma \cb \ph\types\ph$ for all propositions $\ph$;
+\item The natural deduction rules for intuitionistic \fS-logic from \cref{fig:natded-logic}, with an arbitrary type context $\Gamma$; and
+\item The natural deduction rules for quantifiers, equality, and axioms summarized in \cref{fig:fol-natded}.
+\end{enumerate}
+Of course, the modularity of type theory means we can mix and match these rules, removing any number of type operations and their corresponding rules without altering the main theorems.
+(In particular, in the cartesian case we generally omit $\tensor$ and $\one$, since they are isomorphic to $\meet$ and $\top$.)
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+  \inferrule{\types A\type \\ (x:A)\in \Gamma}{\Gamma\types x:A}\and
+  \inferrule{f\in \cG(A_1,\dots,A_n;B) \\ \Gamma\types M_1:A_1 \\ \cdots \\ \Gamma \types M_n:A_n}{\Gamma\types f(M_1,\dots,M_n):B}\and
+  \inferrule{P\in \cP(A_1,\dots,A_n) \\ \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n}{\Gamma \types P(M_1,\dots,M_n) \prop}\and
+  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\tensor\psi)\prop}\and
+  \inferrule{ }{\Gamma\types \one\prop}\and
+  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\meet\psi)\prop}\and
+  \inferrule{ }{\Gamma\types \top\prop}\and
+  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\join\psi)\prop}\and
+  \inferrule{ }{\Gamma\types \bot\prop}\and
+  \inferrule{\Gamma\types \ph\prop \\ \Gamma\types\psi\prop}{\Gamma\types (\ph\hom\psi)\prop}\and
+  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\forall x:A.\ph) \prop}\and
+  \inferrule{\Gamma,x:A\types \ph\prop}{\Gamma\types (\exists x:A.\ph) \prop}\and
+  \inferrule{\Gamma\types M:A \\ \Gamma\types N:A}{\Gamma\types (M =_A N)\prop}
+  \end{mathpar}
+  \caption{Rules for terms and propositions}
+  \label{fig:fol-common}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{mathpar}
+    \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallI\and
+    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma\cb\Theta\types \ph[M/x]}\;\forallE\and
+    \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A.\ph}\;\existsI\and
+    \inferrule{\Gamma\cb\Psi\types \exists x:A.\ph \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,\Psi\types \psi}\;\existsE\and
+    \inferrule{\Gamma\types M:A}{\Gamma\cb \ec\types (M=_A M)}\;\eqI\and
+    \inferrule{
+      \Gamma\types M:A\\
+      \Gamma\types N:A\\
+      \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]\\
+      \Gamma\cb \Psi \types (M =_A N)\\
+      \Gamma\cb \Phi\types \Theta[M/x,N/y]
+    }{\Gamma\cb\Phi,\Psi\types \ph[M/x,N/y]}\;\eqE\and
+    \inferrule{\cA(A_1,\dots,A_n;\Theta;\ph) \\
+      \Gamma\types M_1:A_1 \\ \cdots\\ \Gamma\types M_n:A_n \\
+      \Gamma \cb \Phi \types \Theta[\vec M/\vec x]
+    }{\Gamma \cb \Phi \types \ph[\vec M/\vec x]}\;\textsc{axiom}
+  \end{mathpar}
+  \caption{Natural deduction rules for quantifiers, equality, and axioms}
+  \label{fig:fol-natded}
+\end{figure}
+
+Note also that the rules $\eqE$ and \textsc{axiom} from \cref{fig:fol-natded} incorporate an additional cut on the left.
+For this we have used a shortcut notation $\Gamma\cb \Phi\types \Theta$ where $\Theta$ is a proposition context, meaning that $\Gamma\cb \Phi\types \theta$ for each $\theta\in\Theta$.
+
+We start with the admissibility of substitution into propositions.
 
 \begin{thm}\label{thm:fol-subprop-adm}
-  Substitution is admissible in any first-order logic: given derivations of $\Gamma,x:A \types \ph\prop$ and $\Gamma\types M:A$, we can construct a derivation of $\Gamma \types \ph[M/x]\prop$.
+  Substitution into propositions is admissible: given derivations of $\Gamma,x:A \types \ph\prop$ and $\Gamma\types M:A$, we can construct a derivation of $\Gamma \types \ph[M/x]\prop$.
 \end{thm}
 \begin{proof}
   As with substitution into terms, this is entirely straightforward because we have written all the rules for such judgments with an arbitrary type context.
@@ -341,7 +496,7 @@ Since we are not considering categorical structures or initiality in this sectio
     (\forall y:B.\ph)[M/x] &= \forall y:B.\ph[M/x]\\
     (N=_B P)[M/x] &= (N[M/x] =_B P[M/x])
   \end{align*}
-  In the case of $\all$ (and also $\exis$), we have to ensure (by $\alpha$-equivalence if necessary) that $x$ and $y$ are distinct variables.
+  In the case of $\all$ (and also $\exis$), we have to ensure (by $\alpha$-equivalence if necessary) that $x$ and $y$ are distinct variables, and that $y$ does not occur in $M$.
   This is the same issue that arose in \cref{sec:multicat-moncat,sec:multicat-prod-coprod,sec:stlc} when substituting into terms with bound variables such as $\case$ and $\lambda$-abstractions.
   As always, this is only an issue when representing derivations by terms; the underlying operation on derivations has no notion of ``bound variable''.
 
@@ -349,30 +504,72 @@ Since we are not considering categorical structures or initiality in this sectio
   But since terms never involve propositions, there is no cyclic dependency: we can first prove the admissibility of substitution into terms, and then use it to prove the admissibility of substitution into propositions.
 \end{proof}
 
-Moreover, just as substitution into terms is associative, substitution into propositions satisfies as ``functoriality'' property that can be proven in the same way:
+Just as substitution into terms is associative, substitution into propositions satisfies as ``functoriality'' property that can be proven in the same way:
 \begin{equation}
   \ph[N/y][M/x] = \ph[M/x][N[M/x]/y]\label{eq:fol-subprop-funct}
 \end{equation}
-Similarly, we can prove the admissibility of substitution into entailment judgments, although as mentioned before this is not as important since we consider propositions posetally here.
 
-\begin{rmk}
-  Recall from \cref{sec:natded-logic} that the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
-  The same is true for intuitionistic first-order logic with $\all$ and $\exis$, if we allow ``variable assumptions'' that can be discharged by the quantifier rules; we leave the details to the reader.
-  The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
-\end{rmk}
+\begin{thm}\label{thm:fol-subent-adm}
+%  If we avoid the rules $\forallI^{-1}$, $\existsL^{-1}$, and $\existsS$, and formulate the equality rules with substitutions as in~\eqref{eq:refl-withsub} and~\eqref{eq:J-withsub}, then
+  Substitution into entailments is admissible: if we have derivations of $\Gamma,x:A \types\Theta\types \ph$ and $\Gamma\types M:A$, we can construct a derivation of $\Gamma \types \Theta[M/x] \types \ph[M/x]$.
+\end{thm}
+\begin{proof}
+  Just like \cref{thm:fol-subprop-adm}, we substitute recursively into the derivation of $\Gamma,x:A \types\Theta\types \ph$.
+  This works because all the entailment rules have a fully general type context in the conclusion, so the substitution can always be done inductively on their premises.
+\end{proof}
+
+\begin{thm}\label{thm:fol-natded-cutadm}
+  Cut for propositions is admissible in the natural deduction for first-order intuitionistic \fS-logic: given derivations of $\Gamma\cb\Theta \types \ph$ and $\Gamma\cb \Psi,\ph\types \psi$, we can construct a derivation of $\Gamma\cb \Psi,\Theta\types \psi$.
+\end{thm}
+\begin{proof}
+  As usual, we induct on the derivation of $\Gamma\cb \Psi,\ph\types \psi$.
+  This works because all the rules for the natural deduction have a fully general proposition context in the conclusion as well.
+\end{proof}
+
+Recall from \cref{sec:natded-logic} that the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
+The same is true for intuitionistic first-order logic with $\all$ and $\exis$, if we allow ``variable assumptions'' that can be discharged by the quantifier rules.
+The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
+We leave the details to the reader.
+
+
+% \subsection{Sequent calculus}
+% \label{sec:fol-seqcalc}
+
+% The rules for \textbf{first-order intuitionistic \fS-sequent-calculus} consist of
+% \begin{enumerate}
+% \item The standard rules for types, terms, and propositions shown in \cref{fig:fol-common} (omitting $\tensor$ and $\one$ in the cartesian case);
+% \item The exchange and possibly (depending on \fS) weakening and contraction rules;
+% \item The identity rule $\Gamma \cb \ph\types\ph$ \emph{only when $\ph$ is an instance of an atomic proposition};
+% \item The sequent calculus rules for intuitionistic \fS-logic from \cref{sec:seqcalc-logic}, with an arbitrary type context $\Gamma$; and
+% \item The sequent calculus rules for quantifiers and equality summarized in \cref{fig:fol-seqcalc}.
+% \end{enumerate}
+
+% \begin{figure}
+%   \centering
+%   \begin{mathpar}
+%     \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallR\and
+%     \inferrule{\Gamma\types M:A \\ \Gamma\cb \Theta, \ph[M/x] \types \psi}{\Gamma\cb \Theta, (\forall x:A.\ph) \types \psi}\;\forallL\and
+%     \inferrule{\Gamma\types M:A \\ \Gamma\cb\Theta\types \ph[M/x]}{\Gamma\cb\Theta\types \exists x:A.\ph}\;\existsR\and
+%     \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\;\existsL\and
+%     \inferrule{\Gamma\types M:A}{\Gamma\cb \ec\types (M=_A M)}\;\eqR\and
+%     \inferrule{
+%       \Gamma\types M:A\\
+%       \Gamma\types N:A\\
+%       \Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]
+%     }{\Gamma\cb\Theta[M/x,N/y],(M =_A N)\types \ph[M/x,N/y]}\;\eqL\and
+%      % TODO: What to do with this?
+%   \end{mathpar}
+%   \caption{Sequent calculus rules for quantifiers and equality}
+%   \label{fig:fol-seqcalc}
+% \end{figure}
+
+% TODO: Has cut-admissibility for sequent calculus been done using Lawvere's equality rule?
+
 
 \subsection*{Exercises}
 
-\begin{ex}\label{ex:fol:cutadm}
-  Modify the rules given in this section so as to make the cut rule for propositions admissible, and prove it.
-\end{ex}
-
-\begin{ex}\label{ex:fol-seqcalc}
-  Formulate sequent calculus rules for $\exis,\all,=$ and prove cut admissibility for them.
-\end{ex}
-
 \begin{ex}\label{ex:eq-frob-from-hom}
-  Assuming we have $\hom$, show that the rule $\eqE$ is derivable (recall \cref{rmk:admissible-derivable-1}) from the following simpler rule with no proposition context $\Theta$:
+  Assuming we have $\hom$, show that the rule $\eqR$ is derivable (recall \cref{rmk:admissible-derivable-1}) from the following simpler rule with no proposition context $\Theta$:
   \begin{mathpar}
     \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\ec\types \ph[x/y]}{\Gamma\cb(M=_A N)\types \ph[M/x,N/y]}
   \end{mathpar}
@@ -396,6 +593,21 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
   Thus this (nontrivial!)\ interaction between $\meet$ and $\exis$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exis$.
   Many authors like to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$.
   This is true, but it forces one to assert laws like the distributive law and~\eqref{eq:exists-frob} ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
+\end{ex}
+
+\begin{ex}\label{ex:equality}
+  % CREDIT: Peter Lumsdaine
+  In a first-order theory with
+  three types $A$, $B$, $C$,
+  two generating arrows $f : A \to B$ and $g : B \to A$,
+  one atomic proposition $P$ with domain $(A,B)$, and
+  no axioms,
+  derive the following judgments:
+  \begin{enumerate}
+  \item $x_1: A, x_2 : A, y : B \cb \ph(x_1,y), (x_1 =_A x_2) \types \ph(x_2,y)$
+  \item $x_1 : A, x_2 : A \cb (x_1 =_A x_2) \types f(x_1) =_B f(x_2)$
+  \item $\ec \cb ( \forall x : A. g(f(x)) =_A x ) \types \forall x_1:A. \forall x_2 : A. \left((f(x_1) =_B f(x_2)) \to (x_1 =_A x_2) \right)$
+  \end{enumerate}
 \end{ex}
 
 \begin{ex}\label{ex:fol-egs}
@@ -503,11 +715,11 @@ We will consider this question in more depth in \cref{sec:subobjects}, but here 
 It remains to consider categorical analogues of the quantifiers and equality.
 Lawvere's fundamental insight~\cite{lawvere:adjointness,lawvere:comprehension} was that these correspond categorically to \emph{adjoint functors}.
 
-Consider for instance the rules for $\all$.
-If we remove the built-in substitution from $\forallE$, we can write the two rules as
+Consider, for instance, the universal quantifier.
+We saw in \cref{sec:forall} that its rules could be given as the following pair:
 \begin{mathpar}
   \inferrule{\Gamma,x:A\cb \Theta\types \ph}{\Gamma\cb\Theta\types \forall x:A.\ph}\;\forallI\and
-  \inferrule{\Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma,x:A\cb\Theta\types \ph}\;\forallE
+  \inferrule{\Gamma\cb\Theta\types \forall x:A.\ph}{\Gamma,x:A\cb\Theta\types \ph}\;\forallI^{-1}
 \end{mathpar}
 which are clearly inverses to each other.
 Categorically, they say that to have a morphism from $\Theta$ to $\forall x:A.\ph$ in $\cP(\Gamma)$ is equivalent to having a morphism from $\Theta$ to $\ph$ in $\cP(\Gamma,A)$.
@@ -561,25 +773,12 @@ Such right adjoints for \cref{eg:subobject-hyperdoctrine} will be studied in \cr
 \[ (\pi_A)_*\left(\{h_{(i,a)}\}_{(i,a)\in\Gamma\times A}\right) = \left\{\bigwedge_a h_{(i,a)}\right\}_{i\in\Gamma} \]
 
 The existential quantifier is similar, but a bit more subtle.
-The rule $\existsE$
-\[ \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\]
-certainly looks like one direction of some kind of adjunction.
-The opposite direction is not quite as obviously expressed by $\existsI$, but we can get it by combining $\existsI$ with a cut:
+We saw in \cref{sec:exists} that its rules could be expressed as the pair
 \begin{mathpar}
-  \inferrule*[right=cut]{\inferrule*[right=$\existsI$]{\inferrule*{ }{\Gamma,x:A\types x:A}\\
-      \inferrule*{ }{\Gamma,x:A \cb \ph \types \ph}}{\Gamma,x:A \cb \ph \types \exists x:A.\ph}  \\ 
-    \inferrule*[Right=weakening]{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,(\exists x:A.\ph)\types \psi
-    }}{\Gamma,x:A\cb\Theta,\ph\types \psi}
+  \inferrule{\Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}\;\existsL\and
+  \inferrule{\Gamma\cb\Theta,(\exists x:A.\ph)\types \psi}{\Gamma,x:A\cb\Theta,\ph\types \psi}\;\existsL^{-1}\and
 \end{mathpar}
-Conversely, from the opposite of $\existsE$ we can derive $\existsI$:
-\begin{mathpar}
-  \inferrule*[right=cut]{
-    \Gamma\cb \Theta \types \ph[M/x]\\
-    \inferrule*[Right=subst $M/x$]{\Gamma\types M:A \\
-      \inferrule*[Right=unit]{ }{\Gamma,x:A \cb \ph \types \exists x:A.\ph}}{\Gamma\cb \ph[M/x] \types \exists x:A.\ph}
-  }{\Gamma\cb\Theta \types \exists x:A.\ph}
-\end{mathpar}
-There is one more subtlety for $\exis$, namely the presence of the extra context $\Theta$.
+which likewise seem to express some kind of adjunction; but there is an extra context $\Theta$ hanging around.
 Translating directly across the correspondence to multicategories, this leads to the following definition.
 
 \begin{defn}\label{defn:multicat-hopf-ladj}
@@ -607,13 +806,17 @@ Unsurprisingly, for the indexed poset of subsets from \cref{eg:subset-hyperdoctr
 Left adjoints for \cref{eg:subobject-hyperdoctrine} will be studied in \cref{sec:regular-categories}, while those in \cref{eg:family-hyperdoctrine} can be defined like the right adjoints using joins instead of meets:
 \[ (\pi_A)_!\left(\{h_{(i,a)}\}_{(i,a)\in\Gamma\times A}\right) = \left\{\bigvee_a h_{(i,a)}\right\}_{i\in\Gamma} \]
 
-Finally, we consider the rules for equality.
-If we remove the built-in substitutions, these look like
+Finally, we consider the rules for equality:
 \begin{mathpar}
   \inferrule{ }{\Gamma,x:A\cb \ec\types (x=_A x)}\and
   \inferrule{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma,x:A,y:A\cb\Theta,(x=_A y)\types \ph}
 \end{mathpar}
-As with $\exis$, we can use a cut and a substitution to conclude the opposite of the second rule:
+Although we didn't mention it in \cref{sec:equality}, the first of these rules is equivalent to the opposite of the second, similarly to what happened for the quantifiers.
+One direction is immediate:
+\begin{mathpar}
+  \inferrule*{\inferrule*{ }{\Gamma,x:A,y:A\cb(x=_A y)\types (x=_A y)}}{\Gamma,x:A\cb\ec\types (x=_A x)}
+\end{mathpar}
+while the other uses a cut and a substitution:
 \begin{mathpar}
   \inferrule*[right=cut]{
     \inferrule*{ }{\Gamma,x:A \cb \ec \types x=_A x}\\
@@ -621,11 +824,8 @@ As with $\exis$, we can use a cut and a substitution to conclude the opposite of
     {\Gamma,x:A\cb\Theta[x/y],(x=_A x)\types \ph[x/y]}
   }{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}
 \end{mathpar}
-And conversely, the first rule can be obtained directly from the opposite of the second:
-\begin{mathpar}
-  \inferrule*{\inferrule*{ }{\Gamma,x:A,y:A\cb(x=_A y)\types (x=_A y)}}{\Gamma,x:A\cb\ec\types (x=_A x)}
-\end{mathpar}
-This looks very much like a (Hopf) left adjoint to substitution along the diagonal $(\Gamma,A) \to (\Gamma,A,A)$ in the category of contexts; but there is \emph{no} proposition in context $(\Gamma,A)$ that it is applied to.
+
+Thus, what we have looks very much like a (Hopf) left adjoint to substitution along the diagonal $(\Gamma,A) \to (\Gamma,A,A)$ in the category of contexts; but there is \emph{no} proposition in context $(\Gamma,A)$ that it is applied to.
 This suggests the following definitions.
 
 \begin{defn}\label{defn:multicat-hopf-ladj-empty}
@@ -642,9 +842,6 @@ This suggests the following definitions.
   Then there is a unique morphism $f_! \to k^* g_!$ in $\cP(B)$ such that the composite $() \xto{\eta} f^* f_! \to f^* k^* g_!$ in $\cP(A)$ is equal to the composite $() \xto{h^* \eta} h^* g^* g_!$ (note $f^* k^* = h^* g^*$).
   We say that \cP satisfies the \textbf{left Beck--Chevalley condition at $()$} with respect to this square if this morphism $f_! \to k^* g_!$ is an isomorphism.
 \end{defn}
-
-% Note that \cref{defn:multicat-hopf-ladj} is of the form ``for every object $B$''; we say that $G$ \textbf{has a Hopf left adjoint at $B$} if the condition in \cref{defn:multicat-hopf-ladj} holds only for a particular object $B$.
-% Similarly, in the situation of \cref{defn:bc}, if $g^*$ has a left adjoint at $B$, and $f^*$ has a left adjoint at $h^*B$, we say that \cP \textbf{satisfies the left Beck--Chevalley condition at $B$} with respect to the given square if the relevant map $f_! h^* B \to k^* g_! B$ is an isomorphism.
 
 \begin{defn}
   An \cS-indexed \fS-multiposet with unit objects \textbf{has equality} if
@@ -915,7 +1112,7 @@ We start with a lemma about extremal epimorphisms:
   In particular, since $\exis(f,1) \le \exis(f,1)$, it follows that $f$ factors through it, by some map $e:A\to \exis(f,1)$, say.
   Moreover, if we have a monomorphism $D\mono \exis(f,1)$ that $e$ factors through, then $f$ factors through the composite mono $D\to B$, and thus $\exis(f,1)\le D$ as subobjects of $B$; hence $D\cong \exis(f,1)$.
   Thus, $e$ is extremal epic, and so $A \xto{e} \exis(f,1) \to B$ is a factorization of $f$ as required in the definition of regular category.
-  
+
   The uniqueness of factorizations means that if $f$ itself is extremal epic, then $\exis(f,1) \to B$ is an isomorphism.
   And of course, conversely, if $\exis(f,1) \to B$ is an isomorphism, then $f$, like $e$, is extremal epic.
   Now the Beck--Chevalley condition for existential quantifiers implies that the construction of $\exis(f,1)$ is preserved by pullback.
@@ -991,9 +1188,9 @@ We leave the proof of the final lemma to the reader (\cref{ex:logic-uniquechoice
   \item If in \cref{thm:logic-uniquechoice} the proposition $\ph$ is $f(x)=y$ for some morphism $f:A\to B$ in the theory, then the morphism $A\to B$ defined by \cref{thm:logic-uniquechoice} is just the interpretation of $f$.
   \item If in a regular theory we have three types $A,B,C$ and propositions
     \begin{mathpar}
-      x:A,y:B\types \ph\prop\and 
-      y:B,z:C\types \psi\prop\and 
-      x:A,z:C\types \chi\prop\and 
+      x:A,y:B\types \ph\prop\and
+      y:B,z:C\types \psi\prop\and
+      x:A,z:C\types \chi\prop\and
     \end{mathpar}
     all satisfying the hypotheses of \cref{thm:logic-uniquechoice}, and moreover we can prove
     \begin{mathpar}
@@ -1200,7 +1397,7 @@ This book is not about the category theory of (quasi)toposes, but we encourage t
 
 \begin{ex}\label{ex:logic-extepi-regepi}
   Write out derivation trees for statements~\ref{item:eere2} and~\ref{item:eere3} in the proof of \cref{thm:logic-extepi-regepi}.
-  Feel free to use transitivity of equality as a (derivable) rule, rather than writing it out explicitly in terms of $\eqE$.
+  Feel free to use transitivity of equality as a (derivable) rule, rather than writing it out explicitly in terms of $\eqR$.
 \end{ex}
 
 \begin{ex}\label{ex:regular-subobjects}
