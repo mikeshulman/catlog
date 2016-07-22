@@ -83,7 +83,7 @@ Finally, in \cref{sec:fol-natded} we show that the natural deduction rules do ma
 \end{figure}
 
 The complete list of structural rules is shown in \cref{fig:fol-struc}.
-As in \cref{sec:logic}, we always have exchange for propositions, but we allow ourselves the freedom to take or omit weakening and contraction, corresponding to a choice of a faithful cartesian club \fS.
+As in \cref{sec:logic}, we always have exchange for propositions, but we allow ourselves the freedom to take or omit weakening and contraction, corresponding to a choice of a faithful cartesian club \fS (as in \cref{sec:cartmulti}).
 Depending on which we choose, we speak of \textbf{intuitionistic first-order logic} (all the structural rules), \textbf{intuitionistic first-order linear logic} (exchange only), etc.
 
 Then there are the identity and cut rule for propositions; the latter is just the cut rule from \cref{sec:monoidal-lattices} with an extra type context $\Gamma$.
@@ -585,8 +585,8 @@ Without too much stretch, this can be regarded as a direct formalization of the 
 
 \begin{rmk}
   In particular, this (nontrivial!)\ interaction between $\meet$ and $\exis$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exis$.
-  Many authors like to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$.
-  This is true, but it forces one to assert laws like the distributive law and~\eqref{eq:exists-frob} ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
+  There is sometimes a temptation to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$ (and perhaps even replacing entailments $\ph\types \psi$ by implications $\ph\To\psi$).
+  This is technically possible, but it forces one to assert laws like these ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
   More importantly, as remarked in \cref{sec:natded-logic}, allowing arbitrarily many propositions in the context yields a formal theory that matches informal reasoning much better: as in the example above, informally we frequently apply inference rules in the presence of other unaffected hypotheses.
 \end{rmk}
 
@@ -1448,9 +1448,10 @@ This book is not about the category theory of (quasi)toposes, but we encourage t
   \end{enumerate}
   A factorization system is \textbf{stable} if \cE is stable under pullback (\cM is automatically so), and \textbf{proper} if every morphism in \cE is an epimorphism and every morphism in \cM is a monomorphism.
   \begin{enumerate}
-  \item Prove that if $(\cE,\cM)$ is a proper, stable, factorization system on a category \cS with finite limits, then there is a regular hyperdoctrine $\sub_\cM$ for which $\sum_\cM(\Gamma)$ is the sub-poset of $\sub_\cS(\Gamma)$ consisting only of monomorphisms in \cM.
-  \item If \cS additionally has finite coproducts that are stable under pullback, prove that $\sum_\cM(\Gamma)$ is a coherent hyperdoctrine.
+  \item Prove that if $(\cE,\cM)$ is a proper, stable, factorization system on a category \cS with finite limits, there is a regular hyperdoctrine $\sub_\cM$ where $\sub_\cM(\Gamma)$ is the sub-poset of $\sub_\cS(\Gamma)$ consisting only of monomorphisms in \cM.
+  \item If \cS additionally has finite coproducts that are stable under pullback, prove that $\sub_\cM(\Gamma)$ is a coherent hyperdoctrine.
   \item Show that both of the previous parts apply when \cS is the category of topological spaces and \cM consists of the subspace inclusions.
+  \item Is there an analogue of \cref{thm:logic-uniquechoice} for $\sub_\cM$?
   \end{enumerate}
 \end{ex}
 
