@@ -527,15 +527,80 @@ Just as substitution into terms is associative, substitution into propositions s
 \end{proof}
 
 As in \cref{sec:heyting-algebras}, in the cartesian case we can make exchange, weakening, and contraction admissible as well, by reformulating the rules $\existsE$ and $\eqE$ to keep the same proposition context in the premises and the conclusion, and the identity rule to incorporate a weakening.
+The reformulated rules are
+\begin{mathpar}
+  \inferrule{\Gamma\cb\Theta\types \exists x:A.\ph \\ \Gamma,x:A\cb\Theta,\ph\types \psi}{\Gamma\cb\Theta\types \psi}\;\existsE'\and
+  \inferrule{
+    \Gamma\types M:A\\
+    \Gamma\types N:A\\
+    \Gamma,x:A\cb\Phi,\Theta[x/y]\types \ph[x/y]\\
+    \Gamma\cb \Phi \types (M =_A N)\\
+    \Gamma\cb \Phi\types \Theta[M/x,N/y]
+  }{\Gamma\cb\Phi\types \ph[M/x,N/y]}\;\eqE'\and
+\end{mathpar}
+We leave the proof to the reader (\cref{ex:fol-natded-strucadm}).
 
-Recall also from \cref{sec:natded-logic} that using this reformulation, the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
-The same is true for intuitionistic first-order logic with $\all$ and $\exis$, if we allow ``variable assumptions'' that can be discharged by the quantifier rules.
-The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
-We leave the details to the reader.
+Recall also from \cref{sec:natded-logic} that with such a reformulation, the natural deduction of intuitionistic propositional logic can be formulated without explicit contexts, instead ``discharging'' temporary assumptions by crossing them out.
+The same is true for intuitionistic first-order logic with $\all$ and $\exis$, if we also allow ``assumptions of variables'' (i.e.\ additions to the type context, in addition to the proposition context, as we move up the derivation tree) that can be discharged by the quantifier rules.
+Usually we do not bother to include the derivations of term judgments in this style; we just write down the terms wherever they are needed.
 
-% TODO: Give some details of this.  For equality, we can allow the proof of $\ph[x/y]$ to discharge any number of hypotheses of the form $\theta[x/y]$ as long as $\theta[M/x,N/y]$ is elsewhere a hypothesis (or is added as a hypothesis by the equality rule).
+For instance, here is a derivation in this style of the intuitionistic tautology $\ph\meet (\exists x:A.\psi) \To (\exists x:A. (\ph\meet\psi))$.
+\[
+\inferrule*[Right=$\ToI$]{
+  \inferrule*[Right=$\existsE'$]{
+    \inferrule*{\cancel{\ph\meet (\exists x:A.\psi)}}{\exists x:A.\psi}\\
+    \inferrule*[Right=$\existsI$]{
+      \cancel{x:A}\\
+      \inferrule*[Right=$\meetI$]{
+        \inferrule*{\cancel{\ph\meet (\exists x:A.\psi)}}{\ph} \\
+        \cancel{\psi}
+      }{\ph \meet \psi}
+    }{\exists x:A. (\ph\meet\psi)}}{\exists x:A. (\ph\meet\psi)}
+}{\ph\meet (\exists x:A.\psi) \To (\exists x:A. (\ph\meet\psi))}
+\]
+% (In a perhaps-misguided attempt at clarification, we have used a different variable for one of the quantifiers.)
+% \[
+% \inferrule*[right=$\alpha$-equiv]{
+%   \inferrule*[Right=$\ToI$]{
+%   \inferrule*[Right=$\existsE'$]{
+%     \inferrule*{\cancel{\ph\meet (\exists x:A.\psi)}}{\exists x:A.\psi}\\
+%     \inferrule*[Right=$\existsI$]{
+%     \cancel{x:A}\\
+%     \inferrule*[Right=$\meetI$]{
+%       \inferrule*{\cancel{\ph\meet (\exists x:A.\psi)}}{\ph} \\
+%       \inferrule*[Right=i.e.]{\cancel{\psi}}{\psi[y/x][x/y]}
+%     }{\ph \meet \psi[y/x][x/y]}
+%   }{\exists x:A. (\ph\meet\psi[y/x])}}{\exists y:A. (\ph\meet\psi[y/x])}
+% }{\ph\meet (\exists x:A.\psi) \To (\exists y:A. (\ph\meet\psi[y/x]))}}
+% {\ph\meet (\exists x:A.\psi) \To (\exists x:A. (\ph\meet\psi))}
+% \]
+The hypotheses $x:A$ and $\psi$ are discharged by the $\existsE'$, while the two occurences of the hypothesis ${\ph\meet (\exists x:A.\psi)}$ are discharged by the $\ToI$.
+Without too much stretch, this can be regarded as a direct formalization of the following informal English proof:
+\begin{quote}
+  Suppose ${\ph\meet (\exists x:A.\psi)}$, that is $\ph$ and $\exists x:A.\psi$.
+  By the latter, we may assume given an $x$ such that $\psi$.
+  Now we have both $\ph$ and $\psi$, so $\ph\meet\psi$.
+  Thus, $\exists x:A. (\ph\meet\psi)$, and so we have $\ph\meet (\exists x:A.\psi) \To (\exists x:A. (\ph\meet\psi))$.
+\end{quote}
 
-% TODO: Give some examples of informal reasoning and how it translates to formal deduction.  One de Morgan's law for quantifiers?  Or Frobenius \cref{ex:exists-frob}?
+\begin{rmk}
+  In particular, this (nontrivial!)\ interaction between $\meet$ and $\exis$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exis$.
+  Many authors like to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$.
+  This is true, but it forces one to assert laws like the distributive law and~\eqref{eq:exists-frob} ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
+  More importantly, as remarked in \cref{sec:natded-logic}, allowing arbitrarily many propositions in the context yields a formal theory that matches informal reasoning much better: as in the example above, informally we frequently apply inference rules in the presence of other unaffected hypotheses.
+\end{rmk}
+
+The rule $\eqE'$ is a bit tricker to write in this style because of the arbitrary context $\Theta$ that has to be substituted into.
+One approach is to use \cref{ex:eq-frob-from-hom}, which shows that as long as we also have implication we can get around this.
+A more direct approach is to allow the proof of $\ph[x,y]$ to discharge an arbitrary number of hypotheses of the form $\theta[x/y]$, as long as we also supply corresponding proofs of $\theta[M/x,N/y]$ to the rule $\eqE'$.
+For instance, with one $\theta$ formula the rule would look like this:
+\[
+\inferrule*{
+  \inferrule*{\vdots}{M =_A N}\\
+  \inferrule*{\vdots}{\theta[M/x,N/y]}\\
+  \inferrule*{\mprset{fraction={\relax\relax\relax}}\inferrule*{\cancel{x:A} \\ \cancel{\theta[x/y]}}{\vdots}}{\ph[x/y]}
+  }{\ph[M/x,N/y]}
+\]
 
 
 % \subsection{Sequent calculus}
@@ -593,16 +658,6 @@ We leave the details to the reader.
   \end{align*}
 \end{ex}
 
-\begin{ex}\label{ex:exists-frob}
-  Derive the following sequent in regular logic, for any type $A$, context $\Gamma$, and propositions $\Gamma\types\ph\prop$ and $\Gamma,x:A\types\psi\prop$:
-  \begin{equation}
-    \Gamma \cb \ph\meet (\exists x:A.\psi) \types (\exists x:A. (\ph\meet\psi))\label{eq:exists-frob}
-  \end{equation}
-  Thus this (nontrivial!)\ interaction between $\meet$ and $\exis$ is, like the distributive law of $\meet/\tensor$ over $\join$ from \cref{ex:monpos-jslat} and \cref{sec:logic}, implied automatically by the structure of our contexts and how they interact with the rules for $\meet$ and $\exis$.
-  Many authors like to ``simplify'' logic by presenting it as a unary type theory, arguing that a context $\Theta = (\ph_1,\dots,\ph_n)$ can always be replaced by the conjunction $\ph_1\meet \dots \meet\ph_n$.
-  This is true, but it forces one to assert laws like the distributive law and~\eqref{eq:exists-frob} ``by hand'', breaking principle~\eqref{princ:independence} and making for a less congenial theory.
-\end{ex}
-
 \begin{ex}\label{ex:equality}
   % CREDIT: Peter Lumsdaine
   In a first-order theory with
@@ -627,6 +682,10 @@ We leave the details to the reader.
   \item Fields (coherent)
   \item Categories (regular)
   \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:fol-natded-strucadm}
+  Prove that in intuitionistic first-order logic with $\existsE$ and $\eqE$ replaced by $\existsE'$ and $\eqE'$ as mentioned at the end of the section, the structural rules of exchange, weakening, and contraction for proposition contexts are admissible.
 \end{ex}
 
 
