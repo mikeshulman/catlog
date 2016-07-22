@@ -374,7 +374,7 @@ Similarly, we can prove the admissibility of substitution into entailment judgme
 \begin{ex}\label{ex:eq-frob-from-hom}
   Assuming we have $\hom$, show that the rule $\eqE$ is derivable (recall \cref{rmk:admissible-derivable-1}) from the following simpler rule with no proposition context $\Theta$:
   \begin{mathpar}
-    \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb()\types \ph[x/y]}{\Gamma\cb(M=_A N)\types \ph[M/x,N/y]}
+    \inferrule{\Gamma\types M:A \\ \Gamma\types N:A \\\\ \Gamma,x:A,y:A\types \ph\prop \\ \Gamma,x:A\cb\ec\types \ph[x/y]}{\Gamma\cb(M=_A N)\types \ph[M/x,N/y]}
   \end{mathpar}
 \end{ex}
 
@@ -610,20 +610,20 @@ Left adjoints for \cref{eg:subobject-hyperdoctrine} will be studied in \cref{sec
 Finally, we consider the rules for equality.
 If we remove the built-in substitutions, these look like
 \begin{mathpar}
-  \inferrule{ }{\Gamma,x:A\cb ()\types (x=_A x)}\and
+  \inferrule{ }{\Gamma,x:A\cb \ec\types (x=_A x)}\and
   \inferrule{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}{\Gamma,x:A,y:A\cb\Theta,(x=_A y)\types \ph}
 \end{mathpar}
 As with $\exis$, we can use a cut and a substitution to conclude the opposite of the second rule:
 \begin{mathpar}
   \inferrule*[right=cut]{
-    \inferrule*{ }{\Gamma,x:A \cb () \types x=_A x}\\
+    \inferrule*{ }{\Gamma,x:A \cb \ec \types x=_A x}\\
     \inferrule*[Right=subst $x/y$]{\Gamma,x:A,y:A\cb\Theta,(x=_A y)\types \ph}
     {\Gamma,x:A\cb\Theta[x/y],(x=_A x)\types \ph[x/y]}
   }{\Gamma,x:A\cb\Theta[x/y]\types \ph[x/y]}
 \end{mathpar}
 And conversely, the first rule can be obtained directly from the opposite of the second:
 \begin{mathpar}
-  \inferrule*{\inferrule*{ }{\Gamma,x:A,y:A\cb(x=_A y)\types (x=_A y)}}{\Gamma,x:A\cb()\types (x=_A x)}
+  \inferrule*{\inferrule*{ }{\Gamma,x:A,y:A\cb(x=_A y)\types (x=_A y)}}{\Gamma,x:A\cb\ec\types (x=_A x)}
 \end{mathpar}
 This looks very much like a (Hopf) left adjoint to substitution along the diagonal $(\Gamma,A) \to (\Gamma,A,A)$ in the category of contexts; but there is \emph{no} proposition in context $(\Gamma,A)$ that it is applied to.
 This suggests the following definitions.
@@ -716,7 +716,7 @@ Thus, there is no need to suppose separately that we have \emph{chosen} such ope
 
 \begin{rmk}\label{rmk:fol-soundness-completeness}
   As noted in \cref{rmk:soundness-completeness} for propositional logic, \cref{thm:fol-initial} implies the traditional \emph{soundness} and \emph{completeness} theorems for first-order logic with respect to hyperdoctrines.
-  The soundness theorem says that if we can prove $\Gamma\cb ()\types \ph$, then when we interpret our logic into any hyperdoctrine, $\ph$ must go to the top element, i.e.\ it must ``be true''.
+  The soundness theorem says that if we can prove $\Gamma\cb \ec\types \ph$, then when we interpret our logic into any hyperdoctrine, $\ph$ must go to the top element, i.e.\ it must ``be true''.
   In particular, this applies to models in the hyperdoctrine of sets and subsets from \cref{eg:subset-hyperdoctrine}, which are the classical notion of ``model''.
   (In \cref{sec:subobjects} we will construct hyperdoctrines from more general categories than \bSet.)
   Conversely, the completeness theorem says that if something is true in all hyperdoctrines, then it must in particular be true in the free one constructed from the type theory, and therefore must be provable in the type theory.
@@ -933,7 +933,7 @@ In fact, regular logic is quite useful in proving basic facts about regular cate
 To get started, we make the following observations.
 
 \begin{lem}\label{thm:logic-extremal-epi}
-  Consider the regular theory with two types $A,B$, one morphism $f:A\to B$, and one axiom $y:B \cb () \types \exists x:A.f(x)= y$.
+  Consider the regular theory with two types $A,B$, one morphism $f:A\to B$, and one axiom $y:B \cb \ec \types \exists x:A.f(x)= y$.
   A model of this theory in a regular category \cS is precisely an extremal epimorphism in \cS.
 \end{lem}
 \begin{proof}
@@ -945,7 +945,7 @@ To get started, we make the following observations.
   \item Take the image of the composite $A\to A\times B \to B$.
     This composite is just $f$, so its image is also the image of $f$.
   \end{enumerate}
-  Therefore, to interpret $y:B \cb () \types \exists x:A.f(x)= y$ is to say that the image of $f$ is all of $B$, i.e.\ that $f$ is extremal epic.
+  Therefore, to interpret $y:B \cb \ec \types \exists x:A.f(x)= y$ is to say that the image of $f$ is all of $B$, i.e.\ that $f$ is extremal epic.
 \end{proof}
 
 The next lemma requires only Horn logic, but there was not much point to stating it before now.
@@ -966,7 +966,7 @@ Our third lemma starts to reveal some of the real value of the logical approach.
 \begin{lem}\label{thm:logic-uniquechoice}
   Suppose we have a regular theory containing two types $A,B$ and a proposition (not necessarily an atomic one) $x:A,y:B\types \ph\prop$ such that the following sequents are provable:
   \begin{mathpar}
-    x:A \cb () \types \exists y:B.\ph\and
+    x:A \cb \ec \types \exists y:B.\ph\and
     x:A,y_1:B,y_2:B \cb \ph[y_1/y], \ph[y_2/y] \types y_1=y_2
   \end{mathpar}
   Then for any interpretation of this theory in a regular category, the interpretation of $\ph$ is a monomorphism $\ph \mono A\times B$ such that the composite $\ph \to A\times B \to A$ is an isomorphism; hence the composite $A\cong \ph \to A\times B \to B$ defines a morphism from $A$ to $B$.
@@ -1015,7 +1015,7 @@ Putting all these lemmas together, we can prove a nontrivial theorem about regul
 
   Thus, consider the regular theory with three types $A,B,C$, two morphisms $f:A\to B$ and $g:A\to C$, and the axioms
   \begin{mathpar}
-    y:B \cb () \types \exists x:A.f(x)= y\and
+    y:B \cb \ec \types \exists x:A.f(x)= y\and
     x_1:A,x_2:A \cb (f(x_1)=f(x_2)) \types (g(x_1)=g(x_2))
   \end{mathpar}
   The first says exactly that $f$ is extremal epi, while the second says that the kernel pair of $f$ is contained in the kernel pair of $g$.
@@ -1023,7 +1023,7 @@ Putting all these lemmas together, we can prove a nontrivial theorem about regul
   \[y:B,z:C \types \exists x:A.((f(x)=y) \meet (g(x)=z)) \prop\]
   We will prove the following sequents in this theory:
   \begin{enumerate}
-    \item $y:B \cb () \types \exists z:C.\ph$\label{item:eere1}
+    \item $y:B \cb \ec \types \exists z:C.\ph$\label{item:eere1}
     \item $y:B,z_1:C,z_2:C \cb \ph[z_1/z], \ph[z_2/z] \types z_1=z_2$\label{item:eere2}
     \item $x:A,y:B,z:C \cb \ph, (f(x)=y) \types (g(x)=z)$\label{item:eere3}
   \end{enumerate}
@@ -1046,7 +1046,7 @@ Putting all these lemmas together, we can prove a nontrivial theorem about regul
             }{y:B,x:A \cb (f(x)=y) \types (f(x)=y) \meet (g(x)=g(x))
             }}{y:B,x:A \cb (f(x)=y) \types \exists x:A.((f(x)=y) \meet (g(x)=g(x)))
           }}{y:B,x:A \cb (f(x)=y) \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))
-        }}{y:B \cb() \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))}
+        }}{y:B \cb\ec \types \exists z:C.\exists x:A.((f(x)=y) \meet (g(x)=z))}
       \]
       \caption{Derivation tree of~\ref{item:eere1} in proof of \cref{thm:logic-extepi-regepi}}
       \label{fig:eere1}
@@ -1120,9 +1120,9 @@ Second, we need the following further enhancement of \cref{thm:logic-uniquechoic
   Then all the sequents \cref{thm:logic-uniquechoice-2} have a $\bot$ in their proposition context, hence follow immediately from $\bot E$.
   Since $0_A$ is the interpretation of $\alpha$ and $B$ is the interpretation of $\beta$, we get a morphism $0_A \to B$.
 
-  To show that it is unique, consider the theory with two objects $Z$ and $B$ and two morphisms $f,g:Z\to B$, and the axiom $z:Z \cb () \types \bot$.
+  To show that it is unique, consider the theory with two objects $Z$ and $B$ and two morphisms $f,g:Z\to B$, and the axiom $z:Z \cb \ec \types \bot$.
   This is modeled by any two parallel morphisms in a coherent category whose domain has exactly one subobject (up to isomorphism), which is the case whenever its domain is the smallest subobject of some other object (like $0_A$).
-  In this theory, we can prove $z:Z \cb () \types f(z) = g(z)$ by $\bot E$, which easily implies $f=g$.
+  In this theory, we can prove $z:Z \cb \ec \types f(z) = g(z)$ by $\bot E$, which easily implies $f=g$.
 \end{proof}
 
 We leave some further basic facts about coherent categories to the reader as \cref{ex:coherent-strictinitial,ex:coherent-effunions}.

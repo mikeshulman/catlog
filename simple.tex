@@ -602,7 +602,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
   }{
     \Gamma,\Psi,\Delta \types C
   }\;\tensorE\\
-  \inferrule{ }{()\types \one}\;\one I\and
+  \inferrule{ }{\ec\types \one}\;\one I\and
   \inferrule{
     \Psi\types \one \\
     \Gamma,\Delta\types A
@@ -938,7 +938,7 @@ That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allo
     }{
       \Gamma,\Psi,\Delta \types \match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N):C
     }\;\tensorE\\
-    \inferrule{ }{()\types \ott:\one}\;\one I\and
+    \inferrule{ }{\ec\types \ott:\one}\;\one I\and
     \inferrule{
       \Psi\types M:\one \\
       \Gamma,\Delta\types N:A
@@ -1082,7 +1082,7 @@ This will be the case for almost all type theories we consider from now on (the 
   \item We noted in \cref{thm:moncat-tad} that this annotation on $\match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N)$ is only necessary if $M$ contains no variables.
     To see that it can actually matter in that case, find an example of two distinct derivations whose corresponding terms differ \emph{only} in their annotations $\Gamma|\Delta$.\label{item:moncat-context-splitting-1}
   % \begin{mathpar}
-  %   \inferrule*{()\types \tpair\star\star:\one\tensor \one\\
+  %   \inferrule*{\ec\types \tpair\star\star:\one\tensor \one\\
   %     \inferrule*{
   %       x:\one \types x:\one\\
   %       \inferrule*{
@@ -1092,7 +1092,7 @@ This will be the case for almost all type theories we consider from now on (the 
   %     }{u:C,x:\one,y:\one \types \match_\one(x,\match_\one(y,u)):C}
   %   }{u:C \types \match_\tensor(\tpair\star\star, xy.\match_\one(x,\match_\one(y,u))) : C}
   %   \and
-  %   \inferrule*{()\types \tpair\star\star:\one\tensor \one\\
+  %   \inferrule*{\ec\types \tpair\star\star:\one\tensor \one\\
   %     \inferrule*{
   %       x:\one \types x:\one\\
   %       \inferrule*{
@@ -1154,7 +1154,7 @@ Now we formulate similar rules in natural deduction style, annotated with terms;
       \Gamma,\Psi,\Delta \types \match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N):C
     }\;\tensorE
     \\
-    \inferrule{ }{()\types \ott:\one}\;\one I
+    \inferrule{ }{\ec\types \ott:\one}\;\one I
     \and
     \inferrule{
       \Psi\types M:\one \\
@@ -1227,7 +1227,7 @@ A concrete example where we need the extra arguments to $\ttt$ is:
     \inferrule*{ }{\cdot \types \ttt():\unit}}
   {x:A \types \tpair{\ttt(x)}{\ttt()} : \unit\tensor\unit}
   \qquad
-  \inferrule*{\inferrule*{ }{()\types \ttt():\unit} \\
+  \inferrule*{\inferrule*{ }{\ec\types \ttt():\unit} \\
     \inferrule*{ }{x:A \types \ttt(x):\unit}}
   {x:A \types \tpair{\ttt()}{\ttt(x)} : \unit\tensor\unit}
 \end{equation}
@@ -1603,7 +1603,7 @@ As usual, we have also omitted the rules for the judgment $\types A\type$, which
   }{
     \Gamma,\Psi \types C
   }\;\tensorE\\
-  \inferrule{ }{()\types \one}\;\one I\and
+  \inferrule{ }{\ec\types \one}\;\one I\and
   \inferrule{
     \Psi\types \one \\
     \Gamma\types A
@@ -1818,7 +1818,7 @@ Note that we change our notation and write $A\hom B$ as $A\To B$.
 \end{proof}
 
 
-\subsection{Natural deduction}
+\subsection{Natural deduction and logic}
 \label{sec:natded-logic}
 
 Let us now say a few words about what the natural deduction for Heyting algebras has to do with logic.
@@ -1835,7 +1835,7 @@ The objects of $\F\bHeyting\cG$ are \emph{propositional formulas}, built out of 
 Since $\F\bHeyting\cG \to \tv$ is a map of Heyting algebras, it extends the truth assignment $\nu$ to all such formulas by using the ``truth tables'' for all the connectives, e.g.\ $\nu(A\meet B)$ is true just when $\nu(A)$ and $\nu(B)$ are both true, etc.
 Finally, the fact that $\F\bHeyting\cG \to \tv$ preserves inequalities means that if $A_1,\dots,A_n \types B$ is derivable in the natural deduction for Heyting algebras, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true (where now the $A_i$ and $B$ are arbitrary formulas, not just propositional variables).
 
-As a special case, if \cG has no nontrivial relations, then any derivable judgment $()\types B$ exhibits the propositional formula $B$ as a \textbf{tautology}: a statement that becomes true \emph{whatever} truth values are substituted for its propositional variables.
+As a special case, if \cG has no nontrivial relations, then any derivable judgment $\ec\types B$ exhibits the propositional formula $B$ as a \textbf{tautology}: a statement that becomes true \emph{whatever} truth values are substituted for its propositional variables.
 For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))$ as a tautology:
 \begin{mathpar}
   \tiny
@@ -1857,7 +1857,7 @@ For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet 
         }}{A\meet (B\join C),B \types (A\meet B) \join (A\meet C)}\\
         \text{(and dually)}
         }{A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
-  }{()\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
+  }{\ec\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
 \end{mathpar}
 % VERSION WITH PRIMITIVE STRUCTURAL RULES:
 % \begin{mathpar}
@@ -1884,7 +1884,7 @@ For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet 
 %         \text{(and dually)}
 %         }{A\meet (B\join C),A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
 %     }{A\meet (B\join C)\types (A\meet B) \join (A\meet C)}
-%   }{()\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
+%   }{\ec\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
 % \end{mathpar}
 Thus, the natural deduction for Heyting algebras can be used as a means to derive tautologies in propositional logic.
 
@@ -1919,7 +1919,7 @@ In the above example, the hypotheses $B$ and $C$ are discharged by the $\joinE$ 
 Sometimes people annotate the discharges in some way to indicate this.
 
 However, the real point of a representation like this is that the \emph{process of writing it}, from the top down, is supposed to mirror the process of informal reasoning.
-First we assume $A\meet (B\join C)$, and deduce from it $B\join C$.
+First we assume $A\meet (B\join C)$, and deduce from it both $A$ and $B\join C$.
 Then we use $B\join C$ by additionally assuming $B$ and $C$ in two separate cases (sub-derivations), and in each of those cases we separately deduce ${(A\meet B)\join (A\meet C)}$ (by way of $A\meet B$ and $A\meet C$ respectively).
 Thus, completing those cases (and ending our assumptions of $B$ and $C$) we have $(A\meet B)\join (A\meet C)$.
 Finally, ending our assumption of $A\meet (B\join C)$, we have $(A\meet (B\join C))\To ((A\meet B)\join (A\meet C))$.
@@ -1935,6 +1935,10 @@ This sort of \emph{hypothetical reasoning} is central to everyday mathematics, s
 This is the real origin of the name ``natural deduction''.
 In fact, historically, this representation with discharged hypotheses came first, and only later was it rewritten to carry along the context, and then generalized to theories without contraction and weakening.
 Other systems of formal logic, such as ``Hilbert-style calculi'' (see \cref{ex:hilbert}), though they can derive the same class of tautologies, do not really include hypothetical reasoning as such, and hence do not model informal reasoning as well.
+
+\begin{rmk}
+  [TODO: Frobenius/Hopf for $\join$, for reasoning with extra hypotheses, and distributivity without $\To$.]
+\end{rmk}
 
 Now, it may seem that the logical expressivity of the natural deduction for Heyting algebras is lacking because there is no operation corresponding to \emph{negation}.
 However, we can do pretty well by defining $\neg A$ to mean $A\To\bot$, so that its rules are
@@ -1955,7 +1959,7 @@ Using these rules, here is a derivation of one of ``de Morgan's laws'' as a taut
         }}{\neg(A\join B) \types \neg A}\\
       \text{(and dually)}
       }{\neg(A\join B) \types \neg A\meet \neg B}
-  }{()\types \neg(A\join B)\To(\neg A\meet \neg B)}
+  }{\ec\types \neg(A\join B)\To(\neg A\meet \neg B)}
 \end{mathpar}
 % VERSION WITH PRIMITIVE STRUCTURAL RULES
 % \begin{mathpar}
@@ -1979,7 +1983,7 @@ Using these rules, here is a derivation of one of ``de Morgan's laws'' as a taut
 %           }}{(A\join B)\To\bot,B \types \bot
 %         }}{(A\join B)\To\bot \types B\To\bot}
 %       }{(A\join B)\To\bot \types (A\To\bot)\meet (B\To\bot)}
-%   }{()\types ((A\join B)\To\bot)\To((A\To\bot)\meet (B\To\bot))}
+%   }{\ec\types ((A\join B)\To\bot)\To((A\To\bot)\meet (B\To\bot))}
 % \end{mathpar}
 However, not \emph{every} tautology can be derived this way.
 In particular, $\neg\neg A \To A$ (the ``law of double negation'') and $A\join \neg A$ (the ``law of excluded middle'') are not derivable, because although they hold in $\tv$, their analogues fail to hold in other Heyting algebras.
@@ -2050,14 +2054,19 @@ The straightforward derivation of this tautology in our type theory requires wea
 \begin{mathpar}
   \inferrule*{\inferrule*{\inferrule*[Right=weakening]{A\types A}{A,B\types A
       }}{A\types (B\To A)
-    }}{()\types A\To (B\To A)}
+    }}{\ec\types A\To (B\To A)}
 \end{mathpar}
-and in fact the type theory for closed relevance monoidal lattices cannot derive $()\types A\hom (B\hom A)$ (although this is not obvious; see \cref{ex:relevance-eg,ex:seqcalc-logic}).
+and in fact the type theory for closed relevance monoidal lattices cannot derive $\ec\types A\hom (B\hom A)$ (although this is not obvious; see \cref{ex:relevance-eg,ex:seqcalc-logic}).
 
 The most commonly used relevance logics satisfy other principles that our type theory does not, notably the distributive law $A\meet (B\join C) \cong (A\meet B)\join (A\meet C)$ (note that our derivation of this above also used weakening).
 Of course, any closed monoidal lattice satisfies the distributive law $A\tensor (B\join C) \cong (A\tensor B)\join (A\tensor C)$, but as we have observed, both weakening and contraction are necessary to force $\tensor$ to coincide with $\meet$.
 (It is possible to formulate type theories that ensure the $\meet/\join$ distributive law as well, but this requires a fancier notion of generalized multicategory.) %, so we postpone it to [TODO].
 
+
+\subsection{Sequent calculus and logic}
+\label{sec:seqcalc-logic}
+
+[TODO]
 
 \subsection*{Exercises}
 
@@ -2071,7 +2080,7 @@ Of course, any closed monoidal lattice satisfies the distributive law $A\tensor 
 \end{ex}
 
 \begin{ex}\label{ex:nnlem}
-  Prove that $\neg\neg(P\join\neg P)$ is an intuitionistic tautology, i.e.\ construct a derivation of $()\types\neg\neg(P\join\neg P)$ in the natural deduction for Heyting algebras.
+  Prove that $\neg\neg(P\join\neg P)$ is an intuitionistic tautology, i.e.\ construct a derivation of $\ec\types\neg\neg(P\join\neg P)$ in the natural deduction for Heyting algebras.
 \end{ex}
 
 \begin{ex}\label{ex:heyt-bool}
@@ -2113,14 +2122,14 @@ Of course, any closed monoidal lattice satisfies the distributive law $A\tensor 
 
 \begin{ex}\label{ex:relevance-eg}
   Describe a concrete example of a closed relevance monoidal lattice containing two objects $A$ and $B$ such that there is no morphism from $\one$ (the unit object) to $A\hom (B\hom A)$.
-  Deduce that $()\types A\hom (B\hom A)$ is not derivable in the type theory for closed relevance monoidal lattices.
+  Deduce that $\ec\types A\hom (B\hom A)$ is not derivable in the type theory for closed relevance monoidal lattices.
 \end{ex}
 
 \begin{ex}\label{ex:seqcalc-logic}
   One of the advantages of sequent calculus over natural deduction is that because all of its rules \emph{introduce} operations on the left or the right, it is easier to conclude underivability theorems.
   \begin{enumerate}
   \item Define a sequent calculus for closed \fS-monoidal lattices, and prove the cut admissibility and initiality theorems.
-  \item Prove that $()\types A\hom (B\hom A)$ is not derivable in the sequent calculus for closed relevance monoidal lattices, by ruling out all possible ways that such a derivation could end.
+  \item Prove that $\ec\types A\hom (B\hom A)$ is not derivable in the sequent calculus for closed relevance monoidal lattices, by ruling out all possible ways that such a derivation could end.
   \end{enumerate}
 \end{ex}
 
@@ -2634,7 +2643,7 @@ We can treat all the other rules from \cref{sec:multicat-prod-coprod} (and also 
       \Phi \types \match_{A\tensor B}(M,xy.N):C
     }\;\tensorE
     \\
-    \inferrule{ }{()\types \ott:\one}\;\one I
+    \inferrule{ }{\ec\types \ott:\one}\;\one I
     \and
     \inferrule{
       \Psi\types M:\one \\
@@ -2775,8 +2784,8 @@ and the axioms shown in \cref{fig:smc-bimonoid}.
                 \equiv \comult(m(x,y)) : A\tensor A
               \end{multlined}\\
     x:A,y:A &\types \counit(m(x,y)) \equiv \match_\one(\counit(x),\match_\one(\counit(y),\ott)) :\one\\
-    () &\types \comult(e) \equiv \tpair{e}{e} :A\tensor A\\
-    () &\types \counit(e) \equiv \ott :\one
+    \ec &\types \comult(e) \equiv \tpair{e}{e} :A\tensor A\\
+    \ec &\types \counit(e) \equiv \ott :\one
   \end{align*}
   \caption{Axioms for a bimonoid}
   \label{fig:smc-bimonoid}
