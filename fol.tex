@@ -533,6 +533,8 @@ The same is true for intuitionistic first-order logic with $\all$ and $\exis$, i
 The case of equality is a bit tricker because of the arbitrary context $\Theta$ that has to be substituted into, but \cref{ex:eq-frob-from-hom} shows that as long as we also have implication we can ignore this.
 We leave the details to the reader.
 
+% TODO: Give some details of this.  For equality, we can allow the proof of $\ph[x/y]$ to discharge any number of hypotheses of the form $\theta[x/y]$ as long as $\theta[M/x,N/y]$ is elsewhere a hypothesis (or is added as a hypothesis by the equality rule).
+
 % TODO: Give some examples of informal reasoning and how it translates to formal deduction.  One de Morgan's law for quantifiers?  Or Frobenius \cref{ex:exists-frob}?
 
 
@@ -568,6 +570,8 @@ We leave the details to the reader.
 % \end{figure}
 
 % TODO: Has cut-admissibility for sequent calculus been done using Lawvere's equality rule?
+
+% Need to build in cuts on both sides of axioms in general, as mentioned in \cref{sec:unary-theories}.
 
 
 \subsection*{Exercises}

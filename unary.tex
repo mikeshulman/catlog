@@ -1942,16 +1942,29 @@ It follows that if we define a 2-category whose objects are unary $\times$-theor
 The morphisms in this 2-category are sometimes called ``translations'' of one theory into another.
 
 Finally, it is worth noting that $\times$-theories as defined here have a minor problem from a type-theoretic standpoint.
-If we try to formulate a sequent calculus version of them, we find that cut is no longer admissible, because there is no way to simplify a cut like the following:
+If we try to formulate a sequent calculus version of them with the same generator rules as before, we find that cut is no longer admissible.
+For instance, if $f\in\cG_1(A,B\times C)$, there is no way to simplify a cut like the following:
 \begin{mathpar}
   \inferrule*[right=cut]{\inferrule*[right=$f$]{X\types A}{X\types B\times C} \\
     \inferrule*[Right=$\timesL$]{B\types Y}{B\times C\types Y}}
   {X\types Y}
 \end{mathpar}
-where $f\in\cG_1(A,B\times C)$.
 That is, if we have generating morphisms whose codomains are products, then their composites with projections cannot be ``simplified''.
 In a natural deduction theory, this problem manifests as a lack of ``canonical forms'' relative to $\beta$- and $\eta$-conversion.
-This is another advantage of the multiple-antecedent type theories to be presented in \cref{chap:simple}: they enable us to describe important theories (such as monoids) while restricting the generating morphisms to have only base types in their domain and codomain.
+
+A common way to deal with this is to simply formulate the cut-elimination theorem in a form like ``all cuts except those over types appearing as the domains or codomains of generators can be eliminated''.
+Or roughly equivalently, we can modify the generator rule to build in a cut on \emph{both} sides:
+\begin{mathpar}
+  \inferrule{X\types A \\ B\types Y}{X\types Y}\; f\in\cG_1(A,B)
+\end{mathpar}
+With this primitive rule, the above ``inadmissible'' cut could be replaced by
+\begin{mathpar}
+  \inferrule*[right=$f$]{X\types A\\
+    \inferrule*[Right=$\timesL$]{B\types Y}{B\times C\types Y}}
+  {X\types Y}
+\end{mathpar}
+
+In any case, this is another advantage of the multiple-antecedent type theories to be presented in \cref{chap:simple}: they enable us to describe important theories (such as monoids) while restricting the generating morphisms to have only base types in their domain and codomain.
 (Of course we still do require generating equalities relating complex terms rather than just generators.)
 
 
