@@ -1437,6 +1437,13 @@ In particular~\cite{ptj:elephant} includes a comprehensive discussion of regular
 
 \subsection*{Exercises}
 
+\begin{ex}\label{ex:fptheory-horn}
+  Suppose given a finite-product theory in the sense of \cref{sec:fp-theories}.
+  Then we can make it into a Horn theory by replacing its $\equiv$ axioms with $=$ axioms (with empty proposition context).
+  If \cS is any category with finite limits, prove that models of the original finite-product theory in \cS correspond bijectively to models of the Horn theory in $\sub_\cS$.
+  In this sense, first-order logic subsumes finite-product logic; see \cref{ex:sieves} for a further enhancement.
+\end{ex}
+
 \begin{ex}\label{ex:regular-epis}
   Prove that every regular epimorphism (in any category) is an extremal epimorphism.
 \end{ex}
@@ -1462,6 +1469,17 @@ In particular~\cite{ptj:elephant} includes a comprehensive discussion of regular
   \item If \cS additionally has finite coproducts that are stable under pullback, prove that $\sub_\cM(\Gamma)$ is a coherent hyperdoctrine.
   \item Show that both of the previous parts apply when \cS is the category of topological spaces and \cM consists of the subspace inclusions.
   \item Is there an analogue of \cref{thm:logic-uniquechoice} for $\sub_\cM$?
+  \end{enumerate}
+\end{ex}
+
+\begin{ex}\label{ex:sieves}
+  For any category \cS with finite products, define an \cS-indexed poset $\sieve_\cS$ by letting $\sieve_\cS(\Gamma)$ be the poset of sieves on $\Gamma$.
+  (A \textbf{sieve} on an object $\Gamma$ is a sub-functor of the representable functor $\cS(-,\Gamma)$.
+  More concretely, it is a set of morphisms with codomain $\Gamma$, closed under precomposition with arbitrary morphisms of \cS.)
+  \begin{enumerate}
+  \item Prove that $\sieve_\cS$ is always a first-order hyperdoctrine.
+  \item If we make a finite-product theory into a Horn theory as in \cref{ex:fptheory-horn}, prove that models of the finite-product theory in \cS correspond bijectively to models of the Horn theory in $\sieve_\cS$.
+    Thus, first-order logic subsumes finite-product logic even for categories having only finite products.
   \end{enumerate}
 \end{ex}
 
