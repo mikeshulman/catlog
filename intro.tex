@@ -5,6 +5,10 @@
 
 % [TODO: Mention how the syntactic/free object gives "completeness" of a theory.]
 
+In this optional chapter I will attempt to motivate and describe the discipline of categorical logic for the newcomer, and also locate this book within the ecosystem thereof for the expert.
+Nothing herein is required for reading the rest of the book; but I hope that it may serve some purpose nevertheless.
+
+
 \section{Appetizer: inverses in group objects}
 \label{sec:intro}
 
@@ -68,7 +72,7 @@ Here the composite around the top is equal to $i$, the composite around the bott
 \end{figure}
 
 While there is a certain beauty to \cref{fig:uniqinv-diagram}, it takes considerable effort to write it down and arrange it in such a pleasing form (as opposed to a horrid mess on scratch paper), let alone typeset it prettily.
-And this is really a fairly simple fact about monoids; for more complicated theorems, the complexity of the resulting diagrams grows accordingly.
+And this is really a fairly simple fact about monoids; for more complicated theorems, the complexity of the resulting diagrams grows accordingly (see \cref{ex:eckmann-hilton,ex:near-ring}).
 
 Nevertheless, there is a sense in which \cref{fig:uniqinv-diagram} is obtained \emph{algorithmically} from the simple proof~\eqref{eq:invuniq-easy}.
 Specifically, each expression in~\eqref{eq:invuniq-easy} corresponds to one or more paths through \cref{fig:uniqinv-diagram}, and each equality in~\eqref{eq:invuniq-easy} corresponds to a commuting polygon in \cref{fig:uniqinv-diagram}.\footnote{Not every polygon in \cref{fig:uniqinv-diagram} corresponds to anything in~\eqref{eq:invuniq-easy}, though: the ``universal property'' quadrilaterals on the left are ``invisible'' algebraically.
@@ -77,7 +81,7 @@ With experience, one can learn to do such translations without much effort, at l
 However, if it really is an algorithm, we shouldn't have to re-do it on a case-by-case basis at all; we should be able to prove a single general ``meta-theorem'' and then appeal to it whenever we want to.
 This is the goal of categorical logic.
 
-Specifically, the \emph{internal logic of a category with products} allows us to replace \cref{fig:uniqinv-diagram} by an argument that looks almost the same as~\eqref{eq:invuniq-easy}.
+Specifically, the \emph{type theory for categories with products} allows us to replace \cref{fig:uniqinv-diagram} by an argument that looks almost the same as~\eqref{eq:invuniq-easy}.
 The morphisms $m$ and $e$ are represented in this logic by the notations
 \begin{mathpar}
   x:A,y:A \types x\cdot y :A \and
@@ -107,10 +111,11 @@ However, if our category has more structure, then we can ``internalize'' more se
 
 As an example, note that for ordinary monoids in sets, the uniqueness of inverses~\eqref{eq:invuniq-easy} is expressed ``pointwise'' rather than in terms of inverse-assigning operators.
 In other words, for each element $x\in A$, if $x$ has two two-sided inverses $y$ and $z$, then $y=z$, regardless of whether any other elements of $A$ have inverses.
-If we think hard enough, we can express this diagrammatically in terms of the category \bSet is to consider the following two sets:
+If we think hard enough, we can express this diagrammatically in terms of the category \bSet.
+Consider the following two sets:
 \begin{align*}
   B &= \setof{(x,y,z)\in A^3 | xy=e, yx=e, xz=e, zx=e}\\
-  C &= \setof{(y,z)\in B^2 | y=z}
+  C &= \setof{(y,z)\in A^2 | y=z}
 \end{align*}
 In other words, $B$ is the set of elements $x$ equipped with two inverses, and $C$ is the set of pairs of equal elements.
 Then the uniqueness of pointwise inverses can be expressed by saying there is a commutative diagram
@@ -124,11 +129,11 @@ The object $C$ can be constructed categorically as the equalizer of the two proj
     & 1 \ar[ur]_e }} \]
 and the others are similar.
 We can then try to \emph{prove}, in this generality, that there is a commutative square as above.
-We can do this by manipulating arrows, or by appealing to the Yoneda lemma, but we can also use the \emph{internal logic of a category with finite limits}.
-This is a syntax like the internal logic for categories with finite products, but which also allows us to \emph{hypothesize equalities}.
+We can do this by manipulating arrows, or by appealing to the Yoneda lemma, but we can also use a \emph{type theory for categories with finite limits}.
+This is a syntax like the type theory for categories with finite products, but which also allows us to \emph{hypothesize equalities}.
 The judgment in question is
 \begin{equation}\label{eq:pointwise-unique-inverses}
-  x:A, y:A, z:A, x\cdot y = e, y\cdot x=e, x\cdot z = e, z\cdot x = e \types y=z.
+  x:A, y:A, z:A, (x\cdot y = e), (y\cdot x=e), (x\cdot z = e), (z\cdot x = e) \types (y=z).
 \end{equation}
 As before, the comma binds the most loosely, so this should be read as
 \[ ((x:A), (y:A), (z:A), (x\cdot y = e), (y\cdot x=e), (x\cdot z = e), (z\cdot x = e)) \types (y=z). \]
@@ -137,15 +142,15 @@ The ``interpretation machine'' then produces from this a morphism $B\to C$, for 
 
 Next, note that in the category \bSet, the uniqueness of inverses ensures that if every element $x\in A$ has an inverse, then there is a \emph{function} $i:A\to A$ assigning inverses --- even without using the axiom of choice.
 (If we define functions as sets of ordered pairs, as is usual in set-theoretic foundations, we could take $i = \setof{(x,y) | xy=e}$; the pointwise uniqueness ensures that this is indeed a function.)
-This fact can be expressed in the internal logic of an \emph{elementary topos}.
+This fact can be expressed in the type theory of an \emph{elementary topos}.
 We postpone the definition of a topos until later; for now we just remark that its structure allows both sides of the turnstile $\types$ to contain \emph{logical formulas} such as $\exis x. \all y. \phi(x,y)$ rather than just elements and equalities.
 In this language we can state and prove the following:
-\[ \forall x:A. \exists y:A. x\cdot y = e \land y\cdot x = e \types
-\exists i:A^A. \forall x:A. (x\cdot i(x) = e \land i(x)\cdot x = e)
+\[ \forall x:A. \exists y:A. ((x\cdot y = e) \land (y\cdot x = e)) \types
+\exists i:A^A. \forall x:A. ((x\cdot i(x) = e) \land (i(x)\cdot x = e))
 \]
 As before, the proof is essentially exactly like the usual set-theoretic one.
 Moreover, the interpretation machine allows us to actually extract an ``inverse operator'' morphism in the topos from this proof.
-As before, such a result can also be stated and proved using arrows and commutative diagrams, but as the theorems get more complicated, the translation gets more tedious to do by hand, and the advantage of type-theoretic notation becomes greater.
+Such a result can also be stated and proved using arrows and commutative diagrams, but as the theorems get more complicated, the translation gets more tedious to do by hand, and the advantage of type-theoretic notation becomes greater.
 
 \begin{props}
 So much for adding extra structure.
@@ -210,7 +215,9 @@ So even in a non-cartesian situation, we can use a very similar set-like argumen
 \end{props}
 
 This concludes our ``appetizer''; I hope it has given you a taste of what categorical logic looks like, and what it can do for category theory.
-In \cref{chap:unary} we will rewind back to the beginning and start with very simple cases.
+In \cref{chap:unary} we will rewind back to the beginning and start with very simple type theories (even simpler than the ones we used in this section).
+Before we actually start doing type theory, however, let me prepare the ground a little by explaining how, in principle, the sort of ``interpretation machine'' mentioned above can work.
+
 
 \subsection*{Exercises}
 
@@ -250,29 +257,171 @@ In \cref{chap:unary} we will rewind back to the beginning and start with very si
 \end{ex}
 
 
+\section{On syntax and free objects}
+\label{sec:syntax}
+
+The way that type theory allows us to prove things about categorical structures is by providing a \emph{syntactic presentation of free objects}.
+To explain what this means, let's consider an example that (apparently) has very little to do with type theory or category theory.
+The following is a standard result from elementary group theory.
+
+\begin{thm}\label{thm:intro-conjugation}
+  Recall that for elements $g,h$ of a group $G$, the \textbf{conjugation} of $h$ by $g$ is defined by $h^g = g h g^{-1}$.
+  For any $g,h,k$ we have $h^g\,k^g = (hk)^g$.
+\end{thm}
+\begin{proof}
+  \[ h^g\,k^g = (g h g^{-1})(g k g^{-1}) = g h k g^{-1} = (hk)^g \qedhere \]
+\end{proof}
+
+Now this ``proof'' is not, technically, a complete proof from the usual axioms of a group.
+In fact, even the definition of conjugation is not, technically, meaningful, because the usual axioms of a group only involve a way to multiply \emph{two} elements, not three.
+Technically, we should choose a parenthesization and write, say, $h^g = (g h) g^{-1}$; and then use the associativity and unit axioms explicitly throughout the above proof:
+\begin{multline*}
+  h^g k^g
+  = ((g h) g^{-1})((g k) g^{-1})
+  = (g (h g^{-1}))((g k) g^{-1})
+  = ((g (h g^{-1}))(g k)) g^{-1}\\
+  = (g ((h g^{-1})(g k))) g^{-1}
+  = (g (h (g^{-1}(g k)))) g^{-1}
+  = (g (h ((g^{-1} g) k))) g^{-1}\\
+  = (g (h (e k))) g^{-1}
+  = (g (h k)) g^{-1}
+  = (h k)^g
+\end{multline*}
+Of course, this would be horrific, so no one ever does it.
+But what justifies \emph{not} doing it?
+
+Normally, if mathematicians think about this sort of question at all, they would probably say that technically the extra steps have to be there, but we omit them because the reader could fill them in him- or herself.
+There's nothing intrinsically wrong with this (although it does start to become problematic when formalizing mathematics in a computer, since the computer can't fill in the steps itself unless some programmer takes the time to teach it exactly how).
+
+Interestingly, however, there \emph{is} a way to make the nice short proof of \cref{thm:intro-conjugation} completely rigorous on its own.
+Consider the \emph{free group} $F_3$ generated by three elements $g,h,k$.
+Then the elements of $F_3$ can be represented by finite strings composed of the letters $g,h,k$ and their formal inverses, in which no letter is ever adjacent to its inverse (we call these \textbf{reduced words}).
+In particular, $g h g^{-1}$ and $g k g^{-1}$ and $g h k g^{-1}$ are all elements of $F_3$, and the product $(g h g^{-1})(g k g^{-1})$ is equal to $g h k g^{-1}$ by definition of multiplication in $F_3$ (concatenate strings and cancel any elements adjacent to their inverses).
+Thus, the calculation in the proof of \cref{thm:intro-conjugation} makes literal sense as a statement \emph{about elements of $F_3$}.
+
+Of course, we want the theorem to be true about \emph{any} three elements of \emph{any} group, not just the generators of $F_3$.
+But if we have three such elements $g', h', k'\in G$, the freeness of $F_3$ means there is a unique group homomorphism $\free:F_3 \to G$ such that $\free(g) = g'$, $\free(h)=h'$, and $\free(k)=k'$.
+Since $\free$ is a group homomorphism, it preserves conjugation and multiplication.
+Thus, since \cref{thm:intro-conjugation} is true about $g,h,k\in F_3$, it must also be true about $g',h',k'\in G$.
+
+This is the basic method of categorical logic: we do a calculation in a free structure, then map it everywhere else using the unique morphisms determined by the universal property of that free structure.
+Of course, not much is gained by this in our current fairly trivial example; in particular, no one would ever consider teaching undergraduates group theory that way!
+But as we will see, the same principle applies in much more complicated situations, and tends to get more and more useful the more complicated the structures and proofs are.
+
+It's natural, however, to wonder why such an approach gains us \emph{anything at all}!
+Why would it be any easier to prove something in a free group than in an arbitrary group?
+It almost seems as if it must be false by definition: anything that's true in a free group must be true in all groups, precisely by freeness, so any proof that works in a free group must work in any group.
+
+This ``false by definition'' argument is almost valid.
+It \emph{is} valid if the only thing we know about free groups is their universal property.
+The crucial ingredient in our simplified proof of \cref{thm:intro-conjugation}, however, is that we knew \emph{more} about free groups than their universal property: we had an explicit description of their elements as reduced words.
+Thus, we were able to make use of this knowledge to give a proof in a free group that wouldn't work in an arbitrary group.
+
+I want to emphasize that this explicit description of a free group is \emph{not} a trivial consequence of its universal property.
+There is a ``tautological'' way to construct free groups, but it produces a quite different description:
+\begin{enumerate}
+\item Start with the generators.
+\item Successively apply the operations appearing in the definition (binary multiplication, the unary operation of inversion, and the nullary operation of the identity element) without reference to the axioms.
+  This yields expressions such as $(g h)^{-1}(k^{-1} (k g))$.
+\item Define an equivalence relation on these expressions to be the smallest one that forces all the axioms to hold and is respected by all the operations.
+  Thus, for instance, $(g h)^{-1}(k^{-1} (k g))$ would be identified with $(h^{-1} ((g^{-1} k^{-1}) k)) g$, and also $(g h)^{-1} g$, and also $h^{-1}$.
+\item The quotient of this equivalence relation is the free group on our chosen generators.
+\end{enumerate}
+
+This sort of method works to construct free algebras for any ``algebraic theory''; but it would not help us justify the short proof of \cref{thm:intro-conjugation}.
+The tautological construction produces a free group whose elements are equivalence classes, without any way to choose canonical representatives; in contrast to our explicit description with words, which involved no equivalence classes at all.
+Moreover, there are other algebraic theories, such as \emph{abelian} groups, for which there \emph{are} no canonical representatives for elements of free algebras; so something relatively special to do with groups in particular is happening here.
+
+Roughly the same thing is also true for categorical logic: for many kinds of categorical structure, ``something special'' happens, enabling us to give an explicit description of free structures, and thereby simplify many proofs.
+Moreover, the ``something special'' that happens is more or less the same thing that happens in the case of groups; so it is worth explaining the latter a bit more.
+
+How do we prove that the free group on a set $X$ can be presented using reduced words, given that it is not the tautological construction?
+The very first thing we need to do is prove that the set of reduced words, call it $\F{}X$, \emph{is} a group.
+To multiply two reduced words $w_1$ and $w_2$, we have to concatenate them, but then ``cancel all the element-inverse pairs that appear in the middle''.
+A very formal way to describe this process is by induction.
+
+Consider the second word $w_2$.
+If it has length $0$ (i.e.\ it is the empty word), then we can define the product $w_1\cdot w_2$ to be just $w_1$.
+Otherwise, $w_2$ must end with either a generator or its inverse.
+Suppose it ends with a generator, so that $w_2 = w_2' g$ for some $g\in X$ (we leave the other case to the reader).
+Then $w_2'$ is shorter than $w_2$, so by induction on its length, we may suppose that we have defined how to multiply $w_1$ by $w_2'$, obtaining a new word $w_1 \cdot w_2'$.
+
+Now, since we hope multiplication will be associative, and we expect $w_2$ to actually be the product $w_2' \cdot g$ (not just the concatenation), we should have $w_1 \cdot w_2 = w_1 \cdot (w_2'\cdot g) = (w_1\cdot w_2')\cdot g$.
+Thus, since we have inductively defined $w_1\cdot w_2'$, we only need to multiply it on the right by $g$.
+We would like to just concatenate $g$ on the end, but this might not result in a reduced word, if it happens that $w_1\cdot w_2'$ ends with $g^{-1}$.
+(How could this happen, given that $w_2'$ doesn't end with $g$ (since $w_2 = w_2'g$ is reduced)?
+The simplest case is if $w_1$ ends with $g^{-1}$ and $w_2'$ is empty.
+More generally, all of $w_2'$ could get canceled by part of $w_1$ to expose a $g^{-1}$ inside $w_1$.)
+
+Thus, we have to inspect $w_1\cdot w_2'$.
+If it ends with $g^{-1}$, say $w_1\cdot w_2' = w_3 g^{-1}$, then we define the product $w_1 \cdot w_2$ to be $w_3$.
+Otherwise, the concatenated word $(w_1\cdot w_2')g$ is reduced, so we can define it to be $w_1\cdot w_2$.
+
+This completes our formal definition of multiplication of reduced words.
+The reason for writing out the proof in such a pedantic way is that essentially the same method works for the rest of the argument.
+For instance, how do we prove that multiplication is associative?
+Given three reduced words $w_1$, $w_2$, and $w_3$, we induct on the length of $w_3$.
+If it is empty, then $(w_1\cdot w_2)\cdot w_3$ and $w_1 \cdot (w_2 \cdot w_3)$ are both $w_1\cdot w_2$ by definition.
+Otherwise, $w_3 = w_3'g$ (or $w_3 = w_3'g^{-1}$), and we can use the definitions of multiplication and an inductive hypothesis that $(w_1\cdot w_2)\cdot w_3'$ and $w_1 \cdot (w_2 \cdot w_3')$.
+
+Similarly, how do we extend a function $\prefree:X\to G$ to a group homomorphism $\free:\F{}X\to G$?
+Each reduced word is either empty, in which case it must go to the identity of $G$, or of the form $wg$ for some $g\in X$, in which case it must go to the product $\free(w)\cdot \prefree(g)$ in $G$.
+And we prove that $\free(w_1\cdot w_2) = \free(w_1)\cdot \free(w_2)$ by --- you guessed it --- induction on the length of $w_2$.
+
+This fairly simple proof actually displays many of the characteristics of analogous proofs about type theories that we will encounter throughout the book.
+The construction of multiplication in $\F{}X$ is a simple form of \textbf{cut admissibility}, and the proof that $\F{}X$ is the free group on $X$ provides a prototype for the ``initiality theorems'' that we will prove for all of our type theories.
+(This is the ``something special'' I referred to earlier that happens for groups, and also for categories, but not for abelian groups.)
+But the most important thing to take away is the overall picture: we gave a concrete description of a free structure that was not obvious from its universal property, enabling us to write proofs in the free structure that would not make sense in an arbitrary structure, but nevertheless imply conclusions about arbitrary structures by the universal property.
+
+Now you may be able to look back at \cref{sec:intro} and have a slightly better idea of what is happening.
+The funny type-theoretic syntax such as $x:A,y:A \types x\cdot y :A$ is a particular explicit presentation of (in this case) the category with products ``freely generated by a monoid with two inverse operators''.
+This is a category with products, say $\F{}\cI$, containing a monoid object $A$ with two inverse operators, with the property that given any other category with products \cM and a monoid object $B$ therein with two inverse operators, there is a unique functor $\F{}\cI \to \cM$ mapping $A$ and its inverse operators to $B$ and its inverse operators.
+Our calculation in this type theory showed that the two inverse operators of $A$ are equal; therefore, so must those of $B$, for any \cM and $B$.
+
+I emphasize again that we will make all of this more precise later on, so it is not necessary to understand deeply right now.
+But the idea is unfamiliar enough to many mathematicians that you may need to let it wash over you for a while before coming to understand it.
+(Certainly that was my own experience with learning type theory.)
+I also hope that seeing this glimpse of the bigger picture will motivate the reader to make it through the (sometimes rather technical) details of subsequent chapters.
+
+\begin{rmk}
+  It is worth noting that type theory is not the only syntax for free structures in category theory; probably the best-known alternative syntax is \emph{string diagrams} (see e.g.~\cite{js:geom-tenscalc-i,selinger:graphical}).
+  Type theory and string diagrams use the same idea of giving a concrete presentation of a free object that is easier to reason about, but the particular presentations used are quite different.
+  Type-theoretic presentations are typically characterized by cut-admissibility and similar theorems, whereas string diagrams use topological structures and deformations.
+  Each has strengths and weaknesses; some proofs are easy in type theory and difficult with string diagrams, while for other proofs the opposite is true.
+
+  In fact, the \emph{usual} way of reasoning in category theory (or any other subject), in which we speak explicitly about objects, arrows, and so on, can be interpreted to be simply making use of the ``tautological'' presentation of a free structure rather than some fancier one.
+  In this case, of course, there is nothing practical to be gained by such a viewpoint; but it may help to ``relate the new with the old''.
+\end{rmk}
+
+
+\subsection*{Exercises}
+
+\begin{ex}\label{ex:group-cutadm}
+  Write out the remaining details in the proof that $\F{}X$ is the free group generated by the set $X$.
+\end{ex}
+
+
 \section{On type theory and category theory}
 \label{sec:generalities}
 
-Since there are many other introductions to categorical logic (a non-exhaustive list could include~\cite{mr:focl,ls:hocl,jacobs:cltt,goldblatt:topoi,ptj:elephant}), it seems appropriate to say a few words about what distinguishes this one.
-Our description may not make very much sense to the beginner who doesn't yet know what we are talking about, but it may help to orient the expert, and as the beginner becomes more expert he or she can return to it later on.
+So much for the big picture of categorical logic.
+However, since there are many other introductions to categorical logic (a non-exhaustive list could include~\cite{mr:focl,ls:hocl,jacobs:cltt,goldblatt:topoi,ptj:elephant}), it seems appropriate to say a few words about what distinguishes this one.
+These words may not make very much sense to the beginner who doesn't yet know what we are talking about, but they may help to orient the expert, and as the beginner becomes more expert he or she can return to them later on.
 
-Our perspective is very much that of the category theorist: our primary goal is to use type theory as a convenient syntax to prove things about categories.
-The way that it does this is by giving concrete presentations of \emph{free} categorical structures, so that by working in those presentations we can deduce conclusions about \emph{any} such structure.
-There are other such syntaxes for category theory, notably string diagram calculi, that function in a similar way (giving a concrete presentation of free structures) to the extent that they are made precise.
-Indeed, the \emph{usual} way of reasoning in category theory, in which we speak explicitly about objects, arrows, commutative diagrams, and so on, can also be interpreted, from this point of view, to be simply making use of the \emph{obvious} presentation of a free structure rather than some fancier one.
+Our perspective is very much that of the category theorist: our primary goal is to use type theory as a convenient syntax to prove things about categories, by presenting free structures in a particular way.
 (It can be tempting for the category theorist to want to generalize away from free structures to arbitrary ones, but this temptation should be resisted; see \cref{rmk:free}.)
-
 In particular, this means that we are not interested in aspects of type theory such as computability, canonicity, proof search, cut-elimination, focusing, and so on \emph{for their own sake}.
 However, at the same time we recognize their importance for type theory as a subject in its own right, which suggests that they should not be ignored by the category theorist.
 If nothing else, the category theorist will encounter these words when speaking to type theorists, and so it is advantageous to have at least a passing familiarity with them.
 
-In fact, our perspective is that it is precisely the esoteric-sounding notion of \emph{cut elimination} (or \emph{admissibility of substitution}) that essentially \emph{defines} what we mean by a \emph{type theory}.
+In fact, our perspective is that the esoteric-sounding notion of \emph{cut admissibility} (and its various other incarnations such as \emph{cut-elimination} or \emph{admissibility of substitution}) essentially \emph{defines} what we mean by a ``type theory'' (as opposed to some other syntax for free structures, such as string diagrams or the tautological one).
 Of course this is not literally true; a more careful statement would be that type theories with cut elimination are those that exhibit the most behavior most characteristic of type theories.
 (Jean-Yves Girard remarked that ``a logic without cut-elimination is like a car without an engine.'')
 A ``type theory without cut elimination'' can still yield explicit presentations of free structures, but will tend to lack some of the characteristic features of categorical logic.
 
-So what is this mysterious cut-elimination, from a categorical perspective?
-Informally, it says that the morphisms in a free categorical structure can be presented \emph{without explicit reference to composition}.
+So what is this mysterious cut-admissibility, from a categorical perspective?
+We saw a simple example of it for groups in \cref{sec:syntax}.
+In general, cut admissibility says that the morphisms in a free categorical structure can be presented \emph{without explicit reference to composition}.
 This is a bit of a cheat, because as we will see, in fact what we do is to build just enough ``implicit'' reference to composition into our rules to ensure that we no longer need to talk about composition explicitly.
 However, this does not make the process trivial, and it can still yield valuable results.
 
@@ -284,6 +433,7 @@ Another interesting fact about cut-elimination is that the composition it produc
 Do\v{s}en~\cite{dosen:cutelim-cats} %\footnote{[TODO: Read Do\v{s}en and Petri\'{c}, \textit{Proof-Theoretical Coherence}, \url{http://www.mi.sanu.ac.rs/~kosta/publications.htm}]}
  uses this to ``explain'' or ``justify'' the definition of category (and other basic category-theoretic notions) in terms of cut-elimination.
 Of course, for our intended audience of category theorists it is cut-elimination, rather than associativity, that requires explanation and justification; but nevertheless the relationship is intriguing.
+There is undoubtedly a connection with the ``something special'' possessed by groups and categories but not by magmas or abelian groups.
 
 Both of these facts are instances of an underlying general principle: by presenting a free categorical structure without explicit reference to composition, we are free to then \emph{define} its composition as an operation on its already-existing morphisms, and we can choose this definition so as to ensure that various desirable properties hold automatically.
 This eliminates or reduces the need for quotienting by equivalence relations in the presentation of a free structure.
@@ -302,7 +452,7 @@ This perspective has many advantages.
 For instance, it means that a (constructive) proof of cut-elimination \emph{is already} a definition of substitution into terms; it is not necessary to separately define a notion of ``substitution into terms'' and then prove that this \emph{separately defined} notion of substitution is admissible.
 It also deals quite nicely with the problems of $\alpha$-equivalence and bound variable renaming: as an operation on derivations, substitution doesn't need to care about ``whether a free variable is going to get captured''; the point is just that when we choose a term to represent the substituted derivation we have to accord with the general rules for how terms are assigned to derivations.
 
-Most importantly, however, adhering to the ``terms are derivations'' principle greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present the initial category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
+Most importantly, however, adhering to the ``terms are derivations'' principle greatly simplifies the proofs of the central ``initiality theorems'' (that the type theory really does present a free category with appropriate structure), since we can define a map out of the type theory \emph{by induction on derivations} and deduce immediately that it is also defined on terms.
 If the ``terms are derivations'' principle is broken, then one generally ends up wanting to induct on derivations anyway, and then having to prove laboriously that the resulting ``operation'' on terms is independent of their derivations.
 
 Informally, the ``terms are derivations'' principle means that \emph{the meaning of a notation can be evaluated simply on the basis of the notation as written, without having to guess at the thought processes of the person who wrote it down}.
@@ -314,14 +464,15 @@ This principle demands in particular that substitution be an ``admissible rule''
 For similar reasons, we present our type theories so as to ensure that as many structural rules as possible are admissible rather than primitive: not only cut/substitution, but also exchange, contraction, and weakening.
 The meaning of $x+y$ should not depend on which of the variables $x$ and $y$ happens to have been mentioned first in the course of a proof.
 
-Many introductions to type theory are somewhat vague about exactly how these rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
+Many introductions to type theory are somewhat vague about exactly how these structural rules are to be imposed, especially for substructural theories such as linear logic with exchange only.
 However, when we try to use type theory to present a free symmetric monoidal category (as opposed to a free symmetric monoidal poset), we have to worry about the functoriality of the exchange rule, which technically requires being explicit about exactly how exchange works.
 If we make exchange admissible, then it is automatically functorial, just as making substitution admissible gives associativity for free; this considerably simplifies the theory.
 Having structural rules as primitive would also make the notation quite tedious if we continued to adhere to the principle that terms are just a notation for derivations.
 
 In fact, it seems to me that much of the literature on categorical logic contains gaps or even errors relating to these points.
 It is very tempting to prove the initiality theorem by induction on derivations without realizing that by breaking the ``terms are derivations'' principle one thereby incurs an obligation to prove that the interpretation of a term is independent of its derivation.
-It is also very tempting to include too many primitive rules, perhaps based on the thought that if a rule is true anyway, it's simpler to assume it than to have to prove it; of course, thinking of rules as \emph{operations} in an algebraic theory makes clear that if there are too many of them, then the initial algebra will be too big.
+It is also very tempting to include too many primitive rules, perhaps based on the thought that if a rule is true anyway, it's simpler to assume it than to have to prove it.
+One way to break this habit is to think of primitive rules as the \emph{operations} in an algebraic theory for which we are interested in the free algebras: clearly if there are too many operations, then the initial algebra will be too big.
 
 Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts, including also the still more general ``polycategories'' and their generalizations).
 Although multicategories have been present in categorical logic from close to the beginnings of both (Lambek's original definition of multicategory~\cite{lambek:dedsys-ii} was motivated by logical considerations), they are rarely mentioned in introductions to the subject.
@@ -330,7 +481,7 @@ One concrete advantage of using multicategories is a more direct correspondence 
 However, the correspondence and motivation goes deeper than that.
 We may ask \emph{why} type theory distinguishes these two kinds of sequents?
 We will discuss this in more detail in \cref{sec:why-multicats}, but the short answer is that ``it makes cut-elimination work''.
-More specifically, it enables us to formulate type theory in such a way that \emph{each rule refers to at most one type former}; this enables us to ``commute these rules past each other'' in the proof of cut-elimination.
+More specifically, it enables us to formulate type theory in such a way that \emph{each rule refers to at most one type former}, so that we can ``commute these rules past each other'' in the proof of cut-elimination.
 Moreover, including sequents such as $A,B\types C$ allows us to describe certain operations in a type-theoretic style that would not otherwise be possible, such as a monoidal tensor product.
 A type theorist speaks of this in terms of \emph{deciding on the judgmental structure first} (including ``structural rules'') and then defining the connectives to ``internalize'' various aspects of that structure.
 
