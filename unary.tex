@@ -5,9 +5,11 @@ We begin our study of type theories and their categorical counterparts with a cl
 (This terminology is not standard in the literature.)
 On the type-theoretic side the word ``unary'' indicates that there is only one type on each side of a sequent $A\types B$.
 On the categorical side it means, roughly, that we deal with categories rather than any kind of multicategory.
+In later chapters we will generalize away from this in various ways.
 
 In some ways the unary case is fairly trivial, but for that very reason it serves as a good place to become familiar with basic notions of type theory and how they correspond to category theory.\footnote{I am indebted to Dan Licata~\cite{ls:1var-adjoint-logic} for the insight that unary type theories can be easier but still interesting.}
-In later chapters we will generalize away from unarity in various ways.
+Some of these notions and remarks may seem very pedantic in the unary case, but will become more important later on.
+I encourage the reader new to type theory to skim over any such parts of this chapter, and then return to it after some acquaintance with later chapters.
 
 
 \section{Posets}
@@ -17,7 +19,7 @@ We start with the simplest sort of categories: those in which each hom-set has a
 These are well-known to be equivalent to \emph{preordered sets}, where the existence of an arrow $A\to B$ is regarded as the assertion that $A\le B$.
 I will abusively call them \emph{posets}, although traditionally posets (partially ordered sets) also satisfy the antisymmetry axiom (if $A\le B$ and $B\le A$ then $A=B$).
 From a category-theoretic perspective, antisymmetry means asking a category to be skeletal, which is both unnatural and pointless.
-Conveniently, posets also correspond to the simplest version of logic, namely \emph{propositional} logic.
+Conveniently, posets also correspond to the simplest version of logic, namely \emph{propositional} logic, as we will see in \cref{sec:logic}.
 
 From a category-theoretic perspective, the question we are concerned with is the following.
 Suppose we have some objects in a poset, and some ordering relations between them.
@@ -30,7 +32,7 @@ In other words, is it the case in \emph{any} poset containing objects $A,B,C,D,E
 In this example, the answer is yes, because we have $D\le A$ and  $A\le B$ and $B\le E$, so by transitivity $D\le E$.
 More generally, we would like a method to answer all possible questions of this sort.
 
-There is an elegant categorical way to do this based on the notion of \emph{free structure}.
+There is an elegant categorical way to do this based on the notion of \emph{free structure} (analogously to the situation for free groups we considered in \cref{sec:syntax}).
 Namely, consider the category \bPoset of posets, and also the category \bRelGr of \emph{relational graphs}, by which I mean sets equipped with an arbitrary binary relation.
 There is a forgetful functor $U:\bPoset \to \bRelGr$, which has a left adjoint $\F\bPoset$.
 
@@ -359,21 +361,22 @@ Now we can prove the initiality theorem.
 \begin{proof}
   Let $\F\bCat\cG$ be defined as described in the theorem; the identity and composition rules give it the structure necessary to be a category, and the transitivity and unitality relations make it a category.
 
-  Now suppose \cA is any category and $P:\cG\to\cA$ is a map of directed graphs.
-  Then $P$ extends uniquely to the objects of $\F\bCat\cG$, since they are the same as those of \cG.
-  But unlike the case of posets, we have to define it on the morphisms of $\F\bCat\cG$ as well.
+  Now suppose \cA is any category and $\pfree:\cG\to\cA$ is a map of directed graphs.
+  Then $\pfree$ extends uniquely to the objects of $\F\bCat\cG$, since they are the same as those of \cG.
+  But unlike the case of posets, we have to define our desired extension $\free$ on the morphisms of $\F\bCat\cG$ as well.
 
-  If $\phi :(A\types B)$ is derivable, then by \cref{thm:category-tad} it has a unique derivation; thus we can define $P(\phi)$ by recursion on the derivation of $\phi$.
-  Of course, if the derivation of $\phi$ ends with $f\in\cG(A,B)$, then we define $P(\phi)=P(f)$; if it ends with $\idfunc_A$ we define $P(\phi)=\idfunc_{P(A)}$; and if it ends with $\psi\comp{C}\chi$ we define $P(\phi) = P(\psi)\circ P(\chi)$.
+  If $\phi :(A\types B)$ is derivable, then by \cref{thm:category-tad} it has a unique derivation; thus we can define $\free(\phi)$ by recursion on the derivation of $\phi$.
+  Of course, if the derivation of $\phi$ ends with $f\in\cG(A,B)$, then we define $\free(\phi)=\pfree(f)$; if it ends with $\idfunc_A$ we define $\free(\phi)=\idfunc_{P(A)}$; and if it ends with $\psi\comp{C}\chi$ we define $\free(\phi) = \free(\psi)\circ \pfree(\chi)$.
 
   We also have to show that this definition respects the equivalence relation $\equiv$.
   This is clear since $\cA$ is a category; formally it would be another induction on the derivations of $\equiv$ judgments.
 
-  Finally, we have to show that this $P:\F\bCat\cG\to\cA$ is a functor.
-  This follows by definition of the category structure of $\F\bCat\cG$ and the action of $P$ on its arrows.
+  Finally, we have to show that this $\free:\F\bCat\cG\to\cA$ is a functor.
+  This follows by definition of the category structure of $\F\bCat\cG$ and the action of $\free$ on its arrows.
 \end{proof}
 
 Of course, once again very little seems to be happening; we are just using a complicated funny syntax to build a free algebraic structure.
+(In fact, what we are doing now is analogous to the ``tautological construction'' of free groups from \cref{sec:syntax}.)
 Therefore, it is the second way to deal with the problem of associativity that is more interesting.
 
 \subsection{Cut admissibility}
@@ -437,7 +440,9 @@ In other words, although the cut/composition rule
 is not \emph{part of the type theory} as defined, it is nevertheless true that whenever we have derivations of the premises of this rule, we can construct a derivation of its conclusion.
 
 \begin{rmk}\label{rmk:admissible-derivable-1}
-  This is what it means in general for a rule to be \textbf{admissible}: it is not part of the theory as defined (that is, it is not one of the \textbf{primitive rules}), but nevertheless if it were added to the theory it would not change the set of derivable sequents.
+  This is what it means in general for a rule to be \textbf{admissible}: it is not part of the theory as defined (that is, it is not one of the \textbf{primitive rules}), but nevertheless if it were added to the theory it would not change the set of derivable sequents.\footnote{This terminology comes from the posetal case, where ``derivability'' is the important concept.
+    If we care about distinguishing between different derivations of the same sequent (to represent multiple parallel morphsims in a category), then an admissibility theorem is better regarded as an \emph{operation} on derivations.
+    We will return to this later on.}
   In between primitive and admissible rules there are \textbf{derivable rules}: those that can be expanded out directly into a fragment of a derivation in terms of the primitive rules.
   For instance, if we have $f\in\cG(A,B)$ and $g\in \cG(B,C)$, then the left-hand rule below is derivable:
   \begin{mathpar}
@@ -486,6 +491,7 @@ Under this approach, the inductive step in cut-admissibility is viewed instead a
 Because our derivation trees are finite (or, more generally, well-founded) this process must eventually terminate with all the cuts eliminated.
 
 A more category-theoretic way to say what is going on is that the morphisms in the free category on a directed graph \cG have an explicit description as \emph{finite strings of composable edges} in \cG.
+(This is analogous to the description of free groups using reduced words in \cref{sec:syntax}.)
 We have just given an inductive definition of ``finite string of composable edges'': there is a finite string (of length 0) from $A$ to $A$; and if we have such a string from $X$ to $A$ and an edge $f\in\cG(A,B)$, we can construct a string from $X$ to $B$.
 
 We could prove the initiality theorem by appealing to this known fact about free categories, but as before, we prefer to give a more explicit proof to illustrate the patterns of type theory.
@@ -667,10 +673,10 @@ Before proving the initiality theorem, let us first observe that substitution do
   For unitality, we have $y[M/y] = y$ by definition, while $N[x/x] = N$ is another easy induction on the structure of $N$.
   Thus, $\F\bCat\cG$ is a category.
 
-  Now suppose \cA is any category and $P:\cG\to\cA$ is a map of directed graphs.
-  We define $P:\F\bCat\cG \to\cA$ by recursion on the rules of the type theory: the identity $x:A\types x:A$ goes to $\idfunc_{P(A)}$, while $x:A\types f(M):B$ goes to $P(f) \circ P(M)$, with $P(M)$ defined recursively.
-  Since $x:A\types f(M):B$ is the composite of $x:A\types M:C$ and $y:C\types f(y):B$ in $\F\bCat\cG$, this is the only possible definition that could make $P$ a functor.
-  It remains to check that it actually \emph{is} a functor, i.e.\ that it preserves \emph{all} composites; that is, we must show that $P(N[M/y]) = P(N) \circ P(M)$.
+  Now suppose \cA is any category and $\pfree:\cG\to\cA$ is a map of directed graphs.
+  We define $\free:\F\bCat\cG \to\cA$ by recursion on the rules of the type theory: the identity $x:A\types x:A$ goes to $\idfunc_{P(A)}$, while $x:A\types f(M):B$ goes to $\pfree(f) \circ \free(M)$, with $\free(M)$ defined recursively.
+  Since $x:A\types f(M):B$ is the composite of $x:A\types M:C$ and $y:C\types f(y):B$ in $\F\bCat\cG$, this is the only possible definition that could make $\free$ a functor.
+  It remains to check that it actually \emph{is} a functor, i.e.\ that it preserves \emph{all} composites; that is, we must show that $\free(N[M/y]) = \free(N) \circ \free(M)$.
   This follows by yet another induction on the derivation of $N$.
 \end{proof}
 
@@ -789,11 +795,11 @@ When talking about type theory under \cG, we additionally include ``axiom'' rule
   \inferrule{A\in\cG}{\types A\type}
 \end{mathpar}
 Note that the premise $A\in \cG$ here is not a judgment; rather it is an ``external'' fact that serves as a precondition for application of thish rule.
-Thus it might be more correct to write this rule as
+Thus it would be more correct to write this rule as
 \begin{mathpar}
   \inferrule{ }{\types A\type}\;\text{(if $A\in\cG$)}
 \end{mathpar}
-but we will generally write such conditions as premises for simplicity.
+but we will generally write such conditions as premises, since otherwise the notation can get rather unwieldy.
 
 As an example of the application of these rules, if $A,B\in\cG$ we have a derivation
 \begin{mathpar}
@@ -825,7 +831,7 @@ For instance, if $A,B,C\in \cG$ we have the following derivation:
   }
 \end{mathpar}
 but there is no way to deduce this without using the cut rule.
-Thus, this \textbf{cut-ful type theory for meet-semilattices under \cG} works, but to have a better class of ``canonical forms'' for its relations we would also like a cut-free version.
+Thus, this ``cut-ful type theory for meet-semilattices under \cG'' works, but to have a better class of ``canonical forms'' for its relations we would also like a cut-free version.
 
 What we need to do is to treat the ``projections'' $A\meet B \to A$ and $A\meet B\to B$ similarly to how we treated the edges of \cG in \cref{sec:categories}.
 However, at this point we have to make a choice of whether to build in postcomposition or precomposition:
@@ -870,7 +876,11 @@ However, we don't need to assume explicitly as premises that \emph{all} types ap
   \end{itemize}
 \end{proof}
 
-The second thing to note is that we only assert the identity rule $A\types A$ when $A$ is a \emph{generating object} (also called a \emph{base type}), i.e.\ an object of \cG.
+We will generally formulate our type theories with just enough premises to make theorems such as \cref{thm:seqcalc-mslat-wftype} true.
+Essentially this means that if some type appears in the conclusion but not in any of the premises, we have to add its ``type-ness'' judgment as an additional premise.
+We will not usually state and prove theorems analogous to \cref{thm:seqcalc-mslat-wftype} explicitly, but the reader can verify that they will always be true.
+
+The second thing to note about our current type theory is that we only assert the identity rule $A\types A$ when $A$ is a \emph{generating object} (also called a \emph{base type}), i.e.\ an object of \cG.
 This is sufficient because in the sequent calculus, we can derive the identity rule for any type:
 
 \begin{thm}\label{thm:seqcalc-mslat-idadm}
@@ -936,9 +946,9 @@ Next we prove that the cut rule is admissible for this sequent calculus too.
     \item If it ends with $\meetR$, then we can derive $A\types B_1$ and $A\types B_2$.
       Recall that we are also assuming a derivation of $B_1\types C$.
       Thus, by the inductive hypothesis on $A\types B_1$ and $B_1\types C$, we can derive $A\types C$.
-      \label{item:mslat-principal-cut}\qedhere
+      \label{item:mslat-principal-cut}
     \end{enumerate}
-    The case when it ends with $\meetL2$ is similar.
+  \item The case when it ends with $\meetL2$ is similar.\qedhere
   \end{enumerate}
 \end{proof}
 
@@ -973,10 +983,10 @@ Finally, we have the initiality theorem:
   Therefore, we have a meet-semilattice.
   Moreover, the rules $\idfunc$ and $f$ yield a map of posets $\cG\to \F\bmSLat\cG$.
 
-  Now suppose $\cM$ is any other meet-semilattice with a map $P:\cG\to\cM$.
+  Now suppose $\cM$ is any other meet-semilattice with a map $\pfree:\cG\to\cM$.
   Recall that a meet-semilattices is equipped with a chosen top element and meet function.
-  We extend $P$ to a map from the objects of $\F\bmSLat\cG$ by recursion on the construction of the latter, sending $\top$ to the chosen top element of \cM, and $A\meet B$ to the chosen meet in \cM of the (recursively defined) images of $A$ and $B$.
-  This is clearly the only possible meet-semilattice map extending $P$, and it clearly preserves the chosen meets and top element, so it suffices to check that it is a poset map.
+  We extend $\pfree$ to a map from the objects of $\F\bmSLat\cG$ by recursion on the construction of the latter, sending $\top$ to the chosen top element of \cM, and $A\meet B$ to the chosen meet in \cM of the (recursively defined) images of $A$ and $B$.
+  This is clearly the only possible meet-semilattice map extending $\pfree$, and it clearly preserves the chosen meets and top element, so it suffices to check that it is a poset map.
   This follows by a straightforward induction over the rules for deriving the judgment $A\types B$.
 \end{proof}
 
@@ -1040,9 +1050,8 @@ These properties are characteristic of \emph{natural deduction} theories.
 \begin{rmk}
   Because the proof of cut admissibility for natural deduction theories is so much simpler than that for sequent calculus, some people say that the former is ``trivial''.
   Triviality is subjective; but what seems inarguable is that cut-admissibility for natural deduction is \emph{saying something different} than cut-admissibility for sequent calculus.
-  The content of cut-admissibility for sequent calculus corresponds more closely to $\beta$-reduction in natural deduction (see \cref{sec:beta-eta}).
-  % or to the cut-elimination (``hereditary substitution'') of a canonical/atomic natural deduction (see \cref{cha:canonical}).
-  Similarly, the admissibility of the identity rule for sequent calculus corresponds to the $\eta$-conversion rule in natural deduction (see \cref{sec:beta-eta}).
+  The content of cut-admissibility for sequent calculus corresponds more closely to $\beta$-conversion in natural deduction (see \cref{sec:beta-eta}).
+  Similarly, the admissibility of the identity rule for sequent calculus corresponds to the $\eta$-conversion rule in natural deduction (see \cref{sec:beta-eta} for that too).
 \end{rmk}
 
 Of course, we should also prove the initiality theorem:
@@ -1383,7 +1392,7 @@ We leave it to the reader to similarly prove the following (\cref{ex:catprod-sub
   Substitution is associative in the unary type theory for categories with products under \cG: we have $P[N/z][M/y] = P[N[M/y]/z]$.\qed
 \end{lem}
 
-The proof of the initiality theorem is similar, but we write out some of the details for later reference.
+The proof of the initiality theorem is also similar, but we write out some of the details for later reference.
 
 \begin{thm}\label{thm:catprod-initial}
   For any directed graph \cG, the free category-with-products $\F\bPrCat \cG$ it generates is described by the unary type theory for categories with products under \cG: its objects are the $A$ such that $\types A\type$ is derivable, and its morphisms $A\to B$ are the terms $M$ such that $x:A \types M:B$ is derivable, modulo the equivalence relation $\equiv$.
@@ -1679,15 +1688,6 @@ As in the dual case, by a \textbf{category with coproducts} we mean a category w
 % At this point the reader is free (after doing some exercises) to move on directly to \cref{chap:simple}.
 % However, if you want to understand $\equiv$ a little more deeply, you may also continue with the somewhat digressive \cref{cha:canonical}.
 
-This seems an appropriate place to introduce some more type-theoretic lingo.
-Roughly speaking, types corresponding to objects with ``mapping out'' universal properties, such as $A+B$, are called \textbf{positive}, while types corresponding to objects with ``mapping in'' universal properties, such as $A\times B$, are called \textbf{negative}.
-The precise meanings of these terms relate to ``focusing'' and are more directly applicable to sequent calculus than to natural deduction, but they are often used informally in this broad sense, and we will sometimes do the same.
-% We have already seen some of the different type-theoretic behavior exhibited by both ``polarities'':
-% \begin{itemize}
-% \item Negative types have more direct introduction and elimination rules, while positive types are eliminated by a $\match$ that binds variables (possibly zero of them).
-% \item In sequent calculus, positive types have invertible left rules.
-% \end{itemize}
-
 
 \subsection*{Exercises}
 
@@ -1718,12 +1718,6 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
   Then write down the terms corresponding to the two derivations and show directly that they are related by $\equiv$.
 \end{ex}
 
-\begin{ex}\label{ex:cat-prod-coprod}
-  Combine the type theories of \cref{sec:catprod,sec:catcoprod} to obtain a unary type theory for categories with both products and coproducts.
-  Prove the initiality theorem.
-  (Note in particular that no compatibility between the products and coproducts is required or ensured.)
-\end{ex}
-
 \begin{ex}\label{ex:cat-opfib}
   A functor $P:\sA\to\sB$ is called an \textbf{opfibration} if $P\op:\sA\op\to\sM\op$ is a fibration (as in \cref{ex:catfib}).
   The dual of $f^*(b)$ is written $f_!(a)$.
@@ -1735,6 +1729,76 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
   \end{enumerate}
 \end{ex}
 
+% Is this worth it?  I think there's not much to say beyond \label{ex:catprod-2free}.
+% \begin{ex}\label{ex:2free-catcoprod}
+%   As in \cref{ex:cat-2free,ex:catprod-2free} show that $\F\bCoprCat\cG$ is a representing object for a suitable 2-functor $\bGr(\cG,-):\bCoprCat\to\bCat$.
+% \end{ex}
+
+\section{Universal properties and modularity}
+\label{sec:modularity}
+
+This seems an appropriate place to introduce some more type-theoretic lingo.
+Roughly speaking, types corresponding to objects with ``mapping out'' universal properties, such as $A+B$, are called \textbf{positive}, while types corresponding to objects with ``mapping in'' universal properties, such as $A\times B$, are called \textbf{negative}.
+The precise meanings of these terms relate to ``focusing'' and are more directly applicable to sequent calculus than to natural deduction, but they are often used informally in this broad sense, and we will sometimes do the same.
+% We have already seen some of the different type-theoretic behavior exhibited by both ``polarities'':
+% \begin{itemize}
+% \item Negative types have more direct introduction and elimination rules, while positive types are eliminated by a $\match$ that binds variables (possibly zero of them).
+% \item In sequent calculus, positive types have invertible left rules.
+% \end{itemize}
+
+Another important thing to note is a similarity in structure between the product types of \cref{sec:catprod} and the coproduct types of this section.
+Both of them augment the basic cut-free type theory for categories from \cref{sec:category-cutadm} with four kinds of rules:
+\begin{enumerate}
+\item \textbf{Formation} rules for the judgment $\types A\type$, which tell us how to ``form'' the new types described by this operation (product types or coproduct types):
+  \begin{mathpar}
+    \inferrule{\types A\type \\ \types B\type}{\types A\times B\type}\and
+    \inferrule{\types A\type \\ \types B\type}{\types A+ B\type}\and
+  \end{mathpar}
+\item \textbf{Introduction} rules for the term judgment, which tell us how to ``introduce'' terms belonging to such a new type:
+  \begin{mathpar}
+    \inferrule{x:X\types M:B \\ x:X\types N:C}{x:X\types \pair MN:B\times C}\;\timesI\\
+    \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
+    \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
+  \end{mathpar}
+\item \textbf{Elimination} rules for the term judgment, which tell us how to ``eliminate'' a term belonging to a new type to obtain terms belonging to other types:
+  \begin{mathpar}
+    \inferrule{x:X\types M:B\times C}{x:X \types \pr1BC(M):B}\;\timesE1\and
+    \inferrule{x:X\types M:B\times C}{x:X \types \pr2BC(M):C}\;\timesE2\and
+    \inferrule{x:X\types M:A + B\\u:A\types P:C \\ v:B\types Q:C}{x:X\types \acase AB(M,u.P,v.Q):C}\;\plusE
+  \end{mathpar}
+\item \textbf{Conversion} (or \emph{computation}) rules for the equality judgment, which tell us how to ``convert'' or ``reduce'' terms built by combining the introduction and elimination rules:
+  \begin{mathpar}
+    \pr1AB(\pair M N) \equiv M\and
+    \pr2AB(\pair M N) \equiv N\and
+    \pair{\pr1AB(M)}{\pr2AB(M)} \equiv M\and
+    \case(\inl(y),u.P,v.Q) \equiv P[y/u]\and
+    \case(\inr(z),u.P,v.Q) \equiv Q[z/v]\and
+    \case(y,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P
+  \end{mathpar}
+\end{enumerate}
+
+This division into four groups of rules for each type operation corresponds to the following four aspects of a category-theoretic universal property:
+\begin{enumerate}
+\item The existence of one or more objects given certain input data (formation).
+\item Some data relating those objects to others that we already had, like the projections of a product or the injections of a coproduct (elimination for negative types, introduction for positive ones).
+\item A ``factorization'' operation: given data of some sort, there exist specified morphism(s) into or out of the new objects (introduction for negative types, elimination for positive ones).
+\item These specified morphism(s) satisfy some compatibility conditions with the given data that uniquely determine them (conversion).
+\end{enumerate}
+This provides a template for representing other category-theoretic universal properties with type theory.
+(What if we want to represent something that doesn't have a universal property, like a monoidal structure?
+As we will see in \cref{chap:simple}, the answer is to move into a different world where it \emph{does} have a universal property.)
+
+Finally, I want to emphasize the \emph{modularity} of these rules (in the computer scientist's sense).
+When we added the rules for products to the cut-free type theory for categories, the proofs of the basic theorems like cut admissibility, associativity of substitution, and the initiality theorem did not change in their overall structure.
+They were all still proved by induction on derivations; we simply had to add new clauses to each induction step corresponding to the new rules.
+
+The advantage of this sort of modularity means that we are free to ``mix and match'' rules of our type theory, corresponding to the categorical universal properties we want to have.
+There will be more scope for variety with this later, but at the moment there is one new combination: we can obtain a \textbf{type theory for categories with products and coproducts} by simply combining the rules from \cref{sec:catprod,sec:catcoprod}.
+We can then prove all the same theorems, including the fact that this type theory presents the free category with products and coproducts on a directed graph, by simply combining the relevant clauses from all the proofs in \cref{sec:catprod,sec:catcoprod}.
+
+
+\subsection*{Exercises}
+
 \begin{ex}\label{ex:cat-prod-coprod-uniq}
   Suppose we have
   \begin{mathpar}
@@ -1743,7 +1807,7 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
     h\in\cG(B,C)\and
     k\in\cG(B,D)
   \end{mathpar}
-  Write down two different derivations of $A+B\types C\times D$ in the type theory of \cref{ex:cat-prod-coprod}, one that ends with $\timesI$ and one that ends with $\plusE$.
+  Write down two different derivations of $A+B\types C\times D$ in the type theory for categories with products and coproducts under \cG, one that ends with $\timesI$ and one that ends with $\plusE$.
   Then write down the corresponding terms and show directly that they are identified by $\equiv$.
 \end{ex}
 
@@ -1756,10 +1820,6 @@ The precise meanings of these terms relate to ``focusing'' and are more directly
   \end{enumerate}
 \end{ex}
 
-% Is this worth it?  I think there's not much to say beyond \label{ex:catprod-2free}.
-% \begin{ex}\label{ex:2free-catcoprod}
-%   As in \cref{ex:cat-2free,ex:catprod-2free} show that $\F\bCoprCat\cG$ is a representing object for a suitable 2-functor $\bGr(\cG,-):\bCoprCat\to\bCat$.
-% \end{ex}
 
 \section{Unary theories}
 \label{sec:unary-theories}
@@ -1921,7 +1981,7 @@ The horrific-looking terms are there because we can only apply the associativity
 In \cref{chap:simple} we will remedy this problem by introducing a type theory that allows us to state associativity (and $m$ itself) without tupling.
 
 The construction of unary $\times$-theories, given the ordinary unary type theory for categories with products under directed graphs, while somewhat involved, is quite general\footnote{We will not attempt to make this generality precise, but the approach is similar to the general theory of ``globular computads'' in~\cite{batanin:cptd-fin}.} and can be applied to pretty much any type theory with an initiality theorem.
-For instance, by starting from the type theory for categories with coproducts instead, we obtain a notion of ``unary $+$-theory''; while starting from the theory of \cref{ex:cat-prod-coprod} for categories with both products and coproducts, we obtain a notion of ``unary $(\times,+)$-theory''.
+For instance, by starting from the type theory for categories with coproducts instead, we obtain a notion of ``unary $+$-theory''; while starting from the theory of \cref{sec:modularity} for categories with both products and coproducts, we obtain a notion of ``unary $(\times,+)$-theory''.
 We will discuss some more important special cases in \cref{sec:fp-theories,sec:symmoncat}.
 
 Before leaving this subject, it is worth making a few more remarks about $\times$-theories (all of which generalize to other kinds of theories).
