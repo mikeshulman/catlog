@@ -364,8 +364,8 @@ Given three reduced words $w_1$, $w_2$, and $w_3$, we induct on the length of $w
 If it is empty, then $(w_1\cdot w_2)\cdot w_3$ and $w_1 \cdot (w_2 \cdot w_3)$ are both $w_1\cdot w_2$ by definition.
 Otherwise, $w_3 = w_3'g$ (or $w_3 = w_3'g^{-1}$), and we can use the definitions of multiplication and an inductive hypothesis that $(w_1\cdot w_2)\cdot w_3'$ and $w_1 \cdot (w_2 \cdot w_3')$.
 
-Similarly, how do we extend a function $\prefree:X\to G$ to a group homomorphism $\free:\F{}X\to G$?
-Each reduced word is either empty, in which case it must go to the identity of $G$, or of the form $wg$ for some $g\in X$, in which case it must go to the product $\free(w)\cdot \prefree(g)$ in $G$.
+Similarly, how do we extend a function $\pfree:X\to G$ to a group homomorphism $\free:\F{}X\to G$?
+Each reduced word is either empty, in which case it must go to the identity of $G$, or of the form $wg$ for some $g\in X$, in which case it must go to the product $\free(w)\cdot \pfree(g)$ in $G$.
 And we prove that $\free(w_1\cdot w_2) = \free(w_1)\cdot \free(w_2)$ by --- you guessed it --- induction on the length of $w_2$.
 
 This fairly simple proof actually displays many of the characteristics of analogous proofs about type theories that we will encounter throughout the book.
@@ -501,9 +501,28 @@ These facts about cut-elimination and multicategories have surely been known in 
 They are not strictly necessary if one wants simply to use type theory for internal reasoning about categories, and there are plenty of good introductions that take a geodesic route to that application.
 However, I believe that they yield a deeper understanding of the type/category correspondence; and they are especially valuable when it comes to designing type theories that correspond to new categorical structures (or vice versa).
 
+\section{Expectations of the reader}
+\label{sec:expectations}
+
 I will not assume that the reader has any acquaintance with type theory, or any interest in it apart from its uses for category theory.
 However, because one of my goals is to help the reader become familiar with the lingo and concerns of type theorists, I will sometimes include a little more detail than is strictly necessary for categorical applications.
 The reader should feel free to skip over these brief digressions.
+
+It is possible that my zeal to explain all the aspects of type theory that can be puzzling to the category theorist has made this book a little more ``encyclopedic'' than would be ideal for a first introduction to the subject.
+I hope that it will still be of use to the newcomer; but if you haven't had any prior exposure to type theory or categorical logic, you may want to supplement it with other readings as well.
+
+Another reason for supplementing is that I have intentionally minimized the space devoted to category theory.
+Of course, we are interested in type theory as a language for categories, and I have tried to include enough examples to illustrate its usefulness.
+But our focus will be on type theories and how they correspond to categories, not on the categorical structures themselves.
+For basic notions of category theory, see e.g.~\cite{maclane,awodey:cat-thy,mclarty:ecat-etop,leinster:cat-thy}.
+To learn more about the multicategories that appear in \cref{chap:simple}, I recommend~\cite{leinster:higher-opds,cs:multicats}.
+And for the indexed categories and ``logical'' types of categories appearing in \cref{chap:fol,chap:hol,chap:dtt} one can consult~\cite{mm:shv-gl,ptj:topos-theory,ptj:elephant,jacobs:cltt}.
+
+I have endeavored to include a reasonable number of exercises of varying difficulty; these are placed at the end of most sections, and then compiled again for ease of reference at the end of each chapter.
+As always, doing exercises is important (perhaps even essential) for coming to understand a subject.
+But whether or not you plan to \emph{do} the exercises, I highly recommend at least \emph{reading} all the exercises as part of each section, and spending at least a few seconds thinking about how one might do them.
+A number of ideas are introduced in exercises and then come back again later in the text.
+
 
 % Local Variables:
 % TeX-master: "catlog"
