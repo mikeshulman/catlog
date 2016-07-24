@@ -1834,7 +1834,7 @@ Suppose we want to prove a theorem of the form ``for any objects $A,B,C,\dots$ a
 Then we let \cG be a directed graph with one vertex for each object appearing in the theorem and one edge for each morphism, with appropriate source and target, and we reason in the type theory for categories with products under \cG.
 Then whenever we have objects and morphisms of the sort described in the theorem in any other category \cM with products, we get a map $\cG\to\cM$, which therefore extends to the free category $\F\bPrCat\cG$ presented by the type theory, and this extension carries our type-theoretic constructions and proofs to categorical ones.
 
-However, although theorems about monoid objects are intuitively of the form ``for any object $A$ and morphisms $m,e$, \dots'', it does not fit into this picture, because the data cannot be described as a directed graph.
+However, although theorems about monoid objects are intuitively of the form ``for any object $A$ and morphisms $m,e$, \dots'', they do not fit into this picture, because the data cannot be described as a directed graph.
 The problem is that the source and target of $m$ and $e$ are not \emph{single} objects mentioned in the theorem, but products of them (specifically, $m:A\times A\to A$ and $e:\unit\to A$).
 Furthermore, a monoid object contains not just objects and morphisms, but \emph{axioms} about composites of those morphisms, which the type theory of \cref{sec:catprod} is also unable to deal with.
 
@@ -1848,76 +1848,109 @@ Similarly, to talk about an axiom such as $m(x,m(y,z)) = m(m(x,y),z)$, we need t
 
 We call this structure a \textbf{unary $\times$-theory}.
 Its full definition is somewhat involved; we break it up into several levels, each with their own type theory.
+(In a formal sense it is analogous to the higher-categorical notion of \emph{computad}; see~\cite{batanin:cptd-fin}.)
 
 \begin{defn}
-  A \textbf{unary 0-$\times$-theory} is a set, $\cG_0$.
+  A \textbf{0-skeletal unary $\times$-theory} is a set, $\cG_0$.
 \end{defn}
 
-The type theory of a unary 0-$\times$-theory consists of the rules for type judgments from \cref{sec:catprod}:
+The type theory of a 0-skeletal unary $\times$-theory consists of the rules for type judgments from \cref{sec:catprod}:
 \begin{mathpar}
   \inferrule{A\in\cG_0}{\types A\type}\and
   \inferrule{ }{\types \unit\type} \and
   \inferrule{\types A\type \\ \types B\type}{\types A\times B\type}
 \end{mathpar}
-We write $\F{\times,0}\cG_0$ for the set of derivable types in this theory.
+We write $\F{0}\cG_0$ for the set of derivable types in this theory.
 
 \begin{defn}
-  A \textbf{unary 1-$\times$-theory} consists of a unary 0-$\times$-theory $\cG_0$ together with a set of \emph{arrows} $\cG_1$, each of which is assigned a source and a target that are types in the type theory of $\cG_0$.
+  A \textbf{1-skeletal unary $\times$-theory} consists of a 0-skeletal unary $\times$-theory $\cG_0$ together with a set of \emph{arrows} $\cG_1$, each of which is assigned a source and a target that are types in the type theory of $\cG_0$.
 \end{defn}
 
-Thus, for instance, a unary 1-$\times$-theory could contain objects $A,B$ and arrows $f:A\times B\to B\times B$ and $g:\unit \to A$.
-The type theory of a unary 1-$\times$-theory consists of the rules for term judgments $x:A\types M:B$ from \cref{sec:catprod}.
+Thus, for instance, a 1-skeletal unary $\times$-theory could contain objects $A,B$ and arrows $f:A\times B\to B\times B$ and $g:\unit \to A$.
+In general, 1-skeletal theories are often called \textbf{signatures}.
+
+The type theory of a 1-skeletal unary $\times$-theory consists of the rules for term judgments $x:A\types M:B$ from \cref{sec:catprod}.
 The generator rule 
 \[ \inferrule{x:X\types M:A \\ f\in\cG_1(A,B)}{x:X\types f(M):B} \,f \]
 looks the same as before, but now it no longer implies as a side condition that $A$ and $B$ must be base types.
 We prove exactly as before that terms have unique derivations and that substitution is admissible and associative.
-We write $\F{\times,1}\cG_1(A,B)$ for the set of derivations/terms $x:A\types M:B$ in this theory.
+We write $\F{1}\cG_1(A,B)$ for the set of derivations/terms $x:A\types M:B$ in this theory.
 
 \begin{defn}
-  A \textbf{unary 2-$\times$-theory} (or just a \textbf{unary $\times$-theory}, since this is the last step) consists of a unary 1-$\times$-theory $\cG_{\le 1}$ together with a set of \emph{equalities} $\cG_2$, each of which is assigned a source and a target that are derivable terms with the same antecedent and consequent in the type theory of $\cG_{\le 1}$.
+  A \textbf{2-skeletal unary $\times$-theory} (or just a \textbf{unary $\times$-theory}, since this is the last step) consists of a 1-skeletal unary $\times$-theory $\cG_{\le 1}$ together with a set of \emph{equalities} $\cG_2$, each of which is assigned a source and a target that are derivable terms with the same antecedent and consequent in the type theory of $\cG_{\le 1}$.
 \end{defn}
 
-The type theory of a unary 2-$\times$-theory consists of the rules for the equality judgment $\equiv$ from \cref{sec:catprod}, together with a generator rule for equalities:
+The type theory of a unary $\times$-theory consists of the rules for the equality judgment $\equiv$ from \cref{sec:catprod}, together with a generator rule for equalities:
 \begin{equation}
   \inferrule{x:X\types M:A \\ y:A\types P:B \\ y:A\types Q:B \\ e\in \cG_2(P,Q)}{x:X \types P[M/y] \equiv Q[M/y] : B}\label{eq:equality-intro}
 \end{equation}
 Note that we have built in a substitution on the left.
 This ensures that $\equiv$ remains a congruence for substitution on both sides as in \cref{thm:catprod-subcong} (the other side is ensured by the primitive congruence rules for $\equiv$).
 
-To state an initiality theorem for $\times$-theories, we need a category of them.
+We can prove cut admissibility, i.e.\ construct substitution, for unary $\times$-theories just as we did for the ordinary type theory for categories with products in \cref{sec:catprod}.
+%(There is something to be aware of here that we will mention at the end of this section, but it does work fine.)
+However, stating and proving the initiality theorem is somewhat more complicated.
+We proceed to give some details, but we encourage the reader not to get too bogged down in them; try mainly to take away the big picture that ``there's a way to do this that works in general''.
+(We note also that, although having a general method is important, in \cref{sec:fp-theories} we will be able to deal with the special case of $\times$-theories much more simply.)
+
+To start with, in order to have an adjunction we need a category of $\times$-theories.
 
 \begin{defn}\ 
   \begin{enumerate}
-  \item A morphism of unary 0-$\times$-theories is just a function $K_0:\cG_0 \to \cH_0$.
-    This induces a function $\Kbar_0:\F{\times,0}\cG_0 \to \F{\times,0}\cH_0$ by a simple induction.
-  \item A morphism of unary 1-$\times$-theories is a morphism of their underlying unary 0-$\times$-theories together with a function $K_1:\cG_1 \to \cH_1$ respecting sources and targets (relative to $\Kbar_0$).
-    This induces maps $\Kbar_1 : \F{\times,1}\cG_1(A,B) \to \F{\times,1}\cH_1(\Kbar_0(A),\Kbar_0(B))$ by another simple induction.
-  \item Finally, a morphism of unary 2-$\times$-theories is a morphism of their underlying unary 1-$\times$-theories together with a function $K_2:\cG_2 \to \cH_2$ respecting sources and targets (relative to $\Kbar_1$).
+  \item A morphism of 0-skeletal unary $\times$-theories is just a function $K_0:\cG_0 \to \cH_0$.
+    This induces a function $\Kbar_0:\F{0}\cG_0 \to \F{0}\cH_0$ by a simple induction.
+  \item A morphism of 1-skeletal unary $\times$-theories is a morphism of their underlying 0-skeletal unary $\times$-theories together with a function $K_1:\cG_1 \to \cH_1$ respecting sources and targets (relative to $\Kbar_0$).
+    This induces maps $\Kbar_1 : \F{1}\cG_1(A,B) \to \F{1}\cH_1(\Kbar_0(A),\Kbar_0(B))$ by another simple induction.
+  \item Finally, a morphism of 2-skeletal unary $\times$-theories is a morphism of their underlying 1-skeletal unary $\times$-theories together with a function $K_2:\cG_2 \to \cH_2$ respecting sources and targets (relative to $\Kbar_1$).
   \end{enumerate}
-  We write $\timesthy k$ for the category of $k$-$\times$-theories.
+  We write $\timesthy k$ for the category of $k$-skeletal $\times$-theories.
 \end{defn}
 
-We also need a forgetful functor $\bPrCat \to \timesthy2$, but this is easiest to construct in stages along with the proof of the initiality theorem.
+Now, since $\times$-theories are defined inductively on their skeleta, it is most natural to prove the initiality theorem in stages as well.
+For this purpose we need skeletal versions of ``categories with products'' as well.
 
-\begin{defnthm}\label{thm:catprod-thy-initial}\ 
+\begin{defn}\ 
   \begin{enumerate}
-  \item The forgetful functor $\fU_0 : \bPrCat \to \timesthy0$ takes a category with products to its set of objects.\label{item:catprod-thy-initial-U0}
-  \item Any function $P_0:\cG_0 \to \fU_0\cM$ extends canonically to a function $\Pbar_0:\F{0}\cG_0\to \fU_0\cM$.
-    In particular, for any $\cM\in\bPrCat$ there is a canonical map $\ep_0:\F{0}\fU_0\cM\to \fU_0\cM$.\label{item:catprod-thy-initial-F0}
-  \item The forgetful functor $\fU_1 : \bPrCat \to \timesthy1$ takes \cM to $\fU_0\cM$ with arrows defined by $\fU_1\cM(A,B) = \cM(\ep_0(A),\ep_0(B))$.\label{item:catprod-thy-initial-U1}
-  \item Any morphism $P_1:\cG_1 \to \fU_1\cM$ extends canonically to a morphism $\Pbar_1 : \F{1}\cG_1 \to \fU_1\cM$.
-    In particular, for any $\cM\in\bPrCat$ there is a canonical map $\ep_1:\F{1}\fU_1\cM\to \fU_1\cM$.\label{item:catprod-thy-initial-F1}
-  \item The forgetful functor $\fU_2 : \bPrCat \to \timesthy2$ takes \cM to $\fU_1\cM$ with an equality in $\fU_2\cM(M,N)$ just when $\ep_1(M)=\ep_1(N)$.\label{item:catprod-thy-initial-U2}
-  \item Any morphism $P_2:\cG_2 \to \fU_2\cM$ extends canonically to a morphism $\Pbar_2 : \F{2}\cG_2 \to \fU_2\cM$.
-    Moreover, $\F{2}\cG_2$ is a category with products, and there is a unique such extension that lies in \bPrCat.
-    Therefore, $\F{2}\cG_2$ is the free category with products generated by $\cG_2$, i.e.\ $\F{2}$ is a left adjoint to $\fU_2$.\label{item:catprod-thy-initial-F2}
+  \item A \textbf{0-skeletal category with products} is a set $\cM_0$ with a specified element $\unit\in\cM_0$ and a binary operation $(-\times-) :\cM_0\times \cM_0 \to \cM_0$.
+  \item A \textbf{1-skeletal category with products} is a category $\cM$ together with the structure of a 0-skeletal category with products on its set of objects $\cM_0$.
+  \item A \textbf{2-skeletal category with products} is just a category with products.
   \end{enumerate}
-\end{defnthm}
-\begin{proof}
-  Items~\ref{item:catprod-thy-initial-U0},~\ref{item:catprod-thy-initial-U1}, and~\ref{item:catprod-thy-initial-U2} are just definitions and require no proof.
-  Items~\ref{item:catprod-thy-initial-F0}, \ref{item:catprod-thy-initial-F1}, and the first sentence of~\ref{item:catprod-thy-initial-F2} are straightforward inductions on derivations: all the generator rules are interpreted by the given morphism $P_k$, while we know (as in \cref{sec:catprod}) how to interpret all the other rules in a category with products.
-  The rest of~\ref{item:catprod-thy-initial-F2} follows as in \cref{sec:catprod}: $\F{2}\cG_2$ is a category with products due to substitution and the $\beta$- and $\eta$-conversions, the fact that $\Pbar_2$ is a morphism in \bPrCat is an induction on derivations, and its uniqueness follows because the interpretations of all the rules are defined in terms of the category-with-products structure.
-\end{proof}
+  We write $\prcat k$ for the category of $k$-skeletal categories with products.
+\end{defn}
+
+We will construct the following ladder of adjunctions, in which the both the left and right adjoints commute with the obvious downward-pointing forgetful functors:
+\[ \xymatrix{
+  \timesthy 2 \ar@<2mm>[r]^{\F{2}} \ar@{}[r]|-{\bot} \ar[d] & \prcat 2 \ar@<2mm>[l]^{\fU_2} \ar[d] \\
+  \timesthy 1 \ar@<2mm>[r]^{\F{1}} \ar@{}[r]|-{\bot} \ar[d] & \prcat 1 \ar@<2mm>[l]^{\fU_1} \ar[d] \\
+  \timesthy 0 \ar@<2mm>[r]^{\F{0}} \ar@{}[r]|-{\bot}        & \prcat 0 \ar@<2mm>[l]^{\fU_0}
+}\]
+In fact we will define all the horizontal functors one by one from bottom to top: first $\fU_0$, then $\F1$, then $\fU_1$, etc.
+We omit the proofs that each $\F k$ is actually a left adjoint; they look almost exactly like the proof of \cref{thm:catprod-initial}.
+The more interesting part is in the definitions of $\fU_1$ and $\fU_2$.
+
+\begin{defn}\label{thm:catprod-thy-underlying-0}
+  The forgetful functor $\fU_0 : \prcat0 \to \timesthy0$ takes a 0-skeletal category with products to its underlying set.
+\end{defn}
+
+\begin{thm}\label{thm:catprod-thy-initial-0}
+  The left adjoint $\F0$ of $\fU_0$ takes a 0-skeletal unary $\times$-theory $\cG_0$ to the set of types $\types A\type$ derivable in its type theory.\qed
+\end{thm}
+
+\begin{defn}\label{thm:catprod-thy-underlying-1}
+  The forgetful functor $\fU_1 : \prcat1 \to \timesthy1$ acts as $\fU_0$ on underlying 0-skeleta, and for types $A,B$ in the type theory of $\fU_0\cM$ we define $\fU_1(A,B)$ to be the set of morphisms in \cM between the images of $A$ and $B$ under the counit map $\F0 \fU_0 \cM \to \cM$.
+\end{defn}
+
+\begin{thm}\label{thm:catprod-thy-initial-1}
+  The left adjoint $\F1$ of $\fU_1$ acts as $\F0$ on 0-skeleta, and the morphisms in $\F1 \cG$ are the derivations $x:A\types M:B$ in the type theory of \cG.\qed
+\end{thm}
+
+\begin{defn}\label{thm:catprod-thy-underlying-2}
+  The forgetful functor $\fU_2 : \prcat2 \to \timesthy2$ acts as $\fU_1$ on underlying 1-skeleta, and for parallel terms $x:A\types M:B$ and $x:A\types N:B$ in the type theory of $\fU_1\cM$, we assert an axiom of their equality if and only if their images under the counit map $\F1 \fU_1 \cM \to \cM$ are equal.
+\end{defn}
+
+\begin{thm}\label{thm:catprod-thy-initial-2}\label{thm:catprod-thy-initial}
+  The left adjoint $\F2$ of $\fU_2$ is defined by applying $\F1$ to underlying 1-skeleta, then quotienting by the equivalence relation of derivable judgments $x:A\types M\equiv N:B$.\qed
+\end{thm}
 
 This is a bit abstract, so let's consider our motivating example.
 The unary $\times$-theory for monoid objects should have one object $A\in\cG_0$ and two arrows, $m\in \cG_1(A\times A,A)$ and $e\in\cG_1(\unit,A)$.
@@ -1950,20 +1983,32 @@ For brevity we may write its axioms as
 \end{align*}
 as long as we don't forget that the actual rule~\eqref{eq:equality-intro} builds in a substitution.
 
-\cref{thm:catprod-thy-initial} implies that a morphism from this theory to $\fU_2\cM$, for any category with products \cM, is exactly a monoid object in \cM.
+Let us write this theory as \cT.
+\cref{thm:catprod-thy-underlying-2} tells us that a morphism of theories $\cT \to \fU_2\cM$, for any category with products \cM, is exactly a monoid object in \cM.
+
 More explicitly, first we choose to interpret the base type $A$ as some object of \cM, say $\m A$.
-Then we extend this interpretation inductively to other types, so that for instance $A\times A$ and $\unit$ are sent to the product $\m A \times \m A$ and the terminal object $1$ in \cM.
-Now we choose to interpret the generating arrows $m$ and $e$ as morphisms $\m A \times \m A \to \m A$ and $1\to \m A$ in \cM.
-Then we extend this interpretation to other terms, such as those appearing in the above, are sent to other morphisms in \cM.
+This means choosing a morphism on 0-skeleta $\cT_0 \to \fU_0\cM_0$.
+
+Second, we extend this interpretation inductively to other types using the chosen products in \cM, so that for instance $A\times A$ and $\unit$ are sent to the product $\m A \times \m A$ and the terminal object $1$ in \cM.
+This means considering the adjunct morphism $\F0\cT_0 \to \cM_0$, which factors as the composite $\F0\cT_0 \to \F0 \fU_0 \cM_0 \to \cM_0$.
+
+Third, we choose to interpret the generating arrows $m$ and $e$ as morphisms $\m A \times \m A \to \m A$ and $1\to \m A$ in \cM.
+Technically, we are interpreting them as arrows in $\fU_1 \cM_1$ compatibly with the map $\F0\cT_0 \to \F0 \fU_0 \cM_0$ on their domains and codomains, but arrows in $\fU_1 \cM_1$ are induced by the counit $\F0 \fU_0 \cM_0 \to \cM_0$, so this really means arrows in \cM as shown.
+This gives a morphism $\cT_1 \to \fU_1\cM_1$.
+
+Fourth, we extend this interpretation to other terms, such as those appearing in the above, sending them to other morphisms in \cM.
+This means considering the adjunct morphism $\F1 \cT_1 \to \cM_1$, which again factors through the counit $\F1 \fU_1 \cM_1 \to \cM_1$.
+
+Finally, we assert that the equalities in $\cT$ are sent to equalities in \cM, or technically in $\fU_2 \cM$.
 Unwinding the definitions shows that the two associativity terms really are sent to the two morphisms $(\m A\times \m A)\times \m A \to \m A$ that the associativity of a monoid object should equate, and similarly for the unit terms.
-Thus, when in the final step we assert that the generating equalities map to actual equalities, we have precisely specified a monoid object in \cM.
+Thus, we have precisely specified a monoid object in \cM.
 
-If \cG denotes this theory, then $\F{2}\cG$ is the free category with products it generates.
-(In fact it is a special kind of category with products called a \emph{Lawvere theory}; see \cref{sec:fp-theories}.)
-Thus, a monoid object in \cM also induces a functor $\F{2}\cG\to\cM$.
-Since derivations of equalities yield equal morphisms in $\F2\cG$, it follows that any equation we can derive in this theory will be true of any monoid object in any category with products.
+It now follows from \cref{thm:catprod-thy-initial} that $\F{2}\cT$ is the free category with products it generates.
+(In fact it is, up to equivalence, a special kind of category with products called a \emph{Lawvere theory}; see \cref{sec:fp-theories}.)
+Thus, a monoid object in \cM also induces a functor $\F{2}\cT\to\cM$.
+Since derivations of equalities yield equal morphisms in $\F2\cT$, it follows that any equation we can derive in this theory will be true of any monoid object in any category with products.
 
-If we want to reproduce the uniqueness-of-inverses proof from \cref{sec:intro}, we need to further augment our $\times$-theory with two inverse operations $i,j \in \cG_1(A,A)$ and equalities such as
+If we want to reproduce the uniqueness-of-inverses proof from \cref{sec:intro}, we need to further augment our $\times$-theory with two inverse operations $i,j \in \cT_1(A,A)$ and equalities such as
 \[ x:X \types m(\pair{x}{i(x)}) \equiv e(\ttt) : A \]
 The proof of uniqueness now looks like:
 \begin{align*}
@@ -1978,7 +2023,8 @@ The proof of uniqueness now looks like:
 \end{align*}
 If it weren't for those two horrific-looking terms in the middle, the rest of the calculation looks pretty much like the argument as we gave it in \cref{sec:intro}.
 The horrific-looking terms are there because we can only apply the associativity of $m$ to a single term belonging to $(A\times A)\times A$, so we need to tuple up the terms $i(x)$, $x$, and $j(x)$ and replace them by the projections from that tuple (using $\beta$-conversion).
-In \cref{chap:simple} we will remedy this problem by introducing a type theory that allows us to state associativity (and $m$ itself) without tupling.
+
+In \cref{chap:simple} we will remedy this problem by introducing a type theory that allows us to state associativity (and $m$ itself) without tupling --- and, incidentally, remove much of the complication of this section by eliminating the need for products in the domains and codomains of generating arrows entirely.
 
 The construction of unary $\times$-theories, given the ordinary unary type theory for categories with products under directed graphs, while somewhat involved, is quite general\footnote{We will not attempt to make this generality precise, but the approach is similar to the general theory of ``globular computads'' in~\cite{batanin:cptd-fin}.} and can be applied to pretty much any type theory with an initiality theorem.
 For instance, by starting from the type theory for categories with coproducts instead, we obtain a notion of ``unary $+$-theory''; while starting from the theory of \cref{sec:modularity} for categories with both products and coproducts, we obtain a notion of ``unary $(\times,+)$-theory''.
@@ -1992,18 +2038,23 @@ First of all, unlike the case of directed graphs, we can show that \emph{every} 
 \end{thm}
 \begin{proof}
   The definitions of $\fU_0$, $\fU_1$, and $\fU_2$ are cooked up precisely so as to make this functor surjective on objects, full, and faithful respectively.
-  That is, $\fU_0\cM$ contains all the objects of \cM, so that $\ep_0:\F{0}\fU_0\cM\to \fU_0\cM$ is surjective --- though not injective, since $\F{0}\fU_0\cM$ contains new types such as ``$A\times B$'' for $A,B\in \cM$, which is distinct from the specified product of the objects $A$ and $B$ in \cM.
-  Then for any types $A,B$, $\fU_1\cM(A,B)$ contains all the morphisms of \cM between their images in \cM, so that $\ep_1:\F{1}\fU_1\cM\to \fU_1\cM$ is ``full'' (in the obvious sense) --- though not ``faithful'', since $\F{1}\fU_1\cM$ also contains new terms such as $x:A\types g(f(x)):C$ for $f:A\to B$ and $g:B\to C$ in \cM, which is distinct from $x:A\types (g\circ f)(x):C$ for the composite $g\circ f$ of morphisms in \cM.
-  Finally, $\fU_2\cM$ equates all terms whose images in \cM are equal, so that when we quotient by $\equiv$ the functor $\ep_2$ becomes faithful as well.
+  That is, $\fU_0\cM$ contains all the objects of \cM, so that the counit $\ep_0:\F{0}\fU_0\cM\to \fU_0\cM$ is surjective --- though not injective, since $\F{0}\fU_0\cM$ contains new types such as ``$A\times B$'' for $A,B\in \cM$, which is distinct from the specified product of the objects $A$ and $B$ in \cM.
+  Then for any types $A,B$, $\fU_1\cM(A,B)$ contains all the morphisms of \cM between their images in \cM, so the counit $\ep_1:\F{1}\fU_1\cM\to \fU_1\cM$ is full --- though not faithful, since $\F{1}\fU_1\cM$ also contains new terms such as $x:A\types g(f(x)):C$ for $f:A\to B$ and $g:B\to C$ in \cM, which is distinct from $x:A\types (g\circ f)(x):C$ for the composite $g\circ f$ of morphisms in \cM.
+  Finally, $\fU_2\cM$ equates all terms whose images in \cM are equal, so that when we quotient by $\equiv$ the counit $\ep_2:\F{2}\fU_2\cM\to \fU_2\cM$ becomes faithful as well.
 \end{proof}
 
 In other words, the functor $\F2:\timesthy2 \to \bPrCat$ is bicategorically essentially surjective.
 It follows that if we define a 2-category whose objects are unary $\times$-theories and whose hom-categories are induced from those of \bPrCat (regarded as a 2-category) via $\F2$, the result will be biequivalent to \bPrCat.
-The morphisms in this 2-category are sometimes called ``translations'' of one theory into another.
+The morphisms in this 2-category are sometimes called \textbf{translations}: they map generating types, morphisms, and axioms not to other \emph{generating} types, morphisms, and axioms, like the ordinary morphisms in $\timesthy2$, but rather to arbitrary types, terms, and equalities that are derivable in the codomain theory.
+
+One other bit of terminology to introduce: the $\times$-theory $\fU_2\cM$ is known as the \textbf{internal logic} of \cM.
+Regarded as a theory, it has a generating type for each object of \cM, and generating morphisms and axioms likewise induced by those of \cM.
+It comes with a canonical interpretation into $\cM$ itself given by the counit $\F2\fU_2\cM \to \cM$, so that anything derivable in the internal logic of \cM is actually true in \cM.
+Thus, if we only care about semantics in one category \cM, we can work in the ``universal type theory'' generated by \cM, where ``everything true in \cM'' is available.
 
 Finally, it is worth noting that $\times$-theories as defined here have a minor problem from a type-theoretic standpoint.
 If we try to formulate a sequent calculus version of them with the same generator rules as before, we find that cut is no longer admissible.
-For instance, if $f\in\cG_1(A,B\times C)$, there is no way to simplify a cut like the following:
+For instance, if $f\in\cT_1(A,B\times C)$, there is no way to simplify a cut like the following:
 \begin{mathpar}
   \inferrule*[right=cut]{\inferrule*[right=$f$]{X\types A}{X\types B\times C} \\
     \inferrule*[Right=$\timesL$]{B\types Y}{B\times C\types Y}}
@@ -2015,7 +2066,7 @@ In a natural deduction theory, this problem manifests as a lack of ``canonical f
 A common way to deal with this is to simply formulate the cut-elimination theorem in a form like ``all cuts except those over types appearing as the domains or codomains of generators can be eliminated''.
 Or roughly equivalently, we can modify the generator rule to build in a cut on \emph{both} sides:
 \begin{mathpar}
-  \inferrule{X\types A \\ B\types Y}{X\types Y}\; f\in\cG_1(A,B)
+  \inferrule{X\types A \\ B\types Y}{X\types Y}\; f\in\cT_1(A,B)
 \end{mathpar}
 With this primitive rule, the above ``inadmissible'' cut could be replaced by
 \begin{mathpar}
@@ -2024,7 +2075,7 @@ With this primitive rule, the above ``inadmissible'' cut could be replaced by
   {X\types Y}
 \end{mathpar}
 
-In any case, this is another advantage of the multiple-antecedent type theories to be presented in \cref{chap:simple}: they enable us to describe important theories (such as monoids) while restricting the generating morphisms to have only base types in their domain and codomain.
+In any case, this is another advantage of the multiple-antecedent type theories to be presented in \cref{chap:simple}: they will enable us to describe important theories (such as monoids) while restricting the generating morphisms to have only base types in their domain and codomain.
 (Of course we still do require generating equalities relating complex terms rather than just generators.)
 
 
@@ -2053,6 +2104,9 @@ In any case, this is another advantage of the multiple-antecedent type theories 
   \textit{(In \cref{ex:catprod-ehnr-again} you will re-do this proof using a better internal logic for comparison.)}
 \end{ex}
 
+\begin{ex}\label{ex:catfib-thy}
+  Define a tower of skeletal theories and adjunctions, analogous to those constructed in this section, corresponding to the type theory for fibrations from \cref{ex:catfib}.
+\end{ex}
 
 \ChapterExercises
 
