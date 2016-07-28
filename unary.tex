@@ -2270,8 +2270,13 @@ Thus, in this usage the ``theory of monoids'' would be the category with product
 This category does retain all the information about the \emph{models} of a theory in categories with products, but it has lost all the information about the generating operations and axioms.
 For instance, the category with products corresponding to the theory of monoids treats binary multiplication $(x,y) \mapsto x\cdot y$ on an equal footing with ternary multiplication $(x,y,z) \mapsto x\cdot (y\cdot z)$ (or equivalently $(x\cdot y)\cdot z$) and $n$-ary multiplication for all $n$, as well as other weirder operations like $(x,y,z) \mapsto y\cdot (x\cdot y)$.
 In particular, quite different-looking presentation/theories (such as Boolean algebras and Boolean rings) can present equivalent categories, and hence have the same models everywhere; this is sometimes known as \emph{Morita equivalence}.
-The passage from presentation/theories to categories is thus undoubtedly of great importance; but my own feeling is that using the word ``theory'' for the category rather than its presentation loses too much information that is traditionally included in things referred to as ``theories''.
-An extended dialogue on this subject can be found at~\cite{shulman:what-is-a-theory}.
+
+The passage from presentation/theories to categories is thus undoubtedly of great importance.
+However, my own feeling is that using the word ``theory'' for the category rather than its presentation loses too much information that is traditionally included in things referred to as ``theories''.
+In mathematical practice, theories (such as ``the theory of monoids'') are usually specified by a small number of generators and relations; thus if nothing else it is important to understand \emph{the process by which} these generate a category.
+Type theory, with its technology of cut-admissibility, gives us a concrete way to construct and understand such categories, rather than (for example) simply deducing their existence by an adjoint functor theorem.
+
+An extended dialogue about the meaning of the word ``theory'' can be found at~\cite{shulman:what-is-a-theory}.
 
 
 \subsection*{Exercises}
