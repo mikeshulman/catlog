@@ -475,6 +475,9 @@ It is also very tempting to include too many primitive rules, perhaps based on t
 One way to break this habit is to think of primitive rules as the \emph{operations} in an algebraic theory for which we are interested in the free algebras: clearly if there are too many operations, then the initial algebra will be too big.
 
 Another unusual feature of our treatment is the emphasis on multicategories (of various generalized sorts, including also the still more general ``polycategories'' and their generalizations).
+We start with ordinary multicategories since they are simplest categorically, which forces us to consider ``substructural'' type theories such as linear logic at least briefly.
+But soon we move on to \emph{cartesian multicategories}, which correspond to the more familiar kind of type theory with exchange, contraction, and weakening; these are a very natural structure, but are hard to find in the category-theoretic literature.
+
 Although multicategories have been present in categorical logic from close to the beginnings of both (Lambek's original definition of multicategory~\cite{lambek:dedsys-ii} was motivated by logical considerations), they are rarely mentioned in introductions to the subject.
 One concrete advantage of using multicategories is a more direct correspondence between the type theory and the category theory: type theory distinguishes between a sequent $A,B\types C$ and a sequent $A\times B\types C$ (even though they are bijectively related), so it seems natural to work with a categorical structure that also distinguishes between morphisms $(A,B)\to C$ and $A\times B\to C$.
 

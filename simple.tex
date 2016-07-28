@@ -18,11 +18,10 @@ On the one hand, there are rules that don't refer specifically to any operation,
 On the other hand, there are rules that introduce or eliminate a particular operation on types, such as product, coproduct, and so on --- and each such rule refers to only \emph{one} operation  (such as $\times,+,f^*$, etc.).
 
 This ``independence'' between the rules for distinct operations is important for the good behavior of type theory.
-For instance, notice that many of the exercises have involved combining the rules for multiple previously-studied operations.
-If you did some of these exercises, you hopefully got a sense for how these operations tend to coexist ``without interacting'' in the metatheory: e.g.\
+Many of the exercises have involved combining the rules for multiple previously-studied operations, and in \cref{sec:modularity} we remarked on how such operations tend to coexist ``without interacting'' in the metatheory: e.g.\
 when proving the cut-admissibility theorems we essentially just commute the rules for different operations past each other.
 This ``modularity'' means that we are always free to add new structure to a theory without spoiling the structure we already had.
-We formulate this as a general principle:
+We formulate it as a general principle:
 \begin{equation}\label{princ:independence}
   \text{Each rule in a type theory should refer to only one operation}.\tag{$\ast$}
 \end{equation}
@@ -37,7 +36,7 @@ In general, this tends to happen when relating operations whose universal proper
 For instance, all the operations $\meet,\top,\times,\unit,f^*$ have ``mapping in'' or ``from the right'' universal properties.
 Thus, we can expect to compare two objects built using more than one of them by showing that they have the same universal property, and this is essentially what type theory does.
 
-We also observe that in all cases we were able to extract the rules for a given operation from the universal property of the objects it was intended to represent in category theory.
+We also observed in \cref{sec:modularity} that in all cases we were able to extract the rules for a given operation from the universal property of the objects it was intended to represent in category theory.
 The left and right rules in a sequent calculus, or the introduction and elimination rules in a natural deduction, always expressed the ``two sides'' of a universal property: one of them ``structures the object'' and the other says that it is universal with this structure.
 The ``principal case'' of cut admissibility for a sequent calculus, and the $\beta$-conversion equality rule for a natural deduction, both express the fact that morphisms defined by the universal property ``compose with the structure'' to the inputs, e.g.\ a map $X\to A\times B$ defined from $f:X\to A$ and $g:X\to B$ gives back $f$ and $g$ when composed with the product projections.
 Similarly, the proof of identity admissibility for a sequent calculus, and the $\eta$-conversion rule for a natural deduction, express the uniqueness half of the universal property.
@@ -50,7 +49,7 @@ The point is that from the perspective of unary type theory, these two principle
 For instance, we remarked above that by expressing universal properties in type theory we can compare operations whose universal properties have the same handedness; but often we are interested in categorical structures satisfying nontrivial relations between objects with universal properties of different handedness.
 For instance, in any category with both products and coproducts, there is a canonical map $(A\times B)+(A\times C) \to A\times (B+C)$, and the category is said to be \emph{distributive} if this map is always an isomorphism.
 (When the category is a poset, we call it a \emph{distributive lattice}.)
-However, as you saw in \cref{ex:lattices,ex:cat-prod-coprod}, if we simply combine the unary type theoretic rules for $\times$ and $+$, we get a type theory for categories with products and coproducts, but no interaction between them.
+However, we saw in \cref{sec:modularity} that if we simply combine the unary type theoretic rules for $\times$ and $+$, we get a type theory for categories with products and coproducts, but no interaction between them.
 So unary type theory cannot deal with distributive categories while adhering to~\eqref{princ:independence} and~\eqref{princ:ump}.
 
 Perhaps surprisingly, there \emph{is} a way to present a type theory for distributive categories.
@@ -72,6 +71,7 @@ It turns out that there is a way to give it a universal property, and this also 
 % This is because the type theory generates a free category-with-products from a directed graph \cG whose vertices and edges are the objects and morphisms we hypothesize; but there is no way to express $f:A\times B\to C$ as an edge of \cG, since \cG has no products of objects yet.
 % This problem turns out to have the same solution as well.
 
+So much for motivation.
 As already mentioned, on the type-theoretic side what we will do in this chapter is allow multiple types in the antecedent of a judgment (but still, for now, only one type in the consequent); we call these \emph{simple type theories}.
 In a simple type theory the antecedent is often called the \emph{context}.
 
@@ -233,7 +233,7 @@ Let $\bRepMCat$ denote the category of representable multicategories and functor
   Finally, the constructions are clearly inverse up to natural isomorphism.
 \end{proof}
 
-There are plenty of good references on multicategories, such as~\cite{hermida:multicats,leinster:higher-opds}.
+There are other good references on multicategories, such as~\cite{hermida:multicats,leinster:higher-opds}.
 We end this section by discussing limits and colimits in multicategories, which are a bit less well-known.
 
 % \subsection{Limits and colimits in multicategories}
@@ -614,7 +614,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
 We leave the metatheory of this as an exercise (\cref{ex:natded-monpos}); it is also subsumed by the categorified version discussed in more detail in the next section.
 
 \begin{rmk}\label{rmk:context-splitting-1}
-  In \cref{sec:natded-mslat} we remarked that in (unary) natural deductions, the conclusions of rules always have an arbitrary type as antecedent.
+  In \cref{sec:natded-mslat} we remarked that in (unary) natural deductions, the conclusions (bottoms) of rules always have an arbitrary type as antecedent (left side of $\types$).
   For simple type theories, the corresponding property is that the conclusions of rules should have an arbitrary \emph{context} on the left.
   This is not quite true for the above presentation of the rules, since most of their conclusions have an antecedent obtained by concatenating two or more contexts.
   However, such a rule is always equivalent to one whose conclusion involves an arbitrary context that is decomposed as a concatenation by an additional premise.
@@ -702,13 +702,13 @@ The first is called using \textbf{de Bruijn levels} and the second \textbf{de Br
 
 The second way to name variables is to allow arbitrary variables (perhaps taken from some fixed infinite set of variables), but keep track of $\alpha$-equivalence.
 This now means that we can rename each variable independently, as long as we rename all of its occurrences at the same time and we don't try to rename any two variables to the same thing.
-For instance, if $f\in\cG(A,A;A)$ then we can write four sequents
+For instance, if $f\in\cG(A,A;B)$ then we can write four sequents
 \[
 \begin{array}{c@{\qquad}c}
-  x:A, y:A \types f(x,y):A &
-  x:A, y:A \types f(y,x):A \\\\
-  y:A, x:A \types f(y,x):A &
-  y:A, x:A \types f(x,y):A
+  x:A, y:A \types f(x,y):B &
+  x:A, y:A \types f(y,x):B \\\\
+  y:A, x:A \types f(y,x):B &
+  y:A, x:A \types f(x,y):B
 \end{array}
 \]
 The two in the left column are the same by $\alpha$-equivalence, and similarly the two in the right column are identical; but the columns are distinct from each other.
@@ -721,12 +721,12 @@ Bourbaki attempted to do away with variable labels entirely, writing all variabl
 \tikz[remember picture] \node[rectangle, inner sep=0pt] (a1) {$A$};,
 \tikz[remember picture] \node[rectangle, inner sep=0pt] (a2) {$A$}; \types
 f(\tikz[remember picture] \node[rectangle, inner sep=0pt] (b1) {$\Box$};,
-\tikz[remember picture] \node[rectangle, inner sep=0pt] (b2) {$\Box$};)
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (b2) {$\Box$};) : B
 \qquad
 \tikz[remember picture] \node[rectangle, inner sep=0pt] (a1p) {$A$};,
 \tikz[remember picture] \node[rectangle, inner sep=0pt] (a2p) {$A$}; \types
 f(\tikz[remember picture] \node[rectangle, inner sep=0pt] (b2p) {$\Box$};,
-\tikz[remember picture] \node[rectangle, inner sep=0pt] (b1p) {$\Box$};)
+\tikz[remember picture] \node[rectangle, inner sep=0pt] (b1p) {$\Box$};) : B
 \]
 \begin{tikzpicture}[remember picture,overlay]
   \draw (b2) -- +(0,-.6) -| (a2);
