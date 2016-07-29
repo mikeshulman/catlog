@@ -2398,11 +2398,17 @@ A cartesian multigraph contains operations and equations, so to use it as base d
     \inferrule{\types \Gamma \ctx \\ \types A \type}{\types (\Gamma,A)\ctx}
   \end{mathpar}
   In other words, there is an empty context, and from any context we can make a new one by adding a type on the end.
-  Similarly, instead of the ``identity/variable'' rule having a condition $(x:A)\in \Gamma$ (relying on our external knowledge of what it means to ``be an element of a finite list''), we can replace it by a judgment ``$\Gamma \types x\var A$'' meaning ``$x$ is a variable of type $A$ in context $\Gamma$'', with rules
+
+  We then have the problem of expressing the other rules that modify the context in terms of this judgment.
+  This is simplest and most useful in the cartesian case, when all the structural context rules (exchange, contraction, weakening) are admissible as in this section.
+  For in this case, all the rules that change the context (like $\toI$ and $\plusE$) simply add an extra type at the end of it when passing from the conclusion to some of the premises, and this operation is directly represented by the second rule for the context judgment.
+
+  We also have to deal with the ``identity/variable'' rule.
+  Instead of it having a condition $(x:A)\in \Gamma$ (relying on our external knowledge of what it means to ``be an element of a finite list''), we can introduce another new judgment ``$\Gamma \types x\var A$'' meaning ``$x$ is a variable of type $A$ in context $\Gamma$'', with rules
   \begin{mathpar}
     \inferrule{\types \Gamma \ctx \\ \types A \type}{\Gamma,A \types \pop\var A}\and
     \inferrule{\types \Gamma \ctx \\ \types A \type \\ \Gamma \types x\var B}{\Gamma,A \types \shf(x)\var B}\and
-    \inferrule{\Gamma \types x\var A}{\Gamma\types \use(x):A}
+    \inferrule{\Gamma \types x\var A}{\Gamma\types \use(x):A}.
   \end{mathpar}
   That is, there is a variable associated to the last type in a context, and variables associated to other types in the context are defined inductively.
   Thus, for example, the variables in the context $A,B,C$ are
