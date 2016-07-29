@@ -2265,6 +2265,11 @@ One thing worth noting is that the tower of adjunctions can further motivate the
 Recall that there we had to prove that the extension $\free$ to terms takes substitution to composition before we could extend it to ``act on equalities''.
 From the present perspective, this is explained by the fact that we have to construct the entire 1-skeletal adjunction $\F1 \adj \fU_1$, including the functoriality of induced maps $\free:\F1\cP \to \cM$, before we can start constructing the 2-skeletal adjunction.
 
+The category presentations studied in \cref{sec:category-presentations} fit into this general picture too, but a number of things are degenerate and thus not easily visible.
+Since there are no type operations, a ``0-skeleton for a category'' is (like a 0-skeletal category presentation) just a set, so the level-0 adjunction is the identity.
+And since there are no equality rules (other than those arising from the axioms of a presentation), 1-skeletons and 2-skeletons for categories are both just another name for categories.
+Thus, the level-1 adjunction is the one from \cref{thm:category-initial-2} between directed graphs and categories, while the level-2 adjunction is the one from \cref{thm:catpres-initial} between category presentations and categories.
+
 In the future, whenever we introduce a new class of type theories, we will first describe the basic version that constructs free categorical structures from ``graph-like'' data, and then say a few words about the corresponding kind of ``presentation''.
 As above, usually almost everything in the latter case is a straightforward generalization, the main conceptual point being a definition of the 1-skeletal version of the categorical structure with the right amount of naturality.
 
