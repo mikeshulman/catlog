@@ -1678,11 +1678,11 @@ As in the dual case, by a \textbf{category with coproducts} we mean a category w
   This is basically just like the proof of \cref{thm:catprod-initial}, with one slight twist.
   \cref{thm:catcoprod-subadm} defines substitution, and the same sort of induction proves it associative and unital; thus we have a category $\F\bCoprCat\cG$.
   The rules are defined just so as to give this category the structure of coproducts.
-  Then, given any category with coproducts \cM and map of graphs $P:\cG\to\cM$, we extend $P$ to a unique coproduct-preserving functor $\F\bCoprCat\cG\to\cM$ by successive inductions over all the derivations of the type theory.
+  Then, given any category with coproducts \cM and map of graphs $\pfree:\cG\to\cM$, we extend $\pfree$ to a unique coproduct-preserving functor $\free:\F\bCoprCat\cG\to\cM$ by successive inductions over all the derivations of the type theory.
 
   The twist is that we have to be careful about the order in which we do this.
   Because the rules for $\equiv$ involve the substitution \emph{operation} on terms, to interpret these rules using the universal properties in \cM we need to know already that substitution maps to composition in \cM.
-  Thus we need to (1) extend $P$ to types, (2) extend $P$ to terms, (3) \emph{then} prove that this extension takes substitution to composition, (4) \emph{then} inductively show that derivations of $x:A\types M\equiv N:B$ map to equal morphisms, and (5) then complete the proof that we have a functor preserving coproducts.
+  Thus we need to (1) extend $\pfree$ to types, (2) extend $\pfree$ to terms, (3) \emph{then} prove that this extension $\free$ takes substitution to composition, (4) \emph{then} inductively show that derivations of $x:A\types M\equiv N:B$ map to equal morphisms, and (5) then complete the proof that we have a functor preserving coproducts.
 \end{proof}
 
 % At this point the reader is free (after doing some exercises) to move on directly to \cref{chap:simple}.
@@ -2037,7 +2037,16 @@ The pairings do, however, have to be \emph{natural} in the domain, since that co
   We write $\prcat k$ for the category of $k$-skeleta for a category with products (in which we trust the reader to define the morphisms).
 \end{defn}
 
-We will construct the following ladder of adjunctions, in which the both the left and right adjoints commute with the obvious downward-pointing forgetful functors:
+\begin{rmk}\label{rmk:1skeleton-yoneda}
+  The morphisms $A\times B \to A$ and $A\times B\to B$ in a 1-skeleton for a category with products could also be expressed, by the Yoneda embedding, as natural transformations $\cM(-,A\times B) \to \cM(-,A)$ and $\cM(-,A\times B) \to \cM(-,B)$.
+  This would make them look more like the other two operations in such a 1-skeleton, and moreover would correspond more directly to the type-theoretic rules for projections:
+  \begin{mathpar}
+    \inferrule{x:X\types M:A\times B}{x:X \types \pi_1(M):A}\and
+    \inferrule{x:X\types M:A\times B}{x:X \types \pi_2(M):B}\and
+  \end{mathpar}
+\end{rmk}
+
+Now, we will construct the following ladder of adjunctions, in which the both the left and right adjoints commute with the obvious downward-pointing forgetful functors:
 \[ \xymatrix{
   \timespres 2 \ar@<2mm>[r]^{\F{2}} \ar@{}[r]|-{\bot} \ar[d] & \prcat 2 \ar@<2mm>[l]^{\fU_2} \ar[d] \\
   \timespres 1 \ar@<2mm>[r]^{\F{1}} \ar@{}[r]|-{\bot} \ar[d] & \prcat 1 \ar@<2mm>[l]^{\fU_1} \ar[d] \\
@@ -2190,13 +2199,6 @@ However, we can still construct a bicategory that is (bicategorically) equivalen
 In fact, this bicategory is a strict 2-category, and its underlying 1-category is the Kleisli category of the induced monad on $\timespres2$; we are just observing that the latter category can be enhanced to a 2-category in order to make the adjunction ``bicategorically opmonadic''.
 
 \begin{rmk}
-  The construction of $\times$-presentations, given the ordinary unary type theory for categories with products under directed graphs, while somewhat involved, is quite general and can be applied to pretty much any type theory with an initiality theorem.
-  We will not attempt to make this generality precise, but the approach is similar to the general theory of computads in higher category theory; see~\cite{batanin:cptd-fin,garner:hom-hcat,nlab:computad}.
-  For instance, by starting from the type theory for categories with coproducts instead, we obtain a notion of \emph{unary $+$-presentation}; while starting from the theory of \cref{sec:modularity} for categories with both products and coproducts, we obtain a notion of \emph{unary $(\times,+)$-presentation}.
-  We will discuss some more important special cases in \cref{sec:fp-theories,sec:symmoncat}.
-\end{rmk}
-
-\begin{rmk}
 It is worth noting that $\times$-presentations as defined here have a minor problem from a type-theoretic standpoint:
 if we try to formulate a sequent calculus version of their type theories with the same generator rules as before, we find that cut is no longer admissible.
 For instance, if $f\in\cP_1(A,B\times C)$, there is no way to simplify a cut like the following:
@@ -2223,6 +2225,48 @@ With this primitive rule, the above ``inadmissible'' cut could be replaced by
 In any case, this is another advantage of the multiple-antecedent type theories to be presented in \cref{chap:simple}: they will enable us to describe important theories (such as monoids) while restricting the generating morphisms to have only base types in their domain and codomain.
 (Of course we still do require generating equalities relating complex terms rather than just generators.)
 \end{rmk}
+
+The construction of $\times$-presentations, given the ordinary unary type theory for categories with products under directed graphs, while somewhat involved, is quite general and can be applied to pretty much any type theory with an initiality theorem.
+We will not attempt to make this generality precise, but the approach is similar to the general theory of computads in higher category theory; see~\cite{batanin:cptd-fin,garner:hom-hcat,nlab:computad}.
+
+For instance, by starting from the type theory for categories with coproducts instead, we obtain a notion of \textbf{unary $+$-presentation} and a corresponding tower of adjunctions.
+Most of the definitions and proofs are direct translations of those for $\times$-presentations, replacing $\times$ and its rules by $+$ and its rules everywhere.
+The only thing here that requires a little thought is the definition of a \textbf{1-skeleton for a category with coproducts}.
+But looking at the rules for coproduct terms from \cref{fig:catcoprod},
+% \begin{mathpar}
+%   \inferrule{x:X \types M:\zero \\ \types C\type}{x:X \types \abort(M):C}\;\zeroE\\
+%   \inferrule{x:X\types M:A}{x:X\types \inl(M):A + B}\;\plusI1\and
+%   \inferrule{x:X\types N:B}{X\types \inr(N):A + B}\;\plusI2\and
+%   \inferrule{x:X\types M:A + B\\u:A\types P:C \\ v:B\types Q:C}{x:X\types \acase AB(M,u.P,v.Q):C}\;\plusE
+% \end{mathpar}
+and the corresponding defining clauses of substitution from \cref{thm:catcoprod-subadm},
+% \begin{align*}
+%   \abort(N)[M/y] &= \abort(N[M/y])\\
+%   \inl(N)[M/y] &= \inl(N[M/y])\\
+%   \inr(N)[M/y] &= \inr(N[M/y])\\
+%   \case(N,u.P,v.Q)[M/y] &= \case(N[M/y],u.P,v.Q)
+% \end{align*}
+leads us to define it to consist of the following.
+\begin{enumerate}
+\item A 0-skeleton for a category with coproducts, i.e.\ a set $\cM_0$ with an operation $\mathord+:\cM_0\times \cM_0 \to \cM_0$ and an element $\zero\in\cM_0$.
+\item A category with $\cM_0$ as its set of objects.
+\item For every $A,B\in\cM_0$, morphisms $A\to A+B$ and $B\to A+B$.
+\item For any two morphisms $A\to C$ and $B\to C$, a morphism $A+B\to C$.
+\item For any $A\in\cM_0$, a morphism $\zero\to A$.
+\end{enumerate}
+As noted in \cref{rmk:1skeleton-yoneda}, the type-theoretic rules are modeled more directly by natural transformations between representable functors.
+In general, the necessary naturality involves the premise(s) that share antecedents with the conclusion.
+But in the unary rules for coproducts, unlike those for products, there is always \emph{exactly} one such premise, and so the natural transformations involved will always be in the image of the Yoneda embedding.
+
+The rest of the theory of $+$-presentations is straightforward: we get a tower of adjunctions, with the top left adjoint sending a $+$-presentation to a category with coproducts generated by its type theory.
+We can then go on to combine these two kinds of presentation, starting from the theory of \cref{sec:modularity} for categories with both products and coproducts and obtain a notion of \emph{unary $(\times,+)$-presentation}.
+
+One thing worth noting is that the tower of adjunctions can further motivate the twist in the proof of \cref{thm:catcoprod-initial}.
+Recall that there we had to prove that the extension $\free$ to terms takes substitution to composition before we could extend it to ``act on equalities''.
+From the present perspective, this is explained by the fact that we have to construct the entire 1-skeletal adjunction $\F1 \adj \fU_1$, including the functoriality of induced maps $\free:\F1\cP \to \cM$, before we can start constructing the 2-skeletal adjunction.
+
+In the future, whenever we introduce a new class of type theories, we will first describe the basic version that constructs free categorical structures from ``graph-like'' data, and then say a few words about the corresponding kind of ``presentation''.
+As above, usually almost everything in the latter case is a straightforward generalization, the main conceptual point being a definition of the 1-skeletal version of the categorical structure with the right amount of naturality.
 
 
 \subsection{Theories}
