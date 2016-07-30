@@ -1,5 +1,5 @@
 \makeatletter
-\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fprop\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bCartMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bPres\nSub\nSieve\nMap}
+\autodefs{\bSet\bMag\bVect\bPoset\bRelGr\bCat\bGr\bmSLat\ftype\fprop\fctx\fpreterm\bPrCat\bCoprCat\bMCat\bRepMCat\bSymMulti\bCartMulti\bMGr\bMPos\bRelMGr\bMonPos\bMonCat\bSMPos\bSMC\bProp\bTV\bHeyting\fapp\bPres\nSub\nSieve\nMap\bStrMonCat\sPrCat\sCartMulti}
 \autodefs{\nAut\nShuf}
 \def\tv{\mathbf{2}}
 \def\tr{\mathrm{tr}}
@@ -153,6 +153,8 @@
 % Theories
 \def\timespres#1{\bPres_{\times,#1}}
 \def\prcat#1{\bPrCat_{#1}}
+\def\stlcpres#1{\bPres_{\times,+,\to,#1}}
+\def\cccc#1{\mathbf{CCCC}_{#1}}
 \def\m#1{\llbracket #1\rrbracket}
 % Multicategories
 \let\convolve\boxtimes

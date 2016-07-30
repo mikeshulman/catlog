@@ -1062,155 +1062,12 @@ Note that as in \cref{thm:catcoprod-initial}, we have to be careful to do the in
 Since the rules for equalities refer to substitution, we have to first define the functor on types and terms, then prove that it maps substitution to composition, then define it on equalities.
 This will be the case for almost all type theories we consider from now on (the case of products in \cref{sec:catprod} is very special in that its equality rules don't need to refer to substitution), so for the most part we will no longer bother to mention it.
 
-\subsection{$\tensor$-presentations}
-\label{sec:tensor-presentations}
-
-In \cref{sec:unary-theories} we promised that whenever we introduce a new kind of type theory, we would also say a few words about the corresponding notion of presentation (or ``theory'').
-As in the unary case, in the present situation we can build a tower of adjunctions relating ``$k$-skeletal $\tensor$-presentations'' with ``$k$-skeleta for monoidal categories''.
-For instance, a \textbf{2-skeletal $\tensor$-presentation} consists of:
-\begin{enumerate}
-\item A set $\cP_0$ of objects;
-\item A set $\cP_1$ of morphisms, each of which has a list of types as domain and a single type as codomain, where the ``types'' are generated from $\cP_0$ using the rules for the judgment $\types A\type$ (there is a specified type $\one$, and for any types $A,B$ we can form $A\tensor B$).
-\item A set $\cP_2$ of equalities or axioms, each of which is a pair of terms generated from $\cP_1$ and the rules for the term judgment, with the same context and the same consequent.
-\end{enumerate}
-
-Unsurprisingly, the main subtlety is in the definition of a \textbf{1-skeleton for a monoidal category}, which requires us to express the ``naturality'' properties of a tensor product in a multicategory without asserting its full universal property.
-This requires us to discuss ``contravariant representable functors'' for a multicategory; but what are those?
-More specifically, what \emph{sort of thing} are they?
-Inspecting the structure possessed by the family of sets $\cM(A_1,\dots,A_n;B)$, for a fixed $B$ as the $A_i$ vary, leads us to the following definition.
-
-\begin{defn}\label{defn:multicat-pshf}
-  Let \cM be a multicategory and \bC a category.
-  A \textbf{\bC-valued presheaf on \cM} consists of
-  \begin{enumerate}
-  \item For each list $(A_1,\dots,A_n)$ of objects of \cM, an object $\cH(A_1,\dots,A_n)\in\bC$.
-  \item For each list $(f_1,\dots,f_m)$ of morphisms of \cM, with $f_i:(A_{i1},\dots,A_{in_i})\to B_i$, a morphism in \bC:
-    \[ (f_1,\dots,f_n)^* : \cH(B_1,\dots,B_m) \to \cH(A_{11},\dots,A_{mn_m}) \]
-  \item These morphisms are associative and unital with respect to composition in \cM:
-    \begin{align*}
-      (f_{11},\dots,f_{mn_m})^* \circ (g_1,\dots,g_m)^* &=
-      (g_1\circ (f_{11},\dots,f_{1n_1}), \dots, g_m \circ (f_{m1},\dots,f_{mn_m}))^*
-      \\
-      (\idfunc_{A_1},\dots,\idfunc_{A_n})^* &= \idfunc_{\cH(A_1,\dots,A_n)}
-    \end{align*}
-  \end{enumerate}
-\end{defn}
-
-Thus, for each object $B\in\cM$, we have a \bSet-valued presheaf $\cM(-;B)$.
-However, while this definition is what we see most directly, for technical purposes it is convenient to reformulate it using the following construction, whose proof we leave to the reader.
-
-\begin{thm}\label{thm:catctx}
-  The forgetful functor from strict monoidal categories to multicategories has a left adjoint.
-  It sends a multicategory \cM to the monoidal category $\catctx\cM$ whose objects are finite lists $(A_1,\dots,A_n)$ of objects of \cM, with
-  \begin{multline*}
-    \catctx\cM((A_1,\dots,A_n),(B_1,\dots,B_m))=\\
-    \coprod_{0\le i_1 \le \cdots \le i_{m-1} \le n}
-    \cM(A_1,\dots,A_{i_1}; B_1) \times \cM(A_{i_1+1},\dots,A_{i_2};B_2) \times \cdots \\
-    \times \cM(A_{i_{m-1}+1},\dots,A_n;B_m)
-  \end{multline*}
-  The monoidal structure on $\catctx\cM$ is concatenation of lists.
-\end{thm}
-
-\begin{thm}\label{thm:multicat-pshf-catctx}
-  For any multicategory \cM and category \bC, a \bC-valued presheaf on \cM as in \cref{defn:multicat-pshf} is the same as an ordinary functor $\catctx\cM\op \to \bC$.\qed
-\end{thm}
-
-For instance, this characterization immediately yields a Yoneda lemma:
-
-\begin{cor}\label{thm:multicat-yoneda}
-  For any multicategory \cM, object $B\in\cM$, and \bSet-valued presheaf \cH on \cM, there is a natural bijection between natural transformations $\cM(-;B) \to \cH$ and elements of $\cH(B)$.
-\end{cor}
-\begin{proof}
-  Apply the ordinary Yoneda lemma for presheaves on $\catctx\cM$.
-\end{proof}
-
-In particular, we have a Yoneda embedding: the hom-set $\cM(A_1,\dots,A_n;B)$ reappears as $\catctx\cM((A_1,\dots,A_n),(B))$, and therefore is isomorphic to the set of natural transformations from $\catctx\cM(-,(A_1,\dots,A_n))$ to $\catctx\cM(-,B)$.
-The latter is the same as $\cM(-;B)$; but what is the former in terms of \cM itself?
-Inspecting the definition, we find that it is an instance of the following operation.
-
-\begin{defn}\label{defn:multicat-convolve}
-  Given \bSet-valued presheaves \cH and \cK on a multicategory \cM, their \textbf{convolution product} is the \bSet-valued presheaf defined by:
-  \[ (\cH\convolve\cK)(A_1,\dots,A_n) = \coprod_{0\le i\le n} \cH(A_1,\dots,A_i) \times \cK(A_{i+1},\dots,A_n) \]
-  Similarly, the \textbf{convolution unit} is the \bSet-valued presheaf defined by:
-  \[ \cI(A_1,\dots,A_n) =
-  \begin{cases}
-    1 &\qquad n=0\\
-    \emptyset & \qquad n>0
-  \end{cases}\]
-\end{defn}
-
-\begin{lem}\label{thm:multicat-yonemb}
-  The convolution product makes the category of \bSet-valued presheaves on a multicategory \cM into a monoidal category, and there is a fully faithful Yoneda embedding from \cM into the underlying multicategory of this monoidal category.
-\end{lem}
-\begin{proof}
-  In fact, the convolution product is just the \emph{Day convolution product}~\cite{day:closed} induced by the strict monoidal structure of $\catctx\cM$.
-  The rest is just unfolding definitions; in particular we have
-  \[ \catctx\cM(-,(A_1,\dots,A_n)) \cong \cM(-;A_1)\convolve \cdots \convolve \cM(-;A_n).\qedhere \]
-\end{proof}
-
-There is one further notion that we will need: a ``presheaf of two (or more) variables'' on a multicategory.
-We can also define these in terms of $\catctx\cM$, to be ordinary functors $\catctx\cM\op \times \catctx\cM\op \to \bSet$.
-There is an operation $\intern$ that takes a two-variable presheaf to a one-variable one, defined explicitly by
-\[ \intern\cH(A_1,\dots,A_n) = \coprod_{0\le i\le n} \cH((A_1,\dots,A_i),(A_{i+1},\dots,A_n)). \]
-Formally, $\intern$ is the \emph{left Kan extension} along the monoidal tensor product functor $\catctx\cM\op \times \catctx\cM\op \to  \catctx\cM\op$.
-By inspection (or by definition of Day convolution), we have
-\[ \cH\convolve \cK = \intern(\cH\times\cK) \]
-where $\cH\times\cK$ is a ``pointwise'' product:
-\[ (\cH\times\cK)((A_1,\dots,A_i),(A_{i+1},\dots,A_n)) = \cH(A_1,\dots,A_i) \times \cK(A_{i+1},\dots,A_n). \]
-There is an analogous $\intern^m$ for ``$m$-variable presheaves'' for any $m$.
-
-Finally, let us return to the rules for $\tensor$ terms from \cref{fig:moncat}:
-\begin{mathpar}
-  \inferrule{\Gamma\types M:A \\ \Delta\types N:B}{\Gamma,\Delta\types \tpair{M}{N}:A\tensor B}\;\tensorI\and
-  \inferrule{
-    \Psi \types M:A\tensor B \\
-    \Gamma,x:A,y:B,\Delta\types N:C
-  }{
-    \Gamma,\Psi,\Delta \types \match_{A\tensor B}^{\Gamma|\Delta}(M,xy.N):C
-  }\;\tensorE
-  % \inferrule{\Gamma\types A \\ \Delta\types B}{\Gamma,\Delta\types A\tensor B}\;\tensorI\and
-  % \inferrule{
-  %   \Psi \types A\tensor B \\
-  %   \Gamma,A,B,\Delta\types C
-  % }{
-  %   \Gamma,\Psi,\Delta \types C
-  % }\;\tensorE
-\end{mathpar}
-We commented in \cref{sec:unary-theories} that in general, the naturality properties required of a 1-skeleton come from contexts that are shared by the premises and conclusion, as these give rise to the defining clauses of substitution:
-\begin{align*}
-  \tpair P Q[M/x] &= \tpair{P[M/x]}{Q} &&\quad\text{if $x$ occurs in $P$}\\
-  \tpair P Q[M/x] &= \tpair{P}{Q[M/x]} &&\quad\text{if $x$ occurs in $Q$}\\
-  \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N[M/x],uv.P) &&\quad\text{if $x$ occurs in $N$}\\
-  \match_\tensor(N,uv.P)[M/x] &= \match_\tensor(N,uv.P[M/x]) &&\quad\text{if $x$ occurs in $P$}
-\end{align*}
-Translating these substitution rules back from one-place composition into multi-composition, we see that the rule $\tensorI$ describes exactly a natural transformation
-\[\cM(-;A)\convolve \cM(-;B) \to \cM(-;A\tensor B),\]
-which by \cref{thm:multicat-yonemb} is equivalent to a morphism $(A,B)\to A\tensor B$ in \cM.
-Note that the presence of a concatenated context $\Gamma,\Delta$ in the conclusion, with one part coming from one premise and one part from another, corresponds to the appearance of $\convolve$ in the multicategorical version.
-
-The analogue of $\tensorE$ is similar, but more complicated.
-The first premise corresponds to a representable presheaf $\cM(-;A\tensor B)$, while the second suggests a two-variable presheaf of the form $\cM(-,A,B,-;C)$; thus we might initially guess we should have a natural transformation
-$\cM(-;A\tensor B) \convolve \intern\cM(-,A,B,-;C) \too \cM(-;C)$.
-However, this is not quite right because $\convolve$ concatenates contexts in left-to-right order, whereas in $\tensorE$ the context $\Psi$ has to appear in between $\Gamma$ and $\Delta$.
-Thus, we instead have to first define a presheaf of three variables that puts the inputs in the correct order, then apply $\intern^3$.
-
-Adding in the simpler structure corresponding to $\one$, we arrive finally at a definition of \textbf{1-skeleton for a monoidal category}:
-\begin{enumerate}
-\item A set $\cM_0$ of objects, with an element $\one\in\cM_0$ and an operation $\tensor:\cM_0\times \cM_0 \to \cM_0$.
-\item A multicategory with $\cM_0$ as its set of objects.
-\item For each $A,B\in\cM_0$, a morphism $(A,B)\to A\tensor B$.
-\item For each $A,B,C\in\cM_0$, a natural transformation
-  \[ \intern^3\Big((\Gamma,\Psi,\Delta) \mapsto \cM(\Psi;A\tensor B) \times \cM(\Gamma,A,B,\Delta;C)\Big) \too \cM(-;C). \]
-\item A morphism $() \to \one$.
-\item For each $C\in\cM_0$, a natural transformation
-  \[ \intern^3\Big((\Gamma,\Psi,\Delta) \mapsto \cM(\Psi;\one) \times \cM(\Gamma,\Delta;C)\Big) \too \cM(-;C). \]
-\end{enumerate}
-After all of this work to give the right \emph{definition}, the theorems are straightforward to prove.
-For each $k=0,1,2$, the left adjoint taking a $k$-skeletal $\tensor$-presentation to a $k$-skeleton for a monoidal category is built out of the corresponding type theory, and proven to be correct by inductions on derivations.
-As in \cref{sec:unary-theories}, the naturality in the above definition of 1-skeleton is used to prove that the extension of $\pfree:\cP_1 \to \fU_1\cM$ to $\free:\F1\cP_1 \to \cM$ is a functor of multicategories, which in turn is then used when constructing the adjunction for 2-skeletons.
-
-Admittedly, there may not be a whole lot of intrinsic interest in $\tensor$-presentations.
-However, having spent some time building up the machinery in this simpler case will be beneficial in later sections.
+\begin{rmk}\label{rmk:moncat-pres}
+  In \cref{sec:unary-theories} we mentioned that every kind of type theory can be generalized to use an appropriate kind of ``presentation'' (or ``theory'') as input.
+  This is true for all the type theories in the current chapter; but we postpone discussion of it for a while, because the notion of 1-skeleton for non-symmetric monoidal categories entails some technical complications that would significantly derail us at this point for very little benefit.
+  We will mention presentations for the posetal case (where the problem of 1-skeletons doesn't arise) briefly in \cref{sec:logic}, and then start dealing with the 1-skeletons in the cartesian case (where they are simpler) in \cref{sec:cartesian-presentations}.
+  In \cref{sec:symmoncat} we will do the somewhat trickier symmetric case; after which the reader should be able to handle the trickiest non-symmetric case in \cref{ex:moncat-pres}.
+\end{rmk}
 
 
 \subsection*{Exercises}
@@ -1275,10 +1132,6 @@ However, having spent some time building up the machinery in this simpler case w
 %   There is no technical ambiguity and a computer can parse this term just fine, but it is fairly unreadable for a human.
 %   (Indeed, according to Conor McBride, Bob Atkey once described the ability to read de Bruijn variables as a reverse Turing test.)
 % \end{rmk}
-\end{ex}
-
-\begin{ex}\label{ex:catctx}
-  Prove \cref{thm:catctx,thm:multicat-pshf-catctx}.
 \end{ex}
 
 
@@ -1471,11 +1324,6 @@ The categorical side of this involves moving to \emph{generalized multicategorie
 
 \begin{ex}\label{ex:moncat-prod-coprod-context}
   Find an example of a distributive monoidal category with products in which the two terms in~\eqref{eq:ttt-arg} represent distinct morphisms.
-\end{ex}
-
-\begin{ex}\label{ex:moncat-prod-coprod-pres}
-  Construct a tower of adjunctions as in \cref{sec:unary-theories,sec:tensor-presentations} building up to ``$(\tensor,\times,+)$-presentations'' for distributive monoidal categories with products.
-  As usual, the most interesting part is the definition of ``1-skeletons'' for the latter.
 \end{ex}
 
 
@@ -2633,54 +2481,32 @@ A cartesian multigraph contains operations and equations, so to use it as base d
 \section{Cartesian presentations}
 \label{sec:cartesian-presentations}
 
-As usual, we can generalize from multigraphs to a notion of \textbf{$(\times,+,\to)$-presentation}.
+In \cref{sec:unary-theories} we mentioned that every kind of type theory can be generalized to use an appropriate kind of ``presentation'' (or ``theory'') as input, with the main technical issue being an appropriate notion of ``1-skeleton'' for the categorical structure in question.
+We have postponed dealing with 1-skeleta in this chapter until now, because they are substantially simpler in the cartesian case; but now we are ready.
 
-% TODO: another subsection
-
-%%%%%%
-
-Recall from \cref{sec:unary-theories} that for almost any type theory with an initiality theorem, we can build a notion of a ``presentation'' or a ``theory'' that allows generating morphisms with arbitrary types in their domains and codomains, as well as generating equalities between arbitrary terms.
-We have not explicitly mentioned this in the present chapter, but it is true for all of the type theories we have considered.
-
-For example, starting from the simply typed $\lambda$-calculus with products we can define \textbf{$(\to,\times)$-theory}, which has a set $\cG_0$ of objects, sets $\cG_1(A_1,\dots,A_n;B)$ of generating multimorphisms where $A_i$ and $B$ can be built up out of $\times,\unit,\to$, and a set of generating equations between terms defined from these.
-One such generating morphism might have domain $(A\to B, B\times B\to A)$ and codomain $(A\to C)\times B$.
-As in \cref{sec:unary-theories}, we can show that the type theory of a $(\to,\times)$-theory freely generates an (in this case) cartesian closed category, and that every cartesian closed category is equivalent to that freely generated by its underlying $(\to,\times)$-theory (its ``internal logic'').
-Thus, if we define the morphisms between $(\to,\times)$-theories in a sufficiently tautological way, we obtain a 2-category biequivalent to that of cartesian closed categories.
-We can of course ``mix and match'' the type operations assumed in our theories, by the modularity of type theory (principle~\eqref{princ:independence}).
-
-%%%%%%
-
-[TODO: Need $\catctx{-}$ in the cartesian case.  Say something about action of structural rules too.  This left adjoint reappears in the next subsection as \cref{thm:free-catprod-cartmulti}.]
-
-The necessary definition of a \textbf{1-skeleton for a cartesian closed category with coproducts} is much simpler than in the non-cartesian monoidal case of \cref{sec:tensor-presentations}, since we can just use ordinary products of presheaves instead of convolution products.
-Explicitly, it consists of the following (compare to the rules in \cref{fig:stlc}).
+As in the unary case, our goal is to build a tower of adjunctions relating ``$k$-skeletal $(\times,+,\to)$-presentations'' with ``$k$-skeleta for cartesian closed categories with coproducts'' (and similarly when some of the type operations are omitted).
+For instance, a \textbf{2-skeletal $(\times,+,\to)$-presentation} consists of:
 \begin{enumerate}
-\item A set $\cM_0$ of objects with chosen elements $\unit,\zero$ and binary operations $\times,+,\to$.
-\item A cartesian multicategory $\cM$ with $\cM_0$ as set of objects.
-\item For each $A,B\in\cM_0$, morphisms $A\times B\to A$ and $A\times B\to B$ and a natural transformation
-  \[ \cM(-;A) \times \cM(-;B)\too \cM(-;A\times B) \]
-\item A natural transformation $1\to \cM(-;\unit)$.
-\item For each $C\in\cM_0$, a morphism $\zero\to C$.
-\item For each $A,B\in\cM_0$, morphisms $A\to A+B$ and $B\to A+B$; and for any $A,B,C$ a natural transformation
-  \[ \cM(-;A+B) \times \cM(-,A;C) \times \cM(-,B;C) \too \cM(-;C) \]
-\item For any $A,B\in \cM_0$, natural transformations
-  \[ \cM(-,A;B) \too \cM(-;A\to B) \]
-  \[ \cM(-;A\to B) \times \cM(-;A) \too \cM(-;B). \]
+\item A set $\cP_0$ of objects;
+\item A set $\cP_1$ of morphisms, each of which has a list of types as domain and a single type as codomain, where the ``types'' are generated from $\cP_0$ using the rules for the judgment $\types A\type$ in \cref{sec:stlc}.
+  For example, such a generating morphism might have domain $(A\to B, B\times B\to A)$ and codomain $(A\to C)\times B$.
+\item A set $\cP_2$ of equalities or axioms, each of which is a pair of terms generated from $\cP_1$ and the rules for the term judgment, with the same context and the same consequent.
 \end{enumerate}
-We can then construct a tower of adjunctions as usual.
 
-[TODO]
+Unsurprisingly, the main subtlety is in the definition of 1-skeleta for cartesian multicategories, which will require us to introduce a notion of ``presheaf on a multicategory''.
+However, before we dive into that, there is a simple but still very important case we can deal with first.
 
 
-\section{Finite-product theories}
+\subsection{Finite-product theories}
 \label{sec:fp-theories}
 
-One particularly important case is when we start from the type theory of \cref{sec:stlc} but with \emph{no} type operations (that is, the type theory for plain cartesian multicategories).
-Because we have morphisms in our generating multigraph with arbitrary domains, we can still express ``operations'' of arbitrary finite arity.
-The new thing relative to \cref{sec:stlc} is that we allow arbitrary generating equations between terms.
-These are called \textbf{finite-product theories} or \textbf{finitary algebraic theories}.
+Suppose we start from the type theory of \cref{sec:stlc} but with \emph{no} type operations --- that is, the type theory for plain cartesian multicategories.
+Then just as in \cref{sec:category-presentations}, the 1-skeleta for categories coincide with the categories themselves; the new thing relative to \cref{sec:stlc} is that we allow arbitrary generating \emph{equalities} in our 2-skeletal presentations.
+These presentations are generally called \textbf{finite-product theories} or \textbf{finitary algebraic theories}.
 
-Finite-product theories solve the problem that we had with our \emph{unary} finite-product theories in \cref{sec:unary-theories} (which there we mostly called ``$\times$-presentations'') of having to ``pack and unpack'' terms into ordered pairs in order to apply generators (such as the multiplication of a monoid object) to them.
+Note that because we have morphisms in our generating multigraph with arbitrary domains, we can still express ``operations'' of arbitrary finite arity even a ``product type'' operation.
+Thus, finite-product theories solve the problem that we had with our \emph{unary} finite-product theories in \cref{sec:unary-theories} (which there we mostly called ``$\times$-presentations'') of having to ``pack and unpack'' terms into ordered pairs in order to apply generators to them (such as the multiplication of a monoid object).
+
 For instance, the finite-product theory for a monoid has:
 \begin{itemize}
 \item One base type $A$;
@@ -2712,35 +2538,82 @@ Now if \cG is the above finite-product theory, it generates the free cartesian m
 Its freeness implies there is a unique functor of cartesian multicategories $\F\bCartMulti\cG\to \cM$ taking the generating syntactic monoid to the given one in \cM, and also its inverse operators.
 Finally, the above calculation shows that $i$ and $j$ define equal morphisms in $\F\bCartMulti\cG$; hence their images in \cM must also be equal.
 
-A similar argument, of course, works for any finite-product theory.
 In general, finite-product theories can describe algebraic structures with operations and equational axioms, such as monoids, groups, rings, modules, and so on.
-All such structures can be ``internalized'' in any category with finite products.
-They cannot describe structures whose operations or axioms involve conditions, such as categories (we can only compose two morphisms if the source of one must equal the target of the other) or fields (we can only invert an element if it is nonzero), or whose axioms involve more complicated logical operations such as ``or'' or ``there exists''.
+Thus, all such structures can be ``internalized'' in any category with finite products, and anything provable from their purely equational theory must be true in any such internalization (see for instance \cref{ex:catprod-ehnr-again}).
+
+Finite-product theories cannot describe structures whose operations or axioms involve conditions, such as categories (we can only compose two morphisms if the source of one must equal the target of the other) or fields (we can only invert an element if it is nonzero), or whose axioms involve more complicated logical operations such as ``or'' or ``there exists''.
 Structures of this sort can also be internalized, but only in a category with more structure; we will return to them in \cref{chap:fol}.
 
 Note that we actually obtained a more general result about monoid objects in cartesian multicategories, not just categories with products, because our free object $\F\bCartMulti\cG$ is a cartesian multicategory rather than a category with products.
-However, for some purposes, we might also want to have a free category with products generated by a theory.
-This is easy to obtain: simply consider the same generators of the theory but add the $\times,\unit$ type operations; then the result is a  free cartesian multicategory with products, hence a free category with finite products.
+However, for some purposes, we might also want to have a free category with products generated by a finite-product theory.
+Once we have established the full theory of presentations in \cref{sec:multicat-pshf}, we can obtain this by simply adding the $\times,\unit$ type operations.
+But there is also another way to obtain a free category with products, by applying the following left adjoint (which, for later use, we construct in the case of a general \fS).
 
-If we only care about a universal property up to equivalence, there is an even simpler way to obtain a free category with products: we can apply the following functor.
-
-\begin{lem}\label{thm:free-catprod-cartmulti}
-  The forgetful functor $U$ from categories with products to cartesian multicategories has a left pseudo-adjoint.
-  That is, for any cartesian multicategory \cC there is a category with products $F\cC$ and a pseudonatural equivalence of hom-categories $\bCartMulti(\cC,U\cM) \simeq \bPrCat(F\cC,\cM)$ for any category \cM with products.
-\end{lem}
+\begin{thm}\label{thm:free-Smoncat-Smulti}
+  Let $\bStrMonCat_\fS$ denote the category of strict \fS-monoidal categories; that is, \fS-multicategories that are representable and whose underlying monoidal category is strict, and functors that preserve the chosen tensor products strictly.
+  The forgetful functor from $\bStrMonCat_\fS$ to \fS-multicategories has a left adjoint $\cM\mapsto\catctx\cM$.
+\end{thm}
 \begin{proof}
-  Let the objects of $F\cC$ be finite lists of objects of \cC, and let the morphisms $(A_1,\dots,A_n) \to (B_1,\dots, B_m)$ be finite lists $(f_1,\dots, f_m)$ of morphisms in \cC where $f_i : (A_1,\dots,A_n) \to B_i$.
-  The cartesian product in $F\cC$ is obtained by concatenation of lists.
-  We leave the rest to the reader.
+  Given an \fS-multicategory \cM, we define the objects of $\catctx\cM$ to be finite lists $(A_1,\dots,A_n)$ of objects of \cM, with a monoidal structure given by concatenation of lists.
+  The hom-set $\catctx\cM((A_1,\dots,A_n),(B_1,\dots,B_k))$ is a subquotient (i.e.\ a quotient of a subset) of the set
+  \[ \setof{(\sigma,(f_1,\dots,f_k)) | \cod(f_j) = B_j \text{ and } \sigma : \{1,\dots,m\} \to \{1,\dots,n\}\text{ in }\fS }. \]
+  The subset consists of those tuples such that if we concatenate the domains of the $f_j$'s in order, we get $(A_{\sigma 1},\dots, A_{\sigma m})$.
+  The quotient is then
+  % \begin{equation*}
+  %   \coprod_{(0 = i_0 \le i_1 \le \cdots \le i_{k-1} \le i_k = m)}\;
+  %   \coprod_{(\sigma : \{1,\dots,m\} \to \{1,\dots,n\}\text{ in }\fS)}\;
+  %   \prod_{j=1}^{k} \cM(A_{\sigma(i_{j-1}+1)},\dots,A_{\sigma (i_{j})}; B_j)
+  % \end{equation*}
+  by the smallest equivalence relation that identifies
+  \[ (\sigma, (f_1 \sigma_1^* ,\dots, f_k \sigma_k^*))
+  \qquad\text{with}\qquad
+  (\sigma(\sigma_1\sqcup \cdots \sqcup \sigma_k),(f_1,\dots,f_k))\]
+  (This can be described more abstractly as a ``tensor product of functors''.)
+  % The identity morphism of $(A_1,\dots,A_n)$ is (the equivalence class of) $(\idfunc_n,(\idfunc_{A_1},\dots,\idfunc_{A_n}))$.
+  Composition is defined on representatives by
+  \begin{multline*}
+    (\tau,(g_1,\dots,g_n)) \circ (\sigma,(f_1,\dots,f_k)) =\\
+    (\tau(\sigma\wr \ell_1,\dots,\ell_n), (g_{\sigma 1},\dots,g_{\sigma m})\circ (f_1,\dots,f_k))
+  \end{multline*}
+  Here $\ell_j$ is the arity of $g_j$, and $(g_{\sigma 1},\dots,g_{\sigma m})\circ (f_1,\dots,f_k)$ means to compose the first few $g_{\sigma i}$'s with $f_1$ (according to the arity of $f_1$), then the next few with $f_2$, and so on.
+  We leave the details to the reader.
+
+  There are two cases in which $\catctx\cM$ has a simpler description.
+  Firstly, if \fS contains only identities, so we are talking about ordinary multicategories and monoidal categories, then the coproduct over $\sigma$ degenerates and there is no quotienting necessary; so the above definition is complete.
+  Secondly, in the cartesian case when \fS contains all functions, we can instead define
+  \[\catctx\cM((A_1,\dots,A_n),(B_1,\dots,B_k)) =
+  \prod_{j=1}^k \cM(A_1,\dots,A_n; B_j).
+  \]
+  To see that this definition is isomorphic to the previous one in the cartesian case, note that since $(B_1,\dots,B_k)$ is the cartesian product $B_1\times \cdots \times B_k$ in $\catctx\cM$, we must have
+  \[\catctx\cM((A_1,\dots,A_n),(B_1,\dots,B_k)) =
+  \prod_{j=1}^k \catctx\cM((A_1,\dots,A_n); B_j).
+  \]
+  Thus, it suffices to observe that $\catctx\cM((A_1,\dots,A_n); B) \cong \cM(A_1,\dots,A_n; B)$.
+  This is because when $k=1$, the quotient precisely cancels out the extra $\sigma$ involved in the former.
 \end{proof}
 
-If we apply this left adjoint $F$ to the free cartesian multicategory generated by a finite-product theory \cG, we obtain a category with products whose objects are the \emph{contexts} in the type theory of \cG, and whose morphisms are tuples of terms.
-For this reason it is often called the \textbf{category of contexts} of \cG; up to equivalence, it is the free category with products generated by \cG.
-When \cG has exactly one type, say $A$, the objects of its category of contexts are just lists $(A,A,\dots,A)$ uniquely determined by their length, and so they can be identified with natural numbers.
-In this case, the category of contexts is known as the \textbf{Lawvere theory}~\cite{lawvere:functsem} corresponding to \cG (recall from \cref{sec:theories} that some categorical logicians use the word ``theory'' to refer to the categorical structure \emph{presented by} a type theory).
+If we apply this left adjoint to the free cartesian multicategory generated by a finite-product theory \cP, we obtain a category with products whose objects are the \emph{contexts} in the type theory of \cP, and whose morphisms are tuples of terms.
+For this reason it is often called the \textbf{category of contexts} of \cP.
 
-The category of contexts of a type theory, like the free cartesian multicategory it generates, can be said to contain the ``extensional essence'' of that theory.
-In particular, the category of contexts of \cG uniquely determines, up to equivalence, the category of morphisms of theories from \cG into any category with products (such morphisms are often called \textbf{models} of the theory).
+When \cP has exactly one type, say $A$, the objects of its category of contexts are just lists $(A,A,\dots,A)$ uniquely determined by their length, and so they can be identified with natural numbers.
+In this case, the category of contexts is known as the \textbf{Lawvere theory}~\cite{lawvere:functsem} corresponding to \cP (recall from \cref{sec:theories} that some categorical logicians use the word ``theory'' to refer to the categorical structure \emph{presented by} a type theory).
+
+Of course, the universal property of the category of contexts given by \cref{thm:free-Smoncat-Smulti} refers only to \emph{strict} monoidal categories, which makes sense since concatenation of contexts is strictly associative.
+However, it turns out that up to equivalence, it also has a more general universal property.
+
+\begin{thm}\label{thm:free-catprod-cartmulti}
+  Let $\sPrCat$ denote the 2-category of categories with products, functors that preserve products up to isomorphism in the usual sense, and natural transformations; and let \sCartMulti denote the 2-category of cartesian multicategories.
+  The forgetful functor $\sPrCat\to\sCartMulti$ has a left adjoint constructed exactly as in \cref{thm:free-Smoncat-Smulti}.
+\end{thm}
+\begin{proof}
+  This can be proven directly and concretely (see \cref{ex:free-catprod-cartmulti}); but it also follows from general theory of 2-monads~\cite{bkp:2dmonads} and the fact that categories with products are 2-monadic over cartesian multicategories.
+\end{proof}
+
+Thus, up to equivalence, the category of contexts of a finite-product theory \cP is the free category-with-products generated by \cP.
+In particular, it uniquely determines, up to equivalence, the category of morphisms of theories from \cP into any category with products (such morphisms are often called \textbf{models} of the theory): they are the same as product-preserving functors out of the category of contexts.
+This example was the original observation of Lawvere~\cite{lawvere:functsem} that gave rise to categorical logic.
+
+Intuitively, the category of contexts can be said to contain the ``extensional essence'' of a finite-product theory.
 As mentioned in \cref{sec:theories}, two theories that generate equivalent categories of contexts have ``the same models'' in all categories, and are said to be \textbf{Morita equivalent}.
 For instance, the notion of group can be presented with a multiplication, unit, and inverse, or with a unit and ``division'' operation; these are distinct theories but are Morita equivalent.
 (The study of finite-product theories, particularly those with only one type, is also known as \emph{universal algebra}; although classical universal algebraists mainly study models in \bSet rather than more general categories.)
@@ -2751,6 +2624,88 @@ For instance, the notion of group can be presented with a multiplication, unit, 
   Then the terms (without contexts) are defined inductively by applying generating morphisms to variables of appropriate types, and finally a ``valid context for a term'' is \emph{defined} to be any list of variables (with their associated types) that includes all the variables appearing (freely) in the term.
   The end result is much the same, but our way of keeping track of the context all the way through matches the category theory better (since every morphism in a category has a specified domain) and makes for cleaner inductive arguments.
 \end{rmk}
+
+
+\subsection{Presheaves on multicategories}
+\label{sec:multicat-pshf}
+
+Now we move on to cartesian theories with type operations, and hence 1-skeleta that differ from the 2-skeleta.
+This will require us to discuss ``contravariant representable functors'' for a multicategory; but what are those?
+More specifically, what \emph{sort of thing} are they?
+Inspecting the structure possessed by the family of sets $\cM(A_1,\dots,A_n;B)$, for a fixed $B$ as the $A_i$ vary, leads us to the following definition.
+
+\begin{defn}\label{defn:multicat-pshf}
+  Let \cM be an \fS-multicategory and \bC a category.
+  A \textbf{\bC-valued presheaf on \cM} consists of
+  \begin{enumerate}
+  \item For each list $(A_1,\dots,A_n)$ of objects of \cM, an object $\cH(A_1,\dots,A_n)\in\bC$.
+  \item For each list $(f_1,\dots,f_m)$ of morphisms of \cM, with $f_i:(A_{i1},\dots,A_{in_i})\to B_i$, a morphism in \bC:
+    \[ (f_1,\dots,f_n)^* : \cH(B_1,\dots,B_m) \to \cH(A_{11},\dots,A_{mn_m}) \]
+    which are associative and unital with respect to composition in \cM:
+    \begin{align*}
+      (f_{11},\dots,f_{mn_m})^* \circ (g_1,\dots,g_m)^* &=
+      (g_1\circ (f_{11},\dots,f_{1n_1}), \dots, g_m \circ (f_{m1},\dots,f_{mn_m}))^*
+      \\
+      (\idfunc_{A_1},\dots,\idfunc_{A_n})^* &= \idfunc_{\cH(A_1,\dots,A_n)}
+    \end{align*}
+  \item For each $\sigma : \{1,\dots,m\} \to \{1,\dots,n\}$ in \fS, a morphism in \bC:
+    \[ \sigma^* : \cH(A_{\sigma 1},\dots,A_{\sigma m}) \to \cH(A_1,\dots,A_n) \]
+    such that
+    \begin{align*}
+      (f_1 \sigma_1^* ,\dots, f_n \sigma_n^*)^* &=
+      (\sigma_1\sqcup \cdots \sqcup \sigma_n)^*\circ (f_1,\dots,f_n)^*\\
+      (f_1,\dots,f_n)^* \circ \sigma^* &=
+      (\sigma \wr (k_1,\dots,k_n))^*\circ(f_{\sigma 1},\dots, f_{\sigma m})^*
+    \end{align*}
+    where $k_i$ is the arity of $f_i$.
+  \end{enumerate}
+\end{defn}
+
+Conveniently, it turns out that this definition can be reformulated as an ordinary functor on a different category:
+
+\begin{thm}\label{thm:multicat-pshf-catctx}
+  For any \fS-multicategory \cM, a \bC-valued presheaf on \cM as in \cref{defn:multicat-pshf} is the same as an ordinary functor $\catctx\cM\op \to \bC$, where $\catctx\cM$ is as in \cref{thm:free-Smoncat-Smulti}.
+\end{thm}
+\begin{proof}
+  A functor $\cH:\catctx\cM\op \to \bC$ certainly associates an object of \bC to each list $(A_1,\dots,A_n)$ of objects of \cM.
+  The action of a morphism $(\sigma,(f_1,\dots,f_k))$ in $\catctx\cM$ corresponds to the composite $\sigma^*\circ (f_1,\dots,f_k)^*$ of a \bC-valued presheaf, and the latter actions can be recovered from it by putting in identities for $\sigma$ or the $f$'s.
+  The axiom of a \bC-valued presheaf involving $\sigma_1\sqcup\cdots\sqcup\sigma_n$ comes from the quotient involved in the hom-sets of $\catctx\cM$, while the other axioms come from the definition of identities and composition in $\catctx\cM$.
+\end{proof}
+
+For instance, this immediately implies a Yoneda lemma:
+
+\begin{cor}\label{thm:multicat-yoneda}
+  For any \fS-multicategory \cM, object $B\in\cM$, and \bSet-valued presheaf \cH on \cM, there is a natural bijection between natural transformations $\cM(-;B) \to \cH$ and elements of $\cH(B)$.\qed
+\end{cor}
+
+Specializing all of this to the cartesian case, we can now define a \textbf{1-skeleton for a cartesian closed category with coproducts}.
+It consists of the following (compare to the rules in \cref{fig:stlc}):
+\begin{enumerate}
+\item A set $\cM_0$ of objects with chosen elements $\unit,\zero$ and binary operations $\times,+,\to$.
+\item A cartesian multicategory $\cM$ with $\cM_0$ as set of objects.
+\item For each $A,B\in\cM_0$, morphisms $A\times B\to A$ and $A\times B\to B$ and a natural transformation of \bSet-valued presheaves on \cM:
+  \[ \cM(-;A) \times \cM(-;B)\too \cM(-;A\times B) \]
+\item A natural transformation of \bSet-valued presheaves $1\to \cM(-;\unit)$.
+\item For each $C\in\cM_0$, a morphism $\zero\to C$.
+\item For each $A,B\in\cM_0$, morphisms $A\to A+B$ and $B\to A+B$; and for any $A,B,C$ a natural transformation:
+  \[ \cM(-;A+B) \times \cM(-,A;C) \times \cM(-,B;C) \too \cM(-;C) \]
+\item For any $A,B\in \cM_0$, natural transformations:
+  \[ \cM(-,A;B) \too \cM(-;A\to B) \]
+  \[ \cM(-;A\to B) \times \cM(-;A) \too \cM(-;B). \]
+\end{enumerate}
+With this we can construct a tower of adjunctions as in \cref{sec:unary-theories}:
+\[ \xymatrix{
+  \stlcpres 2 \ar@<2mm>[r]^-{\F{2}} \ar@{}[r]|-{\bot} \ar[d] & \cccc 2 \ar@<2mm>[l]^-{\fU_2} \ar[d] \\
+  \stlcpres 1 \ar@<2mm>[r]^-{\F{1}} \ar@{}[r]|-{\bot} \ar[d] & \cccc 1 \ar@<2mm>[l]^-{\fU_1} \ar[d] \\
+  \stlcpres 0 \ar@<2mm>[r]^-{\F{0}} \ar@{}[r]|-{\bot}        & \cccc 0 \ar@<2mm>[l]^-{\fU_0}
+}\]
+where $\stlcpres k$ denotes the category of $k$-skeletal $(\times,+,\to)$-presentations, and $\cccc k$ denotes the category of $k$-skeleta for cartesian closed categories with coproducts.
+(The 1-skeleta were defined above, the 2-skeleta are simply the categories themselves, and the 0-skeleta are sets equipped with operations $\times,+,\to$ and elements $\unit,\zero$.)
+
+We can also omit any of the type operations, by the modularity of type theory (principle~\eqref{princ:independence}).
+And we can show as in \cref{sec:unary-theories} that every category of the appropriate sort is presented by its underlying presentation (or ``internal logic''); so that if we define the morphisms between presentations appropriately we obtain an equivalence of bicategories.
+In particular, $(\times,\to)$-presentations (which are often given a name like ``$\lambda_\times$-theories'') can be assembled into a bicategory that is equivalent to that of cartesian closed categories.
+The discovery by Lambek~\cite{lambek:stlc-ccc} of this relationship between simply typed $\lambda$-calculus and cartesian closed categories was another important milestone in the development of categorical logic.
 
 
 \subsection*{Exercises}
@@ -2765,8 +2720,17 @@ For instance, the notion of group can be presented with a multiplication, unit, 
   Show that there is another $\times$-theory \cH whose generating arrows contain only base types in their domains and codomains and such that $\F\bPrCat\cG\simeq \F\bPrCat\cH$.
 \end{ex}
 
-\begin{ex}\label{ex:catctx-univprop}
-  Prove directly that the category of contexts of a type theory has a universal property up to equivalence, without going through \cref{thm:free-catprod-cartmulti}.
+\begin{ex}\label{ex:free-Smoncat-Smulti}
+  Complete the proof of \cref{thm:free-Smoncat-Smulti} by showing that the claimed definition does in fact define a left adjoint.
+  Also verify the claimed simpler description of the hom-sets in the cartesian case.
+\end{ex}
+
+\begin{ex}\label{ex:free-catprod-cartmulti}
+  Prove \cref{thm:free-catprod-cartmulti}.
+\end{ex}
+
+\begin{ex}\label{ex:catctx-ctxjdg}
+  By using induction over the ``context judgment'' from \cref{rmk:ctx-judgment}, prove directly that the category of contexts of a finite-product theory has a universal property up to equivalence among categories with products.
 \end{ex}
 
 % \section{Programming with $\lambda$-calculus}
@@ -2780,10 +2744,13 @@ For instance, the notion of group can be presented with a multiplication, unit, 
 
 Now we consider a type theory for symmetric monoidal categories.
 That is, we add the exchange rule (and the $\hom$ rules) to \cref{sec:multicat-prod-coprod}, or remove weakening and contraction from \cref{sec:stlc}.
-As always we want exchange to be admissible, but we cannot use the same trick for this that we did in \cref{sec:stlc}, because in the absence of weakening the identity rule must be $x:A\types x:A$ rather than containing a whole context on the left.
 
-Thus, we cannot expect to push all structural rules up to the top.
-Instead we need to build them into the other rules.
+\subsection{Shuffles}
+\label{sec:shuffles}
+
+As always for structural rules, we want exchange to be admissible.
+But we cannot use the same trick for this that we did in \cref{sec:stlc}, because in the absence of weakening the identity rule must be $x:A\types x:A$ rather than containing a whole context on the left.
+Thus, we cannot expect to push exchange all the way up to the top; instead we need to build it into the other rules.
 For instance, in the theory of \cref{sec:logic} we can derive $B,A\types A\tensor B$ by using primitive exchange:
 \[ \inferrule*{\inferrule*{A\types A \\ B\types B}{A,B\types A\tensor B}}{B,A\types A\tensor B} \]
 To obtain this without primitive exchange, we must incorporate some exchange into the $\tensorI$ rule.
@@ -2883,7 +2850,7 @@ We can treat all the other rules from \cref{sec:multicat-prod-coprod} (and also 
       \Psi\types M:A+B \\ \Gamma,u:A \types P:C \\ \Gamma,v:B\types Q:C \\ \nShuf(\Gamma,\Psi;\Phi)
     }{\Phi \types\acase AB(M,u.P,v.Q):C}\;\plusE\and
     \inferrule{\Gamma,x:A\types M:B}{\Gamma\types \lambda x.M:A\hom B}\;\homI\and
-    \inferrule{\Gamma\types M:A\to B \\ \Delta\types N:A \\ \nShuf(\Gamma,\Delta;\Phi)}{\Phi\types M N:B}\;\homE
+    \inferrule{\Gamma\types M:A\hom B \\ \Delta\types N:A \\ \nShuf(\Gamma,\Delta;\Phi)}{\Phi\types M N:B}\;\homE
   \end{mathpar}
   \caption{Type theory for symmetric monoidal categories}
   \label{fig:smc}
@@ -2944,8 +2911,15 @@ On one hand, if a multiset just means a set with a (finite) positive ``count'' l
 On the other hand, if a multiset means a set with a (finite) nonempty \emph{set} of ``occurrences'' labeling each element, then the occurrences play essentially the same role as named variables.
 This suggests a type theory corresponding somehow to the ``fat symmetric multicategories'' of~\cite[Appendix A]{leinster:higher-opds}; but we will not pursue this further.
 
-Finally, we can enhance the present theory as in \cref{sec:unary-theories} to allow generating morphisms with arbitrary types in their domains and codomains as well as arbitrary generating equalities relating pairs of terms.
-If we omit all type operations (so that we have a theory only of symmetric multicategories) but allow arbitrary generating equalities, then we obtain what might be called \textbf{linear finitary algebraic theories}: a set of types, a set of operations with finite arities and types, and a set of axioms about the the composites of those operations such that ``each variable appears exactly once on both sides of each axiom''.
+
+\subsection{Symmetric $\tensor$-presentations}
+\label{sec:symm-tensor-pres}
+
+We can now enhance the theory of \cref{sec:shuffles}, like in \cref{sec:unary-theories}, to take a ``presentation'' as input.
+That is, we  allowing generating morphisms with arbitrary types in their domains and codomains, as well as generating equalities relating arbitrary pairs of parallel terms.
+
+As in \cref{sec:fp-theories}, the simplest case is if we omit all type operations (so that we have a theory only of symmetric multicategories, which coincide with their 1-skeleta) but allow arbitrary generating equalities.
+In this case we obtain what might be called \textbf{linear finitary algebraic theories}: a set of types, a set of operations with finite arities and types, and a set of axioms about the the composites of those operations such that ``each variable appears exactly once on both sides of each axiom''.
 For instance, the theory of monoids is linear, with the axioms:
 \begin{align*}
   x:A,y:A,z:A &\types x\cdot (y\cdot z) \equiv (x\cdot y)\cdot z :A\\
@@ -3003,14 +2977,64 @@ and the axioms shown in \cref{fig:smc-bimonoid}.
   \label{fig:smc-bimonoid}
 \end{figure}
 
+To make sense of this, we need a notion of 1-skeleton that can describe the naturality properties of the type operations from \cref{fig:smc}.
+This requires the notion of ``presheaf on a multicategory'' from \cref{sec:multicat-pshf} (which we intentionally defined for arbitrary \fS so that we could use it here too).
+Here, however, we will need not just the category of such presheaves but a \emph{multicategory} of them.
+
+\begin{thm}\label{thm:multicat-day}
+  Let \cM and \cC be \fS-multicategories.
+  Then there is an \fS-multicategory whose objects are presheaves on \cM valued in the underlying ordinary category of \cC, as in \cref{defn:multicat-pshf}.
+
+  A morphism $(\cH_1,\dots,\cH_n)\to\cK$ (called an \textbf{$n$-ary natural transformation}) consists of
+  for each $A_{11},\dots,A_{n m_n}$, a morphism in \cC:
+  \[ \alpha : (\cH(A_{11},\dots,A_{1 m_1}),\dots,\cH(A_{n1},\dots,A_{n m_n})) \too \cK(A_{11},\dots,A_{n m_n}) \]
+  such that
+  \begin{align*}
+    \alpha\circ (\sigma_1^*,\dots,\sigma_n^*) &= (\sigma_1\sqcup\cdots\sqcup\sigma_n)^*\circ\alpha\\
+    \alpha\circ ((f_{11},\dots,f_{1 \ell_1})^*,\dots,(f_{k1},\dots,f_{k \ell_k})^*)
+    &= (f_{11},\dots,f_{k \ell_k})^*\circ\alpha
+    \thmqedhere
+  \end{align*}
+\end{thm}
+Technically, the $\alpha$'s should have appropriate subscripts, but that would make the notation even heavier and harder to understand.
+
+The point of this definition is to capture the behavior of substitution into a rule that concatenates two (or more) contexts in its premises (perhaps with a shuffle) to form the context of its conclusion.
+With it in hand, we can define a \textbf{1-skeleton for a closed symmetric monoidal category with products and coproducts} to consist of the following (refer to \cref{fig:smc}).
+\begin{enumerate}
+\item A set $\cM_0$ with chosen elements $\one,\unit,\zero$ and binary operations $\tensor,\times,+,\hom$.
+\item A symmetric multicategory \cM with object set $\cM_0$.
+\item For each $A,B$, a 2-ary natural transformation
+  \[ (\cM(-;A),\cM(-;B)) \too \cM(-;A\tensor B) \]
+\item For each $A,B,C$, a 2-ary natural transformation
+  \[ (\cM(-,A,B;C),\cM(-;A\tensor B)) \too \cM(-;C) \]
+\item A morphism $()\to \one$.
+\item For each $C$, a 2-ary natural transformation
+  \[ (\cM(-;C),\cM(-;\one)) \too \cM(-;C) \]
+\item For each $A,B$, morphisms $A\times B\to A$ and $A\times B\to B$ and a (1-ary) natural transformation
+  \[ \cM(-;A) \times \cM(-;B) \too \cM(-;A\times B) \]
+\item A natural transformation $1\to \cM(-;\unit)$.
+\item For each $C\in\cM_0$, a 2-ary natural transformation
+  \[ (1,\cM(-;\zero)) \too \cM(-;C) \]
+  where $1$ denotes the terminal \bSet-valued presheaf on \cM.
+\item For each $A,B\in\cM_0$, morphisms $A\to A+B$ and $B\to A+B$; and for any $A,B,C$ a 2-ary natural transformation:
+  \[ (\cM(-,A;C) \times \cM(-,B;C) , \cM(-;A+B)) \too \cM(-;C) \]
+\item For any $A,B\in \cM_0$, a natural transformation
+  \[ \cM(-,A;B) \too \cM(-;A\hom B) \]
+\item For any $A,B\in \cM_0$, a 2-ary natural transformation
+  \[ (\cM(-;A\hom B),\cM(-;A)) \too \cM(-;B). \]
+\end{enumerate}
+
+From here, the theory of presentations proceeds as before, yielding a tower of adjunctions.
+We can also treat the non-symmetric case using similar ideas; see \cref{ex:moncat-pres}.
+
 \begin{props}
-An antipode would augment this by a generating morphism $i:A\to A$ and the axioms
+As an example, let us try to reproduce the uniqueness of antipodes calculation from \cref{sec:intro}.
+We have already mentioned the theory of a bimonoid in \ref{fig:smc-bimonoid}; an antipode augments this by a generating morphism $i:A\to A$ and the axioms
 \begin{align*}
   x:A &\types \match_\tensor(\comult(x),uv.m(u,i(v))) \equiv \match_\one(\counit(x),e) :A\\
   x:A &\types \match_\tensor(\comult(x),uv.m(i(u),v)) \equiv \match_\one(\counit(x),e) :A
 \end{align*}
-If we also include another antipode $j:A\to A$, we can then try to
-reproduce the uniqueness argument from \cref{sec:intro}.
+Thus, let us include these and also another antipode $j:A\to A$.
 
 [TODO]
 \end{props}
@@ -3019,7 +3043,17 @@ reproduce the uniqueness argument from \cref{sec:intro}.
 \subsection*{Exercises}
 
 \begin{ex}\label{ex:smc}
-  Finish the theory of this section: prove the admissibility of substitution, state the $\beta$- and $\eta$-conversion rules, and prove the initiality theorem.
+  Finish the theory of \cref{sec:shuffles}: prove the admissibility of substitution, state the $\beta$- and $\eta$-conversion rules, and prove the initiality theorem.
+\end{ex}
+
+\begin{ex}\label{ex:multicat-day}
+  Suppose \cM is a symmetric multicategory and \cC is a cocomplete closed symmetric monoidal category, regarded as a multicategory.
+  Show that the symmetric multicategory constructed in \cref{thm:multicat-day} is in fact a closed symmetric monoidal category.
+  (In fact, it is the \textbf{Day convolution}~\cite{day:closed} monoidal category constructed from $\catctx\cM$ and $\cC$.)
+\end{ex}
+
+\begin{ex}\label{ex:moncat-pres}
+  Define 1-skeleta for non-symmetric monoidal categories, and generalize the initiality theorems of \cref{sec:multicat-moncat,sec:multicat-prod-coprod} to a tower of adjunctions involving an appropriate kind of presentation.
 \end{ex}
 
 \begin{ex}\label{ex:smc-usage}
