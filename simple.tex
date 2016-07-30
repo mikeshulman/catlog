@@ -1870,6 +1870,17 @@ Now we can prove the initiality theorem just as usual.
   Thus it lives in the correct category; and its freeness follows by induction as usual.
 \end{proof}
 
+We can also generalize from relational multigraphs to an appropriate kind of ``presentation'' as in \cref{sec:unary-theories}.
+Since we are in the posetal case, things are much simpler because everything coincides with its 1-skeleton.
+% and there is no need to worry about fancy kinds of naturality as in \cref{sec:tensor-presentations}.
+Specifically, a \textbf{relational $(\tensor,\meet,\join,\hom)$-presentation} consists of
+\begin{enumerate}
+\item A set $\cP_0$ of objects; and
+\item A relation $\cP_1$ between finite lists of types and single types, where the types are generated from $\cP_0$ by the rules for the judgment $\types A\type$ in the type theory for closed (\fS-)monoidal lattices.
+\end{enumerate}
+We can then construct a two-level tower of adjunctions generating a closed \fS-monoidal lattice from any such presentation.
+The only other thing to be said about this is that in the posetal case, it is common to refer to the relations in $\cP_1$ as the \textbf{axioms}, since they are mere properties, in contrast to how in \cref{sec:theories} we used that word for the generating equalities (at level 2 rather than level 1).
+
 
 \subsection{Heyting algebras}
 \label{sec:heyting-algebras}
@@ -1976,6 +1987,8 @@ Note that we change our notation and write $A\hom B$ as $A\To B$.
   This will also follow as a special case of \cref{thm:stlc-initial}.
 \end{proof}
 
+The generalization to presentations is also easy.
+
 
 \subsection{Natural deduction and logic}
 \label{sec:natded-logic}
@@ -1986,15 +1999,18 @@ For a reader who thinks of logical connectives in terms of their action on truth
 is a Heyting algebra, where the operations $\meet,\top,\join,\bot,\To$ correspond to ``and'', ``true'', ``or'', ``false'', and ``implies''.
 (One way to see this easily is to identify $\tv$, up to equivalence, with the full subcategory of \bSet consisting of sets having at most one element.)
 
-Now suppose \cG is a relational multigraph, whose objects we call \textbf{propositional variables}, and suppose furthermore that we have a map of relational multigraphs $\nu:\cG\to\tv$.
+Now suppose \cG is a relational multigraph, or more generally a relational $(\meet,\join,\To)$-presentation.
+We call the objects of \cG \textbf{propositional variables}.
+Suppose furthermore that we have a map of relational multigraphs (or presentations) $\nu:\cG\to\tv$.
 In other words, we assign a truth value to each propositional variable, in such a way that if $(A_1,A_2,\dots,A_n)\le B$ in \cG, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true.
 Then by \cref{thm:natded-logic-initial} we have an induced map $\F\bHeyting\cG \to \tv$ of Heyting algebras.
 
 The objects of $\F\bHeyting\cG$ are \emph{propositional formulas}, built out of the propositional variables by the operations $\meet,\top,\join,\bot,\To$ which we now regard as denoting the logical connectives ``and'', ``true'', ``or'', ``false'', and ``implies''.
 Since $\F\bHeyting\cG \to \tv$ is a map of Heyting algebras, it extends the truth assignment $\nu$ to all such formulas by using the ``truth tables'' for all the connectives, e.g.\ $\nu(A\meet B)$ is true just when $\nu(A)$ and $\nu(B)$ are both true, etc.
-Finally, the fact that $\F\bHeyting\cG \to \tv$ preserves inequalities means that if $A_1,\dots,A_n \types B$ is derivable in the natural deduction for Heyting algebras, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true (where now the $A_i$ and $B$ are arbitrary formulas, not just propositional variables).
+Finally, the fact that $\F\bHeyting\cG \to \tv$ preserves inequalities means that if $A_1,\dots,A_n \types B$ is derivable in the natural deduction for Heyting algebras, and if $\nu(A_i)$ is true for all $i$, then also $\nu(B)$ is true.
+% (where now the $A_i$ and $B$ are arbitrary formulas, not just propositional variables).
 
-As a special case, if \cG has no nontrivial relations, then any derivable judgment $\ec\types B$ exhibits the propositional formula $B$ as a \textbf{tautology}: a statement that becomes true \emph{whatever} truth values are substituted for its propositional variables.
+As a special case, if \cG is discrete (i.e.\ is nothing but a set of propositional variables), then any derivable judgment $\ec\types B$ exhibits the propositional formula $B$ as a \textbf{tautology}: a statement that becomes true \emph{whatever} truth values are substituted for its propositional variables.
 For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))$ as a tautology:
 \begin{mathpar}
   \tiny
@@ -2046,6 +2062,7 @@ For instance, here is a derivation exhibiting $(A\meet (B\join C)) \To ((A\meet 
 %   }{\ec\types (A\meet (B\join C)) \To ((A\meet B) \join (A\meet C))}
 % \end{mathpar}
 Thus, the natural deduction for Heyting algebras can be used as a means to derive tautologies in propositional logic.
+More generally, if \cG has nontrivial relations (a.k.a.\ \emph{axioms}), then we can derive universally valid consequences of those axioms.
 
 However, there is more to the relationship between type theory and logic than this.
 There are many ways to derive tautologies, including methods such as simply plugging in all possible truth assignments for the propositional variables and checking that the formula is always true.
