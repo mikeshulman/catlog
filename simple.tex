@@ -605,7 +605,7 @@ Thus our complete \textbf{natural deduction for monoidal posets under \cG} consi
   \inferrule{ }{\ec\types \one}\;\one I\and
   \inferrule{
     \Psi\types \one \\
-    \Gamma,\Delta\types A
+    \Gamma,\Delta\types C
   }{
     \Gamma,\Psi,\Delta\types C
   }\;\one E
@@ -941,7 +941,7 @@ That is, the term syntax $\match_\one(M,N)$ binds nothing in $N$; it simply allo
     \inferrule{ }{\ec\types \ott:\one}\;\one I\and
     \inferrule{
       \Psi\types M:\one \\
-      \Gamma,\Delta\types N:A
+      \Gamma,\Delta\types N:C
     }{
       \Gamma,\Psi,\Delta\types \match_\one(M,N):C
     }\;\one E
