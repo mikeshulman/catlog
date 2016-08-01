@@ -2452,7 +2452,17 @@ A cartesian multigraph contains operations and equations, so to use it as base d
   Complete the proof in \cref{thm:stlc-initial} that type theory yields a cartesian multicategory by checking \cref{defn:fS-multicategory}\ref{item:cartmulti-3} and \ref{item:cartmulti-4}, or perhaps the corresponding one-place axioms you found in \cref{ex:cartmulti-oneplace}.
 \end{ex}
 
+\begin{ex}\label{ex:church-numerals}\ 
+  \begin{enumerate}
+  \item For any natural number $n$ and any type $A$ in STLC, show that there is a term of type $(A\to A)\to (A\to A)$ that iterates a function $n$ types.
+    Call this term $[n]_A$.
+  \item Define $[n+m]_A$ in terms of $[n]_A$ and $[m]_A$.
+  \item Now define $[nm]_A$ in terms of $[n]_A$ and $[m]_A$ (you may have to use $[n]_A$ or $[m]_A$ for more than one value of $A$).
+  \end{enumerate}
+\end{ex}
+
 \begin{ex}\label{ex:combinatory-logic}\ 
+  % TODO: Put this, Hilbert systems, and the kinds of closed categories (or at least closed posets) in the text.
   \begin{enumerate}
   \item Write down terms in the simply typed $\lambda$-calculus (with $\to$ the only type constructor) that have the following types (for arbitrary $A,B,C$):
     \begin{mathpar}
