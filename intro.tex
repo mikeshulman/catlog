@@ -176,39 +176,58 @@ But what if neither the multiplication nor the comultiplication is commutative?
 
 Internal logic is up to this task.
 In a monoidal category we can consider judgments with multiple outputs as well as multiple inputs.\footnote{For the benefit of readers who are already experts, I should mention that this is \emph{not} ordinary ``classical linear logic'': the comma represents the same monoidal structure $\tensor$ on both sides of the turnstile, rather than $\tensor$ on the left and $\parr$ on the right.}
-This allows us to describe monoids and comonoids in a roughly ``dual'' way.
-Don't worry about the precise syntax being used on the right; it will be explained in \cref{sec:prop-smc}.
-\begin{alignat*}{2}
-  x:A, y:A &\types x\cdot y:A &\qquad x:A &\types (x_1,x_2):(A,A)\\
-  &\types e:A &\qquad x:A &\types (\mid\cancel{x}):()\\
-  x:A,y:A,z:A &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :A &\qquad x:A &\types (x_{11},x_{12},x_2)=(x_1,x_{21},x_{22}):(A,A,A)\\
-  x:A &\types x\cdot e=x:A &\qquad x:A &\types (x_1\mid\cancel{x_2}) = x:A\\
-  x:A &\types e\cdot x=x:A &\qquad x:A &\types (x_2\mid\cancel{x_1}) = x:A
-\end{alignat*}
-In this language, the bimonoid axioms are
+This allows us to describe monoids and comonoids in a roughly ``dual'' way; compare the first and second groups of axioms in \cref{fig:intro-prop-moncomon}.
+
+\begin{figure}
+  \centering
+  \begin{align*}
+    x:A, y:A &\types x\cdot y:A\\
+    &\types e:A\\
+    x:A,y:A,z:A &\types (x\cdot y)\cdot z = x\cdot (y\cdot z) :A\\
+    x:A &\types x\cdot e=x:A\\
+    x:A &\types e\cdot x=x:A\\
+    \\
+    x:A &\types (x\s1,x\s2):(A,A)\\
+    x:A &\types (\,\mid\cancel{x}):()\\
+    x:A &\types (x\s1{}\s1,x\s1{}\s2,x\s2)=(x\s1,x\s2{}\s1,x\s2{}\s2):(A,A,A)\\
+    x:A &\types (x\s1\mid\cancel{x\s2}) = x:A\\
+    x:A &\types (x\s2\mid\cancel{x\s1}) = x:A
+  \end{align*}
+  \caption{Monoids and comonoids}
+  \label{fig:intro-prop-moncomon}
+\end{figure}
+
+Don't worry about the precise syntax being used in the comonoid axioms; it will be explained in \cref{sec:prop-smc}.
+(But if you are familiar with the informal ``Sweedler notation'' for coalgebras, it should look familiar.)
+The main point to make about this syntax is that on the right we have lists such as $(M,N\mid P):(A,B)$, where $M$ and $N$ correspond in some  way to $A$ and $B$ respectively, while $P$ and anything else on the right of the divider has ``no type'' (we call it a \emph{scalar}; categorically it represents a morphism to the unit object).
+
+In this syntax, the bimonoid axioms are
 \begin{align*}
-  x:A,y:A &\types (x_1\cdot y_1,x_2\cdot y_2) = ((x\cdot y)_1,(x\cdot y)_2) :(A,A)\\
-          &\types (e_1,e_2)=(e,e):(A,A)\\
-  x:A,y:A &\types (\mid\cancel{x\cdot y}) = (\mid\cancel{x},\cancel{y}) : ()\\
-  &\types (\mid\cancel{e})=():()
+  x:A,y:A &\types (x\s1\cdot y\s1,x\s2\cdot y\s2) = ((x\cdot y)\s1,(x\cdot y)\s2) :(A,A)\\
+          &\types (e\s1,e\s2)=(e,e):(A,A)\\
+  x:A,y:A &\types (\,\mid\cancel{x\cdot y}) = (\,\mid\cancel{x},\cancel{y}) : ()\\
+  &\types (\,\mid\cancel{e})=():()
 \end{align*}
 And an antipode is a map $x:A \types i(x):A$ such that
 \begin{align*}
-  x:A &\types x_1\cdot i(x_2) = (e\mid\cancel{x}) :A\\
-  x:A &\types i(x_1)\cdot x_2 = (e\mid\cancel{x}) :A
+  x:A &\types (x\s1\cdot i(x\s2)) = (e\mid\cancel{x}) :A\\
+  x:A &\types (i(x\s1)\cdot x\s2) = (e\mid\cancel{x}) :A
 \end{align*}
 Now if we have another antipode $j$, we can compute
 \begin{align*}
-  x:A \types i(x)
-  &= i(x)\cdot e\\
-  &= (i(x_1)\cdot e\mid\cancel{x_2})\\
-  &= i(x_1)\cdot (x_{21} \cdot j(x_{22}))\\
-  &= (i(x_1)\cdot x_{21}) \cdot j(x_{22})\\
-  &= (e \cdot j(x_{2})\mid\cancel{x_1})\\
-  &= e\cdot j(x)\\
-  &= j(x) \qquad :A
+  x:A \types (i(x))
+  &= (i(x)\cdot e)\\
+  &= (i(x\s1)\cdot e\mid\cancel{x\s2})\\
+  &= i(x\s1)\cdot (x\s2{}\s1 \cdot j(x\s2{}\s2))\\
+  &= (i(x\s1)\cdot x\s2{}\s1) \cdot j(x\s2{}\s2)\\
+  &= (i(x\s1{}\s1)\cdot x\s1{}\s2) \cdot j(x\s2)\\
+  &= (e \cdot j(x\s2)\mid\cancel{x\s1})\\
+  &= (e\cdot j(x))\\
+  &= (j(x)) \qquad :A
 \end{align*}
 yielding the same result $i=j$.
+(In fact, as in traditional Sweedler notation, we can also incorporate coassociativity directly into the notation, writing $(x\s1,x\s2,x\s3)$ instead of $(x\s1{}\s1,x\s1{}\s1,x\s2)$ or $(x\s1,x\s2{}\s1,x\s2{}\s2)$; this shortens the above proof by one line.)
+
 So even in a non-cartesian situation, we can use a very similar set-like argument, as long as we keep track of where elements get ``duplicated and discarded''.
 \end{props}
 
