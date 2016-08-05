@@ -256,8 +256,8 @@ We define a \textbf{binary coproduct} in a multicategory \cM to be an object $A+
   \cM(C_1,\dots,C_n,A+B,D_1,\dots,D_m;E) \toiso\\
   \cM(C_1,\dots,C_n,A,D_1,\dots,D_m;E) \times \cM(C_1,\dots,C_n,B,D_1,\dots,D_m;E).
 \end{multline*}
-for all $C_1,\dots,C_n$ and $D_1,\dots, D_M$ and $E$.
-Similarly, an \textbf{initial object} is an object $\zero$ such that for any $C_1,\dots,C_n$ and $D_1,\dots, D_M$ and $E$, there is a unique morphism $(C_1,\dots,C_n,\zero,D_1,\dots,D_m)\to E$.
+for all $C_1,\dots,C_n$ and $D_1,\dots, D_m$ and $E$.
+Similarly, an \textbf{initial object} is an object $\zero$ such that for any $C_1,\dots,C_n$ and $D_1,\dots, D_m$ and $E$, there is a unique morphism $(C_1,\dots,C_n,\zero,D_1,\dots,D_m)\to E$.
 We say a multicategory \textbf{has coproducts} if it has a specified binary coproduct for each pair of objects and a specified initial object.
 
 By a \textbf{distributive monoidal category}, we mean a monoidal category thath has coproducts (in the sense of \cref{sec:catcoprod}) and such that the canonical maps
@@ -1296,7 +1296,7 @@ The $\beta$- and $\eta$-conversion rules are likewise obtained by combining thos
     \pair{\pi_1(M)}{\pi_2(M)} \equiv M\and
     \ttt(x_1,\dots,x_n) \equiv M \\
     \case(\inl(M),u.P,v.Q) \equiv P[M/u]\and
-    \case(\inr(M),u.P,v.Q) \equiv P[M/v]\and
+    \case(\inr(M),u.P,v.Q) \equiv Q[M/v]\and
     \case(M,u.P[\inl(u)/y],v.P[\inr(v)/y]) \equiv P[M/y]\and
     \abort(M) \equiv P[M/y]\and
   \end{mathpar}
