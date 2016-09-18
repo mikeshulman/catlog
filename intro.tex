@@ -379,7 +379,7 @@ The reason for writing out the proof in such a pedantic way is that essentially 
 For instance, how do we prove that multiplication is associative?
 Given three reduced words $w_1$, $w_2$, and $w_3$, we induct on the length of $w_3$.
 If it is empty, then $(w_1\cdot w_2)\cdot w_3$ and $w_1 \cdot (w_2 \cdot w_3)$ are both $w_1\cdot w_2$ by definition.
-Otherwise, $w_3 = w_3'g$ (or $w_3 = w_3'g^{-1}$), and we can use the definitions of multiplication and an inductive hypothesis that $(w_1\cdot w_2)\cdot w_3'$ and $w_1 \cdot (w_2 \cdot w_3')$.
+Otherwise, $w_3 = w_3'g$ (or $w_3 = w_3'g^{-1}$), and we can use the definitions of multiplication and an inductive hypothesis that $(w_1\cdot w_2)\cdot w_3' = w_1 \cdot (w_2 \cdot w_3')$.
 
 Similarly, how do we extend a function $\pfree:X\to G$ to a group homomorphism $\free:\F{}X\to G$?
 Each reduced word is either empty, in which case it must go to the identity of $G$, or of the form $wg$ for some $g\in X$, in which case it must go to the product $\free(w)\cdot \pfree(g)$ in $G$.
