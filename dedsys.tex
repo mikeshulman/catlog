@@ -287,6 +287,8 @@ Since the judgments in each signature $\sig^{(k)}$ in a deductive system are def
 Thus, we generally represent derivations by \textbf{terms}, which are a more concise syntax containing enough information to reconstruct the derivation.
 For instance, the expressions $x\cdot (y\cdot z)$ and $(x\cdot y)\cdot z$ for the two sides of associativity are terms, in which we have represented the rule $m$ by an infix operation ``$\cdot$''.
 
+% TODO: This is actually describing a new inductive family with terms as an additional parameter, thereby defining the graph of the annotation function.
+
 If $M$ is a term representing a derivation of the judgment \cJ, we generally write $M:\cJ$.
 (A notable exception is that if \cJ is the sort of a one-sorted $\sig^{(1)}$ presenting the objects of a category, as mentioned above, we usually write ``$A\type$'' or ``$\types A\type$'' rather than ``$A:\mathsf{type}$''.)
 We describe a syntax for terms by annotating the rules of a deductive system with terms, so that for instance the multiplication of a semigroup would be
@@ -299,6 +301,8 @@ Thus we still have a single thing (namely $x.M$) that represents the entire deri
 Similarly, an equality judgment like $x:A \types M\equiv N:B$ is shorthand for $(x.M)\equiv (x.N) : (A\types B)$.
 There is one actual difference here in that we generally consider terms of this form modulo ``$\alpha$-equivalence'', i.e.\ the consistent renaming of variables.
 For now, let us assume that we know what that means; in \cref{sec:alpha} we will explain it precisely.
+
+% TODO: meaning terms vs. derivation terms vs. proof terms
 
 There is no unique way to assign terms to a deductive system; all that is necessary is to describe some kind of syntax from which a derivation tree can be algorithmically extracted.
 When a human mathematician reads an expression such as $x\cdot (y\cdot z)$, they generally mentally organize it as a tree without really thinking about it: here the first $\cdot$, being the ``outer'' operation, is the root, with children $x$ and $y\cdot z$, and the latter decomposes further into another $\cdot$ node with children $y$ and $z$.
@@ -317,6 +321,8 @@ And as trees, they will be elements of some other free algebra --- but a simpler
 For instance, for the cut-ful type theory of categories under \cG, whose judgments are of the form $A\types B$ for $A,B\in\cG_0$ (and in particular there are $\cG_0\times \cG_0$ of them), the terms will be elements of a \emph{one-sorted} free algebra with a nullary operation $\id_A$ and a binary operation $\circ_A$ for each $A\in\cG_0$.
 Thus this free algebra contains many ``ill-typed'' terms such as $g\circ_B \id_A$ where $g\in\cG(C,D)$; the goal of type-checking is to discard these undesirables.
 (For technical reasons, rather than a single set of terms as here, in the general case we will allow each judgment of our intended theory to be assigned a different set of ``potential terms''; see below.)
+
+% TODO: Actually a judgment can have different "modes" --- we could be checking the type as for a canonical judgment, but we could also be synthesizing it as for an atomic one, and the requisite annotations are different.
 
 Now in practice, the input to type-checking is usually a parsed term \emph{together with} a putative type for that term, and so the term notations only need to contain enough information to reconstruct the derivation tree when supplemented with the latter.
 For instance, we have noted that the cut-ful type theory for categories technically involves a different composition operation $\circ_{A,B,C}$ for each triple of objects, so that terms would technically have to be written as $h\circ_{A,C,D} (g\circ_{A,B,C} f)$.
@@ -342,6 +348,8 @@ This is the direction that a type-checking algorithm applies the rule: given a p
 It is also the direction that the rule is often applied when \emph{searching} for a derivation of \cJ, by the same sort of recursive procedure.
 
 With all of this in mind, we make the following formal definition.
+
+% TODO: This definition only works for all-input moded judgments.
 
 \begin{defn}\label{defn:terms}
   Let $\sig$ be a signature; a \textbf{term system} for $\sig$ is a $\sig$-algebra \dT, whose elements are called (potentially ill-typed) \textbf{terms}, such that

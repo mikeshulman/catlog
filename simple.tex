@@ -2256,6 +2256,8 @@ Technically there ought also to be a label indicating the rule being applied to 
 However, any system of notation has room for \emph{one} operation denoted by simple juxtaposition (e.g.\ in high-school algebra it is multiplication, while in group theory it is the group operation), and the importance of the type operation $\to$ leads us to choose $\toE$ for this honor in type theory.
 Most mathematicians write $f(a)$ for the application of a function $f$ to an argument $a$; since parentheses are used as usual for grouping, this notation is also valid here, just as $(x)(y)=xy$ in high-school algebra.
 
+% TODO: with "types as input" the way we are doing it here, application actually has to be annotated with the argument type $A$ for type-checking to work as it usually has so far.
+
 \begin{lem}\label{thm:stlc-uniqderiv}
   If a term $\Gamma\types M:A$ is derivable in the simply typed $\lambda$-calculus, then it has a unique derivation.
 \end{lem}
