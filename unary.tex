@@ -137,7 +137,7 @@ A different way to phrase such an induction, which is more flexible and more typ
 This means that rather than introduce the auxiliary notion of ``height'' of a derivation, we apply a general principle that \emph{to prove that a property $P$ holds of all derivations, it suffices to show for each rule that if $P$ holds of the premises then it holds of the conclusion}.
 We can also define operations on derivations by \emph{structural recursion}, meaning that it suffices to define what happens to the conclusion of each rule assuming that we have already defined what happens to the premises.
 Structural induction and recursion can be justified formally by set-theoretic arguments --- see \cref{chap:dedsys} for some general statements.
-However, intuitively they implicit in what is meant by saying that ``derivations are what we obtain by applying rules one by one,'' just as ordinary mathematical induction is implicit in saying that ``the natural numbers are what we obtain by starting with zero and constructing successors one by one'', and constructive type-theoretic foundations for mathematics often take them as axiomatic.
+However, intuitively they are implicit in what is meant by saying that ``derivations are what we obtain by applying rules one by one,'' just as ordinary mathematical induction is implicit in saying that ``the natural numbers are what we obtain by starting with zero and constructing successors one by one'', and constructive type-theoretic foundations for mathematics often take them as axiomatic.
 From now on we will use structural induction and recursion on derivations in all type theories without further comment.
 
 However, it is proved, \cref{thm:poset-initial-1} enables us to reach conclusions about arbitrary posets by deriving judgments in type theory.
@@ -156,7 +156,7 @@ Now a derivation can be written without any ``leaves'' at the top, such as
 Clearly this produces the same judgments; thus the initiality theorem can also be expressed as follows.
 
 \begin{thm}\label{thm:poset-initial-2}
-  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the derivable judgments in the type theory of posets under \cG.\qed
+  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates has the same objects and its morphisms are the derivable judgments in the type theory of posets under \cG.\qed
 \end{thm}
 
 We can extract from this our first general statement about categorical logic: it is \emph{a syntax for generating free categorical structures using derivations from rules}.
@@ -167,7 +167,7 @@ The reader may be forgiven at this time for wondering what the point is; but bea
 \label{sec:categories}
 
 Let's now generalize from posets to categories.
-The relevant adjunction is now between categories \bCat and \emph{directed graphs} \bGr; the latter are sets $\cG$ of ``vertices'' equipped with a set $\cG(A,B)$ of ``edges'' for each $x,y\in \cG$.
+The relevant adjunction is now between categories \bCat and \emph{directed graphs} \bGr; the latter are sets $\cG$ of ``vertices'' equipped with a set $\cG(A,B)$ of ``edges'' for each $A,B\in \cG$.
 Thus, we hope to generate the free category $\F{\bCat}\cG$ on a directed graph \cG type-theoretically.
 
 Our judgments $A\types B$ will still represent morphisms from $A$ to $B$, but now of course there can be more than one such morphism.
@@ -194,7 +194,7 @@ Thus, for instance, if we have also $h\in \cG(B,C)$, the distinct composites $h\
   }\and
 \end{mathpar}
 Note that when we have distinct rules with the same premises and conclusion, we have to label them so that we can tell which is being applied.
-For consistency, we begin labeling the identity and composition rules too, with $\circ$ and $\idfunc$.
+For consistency, we also begin labeling the composition and identity rules, with $\circ$ and $\idfunc$ respectively.
 
 Of course, this na\"ive approach founders on the fact that composition in a category is supposed to be associative and unital, since the two composites $h\circ (g\circ f)$ and $(h\circ g)\circ f$, which ought to be equal, nevertheless correspond to distinct derivations:
 \begin{equation}\label{eq:assoc}
