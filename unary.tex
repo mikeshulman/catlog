@@ -794,7 +794,7 @@ When talking about type theory under \cG, we additionally include ``axiom'' rule
 \begin{mathpar}
   \inferrule{A\in\cG}{\types A\type}
 \end{mathpar}
-Note that the premise $A\in \cG$ here is not a judgment; rather it is an ``external'' fact that serves as a precondition for application of thish rule.
+Note that the premise $A\in \cG$ here is not a judgment; rather it is an ``external'' fact that serves as a precondition for application of this rule.
 Thus it would be more correct to write this rule as
 \begin{mathpar}
   \inferrule{ }{\types A\type}\;\text{(if $A\in\cG$)}
@@ -869,7 +869,7 @@ However, we don't need to assume explicitly as premises that \emph{all} types ap
   By induction on the derivation of $A\types B$.
   \begin{itemize}
   \item If it is the $\idfunc$ rule, then $A\in\cG$ and so $\types A\type$.
-  \item If it ends with the rule $f$ for some $f\in\cG(A,B)$, then $B\in \cG$ and so $\types A\type$, while $X\types A$ and so $\types X\type$ by the inductive hypothesis.
+  \item If it ends with the rule $fR$ for some $f\in\cG(A,B)$, then $B\in \cG$ and so $\types B\type$, while $X\types A$ and so $\types X\type$ by the inductive hypothesis.
   \item If it ends with the rule $\top R$, then $\types A\type$ by assumption.
   \item If it ends with the rule $\meetL1$, then $\types B\type$ by assumption, while $\types A\type$ and $\types C\type$ by the inductive hypothesis; thus also $\types A\meet B\type$.
   \item The cases for $\meetL2$ and $\meetR$ are similar.\qedhere
