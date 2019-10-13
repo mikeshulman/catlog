@@ -44,6 +44,7 @@
 \renewcommand{\prec}[2]{(#1)\precsym{#2}}
 % props and their type theory
 \def\s#1{_{\scriptscriptstyle(#1)}}
+\def\ss#1#2{_{\scriptscriptstyle(#1)(#2)}}
 \let\ptens\bullet
 \newcommand{\actv}[1]{{#1}^\star}
 \newcommand{\atleastone}[1]{{#1}^{\scriptscriptstyle \ge 1}}
@@ -129,6 +130,8 @@
 \def\toR{\mathord{\to}R}
 \def\toI{\mathord{\to}I}
 \def\toE{\mathord{\to}E}
+% dual
+\def\d{^\bullet}
 % forall
 \let\all\forall
 \def\forall#1:#2.{\all #1\mathord{:}#2.\,}

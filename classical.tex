@@ -538,6 +538,41 @@ the second applies the first duality equation for $A'$ with $x=f(\eta\s1)$; and 
 
 \end{props}
 
+\section{Cyclic multicategories and cosubunary polycategories}
+\label{sec:cycmulti}
+
+Motivate with two examples: multivariable adjunctions (symmetric), and classical logic (cartesian).
+
+But we want the cyclic action to have a universal property to get a good type theory.
+We can do this by allowing conullary arrows too; then a map $\ep : (A,A\d) \to ()$ is the counit of a duality if composing with it induces a bijection between arrows $(\Gamma,A)\to ()$ and $\Gamma \to A\d$, and the duality is symmetric if $\ep\si$ is also such a counit.
+Conullary arrows are mutual left adjunctions and proofs of contradictions; the universal property is precisely proof by contradiction.
+
+Maybe start with the cosubunary case at the beginning of the chapter, as the simplest one?
+Note that if the conullary arrows are representable, and we have function-types, then all duals exist, but are not generally symmetric.
+
+The elim for $A\d$ is $\ep$, which ``applies'' a term of $A\d$ to a term of $A$ to produce a conullary term.
+Its intro ``abstracts'' a conullary term over a variable of $A$ to a term of $A\d$, and the universal property is $\beta/\eta$ for these.
+(``Parigot-style $\mu$-abstraction''?)
+To ensure symmetry, hence $(A\d)\d\cong A$, we also have to be able to abstract a conullary term over a variable of $A\d$ to get a term of $A$.
+This is closely related to Koh-Ong; it's more or less just making their substitutions implicit rather than explicit.
+
+For instance, if $f:(A,B)\to C$ is the left adjoint of a multivariable adjunction, with term $x:A, y:B \types f(x,y):C$, then its two right adjoints are $x:A, z:C\d \types \mu y. z(f(x,y)) :B\d$ and $y:B, z:C\d \types \mu x. z(f(x,y)):A\d$.
+(We have to dualize their domains and codomains to regard them as \emph{left} adjoints.)
+
+Adding connectives, we get de Morgan duality $\land/\lor$ for classical logic and $\otimes/\parr$ in the noncartesian case, leading to linearly distributive and $\ast$-autonomous categories, and linear logic.
+
+But this isn't ideal from a type-theoretic POV, since abstracting over $A\d$ produces a term in an \emph{arbitrary} type, in contrast to how intro rules are supposed to live in their corresponding type former.
+This corresponds to the weirdness of classical logic by which ``proof by contradiction'' is a special rule that applies to any goal.
+
+A cleaner approach from this POV, though yielding a messier term syntax, is to generalize from the cosubunary case to arbitrary polycategories.
+In a symmetric polycategory, a bijection between arrows $(\Gamma,A) \to \Delta$ and $\Gamma \to (\Delta,A\d)$ is automatically symmetric, since we can Yoneda to get a unit and counit with triangle identities.
+Get a term syntax for polycategories by mapping them into a prop and using a ``proof net'' condition to characterize the image.
+(Actually, use this as a lead-in to prop type theory.)
+Mention the mix rules.
+
+Mention negation normal form at least briefly, since it's in the literature.
+
+
 \section{Classical logic}
 \label{sec:classical}
 
@@ -549,6 +584,8 @@ the second applies the first duality equation for $A'$ with $x=f(\eta\s1)$; and 
 
 %[Mention linearly distributive categories and $\ast$-autonomous categories.
 %But don't belabor them, and perhaps just cite references like~\cite{cs:wkdistrib} for their universal characterizations and initiality theorems.]
+
+% Hughes, "Simple free star-autonomous categories and full coherence", if we want to do more.
 
 
 % Local Variables:
