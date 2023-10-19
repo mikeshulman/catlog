@@ -107,7 +107,7 @@ Note that \texttt{mathpartir} has only recently made it into standard distributi
 Formally speaking, what we have observed is the following \emph{initiality theorem}.
 
 \begin{thm}\label{thm:poset-initial-1}
-  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates is has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.
+  For any relational graph \cG, the free poset $\F{\bPoset}\cG$ that it generates has the same objects and its morphisms are the judgments that are derivable from \cG in free type theory of posets.
 \end{thm}
 \begin{proof}
   In the preceding discussion we assumed it as known that the free poset on a relational graph is its reflexive-transitive closure, which makes this theorem more or less obvious.
@@ -479,7 +479,7 @@ Closely related to cut-admissibility is \textbf{cut-elimination}, which in our t
 
 Note that cut-elimination is a fairly straightforward consequence of cut-admissibility: the latter allows us to eliminate each cut one by one.
 This will nearly always be true for our type theories, so we will usually just prove cut admissibility and rarely remark on the cut-elimination theorem that follows from it.
-On the other hand, cut admissibility is a special case of cut-elimination, and sometimes people prove cut-elimination directly without explicitly using cut-elimination as a lemma.
+On the other hand, cut admissibility is a special case of cut-elimination, and sometimes people prove cut-elimination directly without explicitly using cut-admissibility as a lemma.
 Under this approach, the inductive step in cut-admissibility is viewed instead as a step of ``pushing cuts upwards'' through a derivation: given a derivation as on the left below in the theory with cut, we transform it into the derivation on the right in which the cut is higher up.
 \begin{equation*}
   \inferrule*[right=cut]{\inferrule*{\sD_1\\\\\vdots}{A\types B} \\
