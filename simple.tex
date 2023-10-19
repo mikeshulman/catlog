@@ -355,7 +355,7 @@ By contrast, it is traditional to formulate the cut rule itself in terms of the 
   We induct on the derivation of $\Delta,A,\Psi\types B$.
   If it is the identity rule, then $A=B$ and $\Delta$ and $\Psi$ are empty, so our given derivation of $\Gamma\types A$ is all we need.
   Otherwise, it comes from some relation $A_1,\dots,A_n \le B$ in \cG, where we have derivations of $\Gamma_i \types A_i$.
-  Since then $\Delta,A,\Psi = \Gamma_1,\dots,\Gamma_n$, there msut be an $i$ such that $\Gamma_i = \Gamma_i',A,\Gamma_i''$, while $\Delta = \Gamma_1,\dots,\Gamma_{i-1},\Gamma_i'$ and $\Psi = \Gamma_i'',\Gamma_{i+1},\dots,\Gamma_n$.
+  Since then $\Delta,A,\Psi = \Gamma_1,\dots,\Gamma_n$, there must be an $i$ such that $\Gamma_i = \Gamma_i',A,\Gamma_i''$, while $\Delta = \Gamma_1,\dots,\Gamma_{i-1},\Gamma_i'$ and $\Psi = \Gamma_i'',\Gamma_{i+1},\dots,\Gamma_n$.
   Now by the inductive hypothesis, we can construct a derivation of $\Gamma_i',\Gamma,\Gamma_i''\types A_i$.
   Applying the rule for $A_1,\dots,A_n \le B$ again, with this derivation in place of the original $\Gamma_i \types A_i$, gives the desired result.
 \end{proof}
@@ -832,12 +832,12 @@ We will see something analogous in \cref{sec:logic}, however.)
 But we encourage the interested reader to write down a multi--substitution too (\cref{ex:moncat-multisubadm}).
 
 \begin{thm}\label{thm:multicat-subadm}
-  Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types M[N/x]:B$.
+  Substitution is admissible in the cut-free type theory for multicategories under \cG: given derivations of $\Gamma\types M:A$ and of $\Delta,x:A,\Psi\types N:B$, we can construct a derivation of $\Delta,\Gamma,\Psi\types N[M/x]:B$.
 \end{thm}
 \begin{proof}
   This is essentially just \cref{thm:multiposet-cutadm}, with terms carried along.
   There is one thing to be said: since the variables used in any context must be distinct, including the given context $\Delta,x:A,\Psi$, it must be that the variables in $\Delta$ and $\Psi$ are pairwise distinct, and all of them are distinct from $x$.
-  But the variables in $\Delta,\Psi$ may not be pairwise distinct from those in $\Gamma$, so the context of the desired conclusion $\Delta,\Gamma,\Psi\types M[N/x]:B$ may involve an $\alpha$-equivalence.
+  But the variables in $\Delta,\Psi$ may not be pairwise distinct from those in $\Gamma$, so the context of the desired conclusion $\Delta,\Gamma,\Psi\types N[M/x]:B$ may involve an $\alpha$-equivalence.
   For instance, if we have $y:C\types f(y):A$ and $y:C,x:A,z:D\types g(y,x,z):B$, we cannot naively conclude $y:C,y:C,z:D\types g(y,f(y),z):B$; we have to rename one of the $y$'s first and get $y:C,w:C,z:D\types g(y,f(w),z):B$.
   We emphasize, however, that this is only a point about the term notation.
   The proof of \cref{thm:multiposet-cutadm}, which doesn't mention variables or terms at all, \emph{is already} an operation on derivations, and the renaming of variables only arises when we notate those derivations in a particular way.
